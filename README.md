@@ -1,5 +1,8 @@
 # osu-utils
 
+[![CodeFactor](https://img.shields.io/codefactor/grade/github/kionell/osu-resources)](https://www.codefactor.io/repository/github/kionell/osu-resources)
+[![License](https://img.shields.io/github/license/kionell/osu-resources)](https://github.com/kionell/osu-resources/blob/master/LICENSE)
+
 Basic classes, interfaces and utils for developing new osu! projects.
 
 - Supports TypeScript.
