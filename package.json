@@ -1,5 +1,5 @@
 {
-  "name": "osu-utils",
+  "name": "osu-resources",
   "version": "0.1.0",
   "description": "Basic classes, interfaces and utils for creating new osu! rulesets",
   "main": "./lib/index.js",
