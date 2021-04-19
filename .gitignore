@@ -6,6 +6,7 @@
 !.eslintignore
 !.eslintrc.json
 !.gitignore
+!CHANGELOG.md
 !LICENSE
 !package-lock.json
 !package.json
