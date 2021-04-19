@@ -22,11 +22,14 @@ npm install osu-utils
 Since this project uses ES Modules, it is recommended to use Node.js 12.22.0 or newer.
 
 ## Other projects
-- [osu-parsers](https://github.com/kionell/osu-parsers.git) - A bundle of parsers for different osu! file formats.
-- [osu-standard-stable](https://github.com/kionell/osu-standard-stable.git) - The osu!std ruleset based on the osu!lazer source code.
-- [osu-taiko-stable](https://github.com/kionell/osu-taiko-stable.git) - The osu!taiko ruleset based on the osu!lazer source code.
-- [osu-catch-stable](https://github.com/kionell/osu-catch-stable.git) - The osu!catch ruleset based on the osu!lazer source code.
-- [osu-mania-stable](https://github.com/kionell/osu-mania-stable.git) - The osu!mania ruleset based on the osu!lazer source code.
+
+All projects below are based on this code.
+
+- ~~[osu-parsers](https://github.com/kionell/osu-parsers.git) - A bundle of parsers for different osu! file formats.~~
+- ~~[osu-standard-stable](https://github.com/kionell/osu-standard-stable.git) - The osu!std ruleset based on the osu!lazer source code.~~
+- ~~[osu-taiko-stable](https://github.com/kionell/osu-taiko-stable.git) - The osu!taiko ruleset based on the osu!lazer source code.~~
+- ~~[osu-catch-stable](https://github.com/kionell/osu-catch-stable.git) - The osu!catch ruleset based on the osu!lazer source code.~~
+- ~~[osu-mania-stable](https://github.com/kionell/osu-mania-stable.git) - The osu!mania ruleset based on the osu!lazer source code.~~
 
 ## Contributing
 
