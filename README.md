@@ -14,7 +14,7 @@ Basic classes, interfaces and utils for developing new osu! projects.
 Add a new dependency to your project via npm:
 
 ```npm
-npm install osu-utils
+npm install osu-resources
 ```
 
 ### Requirements
