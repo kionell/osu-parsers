@@ -1,4 +1,4 @@
-# osu-utils
+# osu-resources
 
 [![CodeFactor](https://img.shields.io/codefactor/grade/github/kionell/osu-resources)](https://www.codefactor.io/repository/github/kionell/osu-resources)
 [![License](https://img.shields.io/github/license/kionell/osu-resources)](https://github.com/kionell/osu-resources/blob/master/LICENSE)
