@@ -21,17 +21,17 @@ export abstract class RulesetBeatmap extends Beatmap {
    * @param bitwise Mod bitwise.
    * @returns The same beatmap with applied mods.
    */
-  abstract applyMods(bitwise: number): Beatmap;
+  abstract applyMods(bitwise: number): this;
 
   /**
    * Resets a mod combination from the beatmap.
    */
-  abstract resetMods(): Beatmap;
+  abstract resetMods(): this;
 
   /**
    * Beatmap game mode.
    */
   get mode(): number {
-    return this.ruleset.id || this.base.mode;
+    return this.ruleset ? this.ruleset.id : this.base.mode;
   }
 }
