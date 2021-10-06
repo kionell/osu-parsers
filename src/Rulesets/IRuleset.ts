@@ -1,12 +1,24 @@
 import { BeatmapProcessor } from '../Beatmaps/BeatmapProcessor';
 import { BeatmapConverter } from '../Beatmaps/BeatmapConverter';
-import { ModCombination } from '../Mods/ModCombination';
-import { Beatmap } from '../Beatmaps';
+import { RulesetBeatmap } from '../Beatmaps/RulesetBeatmap';
+import { IBeatmap } from '../Beatmaps/IBeatmap';
 
 /**
  * A ruleset.
  */
 export interface IRuleset {
+  /**
+   * Ruleset ID.
+   */
+  id: number;
+
+  /**
+   * Applies ruleset to a beatmap.
+   * @param beatmap The beatmap.
+   * @returns A new instance of the beatmap with applied ruleset.
+   */
+  applyToBeatmap(beatmap: IBeatmap): RulesetBeatmap;
+
   /**
    * @returns A new beatmap processor.
    */
@@ -16,12 +28,4 @@ export interface IRuleset {
    * @returns A new beatmap converter.
    */
   createBeatmapConverter(): BeatmapConverter;
-
-  /**
-   * @returns A new mod combination.
-   */
-  createModCombination(bitwise: number): ModCombination;
-
-  applyMods(): Beatmap;
-  resetMods(): Beatmap;
 }

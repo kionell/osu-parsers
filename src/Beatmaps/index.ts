@@ -27,5 +27,6 @@ export { BeatmapEventsSection } from './Sections/BeatmapEventsSection';
 /* Beatmaps */
 export { BeatmapProcessor } from './BeatmapProcessor';
 export { BeatmapConverter } from './BeatmapConverter';
+export { RulesetBeatmap } from './RulesetBeatmap';
 export { Beatmap } from './Beatmap';
 export { IBeatmap } from './IBeatmap';
