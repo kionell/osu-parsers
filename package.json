@@ -1,0 +1,45 @@
+{
+  "name": "osu-parsers",
+  "version": "1.0.0",
+  "description": "A bundle of parsers for osu! File formats based on the osu!lazer source code.",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "scripts": {
+    "build": "rollup -c && npm run format",
+    "test": "jest --verbose",
+    "fix": "eslint --fix ./src",
+    "format": "eslint --fix ./lib/** --no-ignore",
+    "prepublish": "npm run build"
+  },
+  "type": "module",
+  "keywords": [
+    "osu",
+    "beatmap",
+    "storyboard",
+    "parser",
+    "osu!std",
+    "osu!taiko",
+    "osu!mania",
+    "osu!catch",
+    ".osu",
+    ".osb"
+  ],
+  "author": "Kionell",
+  "license": "MIT",
+  "devDependencies": {
+    "@rollup/plugin-typescript": "^8.2.1",
+    "@types/jest": "^26.0.22",
+    "@types/node": "^14.14.35",
+    "@typescript-eslint/eslint-plugin": "^4.20.0",
+    "@typescript-eslint/parser": "^4.21.0",
+    "eslint": "^7.23.0",
+    "eslint-plugin-import": "^2.22.1",
+    "jest": "^26.6.3",
+    "rollup": "^2.44.0",
+    "rollup-plugin-dts": "^3.0.1",
+    "typescript": "^4.1.5"
+  },
+  "dependencies": {
+    "osu-resources": "^0.2.1"
+  }
+}
