@@ -1,5 +1,5 @@
 # osu-resources
-[![CodeFactor](https://img.shields.io/codefactor/grade/github/kionell/osu-parsers)](https://www.codefactor.io/repository/github/kionell/osu-resources)
+[![CodeFactor](https://img.shields.io/codefactor/grade/github/kionell/osu-parsers)](https://www.codefactor.io/repository/github/kionell/osu-parsers)
 [![License](https://img.shields.io/github/license/kionell/osu-parsers)](https://github.com/kionell/osu-parsers/blob/master/LICENSE)
 
 A bundle of parsers for osu! File formats based on the osu!lazer source code.
