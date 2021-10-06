@@ -1,6 +1,6 @@
 {
   "name": "osu-resources",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Basic classes, interfaces and utils for creating new osu! rulesets",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
@@ -8,7 +8,8 @@
     "build": "rollup -c && npm run format",
     "test": "jest --verbose",
     "fix": "eslint --fix ./src",
-    "format": "eslint --fix ./lib/** --no-ignore"
+    "format": "eslint --fix ./lib/** --no-ignore",
+    "publish": "npm run build && npm publish"
   },
   "type": "module",
   "keywords": [
