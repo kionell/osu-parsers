@@ -107,7 +107,7 @@ You always should apply one of the rulesets to your parsed beatmaps. There are 4
 
 ## Documentation
 
-Auto-generated documentation is available [here]().
+Auto-generated documentation is available [here](https://kionell.github.io/osu-parsers/).
 
 ## Contributing
 
