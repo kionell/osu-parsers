@@ -1,4 +1,4 @@
-# osu-resources
+# osu-parsers
 [![CodeFactor](https://img.shields.io/codefactor/grade/github/kionell/osu-parsers)](https://www.codefactor.io/repository/github/kionell/osu-parsers)
 [![License](https://img.shields.io/github/license/kionell/osu-parsers)](https://github.com/kionell/osu-parsers/blob/master/LICENSE)
 
