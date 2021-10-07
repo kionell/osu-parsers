@@ -25,4 +25,10 @@ export interface IHitObject {
    * Samples of this hit object.
    */
   samples: HitSample[];
+
+  /**
+   * Creates a new copy of this hit object.
+   * @returns a copy of this hit object.
+   */
+  clone(): IHitObject;
 }

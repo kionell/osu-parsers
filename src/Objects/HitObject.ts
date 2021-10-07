@@ -11,7 +11,7 @@ import { HitSound } from './Enums/HitSound';
  */
 export abstract class HitObject implements IHitObject {
   /**
-   * A base hit object.
+   * The base of this hit object.
    */
   base: IHitObject;
 
@@ -97,12 +97,17 @@ export abstract class HitObject implements IHitObject {
    * @param controlPoints Beatmap control points.
    * @param difficulty Beatmap Difficulty.
    */
-  applyDefaultsToNested(
-    controlPoints: ControlPointInfo,
-    difficulty: BeatmapDifficultySection
-  ): void {
+  applyDefaultsToNested(controlPoints: ControlPointInfo, difficulty: BeatmapDifficultySection): void {
     this.nestedHitObjects.forEach((n) => {
       n.applyDefaultsToSelf(controlPoints, difficulty);
     });
+  }
+
+  /**
+   * Create a new copy of hit object base. 
+   * @returns A clone of hit object base.
+   */
+  clone(): IHitObject {
+    return this.base.clone();
   }
 }
