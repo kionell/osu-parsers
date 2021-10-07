@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.3] - 2021-10-07
+
+### Added
+
+- Object components:
+  - Added a method for clonning hit objects to the IHitObject interface.
+  - HitObject class will copy the base object when using method for clonning.
+
+### Changed
+- Beatmap components:
+  - Moved max combo getter from Beatmap to RulesetBeatmap class.
+  - Remove ruleset data from RulesetBeatmap class to avoid circular imports.
+
+## [0.2.2] - 2021-10-06
+
+### Fixed
+- Beatmap components:
+  - Applying & resetting mods now returns the same instance of ruleset beatmap.
+  - Ruleset beatmap mode getter now checks if ruleset exists.
+
 ## [0.2.0] - 2021-10-06
 
 ### Added
