@@ -1,5 +1,4 @@
 import { Beatmap } from './Beatmap';
-import { IRuleset } from '../Rulesets/IRuleset';
 import { ModCombination } from '../Mods/ModCombination';
 
 /**
@@ -27,11 +26,4 @@ export abstract class RulesetBeatmap extends Beatmap {
    * Resets a mod combination from the beatmap.
    */
   abstract resetMods(): this;
-
-  /**
-   * Beatmap game mode.
-   */
-  get mode(): number {
-    return this.ruleset ? this.ruleset.id : this.base.mode;
-  }
 }
