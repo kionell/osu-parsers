@@ -120,11 +120,6 @@ export abstract class Beatmap implements IBeatmap {
   }
 
   /**
-   * Beatmap max possible combo.
-   */
-  abstract get maxCombo(): number;
-
-  /**
    * Beatmap length in milliseconds.
    */
   get length(): number {

@@ -6,9 +6,9 @@ import { ModCombination } from '../Mods/ModCombination';
  */
 export abstract class RulesetBeatmap extends Beatmap {
   /**
-   * Beatmap ruleset.
+   * Beatmap max possible combo.
    */
-  abstract ruleset: IRuleset;
+  abstract get maxCombo(): number;
 
   /**
    * Beatmap mods.
