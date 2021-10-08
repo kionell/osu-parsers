@@ -11,7 +11,7 @@ export abstract class RulesetBeatmap extends Beatmap {
   abstract get maxCombo(): number;
 
   /**
-   * Beatmap mods.
+   * Applied mods of a beatmap.
    */
   abstract mods: ModCombination;
 

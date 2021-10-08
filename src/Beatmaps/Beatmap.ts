@@ -1,5 +1,4 @@
 import { HitObject, IHasDuration } from '../Objects';
-import { ModCombination } from '../Mods';
 
 import { BeatmapColoursSection } from './Sections/BeatmapColoursSection';
 import { BeatmapDifficultySection } from './Sections/BeatmapDifficultySection';
@@ -28,11 +27,6 @@ export abstract class Beatmap implements IBeatmap {
    * The list of the beatmap hit objects.
    */
   hitObjects: HitObject[] = [];
-
-  /**
-   * Applied mods of a beatmap.
-   */
-  abstract appliedMods: ModCombination;
 
   constructor(beatmap: IBeatmap) {
     this.base = beatmap;
