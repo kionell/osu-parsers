@@ -14,7 +14,7 @@ Basic classes, interfaces and utils for developing new osu! projects.
 
 Add a new dependency to your project via npm:
 
-```npm
+```bash
 npm install osu-resources
 ```
 
@@ -31,6 +31,10 @@ All projects below are based on this code.
 - [osu-taiko-stable](https://github.com/kionell/osu-taiko-stable.git) - The osu!taiko ruleset based on the osu!lazer source code.
 - [osu-catch-stable](https://github.com/kionell/osu-catch-stable.git) - The osu!catch ruleset based on the osu!lazer source code.
 - [osu-mania-stable](https://github.com/kionell/osu-mania-stable.git) - The osu!mania ruleset based on the osu!lazer source code.
+
+## Documentation
+
+Auto-generated documentation is available [here](https://kionell.github.io/osu-resources/).
 
 ## Contributing
 
