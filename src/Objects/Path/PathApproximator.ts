@@ -207,6 +207,11 @@ export class PathApproximator {
     return output;
   }
 
+  /**
+   * Computes various properties that can be used to approximate the circular arc.
+   * @param controlPoints Three distinct points on the arc.
+   * @returns The properties for approximation of the circular arc.
+   */
   static _circularArcProperties(controlPoints: Vector2[]): CircularArcProperties {
     const a = controlPoints[0];
     const b = controlPoints[1];
@@ -432,12 +437,38 @@ export class PathApproximator {
   }
 }
 
-class CircularArcProperties {
+/**
+ * The properties for approximation of the circular arc.
+ */
+export class CircularArcProperties {
+  /**
+   * Whether the properties are valid.
+   */
   readonly isValid: boolean;
+
+  /**
+   * Starting angle of the circle.
+   */
   readonly thetaStart: number;
+
+  /**
+   * The angle of the drawn circle.
+   */
   readonly thetaRange: number;
+
+  /**
+   * The direction in which the circle will be drawn.
+   */
   readonly direction: number;
+
+  /**
+   * The radius of a circle.
+   */
   readonly radius: number;
+
+  /**
+   * The centre position of a circle.
+   */
   readonly centre: Vector2;
 
   constructor(thetaStart?: number, thetaRange?: number, direction?: number, radius?: number, centre?: Vector2) {
