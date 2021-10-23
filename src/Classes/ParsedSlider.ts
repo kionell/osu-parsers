@@ -1,11 +1,11 @@
-import { HitSample, SliderPath } from 'osu-resources';
+import { HitSample, IHasLegacyLastTickOffset, SliderPath } from 'osu-resources';
 
 import { ParsedHitObject } from './ParsedHitObject';
 
 /**
  * A parsed slidable object.
  */
-export class ParsedSlider extends ParsedHitObject {
+export class ParsedSlider extends ParsedHitObject implements IHasLegacyLastTickOffset {
   /**
    * The amount of times a slidable object repeats.
    */
