@@ -1,0 +1,40 @@
+{
+  "name": "osu-mania-stable",
+  "version": "1.0.0",
+  "description": "osu!stable version of osu!mania ruleset based on osu!lazer source code.",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "scripts": {
+    "build": "rollup -c && npm run format",
+    "test": "jest --verbose",
+    "fix": "eslint --fix ./src",
+    "format": "eslint --fix ./lib/** --no-ignore",
+    "prepublish": "npm run build",
+    "docs": "npx typedoc src/index.ts"
+  },
+  "type": "module",
+  "keywords": [
+    "osu",
+    "osu!lazer",
+    "osu!mania"
+  ],
+  "author": "Kionell",
+  "license": "MIT",
+  "devDependencies": {
+    "@rollup/plugin-typescript": "^8.2.1",
+    "@types/jest": "^26.0.22",
+    "@types/node": "^14.14.35",
+    "@typescript-eslint/eslint-plugin": "^4.20.0",
+    "@typescript-eslint/parser": "^4.21.0",
+    "eslint": "^7.23.0",
+    "eslint-plugin-import": "^2.22.1",
+    "jest": "^26.6.3",
+    "rollup": "^2.44.0",
+    "rollup-plugin-dts": "^3.0.1",
+    "typedoc": "^0.22.6",
+    "typescript": "^4.1.5"
+  },
+  "dependencies": {
+    "osu-resources": "^0.3.0"
+  }
+}
