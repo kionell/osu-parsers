@@ -7,11 +7,9 @@ import { PathType } from '../Enums/PathType';
 export class SliderPath {
   private _expectedDistance: number;
 
-  private _pathPoints: PathPoint[];
+  private _controlPoints: PathPoint[];
 
   private _curveType: PathType;
-
-  private _curvePoints: Vector2[];
 
   private _calculatedLength = 0;
 
@@ -21,15 +19,9 @@ export class SliderPath {
 
   private _isCached = false;
 
-  constructor(curveType?: PathType,
-    curvePoints?: Vector2[],
-    expectedDistance?: number) {
+  constructor(curveType?: PathType, controlPoints?: PathPoint[], expectedDistance?: number) {
     this._curveType = curveType || PathType.Linear;
-
-    this._curvePoints = curvePoints || [];
-
-    this._pathPoints = this._getPathPoints(this._curveType, this._curvePoints);
-
+    this._controlPoints = controlPoints || [];
     this._expectedDistance = expectedDistance || 0;
   }
 
@@ -46,26 +38,14 @@ export class SliderPath {
   }
 
   /**
-   * Curve points.
-   */
-  get curvePoints(): Vector2[] {
-    return this._curvePoints;
-  }
-
-  set curvePoints(value: Vector2[]) {
-    this._curvePoints = value;
-    this.invalidate();
-  }
-
-  /**
    * The control points of the path.
    */
-  get pathPoints(): PathPoint[] {
-    return this._pathPoints;
+  get controlPoints(): PathPoint[] {
+    return this._controlPoints;
   }
 
-  set pathPoints(value: PathPoint[]) {
-    this._pathPoints = value;
+  set controlPoints(value: PathPoint[]) {
+    this._controlPoints = value;
     this.invalidate();
   }
 
@@ -190,23 +170,7 @@ export class SliderPath {
   }
 
   clone(): SliderPath {
-    return new SliderPath(this._curveType,
-      this._curvePoints,
-      this._expectedDistance);
-  }
-
-  private _getPathPoints(curveType: PathType, curvePoints: Vector2[]): PathPoint[] {
-    const pathPoints: PathPoint[] = [];
-
-    pathPoints.push(new PathPoint(new Vector2(0, 0), curveType));
-
-    curvePoints.forEach((point) => {
-      const pathPoint = new PathPoint(point, null);
-
-      pathPoints.push(pathPoint);
-    });
-
-    return pathPoints;
+    return new SliderPath(this._curveType, this._controlPoints, this._expectedDistance);
   }
 
   private _ensureValid(): void {
@@ -223,7 +187,7 @@ export class SliderPath {
   private _calculatePath(): void {
     this._calculatedPath = [] as Vector2[];
 
-    const pathPointsLength = this.pathPoints.length;
+    const pathPointsLength = this.controlPoints.length;
 
     if (pathPointsLength === 0) {
       return;
@@ -232,19 +196,19 @@ export class SliderPath {
     const vertices = [] as Vector2[];
 
     for (let i = 0; i < pathPointsLength; i++) {
-      vertices[i] = this.pathPoints[i].position;
+      vertices[i] = this.controlPoints[i].position;
     }
 
     let start = 0;
 
     for (let i = 0; i < pathPointsLength; ++i) {
-      if (!this.pathPoints[i].type && i < pathPointsLength - 1) {
+      if (!this.controlPoints[i].type && i < pathPointsLength - 1) {
         continue;
       }
 
       // The current vertex ends the segment
       const segmentVertices = vertices.slice(start, i + 1);
-      const segmentType = this.pathPoints[start].type || PathType.Linear;
+      const segmentType = this.controlPoints[start].type || PathType.Linear;
 
       for (const t of this._calculateSubPath(segmentVertices, segmentType)) {
         const last = this._calculatedPath[this._calculatedPath.length - 1];
