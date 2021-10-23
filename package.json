@@ -1,6 +1,6 @@
 {
   "name": "osu-resources",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "Basic classes, interfaces and utils for creating new osu! rulesets",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
