@@ -40,6 +40,6 @@
     "typescript": "^4.1.5"
   },
   "dependencies": {
-    "osu-resources": "^0.2.1"
+    "osu-resources": "^0.3.0"
   }
 }
