@@ -5,7 +5,6 @@ import { Vector2, Interpolation } from '../../Utils';
  */
 export class PathApproximator {
   static readonly BEZIER_TOLERANCE = Math.fround(0.25);
-
   static readonly CIRCULAR_ARC_TOLERANCE = Math.fround(0.1);
 
   /**
@@ -20,36 +19,87 @@ export class PathApproximator {
    * @returns A list of vectors representing the piecewise-linear approximation.
    */
   static approximateBezier(controlPoints: Vector2[]): Vector2[] {
-    const output: Vector2[] = [];
-    const count = controlPoints.length;
+    return this.approximateBSpline(controlPoints);
+  }
 
-    if (count === 0) return output;
+  /**
+   * Creates a piecewise-linear approximation of a clamped uniform B-spline with polynomial order p, 
+   * by dividing it into a series of bezier control points at its knots, then adaptively repeatedly
+   * subdividing those until their approximation error vanishes below a given threshold.
+   * Retains previous bezier approximation functionality when p is 0 or too large to create knots.
+   * Algorithm unsuitable for large values of p with many knots.
+   * @param controlPoints The control points.
+   * @param p The polynomial order.
+   * @returns A list of vectors representing the piecewise-linear approximation.
+   */
+  static approximateBSpline(controlPoints: Vector2[], p = 0): Vector2[] {
+    const output: Vector2[] = [];
+    const n = controlPoints.length - 1;
+
+    if (n < 0) return output;
+
+    const toFlatten: Vector2[][] = [];
+    const freeBuffers: Vector2[][] = [];
+
+    const points = controlPoints.slice();
+
+    if (p > 0 && p < n) {
+      // Subdivide B-spline into bezier control points at knots.
+      for (let i = 0; i < n - p; ++i) {
+        const subBezier: Vector2[] = [points[i]];
+
+        // Destructively insert the knot p-1 times via Boehm's algorithm.
+        for (let j = 0; j < p - 1; ++j) {
+          subBezier[j + 1] = points[i + 1];
+
+          for (let k = 1; k < p - j; ++k) {
+            const l = Math.min(k, n - p - i);
+
+            points[i + k] = (points[i + k]
+              .fscale(l)
+              .fadd(points[i + k + 1]))
+              .fdivide(l + 1);
+          }
+        }
+
+        subBezier[p] = points[i + 1];
+        toFlatten.push(subBezier);
+      }
+
+      toFlatten.push(points.slice(n - p));
+      // Reverse the stack so elements can be accessed in order.
+      toFlatten.reverse();
+    }
+    else {
+      // B-spline subdivision unnecessary, degenerate to single bezier.
+      p = n;
+      toFlatten.push(points);
+    }
+
+    /**
+     * "toFlatten" contains all the curves which are not yet approximated well enough.
+     * We use a stack to emulate recursion without the risk of running into a stack overflow.
+     * (More specifically, we iteratively and adaptively refine our curve 
+     * with a {@link https://en.wikipedia.org/wiki/Depth-first_search|Depth-first search} 
+     * over the tree resulting from the subdivisions we make.)
+     */
 
     const subdivisionBuffer1: Vector2[] = [];
     const subdivisionBuffer2: Vector2[] = [];
 
-    const toFlatten = [controlPoints.slice()];
-    const freeBuffers: Vector2[][] = [];
+    const leftChild = subdivisionBuffer2;
 
-    const leftChild: Vector2[] = subdivisionBuffer2;
+    while (toFlatten.length > 0) {
+      const parent = toFlatten.pop() || [];
 
-    while (toFlatten.length) {
-      const parent: Vector2[] = toFlatten.pop() || [];
-
-      if (PathApproximator._bezierIsFlatEnough(parent)) {
+      if (this._bezierIsFlatEnough(parent)) {
         /**
          * If the control points we currently operate on are sufficiently "flat", we use
          * an extension to De Casteljau's algorithm to obtain a piecewise-linear approximation
          * of the bezier curve represented by our control points, consisting of the same amount
          * of points as there are control points.
          */
-        PathApproximator._bezierApproximate(
-          parent,
-          output,
-          subdivisionBuffer1,
-          subdivisionBuffer2,
-          count
-        );
+        this._bezierApproximate(parent, output, subdivisionBuffer1, subdivisionBuffer2, p + 1);
 
         freeBuffers.push(parent);
         continue;
@@ -61,16 +111,13 @@ export class PathApproximator {
        */
       const rightChild = freeBuffers.pop() || [];
 
-      PathApproximator._bezierSubdivide(
-        parent,
-        leftChild,
-        rightChild,
-        subdivisionBuffer1,
-        count
-      );
+      this._bezierSubdivide(parent, leftChild, rightChild, subdivisionBuffer1, p + 1);
 
-      // We re-use the buffer of the parent for one of the children, so that we save one allocation per iteration.
-      for (let i = 0; i < count; ++i) {
+      /**
+       * We re-use the buffer of the parent for one of the children, 
+       * so that we save one allocation per iteration.
+       */
+      for (let i = 0; i < p + 1; ++i) {
         parent[i] = leftChild[i];
       }
 
@@ -78,7 +125,7 @@ export class PathApproximator {
       toFlatten.push(parent);
     }
 
-    output.push(controlPoints[count - 1]);
+    output.push(controlPoints[n]);
 
     return output;
   }
@@ -97,11 +144,11 @@ export class PathApproximator {
       const v2 = controlPoints[i];
       const v3 = i < controlPointsLength - 1
         ? controlPoints[i + 1]
-        : v2.add(v2).subtract(v1);
+        : v2.fadd(v2).fsubtract(v1);
 
       const v4 = i < controlPointsLength - 2
         ? controlPoints[i + 2]
-        : v3.add(v3).subtract(v2);
+        : v3.fadd(v3).fsubtract(v2);
 
       for (let c = 0; c < PathApproximator.CATMULL_DETAIL; c++) {
         output.push(PathApproximator._catmullFindPoint(v1, v2, v3, v4,
@@ -121,70 +168,10 @@ export class PathApproximator {
    * @returns A list of vectors representing the piecewise-linear approximation.
    */
   static approximateCircularArc(controlPoints: Vector2[]): Vector2[] {
-    const a = controlPoints[0];
-    const b = controlPoints[1];
-    const c = controlPoints[2];
+    const pr = this._circularArcProperties(controlPoints);
 
-    const aSq = b.subtract(c).length() ** 2;
-    const bSq = a.subtract(c).length() ** 2;
-    const cSq = a.subtract(b).length() ** 2;
-
-    /**
-     * If we have a degenerate triangle where 
-     * a side-length is almost zero, then give up and fall
-     * back to a more numerically stable method.
-     */
-    if (Math.abs(aSq - 0) < 0.003
-      || Math.abs(bSq - 0) < 0.003
-      || Math.abs(cSq - 0) < 0.003
-    ) {
-      return [];
-    }
-
-    const s = Math.fround(aSq * (bSq + cSq - aSq));
-    const t = Math.fround(bSq * (aSq + cSq - bSq));
-    const u = Math.fround(cSq * (aSq + bSq - cSq));
-
-    const sum = Math.fround(s + t + u);
-
-    /**
-     * If we have a degenerate triangle with an almost-zero size, then give up and fall
-     * back to a more numerically stable method.
-     */
-    if (Math.abs(sum - 0) < 0.003) {
-      return [];
-    }
-
-    const centre = a.scale(s).add(b.scale(t))
-      .add(c.scale(u))
-      .divide(sum);
-
-    const dA = a.subtract(centre);
-    const dC = c.subtract(centre);
-
-    const r = dA.length();
-
-    const thetaStart = Math.atan2(dA.y, dA.x);
-    let thetaEnd = Math.atan2(dC.y, dC.x);
-
-    while (thetaEnd < thetaStart) {
-      thetaEnd += 2 * Math.PI;
-    }
-
-    let dir = 1;
-    let thetaRange = thetaEnd - thetaStart;
-
-    /**
-     * Decide in which direction to draw the circle, depending on which side of
-     * AC B lies.
-     */
-    let orthoAtoC = c.subtract(a);
-
-    orthoAtoC = new Vector2(orthoAtoC.y, -orthoAtoC.x);
-
-    if (orthoAtoC.dot(b.subtract(a)) < 0) {
-      dir *= -1;
-      thetaRange = 2 * Math.PI - thetaRange;
+    if (!pr.isValid) {
+      return this.approximateBezier(controlPoints);
     }
 
     /**
@@ -194,27 +181,87 @@ export class PathApproximator {
      * The special case is required for extremely short sliders where the radius is smaller than
      * the tolerance. This is a pathological rather than a realistic case.
      */
-    const amountPoints =
-      2 * r <= PathApproximator.CIRCULAR_ARC_TOLERANCE
-        ? 2
-        : Math.max(2,
-          Math.ceil(thetaRange /
-                (2 * Math.acos(1 - PathApproximator.CIRCULAR_ARC_TOLERANCE / r))));
+    let amountPoints = 2;
 
-    const output = [];
-    let fract, theta, o;
+    if (2 * pr.radius > PathApproximator.CIRCULAR_ARC_TOLERANCE) {
+      const angle = 2 * Math.acos(1 - PathApproximator.CIRCULAR_ARC_TOLERANCE / pr.radius);
+      const points = Math.trunc(Math.ceil(pr.thetaRange / angle));
+
+      amountPoints = Math.max(2, points);
+    }
+
+    const output: Vector2[] = [];
 
     for (let i = 0; i < amountPoints; ++i) {
-      fract = i / (amountPoints - 1);
-      theta = thetaStart + dir * fract * thetaRange;
+      const fract = i / (amountPoints - 1);
+      const theta = pr.thetaStart + pr.direction * fract * pr.thetaRange;
 
-      o = new Vector2(Math.fround(Math.cos(theta)),
-        Math.fround(Math.sin(theta))).scale(r);
+      const vector2 = new Vector2(
+        Math.fround(Math.cos(theta)),
+        Math.fround(Math.sin(theta))
+      );
 
-      output.push(centre.add(o));
+      output.push(vector2.fscale(pr.radius).fadd(pr.centre));
     }
 
     return output;
+  }
+
+  static _circularArcProperties(controlPoints: Vector2[]): CircularArcProperties {
+    const a = controlPoints[0];
+    const b = controlPoints[1];
+    const c = controlPoints[2];
+
+    /**
+     * If we have a degenerate triangle where a side-length is almost zero,
+     * then give up and fallback to a more numerically stable method.
+     */
+    const sideLength = (b.y - a.y) * (c.x - a.x) - (b.x - a.x) * (c.y - a.y);
+
+    if (Math.abs(sideLength) < Math.fround(0.001)) {
+      return new CircularArcProperties();
+    }
+
+    const d = 2 * (a.x * b.fsubtract(c).y + b.x * c.fsubtract(a).y + c.x * a.fsubtract(b).y);
+
+    const aSq = a.flength() ** 2;
+    const bSq = b.flength() ** 2;
+    const cSq = c.flength() ** 2;
+
+    const centre = new Vector2(
+      aSq * b.fsubtract(c).y + bSq * c.fsubtract(a).y + cSq * a.fsubtract(b).y,
+      aSq * c.fsubtract(b).x + bSq * a.fsubtract(c).x + cSq * b.fsubtract(a).x
+    ).fdivide(d);
+
+    const dA = a.fsubtract(centre);
+    const dC = c.fsubtract(centre);
+
+    const radius = dA.flength();
+
+    const thetaStart = Math.atan2(dA.y, dA.x);
+    let thetaEnd = Math.atan2(dC.y, dC.x);
+
+    while (thetaEnd < thetaStart) {
+      thetaEnd += 2 * Math.PI;
+    }
+
+    let direction = 1;
+    let thetaRange = thetaEnd - thetaStart;
+
+    /**
+     * Decide in which direction to draw the circle, depending on which side of
+     * AC B lies.
+     */
+    let orthoAtoC = c.fsubtract(a);
+
+    orthoAtoC = new Vector2(orthoAtoC.y, -orthoAtoC.x);
+
+    if (orthoAtoC.fdot(b.fsubtract(a)) < 0) {
+      direction = -direction;
+      thetaRange = 2 * Math.PI - thetaRange;
+    }
+
+    return new CircularArcProperties(thetaStart, thetaRange, direction, radius, centre);
   }
 
   /**
@@ -224,7 +271,7 @@ export class PathApproximator {
    * @returns A list of vectors representing the piecewise-linear approximation.
    */
   static approximateLinear(controlPoints: Vector2[]): Vector2[] {
-    return controlPoints;
+    return controlPoints.slice();
   }
 
   /**
@@ -268,15 +315,15 @@ export class PathApproximator {
    * @param controlPoints The control points to check for flatness.
    * @returns Whether the control points are flat enough.
    */
-  static _bezierIsFlatEnough(controlPoints: Vector2[]): boolean {
-    let sub, sum, scale;
+  private static _bezierIsFlatEnough(controlPoints: Vector2[]): boolean {
+    let vector2;
 
     for (let i = 1, len = controlPoints.length; i < len - 1; i++) {
-      scale = controlPoints[i].scale(2);
-      sub = controlPoints[i - 1].subtract(scale);
-      sum = sub.add(controlPoints[i + 1]);
+      vector2 = controlPoints[i - 1]
+        .fsubtract(controlPoints[i].fscale(2))
+        .fadd(controlPoints[i + 1]);
 
-      if (sum.length() ** 2 > PathApproximator.BEZIER_TOLERANCE ** 2 * 4) {
+      if (vector2.flength() ** 2 > PathApproximator.BEZIER_TOLERANCE ** 2 * 4) {
         return false;
       }
     }
@@ -294,7 +341,7 @@ export class PathApproximator {
    * @param subdivisionBuffer The first buffer containing the current subdivision state.
    * @param count The number of control points in the original list.
    */
-  static _bezierSubdivide(
+  private static _bezierSubdivide(
     controlPoints: Vector2[],
     l: Vector2[],
     r: Vector2[],
@@ -312,7 +359,7 @@ export class PathApproximator {
       r[count - i - 1] = midpoints[count - i - 1];
 
       for (let j = 0; j < count - i - 1; j++) {
-        midpoints[j] = midpoints[j].add(midpoints[j + 1]).divide(2);
+        midpoints[j] = midpoints[j].fadd(midpoints[j + 1]).fdivide(2);
       }
     }
   }
@@ -326,7 +373,7 @@ export class PathApproximator {
    * @param subdivisionBuffer1 The first buffer containing the current subdivision state.
    * @param subdivisionBuffer2 The second buffer containing the current subdivision state.
    */
-  static _bezierApproximate(
+  private static _bezierApproximate(
     controlPoints: Vector2[],
     output: Vector2[],
     subdivisionBuffer1: Vector2[],
@@ -336,11 +383,7 @@ export class PathApproximator {
     const l = subdivisionBuffer2;
     const r = subdivisionBuffer1;
 
-    PathApproximator._bezierSubdivide(controlPoints,
-      l,
-      r,
-      subdivisionBuffer1,
-      count);
+    PathApproximator._bezierSubdivide(controlPoints, l, r, subdivisionBuffer1, count);
 
     for (let i = 0; i < count - 1; ++i) {
       l[count + i] = r[i + 1];
@@ -351,9 +394,9 @@ export class PathApproximator {
     for (let i = 1; i < count - 1; ++i) {
       const index = 2 * i;
       const p = l[index - 1]
-        .add(l[index].scale(2))
-        .add(l[index + 1])
-        .scale(Math.fround(0.25));
+        .fadd(l[index].fscale(2))
+        .fadd(l[index + 1])
+        .fscale(Math.fround(0.25));
 
       output.push(p);
     }
@@ -368,7 +411,7 @@ export class PathApproximator {
    * @param t The parameter at which to find the point on the spline, in the range [0, 1].
    * @returns The point on the spline at t.
    */
-  static _catmullFindPoint(
+  private static _catmullFindPoint(
     vec1: Vector2,
     vec2: Vector2,
     vec3: Vector2,
@@ -386,5 +429,27 @@ export class PathApproximator {
         * t + (2 * vec1.y - 5 * vec2.y + 4 * vec3.y - vec4.y)
         * t2 + (-vec1.y + 3 * vec2.y - 3 * vec3.y + vec4.y) * t3))
     );
+  }
+}
+
+class CircularArcProperties {
+  readonly isValid: boolean;
+  readonly thetaStart: number;
+  readonly thetaRange: number;
+  readonly direction: number;
+  readonly radius: number;
+  readonly centre: Vector2;
+
+  constructor(thetaStart?: number, thetaRange?: number, direction?: number, radius?: number, centre?: Vector2) {
+    this.isValid = !!(thetaStart || thetaRange || direction || radius || centre);
+    this.thetaStart = thetaStart || 0;
+    this.thetaRange = thetaRange || 0;
+    this.direction = direction || 0;
+    this.radius = radius || 0;
+    this.centre = centre || new Vector2(0, 0);
+  }
+
+  get thetaEnd(): number {
+    return this.thetaStart + this.thetaRange * this.direction;
   }
 }
