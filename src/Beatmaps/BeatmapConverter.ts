@@ -1,4 +1,4 @@
-import { Beatmap } from './Beatmap';
+import { RulesetBeatmap } from './RulesetBeatmap';
 import { HitObject } from '../Objects/HitObject';
 import { IBeatmap } from './IBeatmap';
 
@@ -11,7 +11,7 @@ export abstract class BeatmapConverter {
    * @param original Any kind of a beatmap.
    * @returns The converted beatmap.
    */
-  convertBeatmap(original: IBeatmap): Beatmap {
+  convertBeatmap(original: IBeatmap): RulesetBeatmap {
     const converted = this.createBeatmap(original);
 
     for (const hitObject of this.convertHitObjects(converted.base)) {
