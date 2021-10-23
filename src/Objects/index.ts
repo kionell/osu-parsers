@@ -6,7 +6,7 @@ export { PathType } from './Enums/PathType';
 export { SampleSet } from './Enums/SampleSet';
 
 /* Path */
-export { PathApproximator } from './Path/PathApproximator';
+export { PathApproximator, CircularArcProperties } from './Path/PathApproximator';
 export { PathPoint } from './Path/PathPoint';
 export { SliderPath } from './Path/SliderPath';
 
