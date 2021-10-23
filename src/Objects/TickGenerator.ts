@@ -5,7 +5,7 @@ import { NestedType } from './Enums/NestedType';
 /**
  * A tick generator for end time objects.
  */
-export class TickGenerator {
+export abstract class TickGenerator {
   /**
    * Generates ticks for an end time object.
    * @param slider A slidable object.
