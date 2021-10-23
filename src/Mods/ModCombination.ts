@@ -11,6 +11,8 @@ import { IApplicableToConverter } from './Types/IApplicableToConverter';
 export abstract class ModCombination {
   private _mods: IMod[] = [];
 
+  abstract get mode(): number;
+
   /**
    * The list of all mods of this combination.
    */
@@ -201,5 +203,4 @@ export abstract class ModCombination {
   modAt(bitwise: number): IMod {
     return this.modsAt(bitwise)[0] || null;
   }
-
 }
