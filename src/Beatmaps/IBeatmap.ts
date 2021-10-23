@@ -60,4 +60,10 @@ export interface IBeatmap {
    * Beatmap file version.
    */
   fileFormat: number;
+
+  /**
+   * Create a new copy of hit object base. 
+   * @returns A clone of hit object base.
+   */
+  clone(): IBeatmap;
 }

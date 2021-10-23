@@ -14,7 +14,7 @@ import { IBeatmap } from './IBeatmap';
  */
 export abstract class Beatmap implements IBeatmap {
   /**
-   * A base beatmap.
+   * The base of this beatmap.
    */
   base: IBeatmap;
 
@@ -210,5 +210,13 @@ export abstract class Beatmap implements IBeatmap {
    */
   get totalBreakTime(): number {
     return (this.events.breaks || []).reduce((d, e) => d + e.duration, 0);
+  }
+
+  /**
+   * Create a new copy of hit object base. 
+   * @returns A clone of hit object base.
+   */
+  clone(): IBeatmap {
+    return this.base.clone();
   }
 }
