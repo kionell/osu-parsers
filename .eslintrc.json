@@ -56,7 +56,6 @@
       }
     }],
     "linebreak-style": "off",
-    "lines-between-class-members": ["error", "always"],
     "multiline-comment-style": ["error", "starred-block"],
     "newline-per-chained-call": ["error", {
       "ignoreChainWithDepth": 2
