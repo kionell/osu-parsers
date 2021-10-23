@@ -3,6 +3,7 @@ import {
   SliderPath,
   SampleBank,
   HitSample,
+  PathPoint,
   PathType,
   HitType,
   HitSound,
@@ -99,8 +100,7 @@ export abstract class HitObjectHandler {
     // Create a new default sample bank.
     const bank = new SampleBank();
 
-    hitObject.samples =
-      HitObjectHandler.getDefaultSamples(sampleData, hitSound, bank);
+    hitObject.samples = HitObjectHandler.getDefaultSamples(sampleData, hitSound, bank);
 
     if (hitObject.hitType & HitType.Slider) {
       const slider = hitObject as ParsedSlider;
@@ -110,8 +110,7 @@ export abstract class HitObjectHandler {
       // One node for each repeat + the start and end nodes
       const nodes = slider.repeats + 2 || 2;
 
-      slider.nodeSamples =
-        HitObjectHandler.getNodeSamples(nodeData, nodes, hitSound, bank);
+      slider.nodeSamples = HitObjectHandler.getNodeSamples(nodeData, nodes, hitSound, bank);
     }
     else if (hitObject.hitType & HitType.Hold) {
       const hold = hitObject as ParsedHold;
@@ -128,7 +127,11 @@ export abstract class HitObjectHandler {
   static addSliderExtras(extras: string[], slider: ParsedSlider): void {
     // curveType|curvePoints,slides,length,edgeSounds,edgeSets
 
-    const [type, ...points] = extras[0].split('|').map((v) => v.trim());
+    const pathString = extras[0];
+    const offset = slider.startPosition;
+
+    const controlPoints = HitObjectHandler.convertPathString(pathString, offset);
+    const curveType = controlPoints[0].type as PathType;
 
     /**
      * osu!stable treated the first span of the slider as a repeat,
@@ -137,20 +140,9 @@ export abstract class HitObjectHandler {
     slider.repeats = Math.max(0, parseInt(extras[1]) - 1);
     slider.pixelLength = parseFloat(extras[2]) || 0;
 
-    const curveType = type as PathType;
-
-    const curvePoints = points.map((curve) => {
-      const coords = curve.split(':').map((v) => +v.trim());
-
-      const curvePoint = new Vector2(coords[0], coords[1]);
-      const offset = slider.startPosition;
-
-      return curvePoint.subtract(offset);
-    });
-
     const expectedDistance = slider.pixelLength;
 
-    slider.path = new SliderPath(curveType, curvePoints, expectedDistance);
+    slider.path = new SliderPath(curveType, controlPoints, expectedDistance);
   }
 
   /**
@@ -173,6 +165,195 @@ export abstract class HitObjectHandler {
     // endTime
 
     hold.endTime = parseInt(extras[0]);
+  }
+
+  /**
+   * Converts a given path string into a set of path control points.
+   * 
+   * A path string takes the form: X|1:1|2:2|2:2|3:3|Y|1:1|2:2.
+   * This has three segments:
+   *  X: { (1,1), (2,2) } (implicit segment)
+   *  X: { (2,2), (3,3) } (implicit segment)
+   *  Y: { (3,3), (1,1), (2, 2) } (explicit segment)
+   * 
+   * @param pathString The path string.
+   * @param offset The positional offset to apply to the control points.
+   * @returns All control points in the resultant path.
+   */
+  static convertPathString(pathString: string, offset: Vector2): PathPoint[] {
+    /**
+     * This code takes on the responsibility of handling explicit segments of the path ("X" & "Y" from above).
+     * Implicit segments are handled by calls to convertPoints().
+     */
+    const pathSplit = pathString.split('|').map((p) => p.trim());
+
+    const controlPoints: PathPoint[] = [];
+
+    let startIndex = 0;
+    let endIndex = 0;
+    let isFirst = true;
+
+    while (++endIndex < pathSplit.length) {
+      /**
+       * Keep incrementing endIndex while it's not the start of a new segment
+       * (indicated by having a type descriptor of length 1).
+       */
+      if (pathSplit[endIndex].length > 1) continue;
+
+      const points = pathSplit.slice(startIndex, endIndex);
+
+      /**
+       * Multi-segmented sliders DON'T contain the end point
+       * as part of the current segment as it's assumed to be the start of the next segment.
+       * The start of the next segment is the index after the type descriptor.
+       */
+      const endPoint = endIndex < pathSplit.length - 1 ? pathSplit[endIndex + 1] : null;
+      const convertedPoints = HitObjectHandler.convertPoints(points, endPoint, isFirst, offset);
+
+      for (const point of convertedPoints) {
+        controlPoints.push(...point);
+      }
+
+      startIndex = endIndex;
+      isFirst = false;
+    }
+
+    if (endIndex > startIndex) {
+      const points = pathSplit.slice(startIndex, endIndex);
+      const convertedPoints = HitObjectHandler.convertPoints(points, null, isFirst, offset);
+
+      for (const point of convertedPoints) {
+        controlPoints.push(...point);
+      }
+    }
+
+    return controlPoints;
+  }
+
+  /**
+   * Converts a given point list into a set of path segments.
+   * @param points The point list.
+   * @param endPoint Any extra endpoint to consider as part of the points.
+   * @param isFisrt Whether this is the first segment in the set. 
+   * If true the first of the returned segments will contain a zero point.
+   * @param offset The positional offset to apply to the control points.
+   * @returns The set of points contained by point list as one or more segments of the path, 
+   * prepended by an extra zero point if isFirst is true.
+   */
+  static *convertPoints(
+    points: string[],
+    endPoint: string | null,
+    isFirst: boolean,
+    offset: Vector2
+  ): Generator<PathPoint[]> {
+    // First control point is zero for the first segment.
+    const readOffset = isFirst ? 1 : 0;
+
+    // Extra length if an endpoint is given that lies outside the base point span.
+    const endPointLength = endPoint !== null ? 1 : 0;
+
+    const vertices: PathPoint[] = [];
+
+    // Fill any non-read points.
+    if (readOffset === 1) {
+      vertices[0] = new PathPoint();
+    }
+
+    // Parse into control points.
+    for (let i = 1; i < points.length; ++i) {
+      vertices[readOffset + i - 1] = readPoint(points[i], offset);
+    }
+
+    // If an endpoint is given, add it to the end.
+    if (endPoint !== null) {
+      vertices[vertices.length - 1] = readPoint(endPoint, offset);
+    }
+
+    let type: PathType = HitObjectHandler.convertPathType(points[0]);
+
+    // Edge-case rules (to match stable).
+    if (type === PathType.PerfectCurve) {
+      if (vertices.length !== 3) {
+        type = PathType.Bezier;
+      }
+      else if (isLinear(vertices)) {
+        // osu!stable special-cased colinear perfect curves to a linear path
+        type = PathType.Linear;
+      }
+    }
+
+    // The first control point must have a definite type.
+    vertices[0].type = type;
+
+    /**
+     * A path can have multiple implicit segments of the same type 
+     * if there are two sequential control points with the same position.
+     * To handle such cases, this code may return multiple path segments 
+     * with the final control point in each segment having a non-null type.
+     * 
+     * For the point string X|1:1|2:2|2:2|3:3, this code returns the segments:
+     *  X: { (1, 1), (2, 2) }
+     *  X: { (3, 3) }
+     * 
+     * Note: (2, 2) is not returned in the second segments, as it is implicit in the path.
+     */
+    let startIndex = 0;
+    let endIndex = 0;
+
+    while (++endIndex < vertices.length - endPointLength) {
+      // Keep incrementing while an implicit segment doesn't need to be started
+      if (!vertices[endIndex].position.equals(vertices[endIndex - 1].position)) {
+        continue;
+      }
+
+      // The last control point of each segment is not allowed to start a new implicit segment.
+      if (endIndex === vertices.length - endPointLength - 1) {
+        continue;
+      }
+
+      // Force a type on the last point, and return the current control point set as a segment.
+      vertices[endIndex - 1].type = type;
+
+      yield vertices.slice(startIndex, endIndex);
+
+      // Skip the current control point - as it's the same as the one that's just been returned.
+      startIndex = endIndex + 1;
+    }
+
+    if (endIndex > startIndex) {
+      yield vertices.slice(startIndex, endIndex);
+    }
+
+    function readPoint(point: string, offset: Vector2): PathPoint {
+      const coords = point.split(':').map((v) => +v.trim());
+      const pos = new Vector2(coords[0], coords[1]).subtract(offset);
+
+      return new PathPoint(pos);
+    }
+
+    function isLinear(p: PathPoint[]): boolean {
+      const yx = (p[1].position.y - p[0].position.y) * (p[2].position.x - p[0].position.x);
+      const xy = (p[1].position.x - p[0].position.x) * (p[2].position.y - p[0].position.y);
+
+      return Math.abs(yx - xy) < 0.001;
+    }
+  }
+
+  static convertPathType(type: string): PathType {
+    switch (type) {
+      default:
+      case 'C':
+        return PathType.Catmull;
+
+      case 'B':
+        return PathType.Bezier;
+
+      case 'L':
+        return PathType.Linear;
+
+      case 'P':
+        return PathType.PerfectCurve;
+    }
   }
 
   /**
