@@ -40,7 +40,7 @@ export class Vector2 {
   }
 
   /**
-   * Subtracts a vector } from the current and returns a new instance.
+   * Subtracts a vector from the current and returns a new instance.
    * @param vec Vector to substract.
    */
   subtract(vec: Vector2): Vector2 {
@@ -48,7 +48,7 @@ export class Vector2 {
   }
 
   /**
-   * Subtracts a vector } from the current and 
+   * Subtracts a vector from the current and 
    * returns a new instance with single precision.
    * @param vec Vector to substract.
    */
@@ -68,6 +68,18 @@ export class Vector2 {
   }
 
   /**
+   * Scales the current vector and 
+   * returns a new instance with single precision.
+   * @param vec Vector to substract.
+   */
+  fscale(multiplier: number): Vector2 {
+    return new Vector2(
+      Math.fround(this.x * multiplier),
+      Math.fround(this.y * multiplier)
+    );
+  }
+
+  /**
    * Divides the current vector and returns a new instance.
    * @param divisor Vector divisor.
    */
@@ -76,11 +88,31 @@ export class Vector2 {
   }
 
   /**
+   * Subtracts a vector from the current and 
+   * returns a new instance with single precision.
+   * @param vec Vector to substract.
+   */
+  fdivide(divisor: number): Vector2 {
+    return new Vector2(
+      Math.fround(this.x / divisor),
+      Math.fround(this.y / divisor)
+    );
+  }
+
+  /**
    * Returns a dot product of two vectors.
    * @param vec Second vector.
    */
   dot(vec: Vector2): number {
     return this.x * vec.x + this.y * vec.y;
+  }
+
+  /**
+   * Returns a dot product of two vectors with single precision.
+   * @param vec Second vector.
+   */
+  fdot(vec: Vector2): number {
+    return Math.fround(this.x * vec.x + this.y * vec.y);
   }
 
   /**
@@ -117,6 +149,18 @@ export class Vector2 {
     const length = this.length();
 
     return new Vector2(this.x / length, this.y / length);
+  }
+
+  /**
+   * Returns a normalized vector with single precision.
+   */
+  fnormalize(): Vector2 {
+    const length = this.flength();
+
+    return new Vector2(
+      Math.fround(this.x / length),
+      Math.fround(this.y / length)
+    );
   }
 
   /**
