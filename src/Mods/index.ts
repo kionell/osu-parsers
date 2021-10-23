@@ -1,0 +1,15 @@
+export { TaikoAutoplay } from './TaikoAutoplay';
+export { TaikoCinema } from './TaikoCinema';
+export { TaikoDoubleTime } from './TaikoDoubleTime';
+export { TaikoEasy } from './TaikoEasy';
+export { TaikoFlashlight } from './TaikoFlashlight';
+export { TaikoHalfTime } from './TaikoHalfTime';
+export { TaikoHardRock } from './TaikoHardRock';
+export { TaikoHidden } from './TaikoHidden';
+export { TaikoModCombination } from './TaikoModCombination';
+export { TaikoNightcore } from './TaikoNightcore';
+export { TaikoNoFail } from './TaikoNoFail';
+export { TaikoNoMod } from './TaikoNoMod';
+export { TaikoPerfect } from './TaikoPerfect';
+export { TaikoRelax } from './TaikoRelax';
+export { TaikoSuddenDeath } from './TaikoSuddenDeath';
