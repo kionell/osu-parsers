@@ -50,10 +50,10 @@ const standardWithNoMod2 = ruleset.applyToBeatmapWithMods(parsed);
 const mods = ruleset.createModCombination(1337);
 const standardWithMods = ruleset.applyToBeatmapWithMods(parsed, mods);
 
-// It will write osu!stdandard beatmap with no mods.
+// It will write osu!standard beatmap with no mods.
 BeatmapEncoder.encodeToPath(encodePath, standardWithNoMod1);
 
-// It will write osu!stdandard beatmap with applied mods.
+// It will write osu!standard beatmap with applied mods.
 BeatmapEncoder.encodeToPath(encodePath, standardWithMods);
 ```
 
