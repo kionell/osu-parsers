@@ -1,4 +1,4 @@
-import { IBeatmap } from 'osu-resources';
+import { Beatmap, IBeatmap } from 'osu-resources';
 
 /**
  * An encoder for beatmap difficulty.
@@ -12,7 +12,8 @@ export abstract class DifficultyEncoder {
   static encodeDifficultySection(beatmap: IBeatmap): string {
     const encoded: string[] = ['[Difficulty]'];
 
-    const difficulty = beatmap.difficulty;
+    const base = (beatmap as Beatmap).base;
+    const difficulty = base ? base.difficulty : beatmap.difficulty;
 
     encoded.push(`HPDrainRate:${difficulty.drainRate}`);
     encoded.push(`CircleSize:${difficulty.circleSize}`);
