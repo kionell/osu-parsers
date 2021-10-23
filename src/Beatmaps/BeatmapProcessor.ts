@@ -1,4 +1,4 @@
-import { Beatmap } from './Beatmap';
+import { IBeatmap } from './IBeatmap';
 
 /**
  * A beatmap processor.
@@ -9,7 +9,7 @@ export abstract class BeatmapProcessor {
    * @param beatmap A beatmap.
    * @returns The link to the same beatmap.
    */
-  preProcess(beatmap: Beatmap): Beatmap {
+  preProcess(beatmap: IBeatmap): IBeatmap {
     return beatmap;
   }
 
@@ -18,7 +18,7 @@ export abstract class BeatmapProcessor {
    * @param beatmap A beatmap.
    * @returns The link to the same beatmap.
    */
-  postProcess(beatmap: Beatmap): Beatmap {
+  postProcess(beatmap: IBeatmap): IBeatmap {
     return beatmap;
   }
 }
