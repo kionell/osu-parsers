@@ -22,8 +22,8 @@ export class PathPoint {
    * @param type A type of path point.
    * @constructor
    */
-  constructor(position: Vector2, type: PathType | null) {
-    this.position = position;
-    this.type = type;
+  constructor(position?: Vector2, type?: PathType | null) {
+    this.position = position || new Vector2(0, 0);
+    this.type = type || null;
   }
 }
