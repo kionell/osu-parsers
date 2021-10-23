@@ -18,6 +18,7 @@ export { SampleBank } from './Sounds/SampleBank';
 export { IHasColumn } from './Types/IHasColumn';
 export { IHasCombo } from './Types/IHasCombo';
 export { IHasDuration } from './Types/IHasDuration';
+export { IHasLegacyLastTickOffset } from './Types/IHasLegacyLastTickOffset';
 export { IHasPath } from './Types/IHasPath';
 export { IHasPosition } from './Types/IHasPosition';
 export { IHasX } from './Types/IHasX';
