@@ -12,8 +12,5 @@ export interface INestedHitObject extends IHitObject, INestedEvent {
    * @param controlPoints Beatmap control points.
    * @param difficulty The beatmap difficulty.
    */
-  applyDefaultsToSelf(
-    controlPoints: ControlPointInfo,
-    difficulty: BeatmapDifficultySection
-  ): void;
+  applyDefaults(controlPoints: ControlPointInfo, difficulty: BeatmapDifficultySection): void;
 }

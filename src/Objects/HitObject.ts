@@ -85,10 +85,11 @@ export abstract class HitObject implements IHitObject {
   }
 
   /**
-   * Applies default values to the hit object and it's nested hit objects.
+   * Applies default values to the hit object.
    * @param controlPoints Beatmap control points.
    */
-  applyDefaultsToSelf(controlPoints: ControlPointInfo): void {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  applyDefaultsToSelf(controlPoints: ControlPointInfo, difficulty: BeatmapDifficultySection): void {
     this.kiai = controlPoints.effectPointAt(this.startTime + 1).kiai;
   }
 
@@ -99,8 +100,25 @@ export abstract class HitObject implements IHitObject {
    */
   applyDefaultsToNested(controlPoints: ControlPointInfo, difficulty: BeatmapDifficultySection): void {
     this.nestedHitObjects.forEach((n) => {
-      n.applyDefaultsToSelf(controlPoints, difficulty);
+      n.applyDefaults(controlPoints, difficulty);
     });
+  }
+
+  /**
+   * Applies default values to the hit object and it's nested hit objects.
+   * @param controlPoints Beatmap control points.
+   * @param difficulty Beatmap Difficulty.
+   */
+  applyDefaults(controlPoints: ControlPointInfo, difficulty: BeatmapDifficultySection): void {
+    this.applyDefaultsToSelf(controlPoints, difficulty);
+
+    this.nestedHitObjects = [];
+
+    this.createNestedHitObjects();
+
+    this.nestedHitObjects.sort((a, b) => a.startTime - b.startTime);
+
+    this.applyDefaultsToNested(controlPoints, difficulty);
   }
 
   /**
