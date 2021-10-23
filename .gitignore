@@ -1,0 +1,17 @@
+/**
+!/docs
+!/docs/**
+!/src
+!/src/**
+!/tests
+!/tests/**
+!.eslintignore
+!.eslintrc.json
+!.gitignore
+!CHANGELOG.md
+!LICENSE
+!package-lock.json
+!package.json
+!README.md
+!rollup.config.js
+!tsconfig.json
