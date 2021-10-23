@@ -25,5 +25,7 @@ export abstract class BeatmapConverter {
 
   abstract convertHitObjects(beatmap: IBeatmap): Generator<HitObject>;
 
-  abstract createBeatmap(beatmap: IBeatmap): Beatmap;
+  abstract createBeatmap(beatmap: IBeatmap): RulesetBeatmap;
+
+  abstract canConvert(beatmap: IBeatmap): boolean;
 }
