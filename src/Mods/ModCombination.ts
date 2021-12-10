@@ -252,4 +252,12 @@ export abstract class ModCombination {
 
     return this.modsAt(bitwise)[0] || null;
   }
+
+  /**
+   * Converts this mod combination to a string.
+   * @returns Stringified mod combination.
+   */
+  toString(): string {
+    return this.acronyms.join('');
+  }
 }
