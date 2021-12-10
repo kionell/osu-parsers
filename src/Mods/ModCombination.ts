@@ -13,6 +13,37 @@ export abstract class ModCombination {
 
   abstract get mode(): number;
 
+  constructor(input?: number | string) {
+    const available = this._availableMods;
+
+    if (typeof input === 'number' || typeof input === 'string') {
+      let bitwise = this.toBitwise(input);
+      let mask = 1 << 30;
+
+      while (mask > 0) {
+        const found = available.find((m) => m.bitwise & bitwise & mask);
+
+        if (found && !(this.bitwise & found.incompatibles)) {
+          this._mods.push(found);
+        }
+
+        /**
+         * Make the processed bit equal to 0.
+         */
+        bitwise &= ~mask;
+        mask >>= 1;
+      }
+    }
+
+    if (!this._mods.length) {
+      const noMod = available.find((m) => m.bitwise === 0);
+
+      if (noMod) this._mods.push(noMod);
+    }
+
+    this._mods.sort((a, b) => a.bitwise - b.bitwise);
+  }
+
   /**
    * The list of all mods of this combination.
    */
