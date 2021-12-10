@@ -22,11 +22,11 @@ export class StandardRuleset extends Ruleset {
 
   /**
    * Creates a new mod combination by converting legacy mod bitwise.
-   * @param bitwise Mod bitwise.
+   * @param input Mod bitwise or acronyms.
    * @returns A new mod combination.
    */
-  createModCombination(bitwise: number): StandardModCombination {
-    return new StandardModCombination(bitwise);
+  createModCombination(input: number | string): StandardModCombination {
+    return new StandardModCombination(input);
   }
 
   /**
