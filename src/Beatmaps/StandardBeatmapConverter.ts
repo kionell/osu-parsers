@@ -52,7 +52,7 @@ export class StandardBeatmapConverter extends BeatmapConverter {
     }
   }
 
-  createBeatmap(ooriginal: IBeatmap): StandardBeatmap {
-    return new StandardBeatmap(ooriginal);
+  createBeatmap(): StandardBeatmap {
+    return new StandardBeatmap();
   }
 }
