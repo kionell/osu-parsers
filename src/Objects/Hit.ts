@@ -1,22 +1,24 @@
 import { TaikoStrongHitObject } from './TaikoStrongHitObject';
-
-import { HitType, HitSound } from 'osu-resources';
+import { HitSound } from 'osu-resources';
 
 export class Hit extends TaikoStrongHitObject {
-  get hitType(): HitType {
-    let hitType = this.base.hitType;
-
-    hitType &= ~HitType.Slider;
-    hitType &= ~HitType.Spinner;
-    hitType &= ~HitType.Hold;
-
-    return hitType | HitType.Normal;
-  }
-
   get isRim(): boolean {
     return !!this.samples.find((s) => {
       return s.hitSound === HitSound[HitSound.Clap]
         || s.hitSound === HitSound[HitSound.Whistle];
     });
+  }
+
+  clone(): Hit {
+    const cloned = new Hit();
+
+    cloned.startPosition = this.startPosition.clone();
+    cloned.startTime = this.startTime;
+    cloned.hitType = this.hitType;
+    cloned.hitSound = this.hitSound;
+    cloned.samples = this.samples.map((s) => s.clone());
+    cloned.kiai = this.kiai;
+
+    return cloned;
   }
 }

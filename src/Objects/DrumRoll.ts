@@ -3,7 +3,6 @@ import {
   BeatmapDifficultySection,
   SliderPath,
   HitSample,
-  HitType,
   ISlidableObject,
 } from 'osu-resources';
 
@@ -11,9 +10,9 @@ import { TaikoStrongHitObject } from './TaikoStrongHitObject';
 import { TaikoEventGenerator } from './TaikoEventGenerator';
 
 export class DrumRoll extends TaikoStrongHitObject implements ISlidableObject {
-  tickInterval = 100;
+  static BASE_DISTANCE = 100;
 
-  tickDistance = 0;
+  tickInterval = 100;
 
   tickRate = 1;
 
@@ -27,56 +26,18 @@ export class DrumRoll extends TaikoStrongHitObject implements ISlidableObject {
 
   overallDifficulty = 0;
 
-  static BASE_DISTANCE: number = Math.fround(100);
+  path: SliderPath = new SliderPath();
 
-  get hitType(): HitType {
-    let hitType = this.base.hitType;
+  nodeSamples: HitSample[][] = [];
 
-    hitType &= ~HitType.Normal;
-    hitType &= ~HitType.Spinner;
-    hitType &= ~HitType.Hold;
+  repeats = 0;
 
-    return hitType | HitType.Slider;
+  get distance(): number {
+    return this.path.distance;
   }
 
-  get pixelLength(): number {
-    return (this.base as ISlidableObject).pixelLength || 0;
-  }
-
-  set pixelLength(value: number) {
-    const slider = this.base as ISlidableObject;
-
-    slider.pixelLength = value;
-
-    if (slider.path) {
-      slider.path.expectedDistance = value;
-      slider.path.invalidate();
-    }
-  }
-
-  get path(): SliderPath {
-    return (this.base as ISlidableObject).path;
-  }
-
-  set path(value: SliderPath) {
-    (this.base as ISlidableObject).path = value;
-    (this.base as ISlidableObject).path.invalidate();
-  }
-
-  get nodeSamples(): HitSample[][] {
-    return (this.base as ISlidableObject).nodeSamples || [this.base.samples];
-  }
-
-  set nodeSamples(value: HitSample[][]) {
-    (this.base as ISlidableObject).nodeSamples = value;
-  }
-
-  get repeats(): number {
-    return (this.base as ISlidableObject).repeats || 0;
-  }
-
-  set repeats(value: number) {
-    (this.base as ISlidableObject).repeats = value;
+  set distance(value: number) {
+    this.path.distance = value;
   }
 
   get spans(): number {
@@ -109,7 +70,7 @@ export class DrumRoll extends TaikoStrongHitObject implements ISlidableObject {
   createNestedHitObjects(): void {
     this.nestedHitObjects = [];
 
-    for (const nested of TaikoTickGenerator.generateDrumRollTicks(this)) {
+    for (const nested of TaikoEventGenerator.generateDrumRollTicks(this)) {
       this.nestedHitObjects.push(nested);
     }
 
@@ -118,5 +79,28 @@ export class DrumRoll extends TaikoStrongHitObject implements ISlidableObject {
 
     this.requiredGreatHits = this.nestedHitObjects.length
       * Math.min(0.3, 0.1 + (0.2 / 6) * this.overallDifficulty);
+  }
+
+  clone(): DrumRoll {
+    const cloned = new DrumRoll();
+
+    cloned.startPosition = this.startPosition.clone();
+    cloned.startTime = this.startTime;
+    cloned.hitType = this.hitType;
+    cloned.hitSound = this.hitSound;
+    cloned.samples = this.samples.map((s) => s.clone());
+    cloned.nodeSamples = this.nodeSamples.map((n) => n.map((s) => s.clone()));
+    cloned.velocity = this.velocity;
+    cloned.repeats = this.repeats;
+    cloned.path = this.path.clone();
+    cloned.kiai = this.kiai;
+    cloned.tickRate = this.tickRate;
+    cloned.tickInterval = this.tickInterval;
+    cloned.duration = this.duration;
+    cloned.requiredGoodHits = this.requiredGoodHits;
+    cloned.requiredGreatHits = this.requiredGreatHits;
+    cloned.overallDifficulty = this.overallDifficulty;
+
+    return cloned;
   }
 }
