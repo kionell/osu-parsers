@@ -1,8 +1,15 @@
 import { TaikoHitObject } from './TaikoHitObject';
-import { NestedType, INestedHitObject } from 'osu-resources';
+export class SwellTick extends TaikoHitObject {
+  clone(): SwellTick {
+    const cloned = new SwellTick();
 
-export class SwellTick extends TaikoHitObject implements INestedHitObject {
-  nestedType: NestedType = NestedType.Tick;
+    cloned.startPosition = this.startPosition.clone();
+    cloned.startTime = this.startTime;
+    cloned.hitType = this.hitType;
+    cloned.hitSound = this.hitSound;
+    cloned.samples = this.samples.map((s) => s.clone());
+    cloned.kiai = this.kiai;
 
-  progress = 0;
+    return cloned;
+  }
 }

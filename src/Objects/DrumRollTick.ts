@@ -1,11 +1,6 @@
 import { TaikoHitObject } from './TaikoHitObject';
-import { INestedHitObject, NestedType } from 'osu-resources';
 
-export class DrumRollTick extends TaikoHitObject implements INestedHitObject {
-  nestedType: NestedType = NestedType.Tick;
-
-  progress = 0;
-
+export class DrumRollTick extends TaikoHitObject {
   /**
    * Whether this is the first (initial) tick of the slider.
    */
@@ -22,5 +17,20 @@ export class DrumRollTick extends TaikoHitObject implements INestedHitObject {
    */
   get hitWindow(): number {
     return this.tickInterval / 2;
+  }
+
+  clone(): DrumRollTick {
+    const cloned = new DrumRollTick();
+
+    cloned.startPosition = this.startPosition.clone();
+    cloned.startTime = this.startTime;
+    cloned.hitType = this.hitType;
+    cloned.hitSound = this.hitSound;
+    cloned.samples = this.samples.map((s) => s.clone());
+    cloned.kiai = this.kiai;
+    cloned.firstTick = this.firstTick;
+    cloned.tickInterval = this.tickInterval;
+
+    return cloned;
   }
 }
