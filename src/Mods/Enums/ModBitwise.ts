@@ -45,9 +45,9 @@ export enum ModBitwise {
     ModBitwise.Key8 |
     ModBitwise.Key9,
 
-  Difficulty = ModBitwise.Easy |
-    ModBitwise.HardRock |
-    ModBitwise.HalfTime |
+  DifficultyDecrease = ModBitwise.Easy | ModBitwise.HalfTime,
+  DifficultyIncrease = ModBitwise.HardRock |
     ModBitwise.DoubleTime |
-    ModBitwise.Nightcore,
+    ModBitwise.Nightcore |
+    ModBitwise.Flashlight,
 }
