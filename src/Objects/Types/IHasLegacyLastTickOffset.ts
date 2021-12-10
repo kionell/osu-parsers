@@ -6,5 +6,5 @@ export interface IHasLegacyLastTickOffset {
   /**
    * Offset to the last tick.
    */
-  legacyLastTickOffset: number;
+  legacyLastTickOffset?: number;
 }
