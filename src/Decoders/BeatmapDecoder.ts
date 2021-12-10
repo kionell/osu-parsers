@@ -132,6 +132,11 @@ export class BeatmapDecoder {
     // Flush last control point group.
     TimingPointHandler.flushPendingPoints();
 
+    // Apply default values to the all hit objects.
+    beatmap.hitObjects.forEach((h) => {
+      h.applyDefaults(beatmap.controlPoints, beatmap.difficulty);
+    });
+
     // Storyboard
     if (parseSb && sbLines && sbLines.length) {
       const storyboardDecoder = new StoryboardDecoder();
