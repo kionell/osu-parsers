@@ -1,16 +1,18 @@
 import { readFileSync } from 'fs';
 
-import { GeneralHandler } from './PairSections/GeneralHandler';
-import { EditorHandler } from './PairSections/EditorHandler';
-import { MetadataHandler } from './PairSections/MetadataHandler';
-import { DifficultyHandler } from './PairSections/DifficultyHandler';
-import { ColourHandler } from './PairSections/ColourHandler';
-import { EventHandler } from './Events/EventHandler';
-import { HitObjectHandler } from './ListSections/HitObjectHandler';
-import { TimingPointHandler } from './ListSections/TimingPointHandler';
-
+import { Beatmap } from 'osu-resources';
 import { StoryboardDecoder } from './StoryboardDecoder';
-import { ParsedBeatmap } from '../Classes/ParsedBeatmap';
+
+import {
+  GeneralHandler,
+  EditorHandler,
+  MetadataHandler,
+  DifficultyHandler,
+  ColourHandler,
+  EventHandler,
+  HitObjectHandler,
+  TimingPointHandler,
+} from './Handlers';
 
 /**
  * Beatmap decoder.
