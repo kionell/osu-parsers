@@ -1,117 +1,67 @@
-import { HitObject, IHasDuration } from '../Objects';
-
-import { BeatmapColoursSection } from './Sections/BeatmapColoursSection';
-import { BeatmapDifficultySection } from './Sections/BeatmapDifficultySection';
-import { BeatmapEditorSection } from './Sections/BeatmapEditorSection';
-import { BeatmapEventsSection } from './Sections/BeatmapEventsSection';
 import { BeatmapGeneralSection } from './Sections/BeatmapGeneralSection';
+import { BeatmapEditorSection } from './Sections/BeatmapEditorSection';
+import { BeatmapDifficultySection } from './Sections/BeatmapDifficultySection';
 import { BeatmapMetadataSection } from './Sections/BeatmapMetadataSection';
+import { BeatmapColoursSection } from './Sections/BeatmapColoursSection';
+import { BeatmapEventsSection } from './Sections/BeatmapEventsSection';
 import { ControlPointInfo } from './ControlPoints/ControlPointInfo';
+import { HitObject } from '../Objects/HitObject';
+import { IHasDuration } from '../Objects/Types/IHasDuration';
 import { IBeatmap } from './IBeatmap';
 
 /**
- * A beatmap.
+ * A parsed beatmap.
  */
-export abstract class Beatmap implements IBeatmap {
+export class Beatmap implements IBeatmap {
   /**
-   * The base of this beatmap.
+   * Beatmap general info.
    */
-  base: IBeatmap;
-
-  /**
-   * A copy of difficulty section for applying mods.
-   */
-  difficulty: BeatmapDifficultySection;
+  general: BeatmapGeneralSection = new BeatmapGeneralSection();
 
   /**
-   * The list of the beatmap hit objects.
+   * Beatmap editor settings.
    */
-  hitObjects: HitObject[] = [];
-
-  constructor(beatmap: IBeatmap) {
-    this.base = beatmap;
-    this.difficulty = beatmap.difficulty.clone();
-  }
+  editor: BeatmapEditorSection = new BeatmapEditorSection();
 
   /**
-   * The beatmap general info.
+   * Beatmap difficulty.
    */
-  get general(): BeatmapGeneralSection {
-    return this.base.general;
-  }
-
-  set general(value: BeatmapGeneralSection) {
-    this.base.general = value;
-  }
-
-  /**
-   * Editor settings of a beatmap.
-   */
-  get editor(): BeatmapEditorSection {
-    return this.base.editor;
-  }
-
-  set editor(value: BeatmapEditorSection) {
-    this.base.editor = value;
-  }
+  difficulty: BeatmapDifficultySection = new BeatmapDifficultySection();
 
   /**
    * Beatmap metadata.
    */
-  get metadata(): BeatmapMetadataSection {
-    return this.base.metadata;
-  }
-
-  set metadata(value: BeatmapMetadataSection) {
-    this.base.metadata = value;
-  }
+  metadata: BeatmapMetadataSection = new BeatmapMetadataSection();
 
   /**
    * Beatmap skin configuration.
    */
-  get colours(): BeatmapColoursSection {
-    return this.base.colours;
-  }
-
-  set colours(value: BeatmapColoursSection) {
-    this.base.colours = value;
-  }
+  colours: BeatmapColoursSection = new BeatmapColoursSection();
 
   /**
-   * Beatmap events.
+   * Beatmap events & Storyboard.
    */
-  get events(): BeatmapEventsSection {
-    return this.base.events;
-  }
-
-  set events(value: BeatmapEventsSection) {
-    this.base.events = value;
-  }
+  events: BeatmapEventsSection = new BeatmapEventsSection();
 
   /**
    * Beatmap control points.
    */
-  get controlPoints(): ControlPointInfo {
-    return this.base.controlPoints;
-  }
-
-  set controlPoints(value: ControlPointInfo) {
-    this.base.controlPoints = value;
-  }
+  controlPoints: ControlPointInfo = new ControlPointInfo();
 
   /**
-   * Beatmap game mode.
+   * Beatmap hit objects.
    */
-  get mode(): number {
-    return this.base.mode;
-  }
+  hitObjects: HitObject[] = [];
 
   /**
-   * Beatmap file format.
+   * Beatmap gamemode.
    */
-  get fileFormat(): number {
-    return this.base.fileFormat;
-  }
+  mode = 0;
+
+  /**
+   * Beatmap file version.
+   */
+  fileFormat = 14;
 
   /**
    * Beatmap length in milliseconds.
@@ -213,10 +163,24 @@ export abstract class Beatmap implements IBeatmap {
   }
 
   /**
-   * Create a new copy of hit object base. 
-   * @returns A clone of hit object base.
+   * Creates a copy of this beatmap.
+   * Non-primitive properties will be copied via their own clone() method.
+   * @returns A copied beatmap.
    */
-  clone(): IBeatmap {
-    return this.base.clone();
+  clone(): Beatmap {
+    const cloned = new Beatmap();
+
+    cloned.general = this.general.clone();
+    cloned.editor = this.editor.clone();
+    cloned.difficulty = this.difficulty.clone();
+    cloned.metadata = this.metadata.clone();
+    cloned.colours = this.colours.clone();
+    cloned.events = this.events.clone();
+    cloned.controlPoints = this.controlPoints.clone();
+    cloned.hitObjects = this.hitObjects.map((h) => h.clone());
+    cloned.mode = this.mode;
+    cloned.fileFormat = this.fileFormat;
+
+    return cloned;
   }
 }

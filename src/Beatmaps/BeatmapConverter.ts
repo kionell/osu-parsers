@@ -11,10 +11,19 @@ export abstract class BeatmapConverter {
    * @param original Any kind of a beatmap.
    * @returns The converted beatmap.
    */
-  convertBeatmap(original: IBeatmap): RulesetBeatmap {
-    const converted = this.createBeatmap(original);
+  convertBeatmap(beatmap: IBeatmap): RulesetBeatmap {
+    const converted = this.createBeatmap();
 
-    for (const hitObject of this.convertHitObjects(converted.base)) {
+    converted.general = beatmap.general.clone();
+    converted.editor = beatmap.editor.clone();
+    converted.difficulty = beatmap.difficulty.clone();
+    converted.metadata = beatmap.metadata.clone();
+    converted.colours = beatmap.colours.clone();
+    converted.events = beatmap.events.clone();
+    converted.controlPoints = beatmap.controlPoints.clone();
+    converted.fileFormat = beatmap.fileFormat;
+
+    for (const hitObject of this.convertHitObjects(beatmap)) {
       converted.hitObjects.push(hitObject);
     }
 
@@ -25,7 +34,7 @@ export abstract class BeatmapConverter {
 
   abstract convertHitObjects(beatmap: IBeatmap): Generator<HitObject>;
 
-  abstract createBeatmap(beatmap: IBeatmap): RulesetBeatmap;
+  abstract createBeatmap(): RulesetBeatmap;
 
   abstract canConvert(beatmap: IBeatmap): boolean;
 }
