@@ -1,31 +1,33 @@
-import { IBeatmap } from 'osu-resources';
-
 import { writeFileSync } from 'fs';
 
-import { GeneralEncoder } from './PairSections/GeneralEncoder';
-import { EditorEncoder } from './PairSections/EditorEncoder';
-import { MetadataEncoder } from './PairSections/MetadataEncoder';
-import { DifficultyEncoder } from './PairSections/DifficultyEncoder';
-import { EventsEncoder } from './Events/EventsEncoder';
-import { TimingPointEncoder } from './ListSections/TimingPointEncoder';
-import { ColourEncoder } from './PairSections/ColourEncoder';
-import { HitObjectEncoder } from './ListSections/HitObjectEncoder';
+import { IBeatmap } from 'osu-resources';
+
+import {
+  GeneralEncoder,
+  EditorEncoder,
+  MetadataEncoder,
+  DifficultyEncoder,
+  EventsEncoder,
+  TimingPointEncoder,
+  ColourEncoder,
+  HitObjectEncoder,
+} from './Handlers';
 
 /**
  * Beatmap encoder.
  */
-export abstract class BeatmapEncoder {
+export class BeatmapEncoder {
   /**
    * Performs beatmap encoding to the specified path.
    * @param path Path for writing the .osu file.
    * @param beatmap Beatmap for encoding.
    */
-  static encodeToPath(path: string, beatmap: IBeatmap): void {
+  encodeToPath(path: string, beatmap: IBeatmap): void {
     if (!path.endsWith('.osu')) {
       path += '.osu';
     }
 
-    writeFileSync(path, BeatmapEncoder.encodeToString(beatmap));
+    writeFileSync(path, this.encodeToString(beatmap));
   }
 
   /**
@@ -33,7 +35,7 @@ export abstract class BeatmapEncoder {
    * @param beatmap Beatmap for encoding.
    * @returns A string with encoded beatmap data.
    */
-  static encodeToString(beatmap: IBeatmap): string {
+  encodeToString(beatmap: IBeatmap): string {
     const encoded: string[] = [];
 
     if (beatmap.fileFormat) {

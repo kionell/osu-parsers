@@ -1,25 +1,27 @@
-import { Storyboard } from 'osu-resources';
-
 import { writeFileSync } from 'fs';
 
-import { VariablesEncoder } from './Events/VariablesEncoder';
-import { EventsEncoder } from './Events/EventsEncoder';
+import { Storyboard } from 'osu-resources';
+
+import {
+  VariablesEncoder,
+  EventsEncoder,
+} from './Handlers';
 
 /**
  * Storyboard encoder.
  */
-export abstract class StoryboardEncoder {
+export class StoryboardEncoder {
   /**
    * Performs storyboard encoding to the specified path.
    * @param path Path for writing the .osb file.
    * @param storyboard Storyboard for encoding.
    */
-  static encodeToPath(path: string, storyboard: Storyboard): void {
+  encodeToPath(path: string, storyboard: Storyboard): void {
     if (!path.endsWith('.osb')) {
       path += '.osb';
     }
 
-    writeFileSync(path, StoryboardEncoder.encodeToString(storyboard));
+    writeFileSync(path, this.encodeToString(storyboard));
   }
 
   /**
@@ -27,7 +29,7 @@ export abstract class StoryboardEncoder {
    * @param storyboard Storyboard for encoding.
    * @returns A string with encoded storyboard data.
    */
-  static encodeToString(storyboard: Storyboard): string {
+  encodeToString(storyboard: Storyboard): string {
     const encoded: string[] = [];
 
     if (storyboard instanceof Storyboard) {

@@ -17,21 +17,21 @@ import {
 /**
  * Beatmap decoder.
  */
-export abstract class BeatmapDecoder {
+export class BeatmapDecoder {
   /**
    * Performs beatmap decoding from the specified .osu file.
    * @param path Path to the .osu file.
    * @param parseSb Should a storyboard be parsed?
    * @returns Decoded beatmap.
    */
-  static decodeFromPath(path: string, parseSb = true): ParsedBeatmap {
+  decodeFromPath(path: string, parseSb = true): Beatmap {
     if (!path.endsWith('.osu')) {
       throw new Error('Wrong file format! Only .osu files are supported!');
     }
 
     const str = readFileSync(path).toString();
 
-    return BeatmapDecoder.decodeFromString(str, parseSb);
+    return this.decodeFromString(str, parseSb);
   }
 
   /**
@@ -40,12 +40,12 @@ export abstract class BeatmapDecoder {
    * @param parseSb Should a storyboard be parsed?
    * @returns Decoded beatmap.
    */
-  static decodeFromString(str: string, parseSb = true): ParsedBeatmap {
+  decodeFromString(str: string, parseSb = true): Beatmap {
     const data = str.toString()
       .replace(/\r/g, '')
       .split('\n');
 
-    return BeatmapDecoder.decodeFromLines(data, parseSb);
+    return this.decodeFromLines(data, parseSb);
   }
 
   /**
@@ -54,8 +54,8 @@ export abstract class BeatmapDecoder {
    * @param parseSb Should a storyboard be parsed?
    * @returns Decoded beatmap.
    */
-  static decodeFromLines(data: string[], parseSb = true): ParsedBeatmap {
-    const beatmap = new ParsedBeatmap();
+  decodeFromLines(data: string[], parseSb = true): Beatmap {
+    const beatmap = new Beatmap();
 
     let lines: string[] = [];
     let sbLines: string[] | null = null;
@@ -134,7 +134,9 @@ export abstract class BeatmapDecoder {
 
     // Storyboard
     if (parseSb && sbLines && sbLines.length) {
-      beatmap.events.storyboard = StoryboardDecoder.decodeFromLines(sbLines);
+      const storyboardDecoder = new StoryboardDecoder();
+
+      beatmap.events.storyboard = storyboardDecoder.decodeFromLines(sbLines);
     }
 
     return beatmap;

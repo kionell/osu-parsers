@@ -1,3 +1,5 @@
+import { readFileSync } from 'fs';
+
 import {
   Storyboard,
   StoryboardSample,
@@ -11,28 +13,28 @@ import {
   LayerType,
 } from 'osu-resources';
 
-import { readFileSync } from 'fs';
-
-import { StoryboardHandler } from './Events/StoryboardHandler';
-import { VariableHandler } from './Events/VariableHandler';
+import {
+  StoryboardHandler,
+  VariableHandler,
+} from './Handlers';
 
 /**
  * Storyboard decoder.
  */
-export abstract class StoryboardDecoder {
+export class StoryboardDecoder {
   /**
    * Performs storyboard decoding from the specified .osb file.
    * @param path Path to the .osb file.
    * @returns Decoded storyboard.
    */
-  static decodeFromPath(path: string): Storyboard {
+  decodeFromPath(path: string): Storyboard {
     if (!path.endsWith('.osb')) {
       throw new Error('Wrong file format! Only .osb files are supported!');
     }
 
     const str = readFileSync(path).toString();
 
-    return StoryboardDecoder.decodeFromString(str);
+    return this.decodeFromString(str);
   }
 
   /**
@@ -40,12 +42,12 @@ export abstract class StoryboardDecoder {
    * @param str String with storyboard data.
    * @returns Decoded storyboard.
    */
-  static decodeFromString(str: string): Storyboard {
+  decodeFromString(str: string): Storyboard {
     const data = str.toString()
       .replace(/\r/g, '')
       .split('\n');
 
-    return StoryboardDecoder.decodeFromLines(data);
+    return this.decodeFromLines(data);
   }
 
   /**
@@ -53,7 +55,7 @@ export abstract class StoryboardDecoder {
    * @param data Array of split lines.
    * @returns Decoded storyboard.
    */
-  static decodeFromLines(data: string[]): Storyboard {
+  decodeFromLines(data: string[]): Storyboard {
     const storyboard = new Storyboard();
 
     let lines: string[] = [];
