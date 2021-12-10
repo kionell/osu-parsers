@@ -1,23 +1,23 @@
-import { ParsedHitObject } from './ParsedHitObject';
+import { HitObject } from 'osu-resources';
 
 /**
- * A parsed hittable object.
+ * A hittable object.
  */
-export class ParsedHit extends ParsedHitObject {
+export class HittableObject extends HitObject {
   /**
-   * Creates a copy of this parsed hit.
+   * Creates a copy of this hittable object.
    * Non-primitive properties will be copied via their own clone() method.
-   * @returns A copied parsed hit.
+   * @returns A copied hittable object.
    */
-  clone(): ParsedHit {
-    const cloned = new ParsedHit();
+  clone(): HittableObject {
+    const cloned = new HittableObject();
 
     cloned.startTime = this.startTime;
     cloned.hitType = this.hitType;
     cloned.hitSound = this.hitSound;
-
     cloned.samples = this.samples.map((s) => s.clone());
     cloned.startPosition = this.startPosition.clone();
+    cloned.kiai = this.kiai;
 
     return cloned;
   }
