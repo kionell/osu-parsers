@@ -1,6 +1,4 @@
-import { Colour } from 'osu-resources';
-
-import { ParsedBeatmap } from '../../Classes/ParsedBeatmap';
+import { Beatmap, Colour } from 'osu-resources';
 
 /**
  * A decoder for beatmap colours.
@@ -11,7 +9,7 @@ export abstract class ColourHandler {
    * @param line A colour line.
    * @param beatmap A parsed beatmap.
    */
-  static handleLine(line: string, beatmap: ParsedBeatmap): void {
+  static handleLine(line: string, beatmap: Beatmap): void {
     const [key, ...values] = line.split(':').map((v) => v.trim());
     const value = values
       .join(' ')

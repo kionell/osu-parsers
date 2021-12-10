@@ -1,6 +1,4 @@
-import { BeatmapBreakEvent, EventType } from 'osu-resources';
-
-import { ParsedBeatmap } from '../../Classes/ParsedBeatmap';
+import { Beatmap, BeatmapBreakEvent, EventType } from 'osu-resources';
 
 /**
  * A decoder for beatmap events.
@@ -14,7 +12,7 @@ export abstract class EventHandler {
    * @param beatmap Beatmap to which the event data will be added.
    * @param sbLines Array for storing storyboard lines.
    */
-  static handleLine(line: string, beatmap: ParsedBeatmap, sbLines: string[] | null): void {
+  static handleLine(line: string, beatmap: Beatmap, sbLines: string[] | null): void {
     // EventType,startTime,eventParams
 
     const data = line.split(',').map((v) => v.trim());

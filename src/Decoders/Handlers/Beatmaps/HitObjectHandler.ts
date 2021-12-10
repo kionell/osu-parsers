@@ -1,20 +1,21 @@
 import {
   Vector2,
-  SliderPath,
   SampleBank,
   HitSample,
   PathPoint,
   PathType,
+  HitObject,
   HitType,
   HitSound,
   SampleSet,
 } from 'osu-resources';
 
-import { ParsedHitObject } from '../../Classes/ParsedHitObject';
-import { ParsedHit } from '../../Classes/ParsedHit';
-import { ParsedSlider } from '../../Classes/ParsedSlider';
-import { ParsedSpinner } from '../../Classes/ParsedSpinner';
-import { ParsedHold } from '../../Classes/ParsedHold';
+import {
+  HittableObject,
+  HoldableObject,
+  SlidableObject,
+  SpinnableObject,
+} from '../../../Objects';
 
 /**
  * A decoder for beatmap hit objects.
@@ -25,7 +26,7 @@ export abstract class HitObjectHandler {
    * @param line A hit object line.
    * @returns A new parsed hit object.
    */
-  static handleLine(line: string): ParsedHitObject {
+  static handleLine(line: string): HitObject {
     // x,y,time,type,hitSound,objectParams,hitSample
 
     const data = line.split(',').map((v) => v.trim());
@@ -50,20 +51,20 @@ export abstract class HitObjectHandler {
    * @param hitType Hit type data.
    * @returns A new parsed hit object.
    */
-  static createHitObject(hitType: HitType): ParsedHitObject {
+  static createHitObject(hitType: HitType): HitObject {
     if (hitType & HitType.Slider) {
-      return new ParsedSlider();
+      return new SlidableObject();
     }
 
     if (hitType & HitType.Spinner) {
-      return new ParsedSpinner();
+      return new SpinnableObject();
     }
 
     if (hitType & HitType.Hold) {
-      return new ParsedHold();
+      return new HoldableObject();
     }
 
-    return new ParsedHit();
+    return new HittableObject();
   }
 
   /**
@@ -71,7 +72,7 @@ export abstract class HitObjectHandler {
    * @param data The data of a hit object line.
    * @param hitObject A parsed hit object.
    */
-  static addExtras(data: string[], hitObject: ParsedHitObject): void {
+  static addExtras(data: string[], hitObject: HitObject): void {
     const hitType = hitObject.hitType;
 
     let extras: string[] = [];
@@ -79,19 +80,19 @@ export abstract class HitObjectHandler {
     if (hitType & HitType.Slider) {
       extras = data.splice(0, 5);
 
-      HitObjectHandler.addSliderExtras(extras, hitObject as ParsedSlider);
+      HitObjectHandler.addSliderExtras(extras, hitObject as SlidableObject);
     }
     else if (hitType & HitType.Spinner) {
       extras = data.splice(0, 1);
 
-      HitObjectHandler.addSpinnerExtras(extras, hitObject as ParsedSpinner);
+      HitObjectHandler.addSpinnerExtras(extras, hitObject as SpinnableObject);
     }
     else if (hitType & HitType.Hold) {
       data = data.join('').split(':');
       extras = data.splice(0, 1);
       data = data.join(':').split(',');
 
-      HitObjectHandler.addHoldExtras(extras, hitObject as ParsedHold);
+      HitObjectHandler.addHoldExtras(extras, hitObject as HoldableObject);
     }
 
     const sampleData = data.join('');
@@ -103,7 +104,7 @@ export abstract class HitObjectHandler {
     hitObject.samples = HitObjectHandler.getDefaultSamples(sampleData, hitSound, bank);
 
     if (hitObject.hitType & HitType.Slider) {
-      const slider = hitObject as ParsedSlider;
+      const slider = hitObject as SlidableObject;
 
       const nodeData = extras.splice(3, 5);
 
@@ -113,7 +114,7 @@ export abstract class HitObjectHandler {
       slider.nodeSamples = HitObjectHandler.getNodeSamples(nodeData, nodes, hitSound, bank);
     }
     else if (hitObject.hitType & HitType.Hold) {
-      const hold = hitObject as ParsedHold;
+      const hold = hitObject as HoldableObject;
 
       hold.nodeSamples = [hold.samples];
     }
@@ -124,25 +125,21 @@ export abstract class HitObjectHandler {
    * @param extras Extra data of slidable object.
    * @param slider A parsed slider.
    */
-  static addSliderExtras(extras: string[], slider: ParsedSlider): void {
+  static addSliderExtras(extras: string[], slider: SlidableObject): void {
     // curveType|curvePoints,slides,length,edgeSounds,edgeSets
 
     const pathString = extras[0];
     const offset = slider.startPosition;
-
-    const controlPoints = HitObjectHandler.convertPathString(pathString, offset);
-    const curveType = controlPoints[0].type as PathType;
 
     /**
      * osu!stable treated the first span of the slider as a repeat,
      * but no repeats are happening.
      */
     slider.repeats = Math.max(0, parseInt(extras[1]) - 1);
-    slider.pixelLength = parseFloat(extras[2]) || 0;
 
-    const expectedDistance = slider.pixelLength;
-
-    slider.path = new SliderPath(curveType, controlPoints, expectedDistance);
+    slider.path.controlPoints = HitObjectHandler.convertPathString(pathString, offset);
+    slider.path.curveType = slider.path.controlPoints[0].type as PathType;
+    slider.path.expectedDistance = parseFloat(extras[2]) || 0;
   }
 
   /**
@@ -150,7 +147,7 @@ export abstract class HitObjectHandler {
    * @param extras Extra data of spinnable object.
    * @param slider A parsed spinner.
    */
-  static addSpinnerExtras(extras: string[], spinner: ParsedSpinner): void {
+  static addSpinnerExtras(extras: string[], spinner: SpinnableObject): void {
     // endTime
 
     spinner.endTime = parseInt(extras[0]);
@@ -161,7 +158,7 @@ export abstract class HitObjectHandler {
    * @param extras Extra data of a holdable object.
    * @param slider A parsed hold.
    */
-  static addHoldExtras(extras: string[], hold: ParsedHold): void {
+  static addHoldExtras(extras: string[], hold: HoldableObject): void {
     // endTime
 
     hold.endTime = parseInt(extras[0]);
@@ -244,7 +241,7 @@ export abstract class HitObjectHandler {
     points: string[],
     endPoint: string | null,
     isFirst: boolean,
-    offset: Vector2
+    offset: Vector2,
   ): Generator<PathPoint[]> {
     // First control point is zero for the first segment.
     const readOffset = isFirst ? 1 : 0;
@@ -395,7 +392,7 @@ export abstract class HitObjectHandler {
   static getDefaultSamples(
     rewritable: string,
     hitSound: HitSound,
-    bank: SampleBank
+    bank: SampleBank,
   ): HitSample[] {
     // Rewrite default sample bank.
     HitObjectHandler.rewriteSampleBank(rewritable, bank);
@@ -415,7 +412,7 @@ export abstract class HitObjectHandler {
     rewritable: string[],
     nodes: number,
     hitSound: HitSound,
-    bank: SampleBank
+    bank: SampleBank,
   ): HitSample[][] {
     /**
      * Populate node sound types and node sample banks 

@@ -8,9 +8,7 @@ import {
   SampleSet,
   HitSample,
   Vector2,
-  HitObject,
   IHasPosition,
-  Beatmap,
   PathType,
   IHasDuration,
 } from 'osu-resources';
@@ -29,15 +27,12 @@ export abstract class HitObjectEncoder {
 
     const encoded: string[] = ['[HitObjects]'];
 
-    const base = (beatmap as Beatmap).base;
-    const difficulty = base ? base.difficulty : beatmap.difficulty;
+    const difficulty = beatmap.difficulty;
     const hitObjects = beatmap.hitObjects;
 
     hitObjects.forEach((hitObject) => {
       const general: string[] = [];
-
-      const baseObj = (hitObject as HitObject).base;
-      const position = ((baseObj || hitObject) as unknown as IHasPosition).startPosition;
+      const position = (hitObject as unknown as IHasPosition).startPosition;
 
       /**
        * Try to get hit object position if possible.
@@ -181,7 +176,7 @@ export abstract class HitObjectEncoder {
      * but no repeats are happening.
      */
     data.push((slider.repeats + 1).toString());
-    data.push(slider.pixelLength.toString());
+    data.push(slider.distance.toString());
 
     const adds: number[] = [];
     const sets: number[][] = [];

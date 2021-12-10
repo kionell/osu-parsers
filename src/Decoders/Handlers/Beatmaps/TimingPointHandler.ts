@@ -9,9 +9,8 @@ import {
   EffectType,
   TimeSignature,
   SampleSet,
+  Beatmap,
 } from 'osu-resources';
-
-import { ParsedBeatmap } from '../../Classes/ParsedBeatmap';
 
 /**
  * A decoder for beatmap control points.
@@ -42,7 +41,7 @@ export abstract class TimingPointHandler {
    * @param line A timing point line.
    * @param beatmap A parsed beatmap.
    */
-  static handleLine(line: string, beatmap: ParsedBeatmap): void {
+  static handleLine(line: string, beatmap: Beatmap): void {
     // Time,beatLength,meter,sampleSet,sampleIndex,volume,uninherited,effects
 
     TimingPointHandler.controlPoints = beatmap.controlPoints;

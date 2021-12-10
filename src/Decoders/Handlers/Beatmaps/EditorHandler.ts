@@ -1,4 +1,4 @@
-import { ParsedBeatmap } from '../../Classes/ParsedBeatmap';
+import { Beatmap } from 'osu-resources';
 
 /**
  * A decoder for beatmap editor settings.
@@ -9,7 +9,7 @@ export abstract class EditorHandler {
    * @param line Editor section line.
    * @param beatmap A parsed beatmap.
    */
-  static handleLine(line: string, beatmap: ParsedBeatmap): void {
+  static handleLine(line: string, beatmap: Beatmap): void {
     const [key, ...values] = line.split(':').map((v) => v.trim());
     const value = values.join(' ');
 
