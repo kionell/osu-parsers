@@ -3,18 +3,12 @@ import { StandardHitObject } from './StandardHitObject';
 import {
   ControlPointInfo,
   BeatmapDifficultySection,
-  NestedType,
-  INestedHitObject,
 } from 'osu-resources';
 
 export class SliderTick extends StandardHitObject implements INestedHitObject {
-  nestedType: NestedType = NestedType.Tick;
-
   spanIndex = 0;
 
   spanStartTime = 0;
-
-  progress = 0;
 
   applyDefaultsToSelf(controlPoints: ControlPointInfo, difficulty: BeatmapDifficultySection): void {
     super.applyDefaultsToSelf(controlPoints, difficulty);
