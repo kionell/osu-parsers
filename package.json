@@ -1,7 +1,7 @@
 {
   "name": "osu-parsers",
   "version": "1.0.1",
-  "description": "A bundle of parsers for osu! File formats based on the osu!lazer source code.",
+  "description": "A bundle of parsers for osu! file formats based on the osu!lazer source code.",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "scripts": {
