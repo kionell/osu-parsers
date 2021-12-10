@@ -35,7 +35,7 @@ export class Vector2 {
   fadd(vec: Vector2): Vector2 {
     return new Vector2(
       Math.fround(this.x + vec.x),
-      Math.fround(this.y + vec.y)
+      Math.fround(this.y + vec.y),
     );
   }
 
@@ -55,7 +55,7 @@ export class Vector2 {
   fsubtract(vec: Vector2): Vector2 {
     return new Vector2(
       Math.fround(this.x - vec.x),
-      Math.fround(this.y - vec.y)
+      Math.fround(this.y - vec.y),
     );
   }
 
@@ -75,7 +75,7 @@ export class Vector2 {
   fscale(multiplier: number): Vector2 {
     return new Vector2(
       Math.fround(this.x * multiplier),
-      Math.fround(this.y * multiplier)
+      Math.fround(this.y * multiplier),
     );
   }
 
@@ -95,7 +95,7 @@ export class Vector2 {
   fdivide(divisor: number): Vector2 {
     return new Vector2(
       Math.fround(this.x / divisor),
-      Math.fround(this.y / divisor)
+      Math.fround(this.y / divisor),
     );
   }
 
@@ -112,7 +112,7 @@ export class Vector2 {
    * @param vec Second vector.
    */
   fdot(vec: Vector2): number {
-    return Math.fround(this.x * vec.x + this.y * vec.y);
+    return Math.fround(this.x * vec.x) + Math.fround(this.y * vec.y);
   }
 
   /**
@@ -159,7 +159,7 @@ export class Vector2 {
 
     return new Vector2(
       Math.fround(this.x / length),
-      Math.fround(this.y / length)
+      Math.fround(this.y / length),
     );
   }
 
