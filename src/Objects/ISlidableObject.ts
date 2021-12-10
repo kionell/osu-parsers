@@ -1,29 +1,17 @@
-import { HitSample } from './Sounds/HitSample';
-
 import { IHitObject } from './IHitObject';
-import { IHasPath } from './Types/IHasPath';
+import { IHasLegacyLastTickOffset } from './Types/IHasLegacyLastTickOffset';
+import { IHasPathWithRepeats } from './Types/IHasPathWithRepeats';
 
-export interface ISlidableObject extends IHasPath, IHitObject {
-  /**
-   * The samples to be played when each node of the IHasPath is hit.
-   * 0: The first node.
-   * 1: The first repeat.
-   * 2: The second repeat.
-   * ...
-   * n-1: The last repeat.
-   * n: The last node.
-   */
-  nodeSamples: HitSample[][];
-
+export interface ISlidableObject extends IHasPathWithRepeats, IHitObject, IHasLegacyLastTickOffset {
   /**
    * Spacing between ticks of a slidable object.
    */
-  tickDistance: number;
+  tickDistance?: number;
 
   /**
    * The length (in milliseconds) between ticks of this slidable object.
    */
-  tickInterval: number;
+  tickInterval?: number;
 
   /**
    * An extra multiplier that affects the number of ticks 
@@ -31,20 +19,10 @@ export interface ISlidableObject extends IHasPath, IHitObject {
    * An increase in this value increases tick distance, 
    * which reduces the number of ticks generated.
    */
-  tickRate: number;
-
-  /**
-   * The positional length of the slidable object.
-   */
-  pixelLength: number;
+  tickRate?: number;
 
   /**
    * Velocity of a slidable object.
    */
   velocity: number;
-
-  /**
-   * The last tick offset of slidable objects in osu!stable.
-   */
-  legacyLastTickOffset?: number;
 }
