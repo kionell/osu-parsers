@@ -29,12 +29,15 @@ Since this project uses ES Modules, it is recommended to use Node.js 12.22.0 or 
 import { BeatmapDecoder, BeatmapEncoder } from "osu-parsers";
 import { TaikoRuleset } from 'osu-taiko-stable';
 
+const decoder = new BeatmapDecoder();
+const encoder = new BeatmapEncoder();
+
 const decodePath = 'path/to/your/decoding/file.osu';
 const encodePath = 'path/to/your/encoding/file.osu';
 const shouldParseSb = true;
 
 // Get beatmap object.
-const parsed = BeatmapDecoder.decodeFromPath(decodePath, shouldParseSb);
+const parsed = decoder.decodeFromPath(decodePath, shouldParseSb);
 
 // Create a new osu!taiko ruleset.
 const ruleset = new TaikoRuleset();
@@ -51,10 +54,10 @@ const mods = ruleset.createModCombination(1337);
 const taikoWithMods = ruleset.applyToBeatmapWithMods(parsed, mods);
 
 // It will write osu!taiko beatmap with no mods.
-BeatmapEncoder.encodeToPath(encodePath, taikoWithNoMod1);
+encoder.encodeToPath(encodePath, taikoWithNoMod1);
 
 // It will write osu!taiko beatmap with applied mods.
-BeatmapEncoder.encodeToPath(encodePath, taikoWithMods);
+encoder.encodeToPath(encodePath, taikoWithMods);
 ```
 
 ## Other projects
