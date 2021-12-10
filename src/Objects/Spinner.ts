@@ -5,7 +5,6 @@ import {
   ControlPointInfo,
   BeatmapDifficultySection,
   ISpinnableObject,
-  HitType,
 } from 'osu-resources';
 
 export class Spinner extends StandardHitObject implements ISpinnableObject {
@@ -30,30 +29,13 @@ export class Spinner extends StandardHitObject implements ISpinnableObject {
    */
   maximumBonusSpins = 1;
 
-  get hitType(): HitType {
-    let hitType = this.base.hitType;
-
-    hitType &= ~HitType.Normal;
-    hitType &= ~HitType.Slider;
-    hitType &= ~HitType.Hold;
-
-    return hitType | HitType.Spinner;
-  }
+  /**
+   * The time at which this spinner ends.
+   */
+  endTime = 0;
 
   get duration(): number {
-    return (this.base as ISpinnableObject).endTime - this.startTime;
-  }
-
-  set duration(value: number) {
-    (this.base as ISpinnableObject).endTime = this.startTime + value;
-  }
-
-  get endTime(): number {
-    return (this.base as ISpinnableObject).endTime;
-  }
-
-  set endTime(value: number) {
-    (this.base as ISpinnableObject).endTime = value;
+    return this.endTime - this.startTime;
   }
 
   applyDefaultsToSelf(controlPoints: ControlPointInfo, difficulty: BeatmapDifficultySection): void {
@@ -73,8 +55,26 @@ export class Spinner extends StandardHitObject implements ISpinnableObject {
   createNestedHitObjects(): void {
     this.nestedHitObjects = [];
 
-    for (const nested of StandardTickGenerator.generateSpinnerTicks(this)) {
+    for (const nested of StandardEventGenerator.generateSpinnerTicks(this)) {
       this.nestedHitObjects.push(nested);
     }
+  }
+
+  clone(): Spinner {
+    const cloned = new Spinner();
+
+    cloned.startPosition = this.startPosition.clone();
+    cloned.startTime = this.startTime;
+    cloned.endTime = this.endTime;
+    cloned.hitType = this.hitType;
+    cloned.hitSound = this.hitSound;
+    cloned.samples = this.samples.map((s) => s.clone());
+    cloned.kiai = this.kiai;
+    cloned.stackHeight = this.stackHeight;
+    cloned.scale = this.scale;
+    cloned.spinsRequired = this.spinsRequired;
+    cloned.maximumBonusSpins = this.maximumBonusSpins;
+
+    return cloned;
   }
 }

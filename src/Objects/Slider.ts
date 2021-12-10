@@ -136,15 +136,11 @@ export class Slider extends StandardHitObject implements ISlidableObject {
       return controlPoints[controlPoints.length - 1].position;
     }
 
-    return super.startPosition;
+    return this.startPosition;
   }
 
   get endTime(): number {
     return this.startTime + this.duration;
-  }
-
-  get legacyLastTickOffset(): number {
-    return (this.base as unknown as IHasLegacyLastTickOffset).legacyLastTickOffset || 0;
   }
 
   applyDefaultsToSelf(controlPoints: ControlPointInfo, difficulty: BeatmapDifficultySection): void {
@@ -179,5 +175,27 @@ export class Slider extends StandardHitObject implements ISlidableObject {
     if (this.tail !== null) {
       this.tail.startPosition = this.endPosition;
     }
+  }
+
+  clone(): Slider {
+    const cloned = new Slider();
+
+    cloned.startPosition = this.startPosition.clone();
+    cloned.startTime = this.startTime;
+    cloned.hitType = this.hitType;
+    cloned.hitSound = this.hitSound;
+    cloned.samples = this.samples.map((s) => s.clone());
+    cloned.nodeSamples = this.nodeSamples.map((n) => n.map((s) => s.clone()));
+    cloned.velocity = this.velocity;
+    cloned.repeats = this.repeats;
+    cloned.path = this.path.clone();
+    cloned.kiai = this.kiai;
+    cloned.tickDistance = this.tickDistance;
+    cloned.tickRate = this.tickRate;
+    cloned.legacyLastTickOffset = this.legacyLastTickOffset;
+    cloned.stackHeight = this.stackHeight;
+    cloned.scale = this.scale;
+
+    return cloned;
   }
 }

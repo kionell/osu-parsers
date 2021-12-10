@@ -2,19 +2,17 @@ import { Circle } from './Circle';
 import { Slider } from './Slider';
 
 import {
-  IHitObject,
   ControlPointInfo,
   BeatmapDifficultySection,
 } from 'osu-resources';
 
 export abstract class SliderEnd extends Circle {
-  private _slider: Slider;
+  protected _slider: Slider;
 
   repeatIndex = 0;
 
-  constructor(hitObject: IHitObject, slider: Slider) {
-    super(hitObject);
-
+  constructor(slider: Slider) {
+    super();
     this._slider = slider;
   }
 
@@ -41,8 +39,15 @@ export abstract class SliderEnd extends Circle {
       return;
     }
 
-    // The first end circle should fade in with the slider.
+    /**
+     * Taken from osu-stable.
+     */
+    const FIRST_END_CIRCLE_PREEMPT_ADJUST = Math.fround(2 / 3);
+
+    /**
+     * The first end circle should fade in with the slider.
+     */
     this.timePreempt = this.startTime - this._slider.startTime
-      + (this._slider.timePreempt * 2) / Math.fround(3);
+      + this._slider.timePreempt * FIRST_END_CIRCLE_PREEMPT_ADJUST;
   }
 }
