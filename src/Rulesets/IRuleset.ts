@@ -1,8 +1,18 @@
-import { BeatmapProcessor } from '../Beatmaps/BeatmapProcessor';
-import { BeatmapConverter } from '../Beatmaps/BeatmapConverter';
-import { RulesetBeatmap } from '../Beatmaps/RulesetBeatmap';
+import {
+  BeatmapProcessor,
+  BeatmapConverter,
+  RulesetBeatmap,
+  IBeatmap,
+} from '../Beatmaps';
+
+import {
+  DifficultyAttributes,
+  DifficultyCalculator,
+  PerformanceCalculator,
+} from '../Difficulty';
+
+import { ScoreInfo } from '../Scoring';
 import { ModCombination } from '../Mods/ModCombination';
-import { IBeatmap } from '../Beatmaps/IBeatmap';
 
 /**
  * A ruleset.
@@ -51,4 +61,17 @@ export interface IRuleset {
    * @returns A new beatmap converter.
    */
   createBeatmapConverter(): BeatmapConverter;
+
+  /**
+   * @param beatmap The beatmap for which the calculation will be done.
+   * @returns A new difficulty calculator.
+   */
+  createDifficultyCalculator(beatmap: IBeatmap): DifficultyCalculator;
+
+  /**
+   * @param attributes The difficulty attributes.
+   * @param score Score information.
+   * @returns A new performance calculator.
+   */
+  createPerformanceCalculator(attributes: DifficultyAttributes, score: ScoreInfo): PerformanceCalculator;
 }

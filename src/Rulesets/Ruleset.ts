@@ -1,8 +1,18 @@
-import { BeatmapProcessor } from '../Beatmaps/BeatmapProcessor';
-import { BeatmapConverter } from '../Beatmaps/BeatmapConverter';
-import { RulesetBeatmap } from '../Beatmaps/RulesetBeatmap';
-import { ModCombination } from '../Mods/ModCombination';
-import { IBeatmap } from '../Beatmaps/IBeatmap';
+import {
+  BeatmapProcessor,
+  BeatmapConverter,
+  RulesetBeatmap,
+  IBeatmap,
+} from '../Beatmaps';
+
+import {
+  DifficultyAttributes,
+  DifficultyCalculator,
+  PerformanceCalculator,
+} from '../Difficulty';
+
+import { ModCombination } from '../Mods';
+import { ScoreInfo } from '../Scoring';
 import { IRuleset } from './IRuleset';
 
 /**
@@ -40,7 +50,9 @@ export abstract class Ruleset implements IRuleset {
       mods = this.createModCombination(0);
     }
 
-    // We should apply mods only from the same ruleset.
+    /**
+     * We should apply mods only from the same ruleset.
+     */
     if (beatmap.mode !== mods.mode) {
       mods = this.createModCombination(mods.bitwise);
     }
@@ -49,17 +61,23 @@ export abstract class Ruleset implements IRuleset {
 
     const cloned = beatmap.clone();
 
-    // Check if the beatmap can be converted
+    /**
+     * Check if the beatmap can be converted.
+     */
     if (beatmap.hitObjects.length > 0 && !converter.canConvert(cloned)) {
       throw new Error('Beatmap can not be converted!');
     }
 
-    // Apply conversion mods
+    /**
+     * Apply conversion mods.
+     */
     mods.converterMods.forEach((m) => m.applyToConverter(converter));
 
     const converted = converter.convertBeatmap(cloned);
 
-    // Apply difficulty mods
+    /**
+     * Apply difficulty mods.
+     */
     mods.difficultyMods.forEach((m) => {
       m.applyToDifficulty(converted.difficulty);
     });
@@ -68,7 +86,10 @@ export abstract class Ruleset implements IRuleset {
 
     processor.preProcess(converted);
 
-    // Compute default values for hitobjects, including creating nested hitobjects in-case they're needed
+    /**
+     * Compute default values for hitobjects, 
+     * including creating nested hitobjects in-case they're needed.
+     */
     converted.hitObjects.forEach((hitObject) => {
       hitObject.applyDefaults(converted.controlPoints, converted.difficulty);
     });
@@ -113,4 +134,17 @@ export abstract class Ruleset implements IRuleset {
    * @returns A new beatmap converter.
    */
   abstract createBeatmapConverter(): BeatmapConverter;
+
+  /**
+   * @param beatmap The beatmap for which the calculation will be done.
+   * @returns A new difficulty calculator.
+   */
+  abstract createDifficultyCalculator(beatmap: IBeatmap): DifficultyCalculator;
+
+  /**
+   * @param attributes The difficulty attributes.
+   * @param score Score information.
+   * @returns A new performance calculator.
+   */
+  abstract createPerformanceCalculator(attributes: DifficultyAttributes, score: ScoreInfo): PerformanceCalculator;
 }
