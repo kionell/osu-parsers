@@ -260,4 +260,34 @@ export abstract class ModCombination {
   toString(): string {
     return this.acronyms.join('');
   }
+
+  /**
+   * Converts mod acronyms to a bitwise value. 
+   * @param input The mod acronyms.
+   * @returns The bitwise value.
+   */
+  toBitwise(input: unknown): number {
+    /**
+     * Return the value if it's already number.
+     */
+    if (typeof input === 'number') return Math.max(0, input);
+
+    /**
+     * We don't want to work with any non-string types or falsy values.
+     */
+    if (typeof input !== 'string' || !input) return 0;
+
+    /**
+     * Correct acronyms must contain an even number of characters
+     */
+    if (input.length % 2) return 0;
+
+    const acronyms = input.match(/.{1,2}/g)?.map((a) => a.toUpperCase()) ?? [];
+
+    return acronyms.reduce((bitwise, acronym) => {
+      const found = this._availableMods.find((m) => m.acronym === acronym);
+
+      return bitwise | (found?.bitwise ?? 0);
+    }, 0);
+  }
 }
