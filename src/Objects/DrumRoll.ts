@@ -8,7 +8,7 @@ import {
 } from 'osu-resources';
 
 import { TaikoStrongHitObject } from './TaikoStrongHitObject';
-import { TaikoTickGenerator } from './TaikoTickGenerator';
+import { TaikoEventGenerator } from './TaikoEventGenerator';
 
 export class DrumRoll extends TaikoStrongHitObject implements ISlidableObject {
   tickInterval = 100;

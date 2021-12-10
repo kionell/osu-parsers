@@ -5,4 +5,4 @@ export { Swell } from './Swell';
 export { SwellTick } from './SwellTick';
 export { TaikoHitObject } from './TaikoHitObject';
 export { TaikoStrongHitObject } from './TaikoStrongHitObject';
-export { TaikoTickGenerator } from './TaikoTickGenerator';
+export { TaikoEventGenerator } from './TaikoEventGenerator';

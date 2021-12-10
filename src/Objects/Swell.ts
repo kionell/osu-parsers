@@ -1,5 +1,5 @@
 import { TaikoHitObject } from './TaikoHitObject';
-import { TaikoTickGenerator } from './TaikoTickGenerator';
+import { TaikoEventGenerator } from './TaikoEventGenerator';
 
 import { HitType, ISpinnableObject } from 'osu-resources';
 
