@@ -79,8 +79,6 @@ export class SliderPath {
 
   set distance(value: number) {
     this.expectedDistance = value;
-
-    this.invalidate();
   }
 
   /**
@@ -255,15 +253,33 @@ export class SliderPath {
     this._calculatedLength = 0;
     this._cumulativeLength = [0];
 
-    for (let i = 0, len = this._calculatedPath.length - 1; i < len; i++) {
+    for (let i = 0, l = this._calculatedPath.length - 1; i < l; ++i) {
       const diff = this._calculatedPath[i + 1].subtract(this._calculatedPath[i]);
 
-      this._calculatedLength += diff.length();
+      this._calculatedLength += diff.flength();
       this._cumulativeLength.push(this._calculatedLength);
     }
 
     if (this._calculatedLength !== this.expectedDistance) {
-      // The last length is always incorrect
+      /**
+       * In osu-stable, if the last two control points 
+       * of a slider are equal, extension is not performed.
+       */
+      const controlPoints = this.controlPoints;
+      const lastPoint = controlPoints[controlPoints.length - 1];
+      const preLastPoint = controlPoints[controlPoints.length - 2];
+      const pointsAreEqual = controlPoints.length >= 2
+        && lastPoint.position.equals(preLastPoint.position);
+
+      if (pointsAreEqual && this.expectedDistance > this._calculatedLength) {
+        this._cumulativeLength.push(this._calculatedLength);
+
+        return;
+      }
+
+      /**
+       * The last length is always incorrect
+       */
       this._cumulativeLength.pop();
 
       let pathEndIndex = this._calculatedPath.length - 1;
