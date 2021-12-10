@@ -3,22 +3,83 @@ import { IRuleset } from '../Rulesets';
 import { ModCombination } from '../Mods';
 import { ScoreRank } from './Enums/ScoreRank';
 
+/**
+ * A score info.
+ */
 export class ScoreInfo {
+  /**
+   * A score ID.
+   */
   id = 0;
+
+  /**
+   * A rank of the play.
+   */
   rank: ScoreRank = ScoreRank.F;
+
+  /**
+   * Total score of the play.
+   */
   totalScore = 0;
+
+  /**
+   * Total accuracy of the play.
+   */
   accuracy = 0;
+
+  /**
+   * The performance of the play.
+   */
   pp?: number;
+
+  /**
+   * Max combo of the play.
+   */
   maxCombo = 0;
+
+  /**
+   * Ruleset ID of the play.
+   */
   rulesetID = 0;
+
+  /**
+   * Whether the map was passed or not.
+   */
   passed = true;
+
+  /**
+   * Ruleset instance.
+   */
   ruleset?: IRuleset;
+
+  /**
+   * Mods of the play.
+   */
   mods?: ModCombination;
+
+  /**
+   * Username of the player who set this play.
+   */
   username = '';
+
+  /**
+   * User ID of the player who set this play.
+   */
   userID = 0;
+
+  /**
+   * Beatmap of the play.
+   */
   beatmap: IBeatmap = new Beatmap();
+
+  /**
+   * The date when this play was set.
+   */
   date: Date = new Date();
 
+  /**
+   * Hit statistics.
+   */
   statistics = {
     none: 0,
     miss: 0,
@@ -37,8 +98,15 @@ export class ScoreInfo {
     ignoreHit: 0,
   };
 
+  /**
+   * Hash of the beatmap.
+   */
   hash = '';
 
+  /**
+   * Creates a deep copy of the score info.
+   * @returns Cloned score info.
+   */
   clone(): ScoreInfo {
     const cloned = new ScoreInfo();
 
@@ -64,6 +132,10 @@ export class ScoreInfo {
     return cloned;
   }
 
+  /**
+   * @param other Other score info.
+   * @returns If two scores are equal.
+   */
   equals(other: ScoreInfo): boolean {
     if (!other) return false;
 
