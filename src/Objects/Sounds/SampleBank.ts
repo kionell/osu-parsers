@@ -1,5 +1,3 @@
-import { ObjectCopying } from '../../Utils';
-
 import { SampleSet } from '../Enums/SampleSet';
 
 export class SampleBank {
@@ -36,9 +34,11 @@ export class SampleBank {
   clone(): SampleBank {
     const cloned = new SampleBank();
 
-    const properties = ObjectCopying.copy(this);
-
-    Object.assign(cloned, properties);
+    cloned.filename = this.filename;
+    cloned.volume = this.volume;
+    cloned.normalSet = this.normalSet;
+    cloned.additionSet = this.additionSet;
+    cloned.customIndex = this.customIndex;
 
     return cloned;
   }

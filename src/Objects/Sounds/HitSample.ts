@@ -1,5 +1,3 @@
-import { ObjectCopying } from '../../Utils';
-
 import { HitSound } from '../Enums/HitSound';
 import { SampleSet } from '../Enums/SampleSet';
 
@@ -11,7 +9,7 @@ import { SampleSet } from '../Enums/SampleSet';
  */
 export class HitSample {
   /**
-   * The bank to load the sample } from.
+   * The bank to load the sample from.
    */
   sampleSet: string = SampleSet[SampleSet.None];
 
@@ -54,9 +52,13 @@ export class HitSample {
   clone(): HitSample {
     const cloned = new HitSample();
 
-    const properties = ObjectCopying.copy(this);
-
-    Object.assign(cloned, properties);
+    cloned.sampleSet = this.sampleSet;
+    cloned.hitSound = this.hitSound;
+    cloned.customIndex = this.customIndex;
+    cloned.suffix = this.suffix;
+    cloned.volume = this.volume;
+    cloned.isLayered = this.isLayered;
+    cloned.filename = this.filename;
 
     return cloned;
   }
