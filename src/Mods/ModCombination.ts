@@ -290,4 +290,8 @@ export abstract class ModCombination {
       return bitwise | (found?.bitwise ?? 0);
     }, 0);
   }
+
+  protected get _availableMods(): IMod[] {
+    return [];
+  }
 }
