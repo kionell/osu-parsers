@@ -62,8 +62,8 @@ export abstract class StandardHitObject extends HitObject implements IHasPositio
   set scale(value: number) {
     this._scale = value;
 
-    this._stackOffset.x = Math.fround(-6.4) * value * this._stackHeight;
-    this._stackOffset.y = Math.fround(-6.4) * value * this._stackHeight;
+    this._stackOffset.x = Math.fround(-6.4) * Math.fround(value) * this._stackHeight;
+    this._stackOffset.y = Math.fround(-6.4) * Math.fround(value) * this._stackHeight;
   }
 
   get radius(): number {
@@ -77,8 +77,8 @@ export abstract class StandardHitObject extends HitObject implements IHasPositio
   set stackHeight(value: number) {
     this._stackHeight = value;
 
-    this._stackOffset.x = Math.fround(-6.4) * this._scale * value;
-    this._stackOffset.y = Math.fround(-6.4) * this._scale * value;
+    this._stackOffset.x = Math.fround(-6.4) * Math.fround(this._scale) * value;
+    this._stackOffset.y = Math.fround(-6.4) * Math.fround(this._scale) * value;
   }
 
   get stackedOffset(): Vector2 {
@@ -112,6 +112,6 @@ export abstract class StandardHitObject extends HitObject implements IHasPositio
      * Closest approximation:
      * 23.0400009155273 + (7 - CS) * 4.47999954223635
      */
-    this.scale = (1 - (Math.fround(0.7) * (difficulty.circleSize - 5)) / 5) / 2;
+    this.scale = Math.fround((1 - Math.fround(0.7) * (difficulty.circleSize - 5) / 5) / 2);
   }
 }
