@@ -11,24 +11,26 @@ export class BinarySearch {
    * @returns Found value.
    */
   static findNumber(arr: number[], x: number): number {
-    let start = 0,
-      mid,
-      end = arr.length - 1;
+    let start = 0, mid, end = arr.length - 1;
 
     // Iterate while start not meets end
     while (start <= end) {
       // Find the mid index
-      mid = Math.floor((start + end) / 2);
+      mid = start + ((end - start) >> 1);
 
-      if (arr[mid] > x) {
-        end = mid - 1;
+      if (arr[mid] === x) {
+        return mid;
       }
-      else if (arr[mid] <= x) {
+
+      if (arr[mid] < x) {
         start = mid + 1;
+      }
+      else {
+        end = mid - 1;
       }
     }
 
-    return Math.floor((start + end) / 2);
+    return ~start;
   }
 
   /**
