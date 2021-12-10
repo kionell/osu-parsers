@@ -9,18 +9,16 @@ import {
   HitType,
 } from 'osu-resources';
 
-export class StandardHardRock
-  extends HardRock
-  implements IApplicableToHitObjects {
+export class StandardHardRock extends HardRock implements IApplicableToHitObjects {
   static BASE_SIZE: Vector2 = new Vector2(512, 384);
 
   applyToHitObjects(hitObjects: StandardHitObject[]): void {
     hitObjects.forEach((hitObject) => {
-      const pos = hitObject.startPosition;
-
-      pos.y = StandardHardRock.BASE_SIZE.y - pos.y;
-
       if ((hitObject.hitType & HitType.Slider) === 0) {
+        const pos = hitObject.startPosition;
+
+        pos.y = StandardHardRock.BASE_SIZE.y - pos.y;
+
         return;
       }
 
