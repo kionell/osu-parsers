@@ -6,6 +6,11 @@ import {
   StandardBeatmap,
 } from './Beatmaps';
 
+import {
+  StandardDifficultyAttributes,
+  StandardDifficultyCalculator,
+  StandardPerformanceCalculator,
+} from './Difficulty';
 
 import { StandardModCombination } from './Mods/StandardModCombination';
 
@@ -41,5 +46,22 @@ export class StandardRuleset extends Ruleset {
    */
   createBeatmapConverter(): StandardBeatmapConverter {
     return new StandardBeatmapConverter();
+  }
+
+  /**
+   * @param beatmap The beatmap for which the calculation will be done.
+   * @returns A new osu!std difficulty calculator.
+   */
+  createDifficultyCalculator(beatmap: StandardBeatmap): StandardDifficultyCalculator {
+    return new StandardDifficultyCalculator(beatmap, this);
+  }
+
+  /**
+   * @param attributes The difficulty attributes.
+   * @param score Score information.
+   * @returns A new osu!std performance calculator.
+   */
+  createPerformanceCalculator(attributes: StandardDifficultyAttributes, score: ScoreInfo): StandardPerformanceCalculator {
+    return new StandardPerformanceCalculator(this, attributes, score);
   }
 }

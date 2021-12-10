@@ -1,0 +1,1 @@
+export { StandardDifficultyAttributes } from './StandardDifficultyAttributes';
