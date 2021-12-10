@@ -1,8 +1,13 @@
-import { StandardBeatmapProcessor } from './Beatmaps/StandardBeatmapProcessor';
-import { StandardBeatmapConverter } from './Beatmaps/StandardBeatmapConverter';
-import { StandardModCombination } from './Mods/StandardModCombination';
+import { Ruleset, ScoreInfo } from 'osu-resources';
 
-import { Ruleset } from 'osu-resources';
+import {
+  StandardBeatmapProcessor,
+  StandardBeatmapConverter,
+  StandardBeatmap,
+} from './Beatmaps';
+
+
+import { StandardModCombination } from './Mods/StandardModCombination';
 
 /**
  * osu!std ruleset.
