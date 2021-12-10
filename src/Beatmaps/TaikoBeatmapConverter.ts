@@ -53,11 +53,11 @@ export class TaikoBeatmapConverter extends BeatmapConverter {
     /**
      * Rewrite the beatmap info to add the slider velocity multiplier.
      */
-    const converted = this.createBeatmap(original);
+    const converted = this.createBeatmap();
 
     converted.difficulty.sliderMultiplier *= TaikoBeatmapConverter.VELOCITY_MULTIPLIER;
 
-    for (const hitObject of this.convertHitObjects(converted.base)) {
+    for (const hitObject of this.convertHitObjects(original)) {
       converted.hitObjects.push(hitObject);
     }
 
@@ -86,34 +86,53 @@ export class TaikoBeatmapConverter extends BeatmapConverter {
     return converted;
   }
 
-  *convertHitObjects(original: IBeatmap): Generator<TaikoHitObject> {
-    const hitObjects = original.hitObjects;
+  *convertHitObjects(beatmap: IBeatmap): Generator<TaikoHitObject> {
+    const hitObjects = beatmap.hitObjects;
 
     for (const hitObject of hitObjects) {
-      if ((hitObject as ISlidableObject).path) {
-        yield* this._convertDistanceObject(hitObject, original);
-      }
-      else if ((hitObject as ISpinnableObject).endTime) {
-        yield* this._convertEndTimeObject(hitObject, original);
-      }
-      else {
-        yield new Hit(hitObject.clone());
+      for (const converted of this._convertHitObject(hitObject, beatmap)) {
+        yield converted;
       }
     }
   }
 
-  private *_convertDistanceObject(hitObject: IHitObject, beatmap: IBeatmap): Generator<TaikoHitObject> {
-    const slider = hitObject as ISlidableObject;
+  private _convertHitObject(hitObject: IHitObject, beatmap: IBeatmap) {
+    const slidable = hitObject as ISlidableObject;
+    const spinnable = hitObject as ISpinnableObject;
 
-    if (this._shouldConvertToHits(slider, beatmap)) {
-      const allSamples = slider.nodeSamples;
+    if (slidable.path) {
+      return this._convertSlidableObject(slidable, beatmap);
+    }
+
+    if (spinnable.endTime) {
+      return this._convertSpinnableObject(spinnable, beatmap);
+    }
+
+    return this._convertHittableObject(hitObject);
+  }
+
+  private *_convertHittableObject(hittable: IHitObject): Generator<TaikoHitObject> {
+    const converted = new Hit();
+
+    converted.startTime = hittable.startTime;
+    converted.hitType = hittable.hitType;
+    converted.hitSound = hittable.hitSound;
+    converted.samples = hittable.samples.map((s) => s.clone());
+
+    yield converted;
+  }
+
+  private *_convertSlidableObject(slidable: ISlidableObject, beatmap: IBeatmap): Generator<TaikoHitObject> {
+
+    if (this._shouldConvertToHits(slidable, beatmap)) {
+      const allSamples = slidable.nodeSamples;
       let sampleIndex = 0;
 
-      let time = slider.startTime;
+      let time = slidable.startTime;
       const endTime = time + this.taikoDuration + this.tickInterval / 8;
 
       while (time <= endTime) {
-        const hit = new Hit(slider.clone());
+        const hit = new Hit();
 
         hit.startTime = time;
         hit.samples = allSamples[sampleIndex];
@@ -126,40 +145,44 @@ export class TaikoBeatmapConverter extends BeatmapConverter {
 
         sampleIndex = (sampleIndex + 1) % allSamples.length;
 
-        if (this.tickInterval < 1e-7) {
-          break;
-        }
+        if (this.tickInterval < 1e-7) break;
 
         time += this.tickInterval;
       }
     }
     else {
       const sliderTickRate = beatmap.difficulty.sliderTickRate;
-      const drumRoll = new DrumRoll(slider.clone());
+      const drumRoll = new DrumRoll();
 
       drumRoll.duration = this.taikoDuration;
-      drumRoll.tickDistance = this.tickDistance;
       drumRoll.tickRate = sliderTickRate === 3 ? 3 : 4;
+      drumRoll.startTime = slidable.startTime;
+      drumRoll.hitType = slidable.hitType;
+      drumRoll.hitSound = slidable.hitSound;
+      drumRoll.samples = slidable.samples.map((s) => s.clone());
 
       yield drumRoll;
     }
   }
 
-  private *_convertEndTimeObject(hitObject: IHitObject, beatmap: IBeatmap): Generator<TaikoHitObject> {
+  private *_convertSpinnableObject(spinnable: IHitObject, beatmap: IBeatmap): Generator<TaikoHitObject> {
     const baseOD = beatmap.difficulty.overallDifficulty;
     const difficultyRange = BeatmapDifficultySection.range(baseOD, 3, 5, 7.5);
 
-    const hitMultiplier =
-      TaikoBeatmapConverter.SWELL_HIT_MULTIPLIER * difficultyRange;
+    const hitMultiplier = TaikoBeatmapConverter.SWELL_HIT_MULTIPLIER * difficultyRange;
 
-    const swell = new Swell(hitObject.clone());
+    const swell = new Swell();
 
+    swell.startTime = spinnable.startTime;
+    swell.hitType = spinnable.hitType;
+    swell.hitSound = spinnable.hitSound;
+    swell.samples = spinnable.samples.map((s) => s.clone());
     swell.requiredHits = Math.trunc(Math.max(1, (swell.duration / 1000) * hitMultiplier));
 
     yield swell;
   }
 
-  private _shouldConvertToHits(slider: ISlidableObject, beatmap: IBeatmap): boolean {
+  private _shouldConvertToHits(slidable: ISlidableObject, beatmap: IBeatmap): boolean {
     /**
      * DO NOT CHANGE OR REFACTOR ANYTHING IN HERE
      * WITHOUT TESTING AGAINST ALL BEATMAPS.
@@ -170,11 +193,8 @@ export class TaikoBeatmapConverter extends BeatmapConverter {
      * Rounding cannot be used as an alternative since the error deltas
      * have been observed to be between 1e-2 and 1e-6.
      */
-    const timingPoint = beatmap.controlPoints
-      .timingPointAt(slider.startTime);
-
-    const difficultyPoint = beatmap.controlPoints
-      .difficultyPointAt(slider.startTime);
+    const timingPoint = beatmap.controlPoints.timingPointAt(slidable.startTime);
+    const difficultyPoint = beatmap.controlPoints.difficultyPointAt(slidable.startTime);
 
     let beatLength = timingPoint.beatLength * difficultyPoint.bpmMultiplier;
 
@@ -192,10 +212,10 @@ export class TaikoBeatmapConverter extends BeatmapConverter {
      * The true distance, accounting for any repeats.
      * This ends up being the drum roll distance later
      */
-    const spans = slider.repeats + 1 || 1;
+    const spans = slidable.repeats + 1 || 1;
 
-    this.taikoDistance =
-      slider.pixelLength * spans * TaikoBeatmapConverter.VELOCITY_MULTIPLIER;
+    this.taikoDistance = slidable.distance * spans
+      * TaikoBeatmapConverter.VELOCITY_MULTIPLIER;
 
     /**
      * The velocity and duration of the taiko hit object.
@@ -203,8 +223,7 @@ export class TaikoBeatmapConverter extends BeatmapConverter {
      */
     const taikoVelocity = sliderScoringPointDistance * sliderTickRate;
 
-    this.taikoDuration =
-      Math.trunc((this.taikoDistance / taikoVelocity) * beatLength);
+    this.taikoDuration = Math.trunc((this.taikoDistance / taikoVelocity) * beatLength);
 
     if (this.originalRuleset === 1) {
       this.tickInterval = 0;
@@ -233,8 +252,7 @@ export class TaikoBeatmapConverter extends BeatmapConverter {
       tickMultiplier = 1 / difficultyPoint.speedMultiplier;
     }
 
-    this.tickDistance =
-      (sliderScoringPointDistance / sliderTickRate) * tickMultiplier;
+    this.tickDistance = (sliderScoringPointDistance / sliderTickRate) * tickMultiplier;
 
     /**
      * If the drum roll is to be split into hit circles,
@@ -249,7 +267,7 @@ export class TaikoBeatmapConverter extends BeatmapConverter {
     );
   }
 
-  createBeatmap(original: IBeatmap): TaikoBeatmap {
-    return new TaikoBeatmap(original);
+  createBeatmap(): TaikoBeatmap {
+    return new TaikoBeatmap();
   }
 }

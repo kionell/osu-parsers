@@ -8,9 +8,7 @@ export class TaikoBeatmap extends RulesetBeatmap {
 
   hitObjects: TaikoHitObject[] = [];
 
-  get mode(): number {
-    return 1;
-  }
+  mode = 1;
 
   get maxCombo(): number {
     return this.hitObjects.reduce((combo, obj) => {
