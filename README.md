@@ -29,12 +29,15 @@ Since this project uses ES Modules, it is recommended to use Node.js 12.22.0 or 
 import { BeatmapDecoder, BeatmapEncoder } from "osu-parsers";
 import { StandardRuleset } from 'osu-standard-stable';
 
+const decoder = new BeatmapDecoder();
+const encoder = new BeatmapEncoder();
+
 const decodePath = 'path/to/your/decoding/file.osu';
 const encodePath = 'path/to/your/encoding/file.osu';
 const shouldParseSb = true;
 
 // Get beatmap object.
-const parsed = BeatmapDecoder.decodeFromPath(decodePath, shouldParseSb);
+const parsed = decoder.decodeFromPath(decodePath, shouldParseSb);
 
 // Create a new osu!standard ruleset.
 const ruleset = new StandardRuleset();
@@ -51,10 +54,10 @@ const mods = ruleset.createModCombination(1337);
 const standardWithMods = ruleset.applyToBeatmapWithMods(parsed, mods);
 
 // It will write osu!standard beatmap with no mods.
-BeatmapEncoder.encodeToPath(encodePath, standardWithNoMod1);
+encoder.encodeToPath(encodePath, standardWithNoMod1);
 
 // It will write osu!standard beatmap with applied mods.
-BeatmapEncoder.encodeToPath(encodePath, standardWithMods);
+encoder.encodeToPath(encodePath, standardWithMods);
 ```
 
 ## Other projects
