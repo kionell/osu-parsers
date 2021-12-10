@@ -1,4 +1,4 @@
-import { StandardTickGenerator } from './StandardTickGenerator';
+import { StandardEventGenerator } from './StandardEventGenerator';
 import { StandardHitObject } from './StandardHitObject';
 import { SliderHead } from './SliderHead';
 import { SliderTail } from './SliderTail';
@@ -153,16 +153,13 @@ export class Slider extends StandardHitObject implements ISlidableObject {
       * difficulty.sliderMultiplier * difficultyPoint.speedMultiplier;
 
     this.velocity = scoringDistance / timingPoint.beatLength;
-
-    this.tickInterval = timingPoint.beatLength / this.tickRate;
-    this.tickDistance =
-      (scoringDistance / difficulty.sliderTickRate) * this.tickRate;
+    this.tickDistance = (scoringDistance / difficulty.sliderTickRate) * this.tickRate;
   }
 
   createNestedHitObjects(): void {
     this.nestedHitObjects = [];
 
-    for (const nested of StandardTickGenerator.generateSliderTicks(this)) {
+    for (const nested of StandardEventGenerator.generateSliderTicks(this)) {
       this.nestedHitObjects.push(nested);
     }
   }

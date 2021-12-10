@@ -9,4 +9,4 @@ export { Spinner } from './Spinner';
 export { SpinnerBonusTick } from './SpinnerBonusTick';
 export { SpinnerTick } from './SpinnerTick';
 export { StandardHitObject } from './StandardHitObject';
-export { StandardTickGenerator } from './StandardTickGenerator';
+export { StandardEventGenerator } from './StandardEventGenerator';

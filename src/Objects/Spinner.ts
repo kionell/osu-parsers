@@ -1,5 +1,5 @@
 import { StandardHitObject } from './StandardHitObject';
-import { StandardTickGenerator } from './StandardTickGenerator';
+import { StandardEventGenerator } from './StandardEventGenerator';
 
 import {
   ControlPointInfo,
