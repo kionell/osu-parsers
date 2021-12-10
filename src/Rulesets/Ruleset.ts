@@ -98,11 +98,11 @@ export abstract class Ruleset implements IRuleset {
   }
 
   /**
-   * Creates a new mod combination by converting legacy mod bitwise.
-   * @param bitwise Mod bitwise.
+   * Creates a new mod combination by converting legacy mod bitwise or string acronyms.
+   * @param input Mod bitwise or string acronyms.
    * @returns A new mod combination.
    */
-  abstract createModCombination(bitwise: number): ModCombination;
+  abstract createModCombination(input?: number | string): ModCombination;
 
   /**
    * @returns A new beatmap processor.
