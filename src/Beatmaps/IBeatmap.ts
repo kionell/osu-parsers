@@ -62,8 +62,33 @@ export interface IBeatmap {
   fileFormat: number;
 
   /**
-   * Create a new copy of hit object base. 
-   * @returns A clone of hit object base.
+   * Beatmap length in milliseconds.
+   */
+  length: number;
+
+  /**
+   * Minimal BPM of a beatmap.
+   */
+  bpmMin: number;
+
+  /**
+   * Maximal BPM of a beatmap.
+   */
+  bpmMax: number;
+
+  /**
+   * The most common BPM of a beatmap.
+   */
+  bpmMode: number;
+
+  /**
+   * The total break time of a beatmap.
+   */
+  totalBreakTime: number;
+
+  /**
+   * Create a new copy of beatmap. 
+   * @returns A clone of beatmap.
    */
   clone(): IBeatmap;
 }
