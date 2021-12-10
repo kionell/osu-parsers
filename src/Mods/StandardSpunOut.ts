@@ -13,5 +13,7 @@ export class StandardSpunOut implements IMod {
 
   isRanked = true;
 
-  incompatibles: ModBitwise = ModBitwise.Autoplay | ModBitwise.Relax2;
+  incompatibles: ModBitwise = ModBitwise.Autoplay |
+    ModBitwise.Cinema |
+    ModBitwise.Relax2;
 }

@@ -17,5 +17,11 @@ export class StandardAutopilot implements IMod {
 
   isRanked = false;
 
-  incompatibles: ModBitwise = ModBitwise.SpunOut | ModBitwise.NoFail | ModBitwise.Relax | ModBitwise.Autoplay;
+  incompatibles: ModBitwise = ModBitwise.NoFail |
+    ModBitwise.SuddenDeath |
+    ModBitwise.Perfect |
+    ModBitwise.Autoplay |
+    ModBitwise.Cinema |
+    ModBitwise.Relax |
+    ModBitwise.SpunOut;
 }

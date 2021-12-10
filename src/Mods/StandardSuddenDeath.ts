@@ -1,5 +1,3 @@
-import { SuddenDeath, ModBitwise } from 'osu-resources';
+import { SuddenDeath } from 'osu-resources';
 
-export class StandardSuddenDeath extends SuddenDeath {
-  incompatibles: ModBitwise = ModBitwise.Relax2;
-}
+export class StandardSuddenDeath extends SuddenDeath {}
