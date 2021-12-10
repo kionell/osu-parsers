@@ -10,9 +10,6 @@ import {
   SliderPath,
   HitSample,
   ISlidableObject,
-  IHasLegacyLastTickOffset,
-  NestedType,
-  HitType,
 } from 'osu-resources';
 
 export class Slider extends StandardHitObject implements ISlidableObject {
