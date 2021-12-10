@@ -130,108 +130,126 @@ export abstract class ModCombination {
   }
 
   /**
-   * @param bitwise The bitwise value.
-   * @returns If the mod combination contain any of mods from this bitwise.
+   * @param input The bitwise value or acronyms.
+   * @returns If the mod combination contain any of mods from this bitwise or acronyms.
    */
-  has(bitwise: number): boolean {
+  has(input: number | string): boolean {
+    const bitwise = this.toBitwise(input);
+
     return (this.bitwise & bitwise) > 0 || this.bitwise === bitwise;
   }
 
   /**
-   * Finds all mods that are applicable to the beatmap by bitwise value.
-   * @param bitwise The bitwise value.
+   * Finds all mods that are applicable to the beatmap by bitwise value or acronyms.
+   * @param input The bitwise value or acronyms.
    * @returns The list of all found mods.
    */
-  beatmapModsAt(bitwise: number): IApplicableToBeatmap[] {
+  beatmapModsAt(input: number | string): IApplicableToBeatmap[] {
+    const bitwise = this.toBitwise(input);
     const mods = this.all as IApplicableToBeatmap[];
 
     return mods.filter((m) => m.bitwise & bitwise && m.applyToBeatmap);
   }
 
   /**
-   * Finds a mod that is applicable to the beatmap by bitwise value.
-   * @param bitwise The bitwise value.
+   * Finds a mod that is applicable to the beatmap by bitwise value or acronyms.
+   * @param input The bitwise value or acronyms.
    * @returns First found mod. Otherwise returns null.
    */
-  beatmapModAt(bitwise: number): IApplicableToBeatmap {
+  beatmapModAt(input: number | string): IApplicableToBeatmap {
+    const bitwise = this.toBitwise(input);
+
     return this.beatmapModsAt(bitwise)[0] || null;
   }
 
   /**
-   * Finds all mods that are applicable to the beatmap hit objects by bitwise value.
-   * @param bitwise The bitwise value.
+   * Finds all mods that are applicable to the beatmap hit objects by bitwise value or acronyms.
+   * @param input The bitwise value or acronyms.
    * @returns The list of all found mods.
    */
-  hitObjectModsAt(bitwise: number): IApplicableToHitObjects[] {
+  hitObjectModsAt(input: number | string): IApplicableToHitObjects[] {
+    const bitwise = this.toBitwise(input);
     const mods = this.all as IApplicableToHitObjects[];
 
     return mods.filter((m) => m.bitwise & bitwise && m.applyToHitObjects);
   }
 
   /**
-   * Finds a mod that is applicable to the beatmap hit objects by bitwise value.
-   * @param bitwise The bitwise value.
+   * Finds a mod that is applicable to the beatmap hit objects by bitwise value or acronyms.
+   * @param input The bitwise value or acronyms.
    * @returns First found mod. Otherwise returns null.
    */
-  hitObjectModAt(bitwise: number): IApplicableToHitObjects {
+  hitObjectModAt(input: number | string): IApplicableToHitObjects {
+    const bitwise = this.toBitwise(input);
+
     return this.hitObjectModsAt(bitwise)[0] || null;
   }
 
   /**
-   * Finds all mods that are applicable to the beatmap difficulty by bitwise value.
-   * @param bitwise The bitwise value.
+   * Finds all mods that are applicable to the beatmap difficulty by bitwise value or acronyms.
+   * @param input The bitwise value or acronyms.
    * @returns The list of all found mods.
    */
-  difficultyModsAt(bitwise: number): IApplicableToDifficulty[] {
+  difficultyModsAt(input: number | string): IApplicableToDifficulty[] {
+    const bitwise = this.toBitwise(input);
     const mods = this.all as IApplicableToDifficulty[];
 
     return mods.filter((m) => m.bitwise & bitwise && m.applyToDifficulty);
   }
 
   /**
-   * Finds a mod that is applicable to the beatmap difficulty by bitwise value.
-   * @param bitwise The bitwise value.
+   * Finds a mod that is applicable to the beatmap difficulty by bitwise value or acronyms.
+   * @param input The bitwise value or acronyms.
    * @returns First found mod. Otherwise returns null.
    */
-  difficultyModAt(bitwise: number): IApplicableToDifficulty {
+  difficultyModAt(input: number | string): IApplicableToDifficulty {
+    const bitwise = this.toBitwise(input);
+
     return this.difficultyModsAt(bitwise)[0] || null;
   }
 
   /**
-   * Finds all mods that are applicable to the beatmap converter by bitwise value.
-   * @param bitwise The bitwise value.
+   * Finds all mods that are applicable to the beatmap converter by bitwise value or acronyms.
+   * @param input The bitwise value or acronyms.
    * @returns The list of all found mods.
    */
-  converterModsAt(bitwise: number): IApplicableToConverter[] {
+  converterModsAt(input: number | string): IApplicableToConverter[] {
+    const bitwise = this.toBitwise(input);
     const mods = this.all as IApplicableToConverter[];
 
     return mods.filter((m) => m.bitwise & bitwise && m.applyToConverter);
   }
 
   /**
-   * Finds a mod that is applicable to the beatmap converter by bitwise value.
-   * @param bitwise The bitwise value.
+   * Finds a mod that is applicable to the beatmap converter by bitwise value or acronyms.
+   * @param input The bitwise value or acronyms.
    * @returns First found mod. Otherwise returns null.
    */
-  converterModAt(bitwise: number): IApplicableToConverter {
+  converterModAt(input: number | string): IApplicableToConverter {
+    const bitwise = this.toBitwise(input);
+
     return this.converterModsAt(bitwise)[0] || null;
   }
 
   /**
-   * Finds mods by bitwise value.
-   * @param bitwise The bitwise value.
+   * Finds mods by bitwise value or acronyms.
+   * @param input The bitwise value or acronyms.
    * @returns The list of all found mods.
    */
-  modsAt(bitwise: number): IMod[] {
+  modsAt(input: number | string): IMod[] {
+    const bitwise = this.toBitwise(input);
+
     return this.all.filter((m) => m.bitwise & bitwise);
   }
 
   /**
-   * Finds a mod by bitwise value.
-   * @param bitwise The bitwise value.
+   * Finds a mod by bitwise value or acronyms.
+   * @param input The bitwise value or acronyms.
    * @returns First found mod. Otherwise returns null.
    */
-  modAt(bitwise: number): IMod {
+  modAt(input: number | string): IMod {
+    const bitwise = this.toBitwise(input);
+
     return this.modsAt(bitwise)[0] || null;
   }
 }
