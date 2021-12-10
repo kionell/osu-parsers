@@ -1,20 +1,15 @@
-import { ControlPointInfo, BeatmapDifficultySection } from '../Beatmaps';
-
-import { HitSample } from './Sounds/HitSample';
-import { IHitObject } from './IHitObject';
-import { INestedHitObject } from './INestedHitObject';
-import { HitType } from './Enums/HitType';
+import { ControlPointInfo } from '../Beatmaps/ControlPoints/ControlPointInfo';
+import { BeatmapDifficultySection } from '../Beatmaps/Sections/BeatmapDifficultySection';
+import { Vector2 } from '../Utils/Vector2';
 import { HitSound } from './Enums/HitSound';
+import { HitType } from './Enums/HitType';
+import { IHitObject } from './IHitObject';
+import { HitSample } from './Sounds/HitSample';
 
 /**
- * A hit object.
+ * An object of a parsed beatmap.
  */
 export abstract class HitObject implements IHitObject {
-  /**
-   * The base of this hit object.
-   */
-  base: IHitObject;
-
   /**
    * The status of kiai mode at the current hit object.
    */
@@ -23,65 +18,60 @@ export abstract class HitObject implements IHitObject {
   /**
    * Nested objects of the hit object.
    */
-  nestedHitObjects: INestedHitObject[] = [];
+  nestedHitObjects: HitObject[] = [];
 
   /**
-   * Creates a new hit object based on another hit object.
-   * @param hitObject A base hit object.
+   * The time at which the hit object starts.
    */
-  constructor(hitObject: IHitObject) {
-    this.base = hitObject;
-  }
+  startTime = 0;
 
   /**
-   * The time at which hit object starts.
+   * Parsed hit type data of a hit object.
    */
-  get startTime(): number {
-    return this.base.startTime;
-  }
-
-  set startTime(value: number) {
-    this.base.startTime = value;
-  }
+  hitType: HitType = HitType.Normal;
 
   /**
-   * The hit type data of this hit object.
+   * Parsed hit sound data of a hit object.
    */
-  get hitType(): HitType {
-    return this.base.hitType;
-  }
-
-  set hitType(value: HitType) {
-    this.base.hitType = value;
-  }
+  hitSound: HitSound = HitSound.Normal;
 
   /**
-   * The hit sound data of this hit object.
+   * The samples to be played when this hit object is hit.
    */
-  get hitSound(): HitSound {
-    return this.base.hitSound;
+  samples: HitSample[] = [];
+
+  /**
+   * The position at which the hit object starts.
+   */
+  startPosition: Vector2 = new Vector2(0, 0);
+
+  /**
+   * The starting X-position of this hit object.
+   */
+  get startX(): number {
+    return this.startPosition.x;
   }
 
-  set hitSound(value: HitSound) {
-    this.base.hitSound = value;
+  set startX(value: number) {
+    this.startPosition.x = value;
   }
 
   /**
-   * Samples of this hit object.
+   * The starting Y-position of this hit object.
    */
-  get samples(): HitSample[] {
-    return this.base.samples;
+  get startY(): number {
+    return this.startPosition.y;
   }
 
-  set samples(value: HitSample[]) {
-    this.base.samples = value;
+  set startY(value: number) {
+    this.startPosition.y = value;
   }
 
   /**
    * Generates a list of nested hit objects.
    */
   createNestedHitObjects(): void {
-    return;
+    this.nestedHitObjects = [];
   }
 
   /**
@@ -122,10 +112,8 @@ export abstract class HitObject implements IHitObject {
   }
 
   /**
-   * Create a new copy of hit object base. 
-   * @returns A clone of hit object base.
+   * Create a new copy of a hit object. 
+   * @returns A clone of this hit object.
    */
-  clone(): IHitObject {
-    return this.base.clone();
-  }
+  abstract clone(): HitObject;
 }
