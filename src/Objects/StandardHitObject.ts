@@ -35,32 +35,24 @@ export abstract class StandardHitObject extends HitObject implements IHasPositio
 
   private _stackOffset = new Vector2(0, 0);
 
-  get startX(): number {
-    return (this.base as unknown as IHasPosition).startX;
-  }
-
-  set startX(value: number) {
-    (this.base as unknown as IHasPosition).startX = value;
-  }
-
-  get startY(): number {
-    return (this.base as unknown as IHasPosition).startY;
-  }
-
-  set startY(value: number) {
-    (this.base as unknown as IHasPosition).startY = value;
-  }
-
-  get startPosition(): Vector2 {
-    return (this.base as unknown as IHasPosition).startPosition;
-  }
-
-  set startPosition(value: Vector2) {
-    (this.base as unknown as IHasPosition).startPosition = value;
-  }
-
   get endPosition(): Vector2 {
-    return (this.base as unknown as IHasPosition).endPosition;
+    return this.startPosition;
+  }
+
+  get endX(): number {
+    return this.endPosition.x;
+  }
+
+  set endX(value: number) {
+    this.endPosition.x = value;
+  }
+
+  get endY(): number {
+    return this.endPosition.y;
+  }
+
+  set endY(value: number) {
+    this.endPosition.y = value;
   }
 
   get scale(): number {
