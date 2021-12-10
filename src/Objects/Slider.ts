@@ -15,79 +15,53 @@ import {
 export class Slider extends StandardHitObject implements ISlidableObject {
   tickDistance = 0;
 
-  tickInterval = 0;
-
   tickRate = 1;
 
   velocity = 1;
 
-  get hitType(): HitType {
-    let hitType = this.base.hitType;
+  legacyLastTickOffset?: number;
 
-    hitType &= ~HitType.Normal;
-    hitType &= ~HitType.Spinner;
-    hitType &= ~HitType.Hold;
 
-    return hitType | HitType.Slider;
-  }
+
+
+  path: SliderPath = new SliderPath();
+
+  nodeSamples: HitSample[][] = [];
+
+  repeats = 0;
+
+  startPosition: Vector2 = new Vector2(0, 0);
 
   get head(): SliderHead | null {
-    const head = this.nestedHitObjects.find((ho) => {
-      return ho.nestedType === NestedType.Head;
-    });
+    const obj = this.nestedHitObjects.find((n) => n instanceof SliderHead);
+    const head = obj as SliderHead;
 
-    return (head as SliderHead) || null;
+    if (head) {
+      head.startX = this.startX;
+      head.startY = this.startY;
+    }
+
+    return head || null;
   }
 
   get tail(): SliderTail | null {
-    const tail = this.nestedHitObjects.find((ho) => {
-      return ho.nestedType === NestedType.Tail;
-    });
+    const obj = this.nestedHitObjects.find((n) => n instanceof SliderTail);
+    const tail = obj as SliderTail;
 
-    return (tail as SliderTail) || null;
-  }
-
-  get pixelLength(): number {
-    return (this.base as ISlidableObject).pixelLength || 0;
-  }
-
-  set pixelLength(value: number) {
-    const slider = this.base as ISlidableObject;
-
-    slider.pixelLength = value;
-
-    if (slider.path) {
-      slider.path.expectedDistance = value;
-
-      slider.path.invalidate();
+    if (tail) {
+      tail.startX = this.endX;
+      tail.startY = this.endY;
     }
+
+    return tail || null;
   }
 
-  get path(): SliderPath {
-    return (this.base as ISlidableObject).path;
+  get distance(): number {
+    return this.path.distance;
   }
 
-  set path(value: SliderPath) {
-    const slider = this.base as ISlidableObject;
-
-    slider.path = value;
-    slider.path.invalidate();
-  }
-
-  get nodeSamples(): HitSample[][] {
-    return (this.base as ISlidableObject).nodeSamples || [this.base.samples];
-  }
-
-  set nodeSamples(value: HitSample[][]) {
-    (this.base as ISlidableObject).nodeSamples = value;
-  }
-
-  get repeats(): number {
-    return (this.base as ISlidableObject).repeats || 0;
-  }
-
-  set repeats(value: number) {
-    (this.base as ISlidableObject).repeats = value;
+  set distance(value: number) {
+    this.path.distance = value;
   }
 
   get spans(): number {
@@ -95,25 +69,15 @@ export class Slider extends StandardHitObject implements ISlidableObject {
   }
 
   get spanDuration(): number {
-    return this.duration / this.spans;
+    return this.path.distance / this.velocity;
   }
 
   get duration(): number {
-    return (this.spans * this.path.distance) / this.velocity;
+    return this.spans * this.spanDuration;
   }
 
   set duration(value: number) {
-    this.velocity = (this.spans * this.path.distance) / value;
-  }
-
-  get startPosition(): Vector2 {
-    return super.startPosition;
-  }
-
-  set startPosition(value: Vector2) {
-    super.startPosition = value;
-
-    this._updateNestedPositions();
+    this.velocity = this.spans * this.distance / value;
   }
 
   get endPosition(): Vector2 {
