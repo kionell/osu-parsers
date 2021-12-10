@@ -4,7 +4,7 @@
 [![Package](https://img.shields.io/npm/v/osu-parsers)](https://www.npmjs.com/package/osu-parsers)
 
 
-A bundle of parsers for osu! File formats based on the osu!lazer source code.
+A bundle of parsers for osu! file formats based on the osu!lazer source code.
 
 - Written in TypeScript.
 - Based on the osu!lazer source code.
@@ -40,9 +40,10 @@ import { BeatmapDecoder } from 'osu-parsers'
 const path = 'path/to/your/file.osu';
 const shouldParseSb = true;
 
-const beatmap = BeatmapDecoder.decodeFromPath(path, shouldParseSb);
+const decoder = new BeatmapDecoder();
+const beatmap = decoder.decodeFromPath(path, shouldParseSb);
 
-console.log(beatmap) // ParsedBeatmap object.
+console.log(beatmap) // Beatmap object.
 ```
 
 ### Example of storyboard decoding
@@ -52,7 +53,8 @@ import { StoryboardDecoder } from 'osu-parsers'
 
 const path = 'path/to/your/file.osb';
 
-const storyboard = StoryboardDecoder.decodeFromPath(path);
+const decoder = new StoryboardDecoder();
+const storyboard = decoder.decodeFromPath(path);
 
 console.log(storyboard); // Storyboard object.
 ```
@@ -73,13 +75,16 @@ import { BeatmapDecoder, BeatmapEncoder } from 'osu-parsers'
 const decodePath = 'path/to/your/decoding/file.osu';
 const shouldParseSb = true;
 
-const beatmap = BeatmapDecoder.decodeFromPath(decodePath, shouldParseSb);
+const decoder = new BeatmapDecoder();
+const encoder = new BeatmapEncoder();
+
+const beatmap = decoder.decodeFromPath(decodePath, shouldParseSb);
 
 // Do your stuff with beatmap...
 
 const encodePath = 'path/to/your/encoding/file.osu';
 
-BeatmapEncoder.encodeToPath(encodePath, beatmap); 
+encoder.encodeToPath(encodePath, beatmap); 
 ```
 
 ### Example of storyboard encoding
@@ -89,16 +94,19 @@ import { StoryboardDecoder, StoryboardEncoder } from 'osu-parsers'
 
 const decodePath = 'path/to/your/decoding/file.osb';
 
-const storyboard = StoryboardDecoder.decodeFromPath(decodePath);
+const decoder = new StoryboardDecoder();
+const encoder = new StoryboardEncoder();
+
+const storyboard = decoder.decodeFromPath(decodePath);
 
 // Do your stuff with storyboard...
 
 const encodePath = 'path/to/your/encoding/file.osb';
 
-StoryboardEncoder.encodeToPath(encodePath, storyboard); 
+encoder.encodeToPath(encodePath, storyboard); 
 ```
 
-## Rulesets (WIP)
+## Rulesets
 
 You always should apply one of the rulesets to your parsed beatmaps. There are 4 basic rulesets in total that support parsed beatmaps from this decoder. If necessary, you can always write your own ruleset using the classes from the [osu-resources](https://github.com/kionell/osu-resources.git) project. By applying a ruleset to a parsed beatmap, you get the ability to apply mods, calculate max combo and convert maps to other game modes.
 
