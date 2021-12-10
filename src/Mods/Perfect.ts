@@ -8,7 +8,7 @@ export abstract class Perfect implements IMod {
 
   acronym = 'PF';
 
-  bitwise: ModBitwise = ModBitwise.SuddenDeath;
+  bitwise: ModBitwise = ModBitwise.Perfect;
 
   type: ModType = ModType.DifficultyIncrease;
 
@@ -16,5 +16,10 @@ export abstract class Perfect implements IMod {
 
   isRanked = true;
 
-  incompatibles: ModBitwise = ModBitwise.SuddenDeath;
+  incompatibles: ModBitwise = ModBitwise.NoFail |
+    ModBitwise.SuddenDeath |
+    ModBitwise.Autoplay |
+    ModBitwise.Cinema |
+    ModBitwise.Relax |
+    ModBitwise.Relax2;
 }

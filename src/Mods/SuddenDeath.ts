@@ -16,5 +16,10 @@ export abstract class SuddenDeath implements IMod {
 
   isRanked = true;
 
-  incompatibles: ModBitwise = ModBitwise.Perfect;
+  incompatibles: ModBitwise = ModBitwise.NoFail |
+    ModBitwise.Perfect |
+    ModBitwise.Autoplay |
+    ModBitwise.Cinema |
+    ModBitwise.Relax |
+    ModBitwise.Relax2;
 }

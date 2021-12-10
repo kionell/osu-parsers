@@ -16,5 +16,10 @@ export abstract class Relax implements IMod {
 
   isRanked = false;
 
-  incompatibles: ModBitwise = ModBitwise.NoFail | ModBitwise.Autoplay;
+  incompatibles: ModBitwise = ModBitwise.NoFail |
+    ModBitwise.SuddenDeath |
+    ModBitwise.Perfect |
+    ModBitwise.Autoplay |
+    ModBitwise.Cinema |
+    ModBitwise.Relax2;
 }

@@ -9,5 +9,5 @@ export abstract class Nightcore extends DoubleTime {
 
   bitwise: ModBitwise = ModBitwise.Nightcore;
 
-  incompatibles: ModBitwise = ModBitwise.DoubleTime;
+  incompatibles: ModBitwise = ModBitwise.HalfTime | ModBitwise.DoubleTime;
 }

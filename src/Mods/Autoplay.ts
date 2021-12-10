@@ -16,5 +16,11 @@ export abstract class Autoplay implements IMod {
 
   isRanked = false;
 
-  incompatibles: ModBitwise = ModBitwise.None;
+  incompatibles: ModBitwise = ModBitwise.NoFail |
+    ModBitwise.SuddenDeath |
+    ModBitwise.Perfect |
+    ModBitwise.Relax |
+    ModBitwise.Relax2 |
+    ModBitwise.SpunOut |
+    ModBitwise.Cinema;
 }

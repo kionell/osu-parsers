@@ -16,5 +16,10 @@ export abstract class NoFail implements IMod {
 
   isRanked = true;
 
-  incompatibles: ModBitwise = ModBitwise.Relax | ModBitwise.Autoplay;
+  incompatibles: ModBitwise = ModBitwise.SuddenDeath |
+    ModBitwise.Perfect |
+    ModBitwise.Autoplay |
+    ModBitwise.Cinema |
+    ModBitwise.Relax |
+    ModBitwise.Relax2;
 }

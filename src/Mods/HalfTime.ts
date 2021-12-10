@@ -19,7 +19,7 @@ export abstract class HalfTime implements IMod, IApplicableToDifficulty {
 
   isRanked = true;
 
-  incompatibles: ModBitwise = ModBitwise.DoubleTime;
+  incompatibles: ModBitwise = ModBitwise.DoubleTime | ModBitwise.Nightcore;
 
   applyToDifficulty(difficulty: BeatmapDifficultySection): void {
     difficulty.clockRate = 0.75;
