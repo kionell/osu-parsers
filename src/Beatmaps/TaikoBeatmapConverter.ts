@@ -55,6 +55,15 @@ export class TaikoBeatmapConverter extends BeatmapConverter {
      */
     const converted = this.createBeatmap();
 
+    converted.general = original.general.clone();
+    converted.editor = original.editor.clone();
+    converted.difficulty = original.difficulty.clone();
+    converted.metadata = original.metadata.clone();
+    converted.colours = original.colours.clone();
+    converted.events = original.events.clone();
+    converted.controlPoints = original.controlPoints.clone();
+    converted.fileFormat = original.fileFormat;
+
     converted.difficulty.sliderMultiplier *= TaikoBeatmapConverter.VELOCITY_MULTIPLIER;
 
     for (const hitObject of this.convertHitObjects(original)) {
@@ -90,6 +99,11 @@ export class TaikoBeatmapConverter extends BeatmapConverter {
     const hitObjects = beatmap.hitObjects;
 
     for (const hitObject of hitObjects) {
+      if (hitObject instanceof TaikoHitObject) {
+        yield hitObject.clone();
+        continue;
+      }
+
       for (const converted of this._convertHitObject(hitObject, beatmap)) {
         yield converted;
       }
