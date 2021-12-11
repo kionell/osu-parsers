@@ -26,15 +26,18 @@ Since this project uses ES Modules, it is recommended to use Node.js 12.22.0 or 
 ## How to use it
 
 ```js
-import { BeatmapDecoder, BeatmapEncoder } from "osu-parsers";
+import { BeatmapDecoder, BeatmapEncoder } from 'osu-parsers';
 import { CatchRuleset } from 'osu-catch-stable';
+
+const decoder = new BeatmapDecoder();
+const encoder = new BeatmapEncoder();
 
 const decodePath = 'path/to/your/decoding/file.osu';
 const encodePath = 'path/to/your/encoding/file.osu';
 const shouldParseSb = true;
 
 // Get beatmap object.
-const parsed = BeatmapDecoder.decodeFromPath(decodePath, shouldParseSb);
+const parsed = decoder.decodeFromPath(decodePath, shouldParseSb);
 
 // Create a new osu!catch ruleset.
 const ruleset = new CatchRuleset();
@@ -51,10 +54,10 @@ const mods = ruleset.createModCombination(1337);
 const catchWithMods = ruleset.applyToBeatmapWithMods(parsed, mods);
 
 // It will write osu!catch beatmap with no mods.
-BeatmapEncoder.encodeToPath(encodePath, catchWithNoMod1);
+encoder.encodeToPath(encodePath, catchWithNoMod1);
 
 // It will write osu!catch beatmap with applied mods.
-BeatmapEncoder.encodeToPath(encodePath, catchWithMods);
+encoder.encodeToPath(encodePath, catchWithMods);
 ```
 
 ## Other projects
