@@ -47,7 +47,7 @@ export abstract class GeneralHandler {
         break;
 
       case 'Mode':
-        beatmap.mode = parseInt(value);
+        beatmap.originalMode = parseInt(value);
         break;
 
       case 'CountdownOffset':
