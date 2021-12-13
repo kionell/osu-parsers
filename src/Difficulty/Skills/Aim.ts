@@ -1,4 +1,4 @@
-import { DifficultyHitObject } from 'osu-resources';
+import { DifficultyHitObject } from 'osu-classes';
 import { Slider, Spinner } from '../../Objects';
 import { StandardModCombination } from '../../Mods';
 import { StandardDifficultyHitObject } from '../Preprocessing/StandardDifficultyHitObject';

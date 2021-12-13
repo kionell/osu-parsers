@@ -1,4 +1,4 @@
-import { IMod, ModBitwise, ModType } from 'osu-resources';
+import { IMod, ModBitwise, ModType } from 'osu-classes';
 
 export class StandardTouchDevice implements IMod {
   name = 'Touch Device';

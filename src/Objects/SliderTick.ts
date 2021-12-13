@@ -3,7 +3,7 @@ import { StandardHitObject } from './StandardHitObject';
 import {
   ControlPointInfo,
   BeatmapDifficultySection,
-} from 'osu-resources';
+} from 'osu-classes';
 
 export class SliderTick extends StandardHitObject {
   spanIndex = 0;

@@ -1,4 +1,4 @@
-import { DifficultyRange, HitResult, HitWindows } from 'osu-resources';
+import { DifficultyRange, HitResult, HitWindows } from 'osu-classes';
 
 export class StandardHitWindows extends HitWindows {
   private static readonly _OSU_RANGES: DifficultyRange[] = [

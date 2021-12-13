@@ -1,4 +1,4 @@
-import { StrainSkill } from 'osu-resources';
+import { StrainSkill } from 'osu-classes';
 
 export abstract class StandardStrainSkill extends StrainSkill {
   /**

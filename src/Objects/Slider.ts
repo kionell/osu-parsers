@@ -10,7 +10,7 @@ import {
   SliderPath,
   HitSample,
   ISlidableObject,
-} from 'osu-resources';
+} from 'osu-classes';
 
 export class Slider extends StandardHitObject implements ISlidableObject {
   tickDistance = 0;

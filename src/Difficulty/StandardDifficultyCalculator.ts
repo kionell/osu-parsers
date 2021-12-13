@@ -6,7 +6,7 @@ import {
   IMod,
   ModBitwise,
   Skill,
-} from 'osu-resources';
+} from 'osu-classes';
 
 import { StandardBeatmap } from '../Beatmaps';
 import { StandardHitWindows } from '../Scoring';

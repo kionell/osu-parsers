@@ -7,7 +7,7 @@ import {
   IApplicableToHitObjects,
   IHitObject,
   HitType,
-} from 'osu-resources';
+} from 'osu-classes';
 
 export class StandardHardRock extends HardRock implements IApplicableToHitObjects {
   static BASE_SIZE: Vector2 = new Vector2(512, 384);

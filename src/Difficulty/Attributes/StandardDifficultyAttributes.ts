@@ -1,4 +1,4 @@
-import { DifficultyAttributes, ModBitwise } from 'osu-resources';
+import { DifficultyAttributes, ModBitwise } from 'osu-classes';
 
 export class StandardDifficultyAttributes extends DifficultyAttributes {
   aimStrain = 0;

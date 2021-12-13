@@ -1,4 +1,4 @@
-import { DifficultyHitObject, IHitObject, Vector2 } from 'osu-resources';
+import { DifficultyHitObject, IHitObject, Vector2 } from 'osu-classes';
 import { Slider, SliderRepeat, Spinner, StandardHitObject } from '../../Objects';
 
 export class StandardDifficultyHitObject extends DifficultyHitObject {

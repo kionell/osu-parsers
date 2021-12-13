@@ -5,7 +5,7 @@ import {
   ControlPointInfo,
   BeatmapDifficultySection,
   ISpinnableObject,
-} from 'osu-resources';
+} from 'osu-classes';
 
 export class Spinner extends StandardHitObject implements ISpinnableObject {
   /**

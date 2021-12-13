@@ -1,3 +1,3 @@
-import { HalfTime } from 'osu-resources';
+import { HalfTime } from 'osu-classes';
 
 export class StandardHalfTime extends HalfTime {}

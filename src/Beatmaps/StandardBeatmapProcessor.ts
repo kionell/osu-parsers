@@ -1,7 +1,7 @@
 import { StandardBeatmap } from './StandardBeatmap';
 import { Slider } from '../Objects/Slider';
 
-import { BeatmapProcessor, HitType } from 'osu-resources';
+import { BeatmapProcessor, HitType } from 'osu-classes';
 
 export class StandardBeatmapProcessor extends BeatmapProcessor {
   postProcess(beatmap: StandardBeatmap): StandardBeatmap {

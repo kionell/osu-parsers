@@ -1,4 +1,4 @@
-import { DifficultyHitObject } from 'osu-resources';
+import { DifficultyHitObject } from 'osu-classes';
 import { Spinner, StandardHitObject } from '../../Objects';
 import { StandardDifficultyHitObject } from '../Preprocessing/StandardDifficultyHitObject';
 import { StandardStrainSkill } from './StandardStrainSkill';

@@ -12,7 +12,7 @@ import {
   ISlidableObject,
   ISpinnableObject,
   Vector2,
-} from 'osu-resources';
+} from 'osu-classes';
 
 export class StandardBeatmapConverter extends BeatmapConverter {
   canConvert(beatmap: IBeatmap): boolean {

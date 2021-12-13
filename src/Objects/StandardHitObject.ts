@@ -6,7 +6,7 @@ import {
   IHasPosition,
   IHasCombo,
   HitType,
-} from 'osu-resources';
+} from 'osu-classes';
 
 export abstract class StandardHitObject extends HitObject implements IHasPosition, IHasCombo {
   /**

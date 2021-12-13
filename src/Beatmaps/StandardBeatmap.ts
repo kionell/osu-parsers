@@ -1,7 +1,7 @@
 import { StandardModCombination } from '../Mods/StandardModCombination';
 import { StandardHitObject } from '../Objects/StandardHitObject';
 
-import { RulesetBeatmap, HitType } from 'osu-resources';
+import { RulesetBeatmap, HitType } from 'osu-classes';
 
 export class StandardBeatmap extends RulesetBeatmap {
   mods: StandardModCombination = new StandardModCombination();

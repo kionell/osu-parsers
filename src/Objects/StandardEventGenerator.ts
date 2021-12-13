@@ -11,7 +11,7 @@ import { SpinnerBonusTick } from './SpinnerBonusTick';
 import {
   EventGenerator,
   SliderEventType,
-} from 'osu-resources';
+} from 'osu-classes';
 
 export class StandardEventGenerator extends EventGenerator {
   static *generateSliderTicks(slider: Slider): Generator<StandardHitObject> {

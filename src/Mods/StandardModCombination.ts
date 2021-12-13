@@ -1,4 +1,4 @@
-import { ModCombination, IMod } from 'osu-resources';
+import { ModCombination, IMod } from 'osu-classes';
 
 import { StandardNoMod } from './StandardNoMod';
 import { StandardNoFail } from './StandardNoFail';

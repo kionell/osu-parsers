@@ -2,7 +2,7 @@
   IMod,
   ModBitwise,
   ModType,
-} from 'osu-resources';
+} from 'osu-classes';
 
 export class StandardAutopilot implements IMod {
   name = 'Autopilot';

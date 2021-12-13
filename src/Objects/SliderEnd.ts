@@ -4,7 +4,7 @@ import { Slider } from './Slider';
 import {
   ControlPointInfo,
   BeatmapDifficultySection,
-} from 'osu-resources';
+} from 'osu-classes';
 
 export abstract class SliderEnd extends Circle {
   protected _slider: Slider;
