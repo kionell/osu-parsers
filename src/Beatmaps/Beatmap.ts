@@ -54,14 +54,21 @@ export class Beatmap implements IBeatmap {
   hitObjects: HitObject[] = [];
 
   /**
-   * Beatmap gamemode.
-   */
-  mode = 0;
-
-  /**
    * Beatmap file version.
    */
   fileFormat = 14;
+
+  /**
+   * Beatmap original gamemode.
+   */
+  originalMode = 0;
+
+  /**
+   * Beatmap gamemode.
+   */
+  get mode(): number {
+    return this.originalMode;
+  }
 
   /**
    * Beatmap length in milliseconds.
@@ -178,7 +185,7 @@ export class Beatmap implements IBeatmap {
     cloned.events = this.events.clone();
     cloned.controlPoints = this.controlPoints.clone();
     cloned.hitObjects = this.hitObjects.map((h) => h.clone());
-    cloned.mode = this.mode;
+    cloned.originalMode = this.originalMode;
     cloned.fileFormat = this.fileFormat;
 
     return cloned;
