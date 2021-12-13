@@ -8,7 +8,9 @@ export class StandardBeatmap extends RulesetBeatmap {
 
   hitObjects: StandardHitObject[] = [];
 
-  mode = 0;
+  get mode(): number {
+    return 0;
+  }
 
   get maxCombo(): number {
     return this.hitObjects.reduce((combo, obj) => {
