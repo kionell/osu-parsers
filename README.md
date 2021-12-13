@@ -23,10 +23,10 @@ npm install osu-standard-stable
 
 Since this project uses ES Modules, it is recommended to use Node.js 12.22.0 or newer.
 
-## How to use it
+## Example of converting beatmap to the osu!std ruleset
 
 ```js
-import { BeatmapDecoder, BeatmapEncoder } from "osu-parsers";
+import { BeatmapDecoder, BeatmapEncoder } from 'osu-parsers';
 import { StandardRuleset } from 'osu-standard-stable';
 
 const decoder = new BeatmapDecoder();
@@ -58,6 +58,99 @@ encoder.encodeToPath(encodePath, standardWithNoMod1);
 
 // It will write osu!standard beatmap with applied mods.
 encoder.encodeToPath(encodePath, standardWithMods);
+```
+
+## Example of difficulty calculation
+
+```js
+import { BeatmapDecoder } from 'osu-parsers';
+import { StandardRuleset } from 'osu-standard-stable';
+
+const decoder = new BeatmapDecoder();
+
+const decodePath = 'path/to/your/decoding/file.osu';
+
+// Get beatmap object.
+const parsed = decoder.decodeFromPath(decodePath);
+
+// Create a new osu!standard ruleset.
+const ruleset = new StandardRuleset();
+
+// Create mod combination and apply it to beatmap.
+const mods = ruleset.createModCombination(1337); // HD, HR, FL, SD, HT
+const standardWithMods = ruleset.applyToBeatmapWithMods(parsed, mods);
+
+// Create difficulty calculator for IBeatmap object.
+const difficultyCalculator1 = ruleset.createDifficultyCalculator(parsed);
+
+// Create difficulty calculator for osu!std beatmap.
+const difficultyCalculator2 = ruleset.createDifficultyCalculator(standardWithMods);
+
+// This will force NoMod even if beatmap has its own mods.
+// Difficulty calculator will implicitly apply osu!std ruleset to every beatmap.
+const difficultyAttributesWithNoMod1 = difficultyCalculator1.calculate();
+const difficultyAttributesWithNoMod2 = difficultyCalculator2.calculate();
+
+// Calculate difficulty with mods.
+const difficultyAttributesWithMods1 = difficultyCalculator1.calculateWithMods(mods);
+const difficultyAttributesWithMods2 = difficultyCalculator2.calculateWithMods(mods);
+
+// Get difficulty attributes for every mod combination.
+const difficultyAtts1 = [...difficultyCalculator1.calculateAll()];
+const difficultyAtts2 = [...difficultyCalculator2.calculateAll()];
+```
+
+## Example of performance calculation
+
+```js
+import { ScoreInfo } from 'osu-classes';
+import { BeatmapDecoder } from 'osu-parsers';
+import { StandardRuleset } from 'osu-standard-stable';
+
+const decoder = new BeatmapDecoder();
+
+const decodePath = 'path/to/your/decoding/file.osu';
+
+// Get beatmap object.
+const parsed = decoder.decodeFromPath(decodePath);
+
+// Create a new osu!standard ruleset.
+const ruleset = new StandardRuleset();
+
+// Create mod combination and apply it to beatmap.
+const mods = ruleset.createModCombination('HDDT');
+const standardBeatmap = ruleset.applyToBeatmapWithMods(parsed, mods);
+
+// Create difficulty calculator for osu!std beatmap.
+const difficultyCalculator = ruleset.createDifficultyCalculator(standardBeatmap);
+
+// Calculate difficulty attributes.
+const difficultyAttributes = difficultyCalculator.calculate();
+
+// Create new Score.
+const score = new ScoreInfo();
+
+// Stella-rium (Asterisk MAKINA Remix) [Starlight]
+// mrekk + HDDT 1192 pp.
+score.beatmap = standardBeatmap;
+score.mods = mods;
+score.maxCombo = 2078;
+score.statistics.great = 1576;
+score.statistics.ok = 24;
+score.statistics.meh = 0;
+score.statistics.miss = 0;
+
+score.accuracy = (score.statistics.great + (score.statistics.ok / 3) + (score.statistics.meh / 6)) 
+  / (score.statistics.great + score.statistics.ok + score.statistics.meh + score.statistics.miss);
+
+// Create performance calculator for osu!std ruleset.
+const performanceCalculator = ruleset.createPerformanceCalculator(difficultyAttributes, score);
+
+// Calculate total performance for a map.
+const totalPerformance = performanceCalculator.calculate();
+
+// 1192.4434422818401
+console.log(totalPerformance);
 ```
 
 ## Other projects
