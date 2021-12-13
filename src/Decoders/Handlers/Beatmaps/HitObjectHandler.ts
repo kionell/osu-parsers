@@ -8,7 +8,7 @@ import {
   HitType,
   HitSound,
   SampleSet,
-} from 'osu-resources';
+} from 'osu-classes';
 
 import {
   HittableObject,

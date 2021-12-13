@@ -10,7 +10,7 @@ import {
   TimeSignature,
   SampleSet,
   Beatmap,
-} from 'osu-resources';
+} from 'osu-classes';
 
 /**
  * A decoder for beatmap control points.

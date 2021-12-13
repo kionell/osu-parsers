@@ -1,4 +1,4 @@
-import { Beatmap, BeatmapBreakEvent, EventType } from 'osu-resources';
+import { Beatmap, BeatmapBreakEvent, EventType } from 'osu-classes';
 
 /**
  * A decoder for beatmap events.

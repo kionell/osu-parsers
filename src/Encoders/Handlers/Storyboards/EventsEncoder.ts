@@ -20,7 +20,7 @@ import {
   ParameterType,
   LayerType,
   Origins,
-} from 'osu-resources';
+} from 'osu-classes';
 
 /**
  * An encoder for beatmap events & storyboard.

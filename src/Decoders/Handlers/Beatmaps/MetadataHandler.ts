@@ -1,4 +1,4 @@
-import { Beatmap } from 'osu-resources';
+import { Beatmap } from 'osu-classes';
 
 /**
  * A decoder for beatmap metadata.

@@ -108,7 +108,7 @@ encoder.encodeToPath(encodePath, storyboard);
 
 ## Rulesets
 
-You always should apply one of the rulesets to your parsed beatmaps. There are 4 basic rulesets in total that support parsed beatmaps from this decoder. If necessary, you can always write your own ruleset using the classes from the [osu-resources](https://github.com/kionell/osu-resources.git) project. By applying a ruleset to a parsed beatmap, you get the ability to apply mods, calculate max combo and convert maps to other game modes.
+You always should apply one of the rulesets to your parsed beatmaps. There are 4 basic rulesets in total that support parsed beatmaps from this decoder. If necessary, you can always write your own ruleset using the classes from the [osu-classes](https://github.com/kionell/osu-classes.git) project. By applying a ruleset to a parsed beatmap, you get the ability to apply mods, calculate max combo and convert maps to other game modes.
 
 - [osu-standard-stable](https://github.com/kionell/osu-standard-stable.git) - The osu!std ruleset based on the osu!lazer source code.
 - [osu-taiko-stable](https://github.com/kionell/osu-taiko-stable.git) - The osu!taiko ruleset based on the osu!lazer source code.

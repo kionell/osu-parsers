@@ -5,7 +5,7 @@ import {
   HitSample,
   ISlidableObject,
   SliderPath,
-} from 'osu-resources';
+} from 'osu-classes';
 
 /**
  * A parsed slidable object.

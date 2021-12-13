@@ -24,7 +24,7 @@ import {
   LoopType,
   CommandType,
   ParameterType,
-} from 'osu-resources';
+} from 'osu-classes';
 
 /**
  * A decoder for storyboard elements, compounds and commands.

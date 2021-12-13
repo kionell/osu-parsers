@@ -1,7 +1,7 @@
 import {
   ISpinnableObject,
   HitObject,
-} from 'osu-resources';
+} from 'osu-classes';
 
 /**
  * A parsed spinnable object.

@@ -1,4 +1,4 @@
-import { Beatmap, SampleSet } from 'osu-resources';
+import { Beatmap, SampleSet } from 'osu-classes';
 
 /**
  * A decoder for general info of a beatmap.

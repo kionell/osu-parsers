@@ -1,4 +1,4 @@
-import { HitObject } from 'osu-resources';
+import { HitObject } from 'osu-classes';
 
 /**
  * A hittable object.

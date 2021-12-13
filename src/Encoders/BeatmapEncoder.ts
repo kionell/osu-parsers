@@ -1,6 +1,6 @@
 import { writeFileSync } from 'fs';
 
-import { IBeatmap } from 'osu-resources';
+import { IBeatmap } from 'osu-classes';
 
 import {
   GeneralEncoder,

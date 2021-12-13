@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs';
 
-import { Beatmap } from 'osu-resources';
+import { Beatmap } from 'osu-classes';
 import { StoryboardDecoder } from './StoryboardDecoder';
 
 import {

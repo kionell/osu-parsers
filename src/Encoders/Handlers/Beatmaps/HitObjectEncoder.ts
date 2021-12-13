@@ -11,7 +11,7 @@ import {
   IHasPosition,
   PathType,
   IHasDuration,
-} from 'osu-resources';
+} from 'osu-classes';
 
 /**
  * An encoder for beatmap hit objects.

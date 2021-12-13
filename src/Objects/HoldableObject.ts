@@ -2,7 +2,7 @@ import {
   HitObject,
   HitSample,
   IHoldableObject,
-} from 'osu-resources';
+} from 'osu-classes';
 
 /**
  * A holdable object.

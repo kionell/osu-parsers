@@ -1,4 +1,4 @@
-import { Beatmap, Colour } from 'osu-resources';
+import { Beatmap, Colour } from 'osu-classes';
 
 /**
  * A decoder for beatmap colours.

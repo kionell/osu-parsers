@@ -1,4 +1,4 @@
-import { Storyboard } from 'osu-resources';
+import { Storyboard } from 'osu-classes';
 
 /**
  * An encoder for storyboard variables

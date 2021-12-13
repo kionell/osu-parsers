@@ -11,7 +11,7 @@ import {
   IHasCommands,
   CompoundType,
   LayerType,
-} from 'osu-resources';
+} from 'osu-classes';
 
 import {
   StoryboardHandler,

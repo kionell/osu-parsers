@@ -1,4 +1,4 @@
-import { IBeatmap } from 'osu-resources';
+import { IBeatmap } from 'osu-classes';
 
 /**
  * An encoder for beatmap colours.

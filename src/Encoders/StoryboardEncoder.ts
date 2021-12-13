@@ -1,6 +1,6 @@
 import { writeFileSync } from 'fs';
 
-import { Storyboard } from 'osu-resources';
+import { Storyboard } from 'osu-classes';
 
 import {
   VariablesEncoder,

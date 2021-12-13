@@ -9,7 +9,7 @@ import {
   EffectType,
   TimeSignature,
   SampleSet,
-} from 'osu-resources';
+} from 'osu-classes';
 
 /**
  * A set of control points in a group.
