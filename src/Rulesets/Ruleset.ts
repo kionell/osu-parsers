@@ -75,6 +75,8 @@ export abstract class Ruleset implements IRuleset {
 
     const converted = converter.convertBeatmap(cloned);
 
+    converted.mods = mods;
+
     /**
      * Apply difficulty mods.
      */
@@ -101,8 +103,6 @@ export abstract class Ruleset implements IRuleset {
     processor.postProcess(converted);
 
     mods.beatmapMods.forEach((m) => m.applyToBeatmap(converted));
-
-    converted.mods = mods;
 
     return converted;
   }
