@@ -38,7 +38,7 @@ export class Interpolation {
   static barycentricLagrange(
     points: Vector2[],
     weights: number[],
-    time: number
+    time: number,
   ): number {
     if (points === null || points.length === 0) {
       throw new Error('points must contain at least one point');

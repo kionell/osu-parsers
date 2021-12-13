@@ -35,7 +35,7 @@ export class CommandTrigger extends Compound {
     triggerName?: string,
     startTime?: number,
     endTime?: number,
-    groupNumber?: number
+    groupNumber?: number,
   ) {
     super();
 
