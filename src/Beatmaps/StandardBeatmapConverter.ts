@@ -25,6 +25,11 @@ export class StandardBeatmapConverter extends BeatmapConverter {
     const hitObjects = beatmap.hitObjects;
 
     for (const hitObject of hitObjects) {
+      if (hitObject instanceof StandardHitObject) {
+        yield hitObject.clone() as StandardHitObject;
+        continue;
+      }
+
       yield this._convertHitObject(hitObject, beatmap);
     }
   }
