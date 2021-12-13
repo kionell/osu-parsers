@@ -19,6 +19,14 @@ export class Vector2 {
     this.y = isFinite(y as number) ? (y as number) : x;
   }
 
+  get floatX(): number {
+    return Math.fround(this.x);
+  }
+
+  get floatY(): number {
+    return Math.fround(this.y);
+  }
+
   /**
    * Adds a vector to the current and returns a new instance.
    * @param vec Vector to add.
@@ -33,10 +41,7 @@ export class Vector2 {
    * @param vec Vector to add.
    */
   fadd(vec: Vector2): Vector2 {
-    return new Vector2(
-      Math.fround(this.x + vec.x),
-      Math.fround(this.y + vec.y),
-    );
+    return new Vector2(this.floatX + vec.floatX, this.floatY + vec.floatY);
   }
 
   /**
@@ -53,10 +58,7 @@ export class Vector2 {
    * @param vec Vector to substract.
    */
   fsubtract(vec: Vector2): Vector2 {
-    return new Vector2(
-      Math.fround(this.x - vec.x),
-      Math.fround(this.y - vec.y),
-    );
+    return new Vector2(this.floatX - vec.floatX, this.floatY - vec.floatY);
   }
 
   /**
@@ -73,9 +75,11 @@ export class Vector2 {
    * @param vec Vector to substract.
    */
   fscale(multiplier: number): Vector2 {
+    const floatMultiplier = Math.fround(multiplier);
+
     return new Vector2(
-      Math.fround(this.x * multiplier),
-      Math.fround(this.y * multiplier),
+      this.floatX * floatMultiplier,
+      this.floatY * floatMultiplier,
     );
   }
 
@@ -93,9 +97,11 @@ export class Vector2 {
    * @param vec Vector to substract.
    */
   fdivide(divisor: number): Vector2 {
+    const floatDivisor = Math.fround(divisor);
+
     return new Vector2(
-      Math.fround(this.x / divisor),
-      Math.fround(this.y / divisor),
+      this.floatX / floatDivisor,
+      this.floatY / floatDivisor,
     );
   }
 
@@ -112,7 +118,7 @@ export class Vector2 {
    * @param vec Second vector.
    */
   fdot(vec: Vector2): number {
-    return Math.fround(this.x * vec.x) + Math.fround(this.y * vec.y);
+    return this.floatX * vec.floatX + this.floatY * vec.floatY;
   }
 
   /**
@@ -126,7 +132,10 @@ export class Vector2 {
    * Returns a single precision length of two points in a vector.
    */
   flength(): number {
-    return Math.fround(this.length());
+    return Math.fround(Math.sqrt(
+      this.floatX * this.floatX +
+      this.floatY * this.floatY,
+    ));
   }
 
   /**
@@ -137,30 +146,32 @@ export class Vector2 {
     const x = this.x - vec.x;
     const y = this.y - vec.y;
 
-    const dist = x * x + y * y;
+    return Math.sqrt(x * x + y * y);
+  }
 
-    return Math.sqrt(dist);
+  fdistance(vec: Vector2): number {
+    const x = this.floatX - vec.floatX;
+    const y = this.floatY - vec.floatY;
+
+    return Math.fround(Math.sqrt(x * x + y * y));
   }
 
   /**
    * Returns a normalized vector.
    */
   normalize(): Vector2 {
-    const length = this.length();
+    const scale = 1 / this.length();
 
-    return new Vector2(this.x / length, this.y / length);
+    return new Vector2(this.x * scale, this.y * scale);
   }
 
   /**
    * Returns a normalized vector with single precision.
    */
   fnormalize(): Vector2 {
-    const length = this.flength();
+    const scale = Math.fround(1 / this.flength());
 
-    return new Vector2(
-      Math.fround(this.x / length),
-      Math.fround(this.y / length),
-    );
+    return new Vector2(this.floatX * scale, this.floatY * scale);
   }
 
   /**

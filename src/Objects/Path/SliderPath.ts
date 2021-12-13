@@ -254,7 +254,7 @@ export class SliderPath {
     this._cumulativeLength = [0];
 
     for (let i = 0, l = this._calculatedPath.length - 1; i < l; ++i) {
-      const diff = this._calculatedPath[i + 1].subtract(this._calculatedPath[i]);
+      const diff = this._calculatedPath[i + 1].fsubtract(this._calculatedPath[i]);
 
       this._calculatedLength += diff.flength();
       this._cumulativeLength.push(this._calculatedLength);
@@ -311,15 +311,14 @@ export class SliderPath {
 
       // The direction of the segment to shorten or lengthen
       const direction = this._calculatedPath[pathEndIndex]
-        .subtract(this._calculatedPath[pathEndIndex - 1])
-        .normalize();
+        .fsubtract(this._calculatedPath[pathEndIndex - 1])
+        .fnormalize();
 
       const distance = Math.fround(this.expectedDistance -
           this._cumulativeLength[this._cumulativeLength.length - 1]);
 
-      this._calculatedPath[pathEndIndex] = this._calculatedPath[
-        pathEndIndex - 1
-      ].add(direction.scale(distance));
+      this._calculatedPath[pathEndIndex] = this._calculatedPath[pathEndIndex - 1]
+        .fadd(direction.fscale(distance));
 
       this._cumulativeLength.push(this.expectedDistance);
     }
@@ -364,6 +363,6 @@ export class SliderPath {
 
     const w = (d - d0) / (d1 - d0);
 
-    return p0.add(p1.subtract(p0).scale(Math.fround(w)));
+    return p0.fadd(p1.fsubtract(p0).fscale(w));
   }
 }

@@ -198,7 +198,7 @@ export class PathApproximator {
 
       const vector2 = new Vector2(
         Math.fround(Math.cos(theta)),
-        Math.fround(Math.sin(theta))
+        Math.fround(Math.sin(theta)),
       );
 
       output.push(vector2.fscale(pr.radius).fadd(pr.centre));
@@ -221,21 +221,27 @@ export class PathApproximator {
      * If we have a degenerate triangle where a side-length is almost zero,
      * then give up and fallback to a more numerically stable method.
      */
-    const sideLength = (b.y - a.y) * (c.x - a.x) - (b.x - a.x) * (c.y - a.y);
+    const sideLength =
+      (b.floatY - a.floatY) * (c.floatX - a.floatX) -
+      (b.floatX - a.floatX) * (c.floatY - a.floatY);
 
     if (Math.abs(sideLength) < Math.fround(0.001)) {
       return new CircularArcProperties();
     }
 
-    const d = 2 * (a.x * b.fsubtract(c).y + b.x * c.fsubtract(a).y + c.x * a.fsubtract(b).y);
+    const d = 2 * (
+      a.floatX * b.fsubtract(c).floatY +
+      b.floatX * c.fsubtract(a).floatY +
+      c.floatX * a.fsubtract(b).floatY
+    );
 
     const aSq = a.flength() ** 2;
     const bSq = b.flength() ** 2;
     const cSq = c.flength() ** 2;
 
     const centre = new Vector2(
-      aSq * b.fsubtract(c).y + bSq * c.fsubtract(a).y + cSq * a.fsubtract(b).y,
-      aSq * c.fsubtract(b).x + bSq * a.fsubtract(c).x + cSq * b.fsubtract(a).x
+      aSq * b.fsubtract(c).floatY + bSq * c.fsubtract(a).floatY + cSq * a.fsubtract(b).floatY,
+      aSq * c.fsubtract(b).floatX + bSq * a.fsubtract(c).floatX + cSq * b.fsubtract(a).floatX,
     ).fdivide(d);
 
     const dA = a.fsubtract(centre);
@@ -243,8 +249,8 @@ export class PathApproximator {
 
     const radius = dA.flength();
 
-    const thetaStart = Math.atan2(dA.y, dA.x);
-    let thetaEnd = Math.atan2(dC.y, dC.x);
+    const thetaStart = Math.atan2(dA.floatY, dA.floatX);
+    let thetaEnd = Math.atan2(dC.floatY, dC.floatX);
 
     while (thetaEnd < thetaStart) {
       thetaEnd += 2 * Math.PI;
@@ -259,7 +265,7 @@ export class PathApproximator {
      */
     let orthoAtoC = c.fsubtract(a);
 
-    orthoAtoC = new Vector2(orthoAtoC.y, -orthoAtoC.x);
+    orthoAtoC = new Vector2(orthoAtoC.floatY, -orthoAtoC.floatX);
 
     if (orthoAtoC.fdot(b.fsubtract(a)) < 0) {
       direction = -direction;
@@ -292,12 +298,12 @@ export class PathApproximator {
 
     const weights = Interpolation.barycentricWeights(controlPoints);
 
-    let minX = controlPoints[0].x;
-    let maxX = controlPoints[0].x;
+    let minX = controlPoints[0].floatX;
+    let maxX = controlPoints[0].floatX;
 
     for (let i = 1, len = controlPoints.length; i < len; i++) {
-      minX = Math.min(minX, controlPoints[i].x);
-      maxX = Math.max(maxX, controlPoints[i].x);
+      minX = Math.min(minX, controlPoints[i].floatX);
+      maxX = Math.max(maxX, controlPoints[i].floatX);
     }
 
     const dx = maxX - minX;
@@ -351,7 +357,7 @@ export class PathApproximator {
     l: Vector2[],
     r: Vector2[],
     subdivisionBuffer: Vector2[],
-    count: number
+    count: number,
   ): void {
     const midpoints = subdivisionBuffer;
 
@@ -383,7 +389,7 @@ export class PathApproximator {
     output: Vector2[],
     subdivisionBuffer1: Vector2[],
     subdivisionBuffer2: Vector2[],
-    count: number
+    count: number,
   ): void {
     const l = subdivisionBuffer2;
     const r = subdivisionBuffer1;
@@ -421,18 +427,20 @@ export class PathApproximator {
     vec2: Vector2,
     vec3: Vector2,
     vec4: Vector2,
-    t: number
+    t: number,
   ): Vector2 {
+    t = Math.fround(t);
+
     const t2 = Math.fround(t * t);
     const t3 = Math.fround(t * t2);
 
     return new Vector2(
-      Math.fround(0.5 * (2 * vec2.x + (-vec1.x + vec3.x)
-        * t + (2 * vec1.x - 5 * vec2.x + 4 * vec3.x - vec4.x)
-        * t2 + (-vec1.x + 3 * vec2.x - 3 * vec3.x + vec4.x) * t3)),
-      Math.fround(0.5 * (2 * vec2.y + (-vec1.y + vec3.y)
-        * t + (2 * vec1.y - 5 * vec2.y + 4 * vec3.y - vec4.y)
-        * t2 + (-vec1.y + 3 * vec2.y - 3 * vec3.y + vec4.y) * t3))
+      Math.fround(0.5 * (2 * vec2.floatX + (-vec1.floatX + vec3.floatX)
+        * t + (2 * vec1.floatX - 5 * vec2.floatX + 4 * vec3.floatX - vec4.floatX)
+        * t2 + (-vec1.floatX + 3 * vec2.floatX - 3 * vec3.floatX + vec4.floatX) * t3)),
+      Math.fround(0.5 * (2 * vec2.floatY + (-vec1.floatY + vec3.floatY)
+        * t + (2 * vec1.floatY - 5 * vec2.floatY + 4 * vec3.floatY - vec4.floatY)
+        * t2 + (-vec1.floatY + 3 * vec2.floatY - 3 * vec3.floatY + vec4.floatY) * t3)),
     );
   }
 }
@@ -476,7 +484,7 @@ export class CircularArcProperties {
     this.thetaStart = thetaStart || 0;
     this.thetaRange = thetaRange || 0;
     this.direction = direction || 0;
-    this.radius = radius || 0;
+    this.radius = radius ? Math.fround(radius) : 0;
     this.centre = centre || new Vector2(0, 0);
   }
 
