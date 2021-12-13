@@ -57,6 +57,11 @@ export interface IBeatmap {
   mode: number;
 
   /**
+   * Beatmap original game mode.
+   */
+  originalMode: number;
+
+  /**
    * Beatmap file version.
    */
   fileFormat: number;

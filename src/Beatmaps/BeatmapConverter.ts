@@ -22,6 +22,7 @@ export abstract class BeatmapConverter {
     converted.events = beatmap.events.clone();
     converted.controlPoints = beatmap.controlPoints.clone();
     converted.fileFormat = beatmap.fileFormat;
+    converted.originalMode = beatmap.originalMode;
 
     for (const hitObject of this.convertHitObjects(beatmap)) {
       converted.hitObjects.push(hitObject);
