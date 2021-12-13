@@ -1,7 +1,7 @@
-# osu-resources
-[![CodeFactor](https://img.shields.io/codefactor/grade/github/kionell/osu-resources)](https://www.codefactor.io/repository/github/kionell/osu-resources)
-[![License](https://img.shields.io/github/license/kionell/osu-resources)](https://github.com/kionell/osu-resources/blob/master/LICENSE)
-[![Package](https://img.shields.io/npm/v/osu-resources)](https://www.npmjs.com/package/osu-resources)
+# osu-classes
+[![CodeFactor](https://img.shields.io/codefactor/grade/github/kionell/osu-classes)](https://www.codefactor.io/repository/github/kionell/osu-classes)
+[![License](https://img.shields.io/github/license/kionell/osu-classes)](https://github.com/kionell/osu-classes/blob/master/LICENSE)
+[![Package](https://img.shields.io/npm/v/osu-classes)](https://www.npmjs.com/package/osu-classes)
 
 
 Basic classes, interfaces and utils for developing new osu! projects.
@@ -15,7 +15,7 @@ Basic classes, interfaces and utils for developing new osu! projects.
 Add a new dependency to your project via npm:
 
 ```bash
-npm install osu-resources
+npm install osu-classes
 ```
 
 ### Requirements
@@ -34,7 +34,7 @@ All projects below are based on this code.
 
 ## Documentation
 
-Auto-generated documentation is available [here](https://kionell.github.io/osu-resources/).
+Auto-generated documentation is available [here](https://kionell.github.io/osu-classes/).
 
 ## Contributing
 
