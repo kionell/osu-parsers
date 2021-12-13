@@ -108,6 +108,13 @@ export class ProgressiveCalculationBeatmap implements IBeatmap {
   }
 
   /**
+   * Beatmap original gamemode.
+   */
+  get originalMode(): number {
+    return this._baseBeatmap.originalMode;
+  }
+
+  /**
    * Beatmap file version.
    */
   get fileFormat(): number {
