@@ -1,4 +1,4 @@
-import { HardRock, BeatmapDifficultySection } from 'osu-resources';
+import { HardRock, BeatmapDifficultySection } from 'osu-classes';
 
 export class TaikoHardRock extends HardRock {
   applyToDifficulty(difficulty: BeatmapDifficultySection): void {

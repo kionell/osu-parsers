@@ -1,4 +1,4 @@
-import { EventGenerator } from 'osu-resources';
+import { EventGenerator } from 'osu-classes';
 
 import { TaikoHitObject } from './TaikoHitObject';
 import { DrumRoll } from './DrumRoll';

@@ -1,7 +1,7 @@
 import { TaikoModCombination } from '../Mods/TaikoModCombination';
 import { TaikoHitObject } from '../Objects/TaikoHitObject';
 
-import { RulesetBeatmap, HitType } from 'osu-resources';
+import { RulesetBeatmap, HitType } from 'osu-classes';
 
 export class TaikoBeatmap extends RulesetBeatmap {
   mods: TaikoModCombination = new TaikoModCombination();

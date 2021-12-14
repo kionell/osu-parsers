@@ -4,7 +4,7 @@
   PerformanceCalculator,
   Ruleset,
   ScoreInfo,
-} from 'osu-resources';
+} from 'osu-classes';
 
 import { TaikoModCombination } from '../Mods';
 import { TaikoDifficultyAttributes } from './Attributes';

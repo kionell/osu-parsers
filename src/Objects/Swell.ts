@@ -1,7 +1,7 @@
 import { TaikoHitObject } from './TaikoHitObject';
 import { TaikoEventGenerator } from './TaikoEventGenerator';
 
-import { ISpinnableObject } from 'osu-resources';
+import { ISpinnableObject } from 'osu-classes';
 
 export class Swell extends TaikoHitObject implements ISpinnableObject {
   requiredHits = 10;

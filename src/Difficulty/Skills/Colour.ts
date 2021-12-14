@@ -1,4 +1,4 @@
-﻿import { DifficultyHitObject, LimitedCapacityQueue, StrainDecaySkill } from 'osu-resources';
+﻿import { DifficultyHitObject, LimitedCapacityQueue, StrainDecaySkill } from 'osu-classes';
 import { TaikoDifficultyHitObject } from '../Preprocessing/TaikoDifficultyHitObject';
 import { Hit } from '../../Objects';
 

@@ -1,6 +1,6 @@
 import { TaikoHitObject } from './TaikoHitObject';
 
-import { HitSound } from 'osu-resources';
+import { HitSound } from 'osu-classes';
 
 export abstract class TaikoStrongHitObject extends TaikoHitObject {
   static STRONG_SCALE: number = Math.fround(1.4);

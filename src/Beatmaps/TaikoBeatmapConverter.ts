@@ -6,7 +6,7 @@ import {
   IHitObject,
   ISlidableObject,
   ISpinnableObject,
-} from 'osu-resources';
+} from 'osu-classes';
 
 import { TaikoBeatmap } from './TaikoBeatmap';
 import { TaikoHitObject } from '../Objects/TaikoHitObject';
@@ -32,7 +32,7 @@ export class TaikoBeatmapConverter extends BeatmapConverter {
    */
   static SWELL_HIT_MULTIPLIER = Math.fround(1.65);
 
-  originalRuleset = 1;
+  isForCurrentRuleset = true;
 
   taikoDistance = 0;
 
@@ -48,7 +48,7 @@ export class TaikoBeatmapConverter extends BeatmapConverter {
   }
 
   convertBeatmap(original: IBeatmap): TaikoBeatmap {
-    this.originalRuleset = original.mode;
+    this.isForCurrentRuleset = original.originalMode === 1;
 
     /**
      * Rewrite the beatmap info to add the slider velocity multiplier.
@@ -63,6 +63,7 @@ export class TaikoBeatmapConverter extends BeatmapConverter {
     converted.events = original.events.clone();
     converted.controlPoints = original.controlPoints.clone();
     converted.fileFormat = original.fileFormat;
+    converted.originalMode = original.originalMode;
 
     converted.difficulty.sliderMultiplier *= TaikoBeatmapConverter.VELOCITY_MULTIPLIER;
 
@@ -239,7 +240,7 @@ export class TaikoBeatmapConverter extends BeatmapConverter {
 
     this.taikoDuration = Math.trunc((this.taikoDistance / taikoVelocity) * beatLength);
 
-    if (this.originalRuleset === 1) {
+    if (this.isForCurrentRuleset) {
       this.tickInterval = 0;
 
       return false;

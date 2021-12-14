@@ -4,7 +4,7 @@ import {
   SliderPath,
   HitSample,
   ISlidableObject,
-} from 'osu-resources';
+} from 'osu-classes';
 
 import { TaikoStrongHitObject } from './TaikoStrongHitObject';
 import { TaikoEventGenerator } from './TaikoEventGenerator';

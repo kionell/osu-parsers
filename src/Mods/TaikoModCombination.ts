@@ -1,4 +1,4 @@
-import { ModCombination, IMod } from 'osu-resources';
+import { ModCombination, IMod } from 'osu-classes';
 
 import { TaikoNoMod } from './TaikoNoMod';
 import { TaikoNoFail } from './TaikoNoFail';

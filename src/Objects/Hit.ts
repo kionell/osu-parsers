@@ -1,5 +1,5 @@
 import { TaikoStrongHitObject } from './TaikoStrongHitObject';
-import { HitSound } from 'osu-resources';
+import { HitSound } from 'osu-classes';
 
 export class Hit extends TaikoStrongHitObject {
   get isRim(): boolean {

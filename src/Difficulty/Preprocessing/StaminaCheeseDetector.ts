@@ -1,4 +1,4 @@
-﻿import { LimitedCapacityQueue } from 'osu-resources';
+﻿import { LimitedCapacityQueue } from 'osu-classes';
 import { TaikoDifficultyHitObject } from './TaikoDifficultyHitObject';
 
 /**

@@ -1,4 +1,4 @@
-import { Ruleset, ScoreInfo } from 'osu-resources';
+import { Ruleset, ScoreInfo } from 'osu-classes';
 
 import {
   TaikoBeatmapProcessor,
@@ -27,11 +27,11 @@ export class TaikoRuleset extends Ruleset {
 
   /**
    * Creates a new mod combination by converting legacy mod bitwise.
-   * @param bitwise Mod bitwise.
+   * @param input Mod bitwise or acronyms.
    * @returns A new mod combination.
    */
-  createModCombination(bitwise: number): TaikoModCombination {
-    return new TaikoModCombination(bitwise);
+  createModCombination(input: number | string): TaikoModCombination {
+    return new TaikoModCombination(input);
   }
 
   /**

@@ -5,7 +5,7 @@ import {
   IMod,
   ModCombination,
   Skill,
-} from 'osu-resources';
+} from 'osu-classes';
 
 import {
   TaikoDoubleTime,

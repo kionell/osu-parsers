@@ -1,4 +1,4 @@
-import { DifficultyRange, HitResult, HitWindows } from 'osu-resources';
+import { DifficultyRange, HitResult, HitWindows } from 'osu-classes';
 
 export class TaikoHitWindows extends HitWindows {
   private static readonly _TAIKO_RANGES: DifficultyRange[] = [

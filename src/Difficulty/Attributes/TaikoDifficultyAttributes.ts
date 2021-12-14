@@ -1,4 +1,4 @@
-﻿import { DifficultyAttributes } from 'osu-resources';
+﻿import { DifficultyAttributes } from 'osu-classes';
 
 export class TaikoDifficultyAttributes extends DifficultyAttributes {
   staminaStrain = 0;

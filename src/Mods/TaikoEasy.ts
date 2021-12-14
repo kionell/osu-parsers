@@ -1,4 +1,4 @@
-import { Easy, BeatmapDifficultySection } from 'osu-resources';
+import { Easy, BeatmapDifficultySection } from 'osu-classes';
 
 export class TaikoEasy extends Easy {
   applyToDifficulty(difficulty: BeatmapDifficultySection): void {

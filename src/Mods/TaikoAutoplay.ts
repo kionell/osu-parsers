@@ -1,3 +1,3 @@
-import { Autoplay } from 'osu-resources';
+import { Autoplay } from 'osu-classes';
 
 export class TaikoAutoplay extends Autoplay {}
