@@ -19,11 +19,11 @@ export class ManiaRuleset extends Ruleset {
 
   /**
    * Creates a new mod combination by converting legacy mod bitwise.
-   * @param bitwise Mod bitwise.
+   * @param input Mod bitwise or acronyms.
    * @returns A new mod combination.
    */
-  createModCombination(bitwise: number): ManiaModCombination {
-    return new ManiaModCombination(bitwise);
+  createModCombination(input: number | string): ManiaModCombination {
+    return new ManiaModCombination(input);
   }
 
   /**
