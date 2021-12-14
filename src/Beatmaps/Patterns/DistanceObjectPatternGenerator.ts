@@ -17,7 +17,7 @@ import {
   IHasPosition,
   IBeatmap,
   Vector2,
-} from 'osu-resources';
+} from 'osu-classes';
 
 /**
  * A pattern generator for IHasDistance hit objects.

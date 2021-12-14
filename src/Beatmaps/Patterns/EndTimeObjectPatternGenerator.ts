@@ -14,7 +14,7 @@ import {
   IHitObject,
   IHoldableObject,
   Vector2,
-} from 'osu-resources';
+} from 'osu-classes';
 
 export class EndTimeObjectPatternGenerator extends PatternGenerator {
   protected readonly endTime: number;

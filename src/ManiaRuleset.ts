@@ -1,4 +1,4 @@
-import { Ruleset, ScoreInfo } from 'osu-resources';
+import { Ruleset, ScoreInfo } from 'osu-classes';
 
 import {
   ManiaBeatmapProcessor,

@@ -1,4 +1,4 @@
-﻿import { DifficultyAttributes, IMod, ModBitwise, ModType, PerformanceCalculator, Ruleset, ScoreInfo } from 'osu-resources';
+﻿import { DifficultyAttributes, IMod, ModBitwise, ModType, PerformanceCalculator, Ruleset, ScoreInfo } from 'osu-classes';
 import { ManiaModCombination } from '../Mods';
 import { ManiaDifficultyAttributes } from './Attributes';
 

@@ -1,4 +1,4 @@
-import { HitResult, HitWindows } from 'osu-resources';
+import { HitResult, HitWindows } from 'osu-classes';
 
 export class ManiaHitWindows extends HitWindows {
   isHitResultAllowed(result: HitResult): boolean {

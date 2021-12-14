@@ -1,3 +1,3 @@
-import { Easy } from 'osu-resources';
+import { Easy } from 'osu-classes';
 
 export class ManiaEasy extends Easy {}

@@ -1,5 +1,5 @@
 import { ManiaBeatmapConverter } from '../Beatmaps/ManiaBeatmapConverter';
-import { IMod, IApplicableToConverter, ModBitwise, ModType } from 'osu-resources';
+import { IMod, IApplicableToConverter, ModBitwise, ModType } from 'osu-classes';
 
 export class ManiaDualStages implements IMod, IApplicableToConverter {
   name = 'Dual Stages';

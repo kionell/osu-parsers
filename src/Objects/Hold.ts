@@ -9,7 +9,7 @@ import {
   IHoldableObject,
   HitSample,
   HitType,
-} from 'osu-resources';
+} from 'osu-classes';
 
 export class Hold extends ManiaHitObject implements IHoldableObject {
   /**

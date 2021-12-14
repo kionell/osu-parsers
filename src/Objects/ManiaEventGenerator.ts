@@ -1,4 +1,4 @@
-import { EventGenerator } from 'osu-resources';
+import { EventGenerator } from 'osu-classes';
 
 import { ManiaHitObject } from './ManiaHitObject';
 import { Hold } from './Hold';

@@ -1,4 +1,4 @@
-import { Hidden, ModBitwise } from 'osu-resources';
+import { Hidden, ModBitwise } from 'osu-classes';
 
 export class ManiaHidden extends Hidden {
   multiplier = 1;

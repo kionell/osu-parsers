@@ -12,7 +12,7 @@ import {
   IHitObject,
   IHasPosition,
   IBeatmap,
-} from 'osu-resources';
+} from 'osu-classes';
 
 export class HitObjectPatternGenerator extends PatternGenerator {
   stairType: PatternType = PatternType.None;

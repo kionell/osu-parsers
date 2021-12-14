@@ -1,4 +1,4 @@
-﻿import { DifficultyAttributes } from 'osu-resources';
+﻿import { DifficultyAttributes } from 'osu-classes';
 
 export class ManiaDifficultyAttributes extends DifficultyAttributes {
   greatHitWindow = 0;

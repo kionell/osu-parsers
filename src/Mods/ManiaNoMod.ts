@@ -1,3 +1,3 @@
-import { NoMod } from 'osu-resources';
+import { NoMod } from 'osu-classes';
 
 export class ManiaNoMod extends NoMod {}

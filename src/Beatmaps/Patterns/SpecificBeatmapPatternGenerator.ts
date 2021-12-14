@@ -4,7 +4,7 @@ import { Pattern } from './Pattern';
 import { Note } from '../../Objects/Note';
 import { Hold } from '../../Objects/Hold';
 
-import { HitType, IHasPosition, IHoldableObject, Vector2 } from 'osu-resources';
+import { HitType, IHasPosition, IHoldableObject, Vector2 } from 'osu-classes';
 
 /**
  * A pattern generator for osu!mania-specific beatmaps.

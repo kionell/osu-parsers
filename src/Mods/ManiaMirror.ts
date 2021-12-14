@@ -1,5 +1,5 @@
 import { ManiaBeatmap } from '../Beatmaps/ManiaBeatmap';
-import { IMod, IApplicableToBeatmap, ModBitwise, ModType } from 'osu-resources';
+import { IMod, IApplicableToBeatmap, ModBitwise, ModType } from 'osu-classes';
 
 export class ManiaMirror implements IMod, IApplicableToBeatmap {
   name = 'Mirror';

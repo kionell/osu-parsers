@@ -1,4 +1,4 @@
-import { HitObject, IHasColumn, IHasX } from 'osu-resources';
+import { HitObject, IHasColumn, IHasX } from 'osu-classes';
 
 export abstract class ManiaHitObject extends HitObject implements IHasColumn, IHasX {
   protected _originalColumn = 0;

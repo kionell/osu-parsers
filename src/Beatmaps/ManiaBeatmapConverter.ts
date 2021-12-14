@@ -9,7 +9,7 @@ import {
   ISpinnableObject,
   IHasX,
   IHitObject,
-} from 'osu-resources';
+} from 'osu-classes';
 
 import {
   DistanceObjectPatternGenerator,

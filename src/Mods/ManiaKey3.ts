@@ -1,4 +1,4 @@
-import { ModBitwise } from 'osu-resources';
+import { ModBitwise } from 'osu-classes';
 import { ManiaKeyMod } from './ManiaKeyMod';
 
 export class ManiaKey3 extends ManiaKeyMod {

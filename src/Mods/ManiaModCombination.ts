@@ -1,4 +1,4 @@
-import { ModCombination, IMod } from 'osu-resources';
+import { ModCombination, IMod } from 'osu-classes';
 
 import { ManiaNoMod } from './ManiaNoMod';
 import { ManiaNoFail } from './ManiaNoFail';

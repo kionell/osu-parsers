@@ -7,7 +7,7 @@ import {
   ModBitwise,
   ModCombination,
   Skill,
-} from 'osu-resources';
+} from 'osu-classes';
 
 import {
   ManiaDoubleTime,

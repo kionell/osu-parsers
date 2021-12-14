@@ -1,4 +1,4 @@
-import { RulesetBeatmap, HitType } from 'osu-resources';
+import { RulesetBeatmap, HitType } from 'osu-classes';
 import { ManiaModCombination } from '../Mods/ManiaModCombination';
 import { StageDefinition } from './StageDefinition';
 import { ManiaHitObject } from '../Objects/ManiaHitObject';

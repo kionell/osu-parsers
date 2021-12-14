@@ -1,4 +1,4 @@
-import { FastRandom, IBeatmap, IHitObject } from 'osu-resources';
+import { FastRandom, IBeatmap, IHitObject } from 'osu-classes';
 import { ManiaBeatmap } from '../ManiaBeatmap';
 import { Pattern } from './Pattern';
 
