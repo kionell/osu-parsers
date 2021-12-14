@@ -33,7 +33,9 @@ export abstract class DifficultyCalculator {
    * @returns A structure describing the difficulty of the beatmap.
    */
   calculate(): DifficultyAttributes {
-    return this.calculateWithMods(this._ruleset.createModCombination());
+    const mods = (this._beatmap as RulesetBeatmap).mods;
+
+    return this.calculateWithMods(mods ?? this._ruleset.createModCombination());
   }
 
   /**
