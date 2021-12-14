@@ -5,6 +5,9 @@ export abstract class ManiaHitObject extends HitObject implements IHasColumn, IH
 
   protected _column = 0;
 
+  /**
+   * The original column of this hit object before any changes.
+   */
   get originalColumn(): number {
     return this._originalColumn;
   }
@@ -14,6 +17,9 @@ export abstract class ManiaHitObject extends HitObject implements IHasColumn, IH
     this._column = value;
   }
 
+  /**
+   * The column of this hit object.
+   */
   get column(): number {
     return this._column;
   }
@@ -22,7 +28,17 @@ export abstract class ManiaHitObject extends HitObject implements IHasColumn, IH
     this._column = value;
   }
 
+  /**
+   * The starting X-position of the hit object.
+   */
   get startX(): number {
     return this._column;
+  }
+
+  /**
+   * The ending X-position of the hit object.
+   */
+  get endX(): number {
+    return this.startX;
   }
 }

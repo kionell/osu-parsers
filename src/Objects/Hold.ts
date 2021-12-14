@@ -1,14 +1,13 @@
 import { ManiaHitObject } from './ManiaHitObject';
-import { ManiaTickGenerator } from './ManiaTickGenerator';
+import { ManiaEventGenerator } from './ManiaEventGenerator';
 import { HoldHead } from './HoldHead';
 import { HoldTail } from './HoldTail';
 
 import {
   ControlPointInfo,
   BeatmapDifficultySection,
-  HitSample,
   IHoldableObject,
-  NestedType,
+  HitSample,
   HitType,
 } from 'osu-resources';
 
@@ -18,62 +17,37 @@ export class Hold extends ManiaHitObject implements IHoldableObject {
    */
   tickInterval = 50;
 
-  get hitType(): HitType {
-    let hitType = this.base.hitType;
+  nodeSamples: HitSample[][] = [];
 
-    hitType &= ~HitType.Normal;
-    hitType &= ~HitType.Slider;
-    hitType &= ~HitType.Spinner;
+  /**
+   * The time at which this hold ends.
+   */
+  endTime = 0;
 
-    return hitType | HitType.Hold;
-  }
-
-  get head(): HoldHead {
-    const head = this.nestedHitObjects.find((ho) => {
-      return ho.nestedType === NestedType.Head;
-    });
-
-    return (head as HoldHead) || null;
-  }
-
-  get tail(): HoldTail | null {
-    const tail = this.nestedHitObjects.find((ho) => {
-      return ho.nestedType === NestedType.Tail;
-    });
-
-    return (tail as HoldTail) || null;
-  }
+  hitType: HitType = HitType.Hold;
 
   get duration(): number {
     return this.endTime - this.startTime;
   }
 
-  get startTime(): number {
-    return this.base.startTime;
-  }
+  get head(): HoldHead | null {
+    const head = this.nestedHitObjects.find((n) => n instanceof HoldHead);
 
-  set startTime(value: number) {
-    this.base.startTime = value;
-
-    if (this.head !== null) {
-      this.head.startTime = value;
+    if (head) {
+      head.startTime = this.startTime;
     }
 
-    if (this.tail !== null) {
-      this.tail.startTime = this.endTime;
-    }
+    return head as HoldHead || null;
   }
 
-  get endTime(): number {
-    return (this.base as IHoldableObject).endTime;
-  }
+  get tail(): HoldTail | null {
+    const tail = this.nestedHitObjects.find((n) => n instanceof HoldTail);
 
-  set endTime(value: number) {
-    (this.base as IHoldableObject).endTime = value;
-
-    if (this.tail !== null) {
-      this.tail.startTime = value;
+    if (tail) {
+      tail.startTime = this.endTime;
     }
+
+    return tail as HoldTail || null;
   }
 
   get column(): number {
@@ -83,21 +57,13 @@ export class Hold extends ManiaHitObject implements IHoldableObject {
   set column(value: number) {
     this._column = value;
 
-    if (this.head !== null) {
+    if (this.head) {
       this.head.column = value;
     }
 
-    if (this.tail !== null) {
+    if (this.tail) {
       this.tail.column = value;
     }
-  }
-
-  get nodeSamples(): HitSample[][] {
-    return (this.base as IHoldableObject).nodeSamples || [this.base.samples];
-  }
-
-  set nodeSamples(value: HitSample[][]) {
-    (this.base as IHoldableObject).nodeSamples = value;
   }
 
   applyDefaultsToSelf(controlPoints: ControlPointInfo, difficulty: BeatmapDifficultySection): void {
@@ -114,5 +80,23 @@ export class Hold extends ManiaHitObject implements IHoldableObject {
     for (const nested of ManiaEventGenerator.generateHoldTicks(this)) {
       this.nestedHitObjects.push(nested);
     }
+  }
+
+  clone(): Hold {
+    const cloned = new Hold();
+
+    cloned.startPosition = this.startPosition.clone();
+    cloned.startTime = this.startTime;
+    cloned.endTime = this.endTime;
+    cloned.hitType = this.hitType;
+    cloned.hitSound = this.hitSound;
+    cloned.samples = this.samples.map((s) => s.clone());
+    cloned.nodeSamples = this.nodeSamples.map((n) => n.map((s) => s.clone()));
+    cloned.kiai = this.kiai;
+    cloned.tickInterval = this.tickInterval;
+    cloned.originalColumn = this.originalColumn;
+    cloned.column = this.column;
+
+    return cloned;
   }
 }
