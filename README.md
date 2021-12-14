@@ -86,7 +86,6 @@ const difficultyCalculator1 = ruleset.createDifficultyCalculator(parsed);
 // Create difficulty calculator for osu!taiko beatmap.
 const difficultyCalculator2 = ruleset.createDifficultyCalculator(taikoWithMods);
 
-// This will force NoMod even if beatmap has its own mods.
 // Difficulty calculator will implicitly apply osu!taiko ruleset to every beatmap.
 const difficultyAttributesWithNoMod1 = difficultyCalculator1.calculate();
 const difficultyAttributesWithNoMod2 = difficultyCalculator2.calculate();
