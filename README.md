@@ -86,7 +86,6 @@ const difficultyCalculator1 = ruleset.createDifficultyCalculator(parsed);
 // Create difficulty calculator for osu!mania beatmap.
 const difficultyCalculator2 = ruleset.createDifficultyCalculator(maniaWithMods);
 
-// This will force NoMod even if beatmap has its own mods.
 // Difficulty calculator will implicitly apply osu!mania ruleset to every beatmap.
 const difficultyAttributesWithNoMod1 = difficultyCalculator1.calculate();
 const difficultyAttributesWithNoMod2 = difficultyCalculator2.calculate();
