@@ -111,7 +111,7 @@ export class Hold extends ManiaHitObject implements IHoldableObject {
   createNestedHitObjects(): void {
     this.nestedHitObjects = [];
 
-    for (const nested of ManiaTickGenerator.generateHoldTicks(this)) {
+    for (const nested of ManiaEventGenerator.generateHoldTicks(this)) {
       this.nestedHitObjects.push(nested);
     }
   }

@@ -1,17 +1,18 @@
-import { TickGenerator, INestedHitObject } from 'osu-resources';
+import { EventGenerator } from 'osu-resources';
 
+import { ManiaHitObject } from './ManiaHitObject';
 import { Hold } from './Hold';
 import { HoldHead } from './HoldHead';
 import { HoldTail } from './HoldTail';
 import { HoldTick } from './HoldTick';
 
-export class ManiaTickGenerator extends TickGenerator {
-  static *generateHoldTicks(hold: Hold): Generator<INestedHitObject> {
+export class ManiaEventGenerator extends EventGenerator {
+  static *generateHoldTicks(hold: Hold): Generator<ManiaHitObject> {
     if (hold.tickInterval === 0) {
       return;
     }
 
-    const head = new HoldHead(hold.clone());
+    const head = new HoldHead();
 
     head.startTime = hold.startTime;
     head.column = hold.column;
@@ -24,17 +25,16 @@ export class ManiaTickGenerator extends TickGenerator {
     const endTime = hold.endTime - tickInterval;
 
     while (time <= endTime) {
-      const tick = new HoldTick(hold.clone());
+      const tick = new HoldTick();
 
       tick.startTime = time;
-      tick.progress = (time - hold.startTime) / hold.duration;
 
       yield tick;
 
       time += tickInterval;
     }
 
-    const tail = new HoldTail(hold.clone());
+    const tail = new HoldTail();
 
     tail.startTime = hold.endTime;
     tail.column = hold.column;
