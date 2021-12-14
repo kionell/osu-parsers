@@ -14,7 +14,7 @@ export class ManiaRandom implements IMod, IApplicableToBeatmap {
 
   isRanked = false;
 
-  incompatibles: ModBitwise = ModBitwise.Hidden;
+  incompatibles: ModBitwise = ModBitwise.None;
 
   applyToBeatmap(beatmap: ManiaBeatmap): void {
     const random: number[] = [];
