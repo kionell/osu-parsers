@@ -1,9 +1,19 @@
-import { IBeatmap, IMod, IRuleset, ModCombination } from '..';
-import { ProgressiveCalculationBeatmap } from '../Beatmaps/ProgressiveCalculationBeatmap';
-import { DifficultyAttributes } from './Attributes/DifficultyAttributes';
-import { TimedDifficultyAttributes } from './Attributes/TimedDifficultyAttributes';
-import { DifficultyHitObject } from './Preprocessing/DifficultyHitObject';
-import { Skill } from './Skills/Skill';
+import {
+  IBeatmap,
+  ProgressiveCalculationBeatmap,
+  RulesetBeatmap,
+} from '../Beatmaps';
+
+import { IRuleset } from '../Rulesets';
+import { ModCombination, IMod } from '../Mods';
+
+import {
+  DifficultyAttributes,
+  TimedDifficultyAttributes,
+} from './Attributes';
+
+import { DifficultyHitObject } from './Preprocessing';
+import { Skill } from './Skills';
 
 export abstract class DifficultyCalculator {
   /**
