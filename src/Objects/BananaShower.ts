@@ -1,7 +1,5 @@
 import { CatchHitObject } from './CatchHitObject';
-import { CatchTickGenerator } from './CatchTickGenerator';
-
-import { ISpinnableObject, HitType } from 'osu-resources';
+import { CatchEventGenerator } from './CatchEventGenerator';
 
 export class BananaShower extends CatchHitObject implements ISpinnableObject {
   get hitType(): HitType {
@@ -33,7 +31,7 @@ export class BananaShower extends CatchHitObject implements ISpinnableObject {
   createNestedHitObjects(): void {
     this.nestedHitObjects = [];
 
-    for (const nested of CatchTickGenerator.generateBananas(this)) {
+    for (const nested of CatchEventGenerator.generateBananas(this)) {
       this.nestedHitObjects.push(nested);
     }
   }

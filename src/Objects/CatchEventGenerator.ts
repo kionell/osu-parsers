@@ -1,24 +1,25 @@
+import { CatchHitObject } from './CatchHitObject';
 import { JuiceStream } from './JuiceStream';
 import { JuiceFruit } from './JuiceFruit';
-import { JuiceDrop } from './JuiceDrop';
 import { JuiceDroplet } from './JuiceDroplet';
-
+import { JuiceTinyDroplet } from './JuiceTinyDroplet';
 import { BananaShower } from './BananaShower';
 import { Banana } from './Banana';
 
 import {
-  TickGenerator,
-  INestedHitObject,
-  INestedEvent,
-  NestedType,
+  EventGenerator,
+  ISliderEventDescriptor,
+  SliderEventType,
 } from 'osu-resources';
 
-export class CatchTickGenerator extends TickGenerator {
-  static *generateDroplets(stream: JuiceStream): Generator<INestedHitObject> {
-    let lastEvent: INestedEvent | null = null;
+export class CatchEventGenerator extends EventGenerator {
+  static *generateDroplets(stream: JuiceStream): Generator<CatchHitObject> {
+    let lastEvent: ISliderEventDescriptor | null = null;
 
-    for (const event of TickGenerator.generateNestedEvents(stream)) {
-      // Generate tiny droplets since the last point
+    for (const event of EventGenerator.generate(stream)) {
+      /**
+       * Generate tiny droplets since the last point
+       */
       if (lastEvent !== null) {
         const sinceLastTick = event.startTime - lastEvent.startTime;
 
@@ -34,18 +35,13 @@ export class CatchTickGenerator extends TickGenerator {
 
           while (time < endTime) {
             const startTime = time + lastEvent.startTime;
-            const offset =
-              lastEvent.progress +
+            const offset = lastEvent.progress +
               (time / sinceLastTick) * (event.progress - lastEvent.progress);
 
-            const droplet = new JuiceDroplet(stream.clone());
+            const droplet = new JuiceTinyDroplet();
 
             droplet.startTime = startTime;
-
-            droplet.progress = (startTime - stream.startTime) / stream.duration;
-
-            droplet.startX =
-              stream.originalX + stream.path.positionAt(offset).x;
+            droplet.startX = stream.originalX + stream.path.positionAt(offset).x;
 
             yield droplet;
 
@@ -62,35 +58,33 @@ export class CatchTickGenerator extends TickGenerator {
        */
       lastEvent = event;
 
-      let nested: JuiceFruit | JuiceDrop;
+      let nested: JuiceFruit | JuiceDroplet;
 
-      switch (event.nestedType) {
-        case NestedType.Head:
-        case NestedType.Repeat:
-        case NestedType.Tail:
-          nested = new JuiceFruit(stream.clone());
+      switch (event.eventType) {
+        case SliderEventType.Head:
+        case SliderEventType.Repeat:
+        case SliderEventType.Tail:
+          nested = new JuiceFruit();
 
           nested.startTime = event.startTime;
-          nested.startX =
-            stream.originalX + stream.path.positionAt(event.progress).x;
+          nested.startX = stream.originalX + stream.path.positionAt(event.progress).x;
 
           yield nested;
 
           break;
 
-        case NestedType.Tick:
-          nested = new JuiceDrop(stream.clone());
+        case SliderEventType.Tick:
+          nested = new JuiceDroplet();
 
           nested.startTime = event.startTime;
-          nested.startX =
-            stream.originalX + stream.path.positionAt(event.progress).x;
+          nested.startX = stream.originalX + stream.path.positionAt(event.progress).x;
 
           yield nested;
       }
     }
   }
 
-  static *generateBananas(shower: BananaShower): Generator<INestedHitObject> {
+  static *generateBananas(shower: BananaShower): Generator<CatchHitObject> {
     let tickInterval = shower.duration;
 
     while (tickInterval > 100) {
@@ -101,18 +95,17 @@ export class CatchTickGenerator extends TickGenerator {
       return;
     }
 
-    let time = shower.startTime;
     const endTime = shower.endTime;
+    let time = shower.startTime;
     let index = -1;
 
     while (time <= endTime) {
-      const tick = new Banana(shower.clone());
+      const banana = new Banana();
 
-      tick.startTime = time;
-      tick.bananaIndex = ++index;
-      tick.progress = (time - shower.startTime) / shower.duration;
+      banana.startTime = time;
+      banana.index = ++index;
 
-      yield tick;
+      yield banana;
 
       time += tickInterval;
     }

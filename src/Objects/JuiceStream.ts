@@ -1,5 +1,5 @@
 import { CatchHitObject } from './CatchHitObject';
-import { CatchTickGenerator } from './CatchTickGenerator';
+import { CatchEventGenerator } from './CatchEventGenerator';
 
 import {
   ControlPointInfo,
@@ -122,7 +122,7 @@ export class JuiceStream extends CatchHitObject implements ISlidableObject, IHas
   createNestedHitObjects(): void {
     this.nestedHitObjects = [];
 
-    for (const nested of CatchTickGenerator.generateDroplets(this)) {
+    for (const nested of CatchEventGenerator.generateDroplets(this)) {
       this.nestedHitObjects.push(nested);
     }
   }
