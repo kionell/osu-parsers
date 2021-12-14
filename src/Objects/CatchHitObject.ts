@@ -5,7 +5,7 @@ import {
   IHasCombo,
   IHasX,
   HitType,
-} from 'osu-resources';
+} from 'osu-classes';
 
 /**
  * An osu!catch hit object.

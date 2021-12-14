@@ -7,7 +7,7 @@ import {
   HitSample,
   SliderPath,
   ISlidableObject,
-} from 'osu-resources';
+} from 'osu-classes';
 
 export class JuiceStream extends CatchHitObject implements ISlidableObject {
   static BASE_DISTANCE = 100;

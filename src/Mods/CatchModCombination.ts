@@ -13,7 +13,7 @@ import { CatchAutoplay } from './CatchAutoplay';
 import { CatchPerfect } from './CatchPerfect';
 import { CatchCinema } from './CatchCinema';
 
-import { ModCombination, IMod } from 'osu-resources';
+import { ModCombination, IMod } from 'osu-classes';
 
 export class CatchModCombination extends ModCombination {
   get mode(): number {

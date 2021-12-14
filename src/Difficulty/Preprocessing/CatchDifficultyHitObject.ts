@@ -1,4 +1,4 @@
-import { DifficultyHitObject, IHitObject } from 'osu-resources';
+import { DifficultyHitObject, IHitObject } from 'osu-classes';
 import { PalpableHitObject } from '../../Objects';
 
 export class CatchDifficultyHitObject extends DifficultyHitObject {

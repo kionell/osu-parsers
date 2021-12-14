@@ -1,4 +1,4 @@
-import { DifficultyHitObject, ModCombination, StrainDecaySkill } from 'osu-resources';
+import { DifficultyHitObject, ModCombination, StrainDecaySkill } from 'osu-classes';
 import { CatchDifficultyHitObject } from '../Preprocessing';
 
 export class Movement extends StrainDecaySkill {

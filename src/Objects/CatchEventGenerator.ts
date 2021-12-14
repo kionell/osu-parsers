@@ -10,7 +10,7 @@ import {
   EventGenerator,
   ISliderEventDescriptor,
   SliderEventType,
-} from 'osu-resources';
+} from 'osu-classes';
 
 export class CatchEventGenerator extends EventGenerator {
   static *generateDroplets(stream: JuiceStream): Generator<CatchHitObject> {

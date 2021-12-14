@@ -1,4 +1,4 @@
-import { DifficultyAttributes, ModBitwise, PerformanceCalculator, Ruleset, ScoreInfo } from 'osu-resources';
+import { DifficultyAttributes, ModBitwise, PerformanceCalculator, Ruleset, ScoreInfo } from 'osu-classes';
 import { CatchModCombination } from '../Mods';
 import { CatchDifficultyAttributes } from './Attributes';
 

@@ -13,7 +13,7 @@ import {
   IHitObject,
   ModBitwise,
   HitType,
-} from 'osu-resources';
+} from 'osu-classes';
 import { JuiceDroplet, JuiceTinyDroplet } from '../Objects';
 
 export class CatchBeatmapProcessor extends BeatmapProcessor {

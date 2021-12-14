@@ -12,7 +12,7 @@ import {
   IHitObject,
   ISlidableObject,
   ISpinnableObject,
-} from 'osu-resources';
+} from 'osu-classes';
 
 export class CatchBeatmapConverter extends BeatmapConverter {
   canConvert(beatmap: IBeatmap): boolean {

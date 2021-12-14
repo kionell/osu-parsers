@@ -1,3 +1,3 @@
-import { Cinema } from 'osu-resources';
+import { Cinema } from 'osu-classes';
 
 export class CatchCinema extends Cinema {}

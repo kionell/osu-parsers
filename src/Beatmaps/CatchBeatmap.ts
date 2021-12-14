@@ -5,7 +5,7 @@ import { JuiceTinyDroplet } from '../Objects/JuiceTinyDroplet';
 import {
   RulesetBeatmap,
   HitType,
-} from 'osu-resources';
+} from 'osu-classes';
 
 export class CatchBeatmap extends RulesetBeatmap {
   mods: CatchModCombination = new CatchModCombination();

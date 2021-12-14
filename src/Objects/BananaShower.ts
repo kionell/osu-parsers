@@ -1,4 +1,4 @@
-import { ISpinnableObject } from 'osu-resources';
+import { ISpinnableObject } from 'osu-classes';
 import { CatchHitObject } from './CatchHitObject';
 import { CatchEventGenerator } from './CatchEventGenerator';
 
