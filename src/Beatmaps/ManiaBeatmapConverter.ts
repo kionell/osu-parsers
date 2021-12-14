@@ -90,6 +90,7 @@ export class ManiaBeatmapConverter extends BeatmapConverter {
     this._converted.events = original.events.clone();
     this._converted.controlPoints = original.controlPoints.clone();
     this._converted.fileFormat = original.fileFormat;
+    this._converted.originalMode = original.originalMode;
 
     for (const hitObject of this.convertHitObjects(original)) {
       this._converted.hitObjects.push(hitObject);
