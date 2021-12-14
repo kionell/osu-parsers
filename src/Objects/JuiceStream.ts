@@ -7,75 +7,29 @@ import {
   HitSample,
   SliderPath,
   ISlidableObject,
-  IHasLegacyLastTickOffset,
-  HitType,
 } from 'osu-resources';
 
-export class JuiceStream extends CatchHitObject implements ISlidableObject, IHasLegacyLastTickOffset {
+export class JuiceStream extends CatchHitObject implements ISlidableObject {
   static BASE_DISTANCE = 100;
 
   tickDistance = 100;
 
-  tickInterval = 0;
-
-  tickRate = 1;
-
   velocity = 1;
 
-  get hitType(): HitType {
-    let hitType = this.base.hitType;
+  legacyLastTickOffset?: number;
 
-    hitType &= ~HitType.Normal;
-    hitType &= ~HitType.Spinner;
-    hitType &= ~HitType.Hold;
+  path: SliderPath = new SliderPath();
 
-    return hitType | HitType.Slider;
+  nodeSamples: HitSample[][] = [];
+
+  repeats = 0;
+
+  get distance(): number {
+    return this.path.distance;
   }
 
-  get endX(): number {
-    return this.originalX + this.path.curvePositionAt(1, this.spans).x;
-  }
-
-  get pixelLength(): number {
-    return (this.base as ISlidableObject).pixelLength || 0;
-  }
-
-  set pixelLength(value: number) {
-    const slider = this.base as ISlidableObject;
-
-    slider.pixelLength = value;
-
-    if (slider.path) {
-      slider.path.expectedDistance = value;
-      slider.path.invalidate();
-    }
-  }
-
-  get path(): SliderPath {
-    return (this.base as ISlidableObject).path;
-  }
-
-  set path(value: SliderPath) {
-    const slider = this.base as ISlidableObject;
-
-    slider.path = value;
-    slider.path.invalidate();
-  }
-
-  get nodeSamples(): HitSample[][] {
-    return (this.base as ISlidableObject).nodeSamples || [this.base.samples];
-  }
-
-  set nodeSamples(value: HitSample[][]) {
-    (this.base as ISlidableObject).nodeSamples = value;
-  }
-
-  get repeats(): number {
-    return (this.base as ISlidableObject).repeats || 0;
-  }
-
-  set repeats(value: number) {
-    (this.base as ISlidableObject).repeats = value;
+  set distance(value: number) {
+    this.path.distance = value;
   }
 
   get spans(): number {
@@ -98,8 +52,8 @@ export class JuiceStream extends CatchHitObject implements ISlidableObject, IHas
     return this.startTime + this.duration;
   }
 
-  get legacyLastTickOffset(): number {
-    return (this.base as unknown as IHasLegacyLastTickOffset).legacyLastTickOffset || 0;
+  get endX(): number {
+    return this.originalX + this.path.curvePositionAt(1, this.spans).x;
   }
 
   applyDefaultsToSelf(controlPoints: ControlPointInfo, difficulty: BeatmapDifficultySection): void {
@@ -111,11 +65,7 @@ export class JuiceStream extends CatchHitObject implements ISlidableObject, IHas
     const scoringDistance = JuiceStream.BASE_DISTANCE
       * difficulty.sliderMultiplier * difficultyPoint.speedMultiplier;
 
-    this.tickRate = difficulty.sliderTickRate;
-
-    this.tickInterval = timingPoint.beatLength / this.tickRate;
-    this.tickDistance = scoringDistance / this.tickRate;
-
+    this.tickDistance = scoringDistance / difficulty.sliderTickRate;
     this.velocity = scoringDistance / timingPoint.beatLength;
   }
 
@@ -125,5 +75,29 @@ export class JuiceStream extends CatchHitObject implements ISlidableObject, IHas
     for (const nested of CatchEventGenerator.generateDroplets(this)) {
       this.nestedHitObjects.push(nested);
     }
+  }
+
+  clone(): JuiceStream {
+    const cloned = new JuiceStream();
+
+    cloned.startPosition = this.startPosition.clone();
+    cloned.startX = this.startX;
+    cloned.startTime = this.startTime;
+    cloned.hitType = this.hitType;
+    cloned.hitSound = this.hitSound;
+    cloned.samples = this.samples.map((s) => s.clone());
+    cloned.nodeSamples = this.nodeSamples.map((n) => n.map((s) => s.clone()));
+    cloned.velocity = this.velocity;
+    cloned.repeats = this.repeats;
+    cloned.path = this.path.clone();
+    cloned.kiai = this.kiai;
+    cloned.tickDistance = this.tickDistance;
+    cloned.legacyLastTickOffset = this.legacyLastTickOffset;
+    cloned.scale = this.scale;
+    cloned.timePreempt = this.timePreempt;
+    cloned.scale = this.scale;
+    cloned.offsetX = this.offsetX;
+
+    return cloned;
   }
 }

@@ -1,10 +1,10 @@
 import { CatchHitObject } from '../Objects/CatchHitObject';
 import { CatchModCombination } from '../Mods/CatchModCombination';
+import { JuiceTinyDroplet } from '../Objects/JuiceTinyDroplet';
 
 import {
   RulesetBeatmap,
   HitType,
-  NestedType,
 } from 'osu-resources';
 
 export class CatchBeatmap extends RulesetBeatmap {
@@ -24,7 +24,7 @@ export class CatchBeatmap extends RulesetBeatmap {
 
       if (obj.hitType & HitType.Slider) {
         return combo + obj.nestedHitObjects.reduce((c, n) => {
-          return c + Number(n.nestedType !== NestedType.JuiceDroplet);
+          return c + (n instanceof JuiceTinyDroplet ? 0 : 1);
         }, 0);
       }
 

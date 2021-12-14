@@ -7,62 +7,68 @@ import {
   HitType,
 } from 'osu-resources';
 
+/**
+ * An osu!catch hit object.
+ */
 export abstract class CatchHitObject extends HitObject implements IHasCombo, IHasX {
+  /**
+   * The radius of hit objects.
+   */
   static OBJECT_RADIUS = 64;
 
   timePreempt = 1000;
 
   scale = 0.5;
 
+  /**
+   * X-offset of the hit object.
+   */
   offsetX = 0;
 
   private _originalX: number = this.startX;
 
   /**
-   * Start x-position of the hit object.
+   * The starting X-position of the hit object.
    */
   get startX(): number {
-    return (this.base as unknown as IHasX).startX;
+    return this.startPosition.x;
   }
 
   set startX(value: number) {
-    (this.base as unknown as IHasX).startX = value;
+    this.startPosition.x = value;
     this._originalX = value;
   }
 
   /**
-   * Original start x-position of the hit object before any changes.
+   * The ending X-position of the hit object.
+   */
+  get endX(): number {
+    return this.effectiveX;
+  }
+
+  /**
+   * Original start X-position of the hit object before any changes.
    */
   get originalX(): number {
     return this._originalX;
   }
 
   /**
-   * Start x-position with applied offset.
+   * Start X-position with applied offset.
    */
   get effectiveX(): number {
     return this._originalX + this.offsetX;
   }
 
   get randomSeed(): number {
-    return Math.trunc(this.base.startTime);
+    return Math.trunc(this.startTime);
   }
 
-  applyDefaultsToSelf(
-    controlPoints: ControlPointInfo,
-    difficulty: BeatmapDifficultySection
-  ): void {
+  applyDefaultsToSelf(controlPoints: ControlPointInfo, difficulty: BeatmapDifficultySection): void {
     super.applyDefaultsToSelf(controlPoints, difficulty);
 
-    this.timePreempt =
-      BeatmapDifficultySection.range(difficulty.approachRate, 1800, 1200, 450);
-
-    /**
-     * Closest approximation:
-     * 23.0400009155273 + (7 - CS) * 4.47999954223635
-     */
-    this.scale =
-      (1 - (Math.fround(0.7) * (difficulty.circleSize - 5)) / 5) / 2;
+    this.timePreempt = BeatmapDifficultySection.range(difficulty.approachRate, 1800, 1200, 450);
+    this.scale = Math.fround((1 - Math.fround(0.7) * (difficulty.circleSize - 5) / 5) / 2);
   }
 
   get isNewCombo(): boolean {

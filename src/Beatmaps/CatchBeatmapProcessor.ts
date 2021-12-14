@@ -11,10 +11,10 @@ import {
   FastRandom,
   BeatmapProcessor,
   IHitObject,
-  NestedType,
   ModBitwise,
   HitType,
 } from 'osu-resources';
+import { JuiceDroplet, JuiceTinyDroplet } from '../Objects';
 
 export class CatchBeatmapProcessor extends BeatmapProcessor {
   static RNG_SEED = 1337;
@@ -71,14 +71,13 @@ export class CatchBeatmapProcessor extends BeatmapProcessor {
 
           juice.offsetX = 0;
 
-          if (nested.nestedType & NestedType.JuiceDroplet) {
+          if (nested instanceof JuiceTinyDroplet) {
             const min = -juice.originalX;
             const max = min + CatchBeatmapProcessor.PLAYFIELD_WIDTH;
 
-            juice.offsetX = Math.max(min,
-              Math.min(this._rng.nextInt(-20, 20), max));
+            juice.offsetX = Math.max(min, Math.min(this._rng.nextInt(-20, 20), max));
           }
-          else if (nested.nestedType & NestedType.JuiceDrop) {
+          else if (nested instanceof JuiceDroplet) {
             // Osu!stable retrieved a random droplet rotation.
             this._rng.next();
           }
@@ -90,8 +89,7 @@ export class CatchBeatmapProcessor extends BeatmapProcessor {
         const bananas = bananaShower.nestedHitObjects as Banana[];
 
         bananas.forEach((banana) => {
-          banana.offsetX =
-            this._rng.nextDouble() * CatchBeatmapProcessor.PLAYFIELD_WIDTH;
+          banana.offsetX = this._rng.nextDouble() * CatchBeatmapProcessor.PLAYFIELD_WIDTH;
 
           // Osu!stable retrieved a random banana type.
           this._rng.next();
@@ -217,7 +215,7 @@ export class CatchBeatmapProcessor extends BeatmapProcessor {
         const nestedHitObjects = juiceStream.nestedHitObjects;
 
         nestedHitObjects.forEach((nested) => {
-          if ((nested.nestedType & NestedType.JuiceDroplet) === 0) {
+          if (!(nested instanceof JuiceTinyDroplet)) {
             palpableObjects.push((nested as IHitObject) as PalpableHitObject);
           }
         });
@@ -244,13 +242,9 @@ export class CatchBeatmapProcessor extends BeatmapProcessor {
       const thisDirection = next.effectiveX > current.effectiveX ? 1 : -1;
 
       // 1/4th of a frame of grace time, taken } from osu-stable
-      const timeToNext =
-        next.startTime -
-        current.startTime -
-        Math.fround(1000) / Math.fround(60) / 4;
+      const timeToNext = next.startTime - current.startTime - Math.fround(1000 / 60) / 4;
 
-      const distanceToNext =
-        Math.abs(next.effectiveX - current.effectiveX) -
+      const distanceToNext = Math.abs(next.effectiveX - current.effectiveX) -
         (lastDirection === thisDirection ? lastExcess : halfCatcherWidth);
 
       const distanceToHyper = Math.fround(timeToNext * CatchBeatmapProcessor.BASE_SPEED - distanceToNext);
