@@ -17,11 +17,11 @@ export class CatchRuleset extends Ruleset {
 
   /**
    * Creates a new mod combination by converting legacy mod bitwise.
-   * @param bitwise Mod bitwise.
+   * @param input Mod bitwise or acronyms.
    * @returns A new mod combination.
    */
-  createModCombination(bitwise: number): CatchModCombination {
-    return new CatchModCombination(bitwise);
+  createModCombination(input: number | string): CatchModCombination {
+    return new CatchModCombination(input);
   }
 
   /**
