@@ -5,38 +5,48 @@ import {
   HardRock,
   Vector2,
   IApplicableToHitObjects,
-  IHitObject,
-  HitType,
+  PathPoint,
+  SliderPath,
+  PathType,
 } from 'osu-classes';
+import { SliderRepeat, SliderTick } from '..';
 
 export class StandardHardRock extends HardRock implements IApplicableToHitObjects {
   static BASE_SIZE: Vector2 = new Vector2(512, 384);
 
   applyToHitObjects(hitObjects: StandardHitObject[]): void {
     hitObjects.forEach((hitObject) => {
-      if ((hitObject.hitType & HitType.Slider) === 0) {
-        const pos = hitObject.startPosition;
-
-        pos.y = StandardHardRock.BASE_SIZE.y - pos.y;
-
-        return;
-      }
-
-      const slider = hitObject as Slider;
-      const nestedHitObjects = slider.nestedHitObjects;
-
-      nestedHitObjects.forEach((nested) => {
-        const standardObject = (nested as IHitObject) as StandardHitObject;
-        const nestedPos = standardObject.startPosition;
-
-        nestedPos.y = StandardHardRock.BASE_SIZE.y - nestedPos.y;
-      });
-
-      slider.path.controlPoints.forEach((pathPoint) => {
-        pathPoint.position.y *= -1;
-      });
-
-      slider.path.invalidate();
+      StandardHardRock._reflectVertically(hitObject);
     });
+  }
+
+  private static _reflectVertically(hitObject: StandardHitObject) {
+    const x = hitObject.startX;
+    const y = StandardHardRock.BASE_SIZE.y - hitObject.startY;
+
+    hitObject.startPosition = new Vector2(x, y);
+
+    if (!(hitObject instanceof Slider)) return;
+
+    const slider = hitObject as Slider;
+    const nestedHitObjects = slider.nestedHitObjects as StandardHitObject[];
+
+    nestedHitObjects.forEach((nested) => {
+      if (nested instanceof SliderTick || nested instanceof SliderRepeat) {
+        const x = nested.startX;
+        const y = StandardHardRock.BASE_SIZE.y - nested.startY;
+
+        nested.startPosition = new Vector2(x, y);
+      }
+    });
+
+    const controlPoints = slider.path.controlPoints.map((p) => new PathPoint(p.position, p.type));
+    const curveType = controlPoints[0].type as PathType;
+
+    controlPoints.forEach((point) => {
+      point.position = new Vector2(point.position.x, -point.position.y);
+    });
+
+    slider.path = new SliderPath(curveType, controlPoints, slider.path.expectedDistance);
   }
 }
