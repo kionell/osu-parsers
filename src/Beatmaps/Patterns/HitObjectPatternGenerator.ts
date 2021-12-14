@@ -11,6 +11,7 @@ import {
   HitSound,
   IHitObject,
   IHasPosition,
+  IBeatmap,
 } from 'osu-resources';
 
 export class HitObjectPatternGenerator extends PatternGenerator {
@@ -21,14 +22,15 @@ export class HitObjectPatternGenerator extends PatternGenerator {
   constructor(
     hitObject: IHitObject,
     beatmap: ManiaBeatmap,
+    originalBeatmap: IBeatmap,
     previousPattern: Pattern,
     rng: FastRandom,
     previousTime: number,
     previousPosition: Vector2,
     density: number,
-    lastStair: PatternType
+    lastStair: PatternType,
   ) {
-    super(hitObject, beatmap, previousPattern, rng);
+    super(hitObject, beatmap, originalBeatmap, previousPattern, rng);
 
     this.stairType = lastStair;
 
@@ -40,7 +42,7 @@ export class HitObjectPatternGenerator extends PatternGenerator {
 
     const startPosition = (hitObject as unknown as IHasPosition).startPosition;
     const posSeparation = (startPosition || new Vector2(0, 0))
-      .subtract(previousPosition)
+      .fsubtract(previousPosition)
       .flength();
 
     const timeSeparation = hitObject.startTime - previousTime;
@@ -541,10 +543,14 @@ export class HitObjectPatternGenerator extends PatternGenerator {
    * @param column The column to add the note to.
    */
   protected addToPattern(pattern: Pattern, column: number): void {
-    const newObject = new Note(this.hitObject.clone());
+    const note = new Note();
+    const posData = this.hitObject as unknown as IHasPosition;
 
-    newObject.originalColumn = column;
+    note.startTime = this.hitObject.startTime;
+    note.originalColumn = column;
+    note.samples = this.hitObject.samples.map((s) => s.clone());
+    note.startPosition = posData?.startPosition?.clone() ?? new Vector2(256, 192);
 
-    pattern.addHitObject(newObject);
+    pattern.addHitObject(note);
   }
 }

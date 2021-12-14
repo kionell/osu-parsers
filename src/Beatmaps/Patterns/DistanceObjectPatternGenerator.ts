@@ -15,6 +15,8 @@ import {
   IHoldableObject,
   IHitObject,
   IHasPosition,
+  IBeatmap,
+  Vector2,
 } from 'osu-resources';
 
 /**
@@ -36,8 +38,14 @@ export class DistanceObjectPatternGenerator extends PatternGenerator {
 
   protected convertType: PatternType = PatternType.None;
 
-  constructor(hitObject: IHitObject, beatmap: ManiaBeatmap, previousPattern: Pattern, rng: FastRandom) {
-    super(hitObject, beatmap, previousPattern, rng);
+  constructor(
+    hitObject: IHitObject,
+    beatmap: ManiaBeatmap,
+    originalBeatmap: IBeatmap,
+    previousPattern: Pattern,
+    rng: FastRandom,
+  ) {
+    super(hitObject, beatmap, originalBeatmap, previousPattern, rng);
 
     if (!beatmap.controlPoints.effectPointAt(hitObject.startTime).kiai) {
       this.convertType = PatternType.LowProbability;
@@ -55,7 +63,7 @@ export class DistanceObjectPatternGenerator extends PatternGenerator {
     this.spanCount = slider.repeats + 1 || 1;
     this.startTime = Math.trunc(Math.round(hitObject.startTime));
 
-    const sliderMultiplier = beatmap.base.difficulty.sliderMultiplier;
+    const sliderMultiplier = beatmap.difficulty.sliderMultiplier;
 
     // This matches stable's calculation.
     this.endTime = ((slider.path.distance || 0) * beatLength * this.spanCount * 0.01) / sliderMultiplier;
@@ -650,23 +658,28 @@ export class DistanceObjectPatternGenerator extends PatternGenerator {
     startTime: number,
     endTime: number): void {
     if (startTime === endTime) {
-      const newObject = new Note(this.hitObject.clone());
+      const note = new Note();
+      const posData = this.hitObject as unknown as IHasPosition;
 
-      newObject.startTime = startTime;
-      newObject.originalColumn = column;
-      newObject.samples = this.hitSamplesAt(startTime);
+      note.startTime = startTime;
+      note.originalColumn = column;
+      note.samples = this.hitSamplesAt(startTime);
+      note.startPosition = posData?.startPosition?.clone() ?? new Vector2(256, 192);
 
-      pattern.addHitObject(newObject);
+      pattern.addHitObject(note);
     }
     else {
-      const newObject = new Hold(this.hitObject.clone());
+      const hold = new Hold();
+      const posData = this.hitObject as unknown as IHasPosition;
 
-      newObject.startTime = startTime;
-      newObject.endTime = endTime;
-      newObject.originalColumn = column;
-      newObject.nodeSamples = this.nodeSamplesAt(startTime);
+      hold.startTime = startTime;
+      hold.endTime = endTime;
+      hold.originalColumn = column;
+      hold.samples = this.hitSamplesAt(startTime);
+      hold.nodeSamples = this.nodeSamplesAt(startTime);
+      hold.startPosition = posData?.startPosition?.clone() ?? new Vector2(256, 192);
 
-      pattern.addHitObject(newObject);
+      pattern.addHitObject(hold);
     }
   }
 }

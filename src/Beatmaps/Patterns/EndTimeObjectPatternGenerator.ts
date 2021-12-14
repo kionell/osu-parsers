@@ -9,8 +9,11 @@ import {
   FastRandom,
   HitSample,
   HitSound,
+  IBeatmap,
+  IHasPosition,
   IHitObject,
   IHoldableObject,
+  Vector2,
 } from 'osu-resources';
 
 export class EndTimeObjectPatternGenerator extends PatternGenerator {
@@ -18,8 +21,14 @@ export class EndTimeObjectPatternGenerator extends PatternGenerator {
 
   protected readonly convertType: PatternType;
 
-  constructor(hitObject: IHitObject, beatmap: ManiaBeatmap, previousPattern: Pattern, rng: FastRandom) {
-    super(hitObject, beatmap, previousPattern, rng);
+  constructor(
+    hitObject: IHitObject,
+    beatmap: ManiaBeatmap,
+    originalBeatmap: IBeatmap,
+    previousPattern: Pattern,
+    rng: FastRandom,
+  ) {
+    super(hitObject, beatmap, originalBeatmap, previousPattern, rng);
 
     this.endTime = Math.trunc((hitObject as IHoldableObject).endTime || 0);
 
@@ -83,23 +92,31 @@ export class EndTimeObjectPatternGenerator extends PatternGenerator {
   protected addToPattern(
     pattern: Pattern,
     column: number,
-    isHoldNote: boolean
+    isHoldNote: boolean,
   ): void {
     if (isHoldNote) {
-      const newObject = new Hold(this.hitObject.clone());
+      const hold = new Hold();
+      const posData = this.hitObject as unknown as IHasPosition;
 
-      newObject.endTime = this.endTime;
-      newObject.originalColumn = column;
-      newObject.nodeSamples = (this.hitObject as IHoldableObject).nodeSamples;
+      hold.startTime = this.hitObject.startTime;
+      hold.endTime = this.endTime;
+      hold.originalColumn = column;
+      hold.samples = this.hitObject.samples.map((s) => s.clone());
+      hold.nodeSamples = (this.hitObject as IHoldableObject).nodeSamples ?? [];
+      hold.startPosition = posData?.startPosition?.clone() ?? new Vector2(256, 192);
 
-      pattern.addHitObject(newObject);
+      pattern.addHitObject(hold);
     }
     else {
-      const newObject = new Note(this.hitObject.clone());
+      const note = new Note();
+      const posData = this.hitObject as unknown as IHasPosition;
 
-      newObject.originalColumn = column;
+      note.startTime = this.hitObject.startTime;
+      note.originalColumn = column;
+      note.samples = this.hitObject.samples.map((s) => s.clone());
+      note.startPosition = posData?.startPosition?.clone() ?? new Vector2(256, 192);
 
-      pattern.addHitObject(newObject);
+      pattern.addHitObject(note);
     }
   }
 }

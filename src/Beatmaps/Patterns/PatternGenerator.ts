@@ -1,4 +1,4 @@
-import { FastRandom, IHitObject } from 'osu-resources';
+import { FastRandom, IBeatmap, IHitObject } from 'osu-resources';
 import { ManiaBeatmap } from '../ManiaBeatmap';
 import { Pattern } from './Pattern';
 
@@ -52,6 +52,11 @@ export abstract class PatternGenerator {
    */
   protected readonly beatmap: ManiaBeatmap;
 
+  /**
+   * The original beatmap.
+   */
+  protected readonly originalBeatmap: IBeatmap;
+
   protected readonly totalColumns: number;
 
   /**
@@ -64,11 +69,13 @@ export abstract class PatternGenerator {
   constructor(
     hitObject: IHitObject,
     beatmap: ManiaBeatmap,
+    originalBeatmap: IBeatmap,
     previousPattern: Pattern,
-    rng: FastRandom
+    rng: FastRandom,
   ) {
     this.hitObject = hitObject;
     this.beatmap = beatmap;
+    this.originalBeatmap = originalBeatmap;
     this.previousPattern = previousPattern;
 
     this.totalColumns = beatmap.totalColumns;
@@ -111,7 +118,7 @@ export abstract class PatternGenerator {
     p3: number,
     p4 = 0,
     p5 = 0,
-    p6 = 0
+    p6 = 0,
   ): number {
     if (p2 < 0 || p2 > 1) {
       throw new Error('p2 is not in range 0-1');
@@ -153,7 +160,7 @@ export abstract class PatternGenerator {
       return this._conversionDiff;
     }
 
-    const hitObjects = this.beatmap.base.hitObjects;
+    const hitObjects = this.originalBeatmap.hitObjects;
 
     const firstObject = hitObjects[0];
     const lastObject = hitObjects[hitObjects.length - 1];
@@ -161,14 +168,14 @@ export abstract class PatternGenerator {
     const firstStartTime = firstObject.startTime || 0;
     const lastStartTime = lastObject.startTime || 0;
 
-    const drain = lastStartTime - firstStartTime - this.beatmap.totalBreakTime;
+    const drain = lastStartTime - firstStartTime - this.originalBeatmap.totalBreakTime;
 
     // Drain time in seconds
     let drainTime = Math.trunc(drain / 1000);
 
     if (drainTime === 0) drainTime = 10000;
 
-    const difficulty = this.beatmap.base.difficulty;
+    const difficulty = this.originalBeatmap.difficulty;
 
     this._conversionDiff = Math.max(4, Math.min(difficulty.approachRate, 7));
     this._conversionDiff += difficulty.drainRate;
@@ -190,7 +197,7 @@ export abstract class PatternGenerator {
    */
   protected findAvailableColumn(
     column: number,
-    options: IFindOptions
+    options: IFindOptions,
   ): number {
     const patterns = options.patterns || [];
     const lowerBound = options.lowerBound || this.randomStart;
