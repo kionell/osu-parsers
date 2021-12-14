@@ -1,14 +1,3 @@
-import { DistanceObjectPatternGenerator } from './Patterns/DistanceObjectPatternGenerator';
-import { EndTimeObjectPatternGenerator } from './Patterns/EndTimeObjectPatternGenerator';
-import { HitObjectPatternGenerator } from './Patterns/HitObjectPatternGenerator';
-import { SpecificBeatmapPatternGenerator } from './Patterns/SpecificBeatmapPatternGenerator';
-import { PatternGenerator } from './Patterns/PatternGenerator';
-import { PatternType } from '../Enums/PatternType';
-import { Pattern } from './Patterns/Pattern';
-import { ManiaBeatmap } from './ManiaBeatmap';
-import { ManiaHitObject } from '../Objects/ManiaHitObject';
-import { StageDefinition } from './StageDefinition';
-
 import {
   Vector2,
   FastRandom,
@@ -19,8 +8,22 @@ import {
   IHasDuration,
   ISpinnableObject,
   IHasX,
-  Beatmap,
+  IHitObject,
 } from 'osu-resources';
+
+import {
+  DistanceObjectPatternGenerator,
+  EndTimeObjectPatternGenerator,
+  HitObjectPatternGenerator,
+  SpecificBeatmapPatternGenerator,
+  PatternGenerator,
+  Pattern,
+} from './Patterns';
+
+import { ManiaHitObject } from '../Objects/ManiaHitObject';
+import { PatternType } from '../Enums/PatternType';
+import { ManiaBeatmap } from './ManiaBeatmap';
+import { StageDefinition } from './StageDefinition';
 
 export class ManiaBeatmapConverter extends BeatmapConverter {
   /**
@@ -55,6 +58,8 @@ export class ManiaBeatmapConverter extends BeatmapConverter {
 
   private _lastStair: PatternType = PatternType.Stair;
 
+  private _converted?: ManiaBeatmap;
+
   canConvert(beatmap: IBeatmap): boolean {
     return beatmap.hitObjects.every((h) => {
       return Number.isFinite((h as unknown as IHasX).startX);
@@ -66,7 +71,7 @@ export class ManiaBeatmapConverter extends BeatmapConverter {
 
     this._updateTargetColumns(original);
 
-    let difficulty = original.difficulty;
+    const difficulty = original.difficulty;
 
     let seed = Math.trunc(Math.round(difficulty.approachRate));
 
@@ -75,55 +80,170 @@ export class ManiaBeatmapConverter extends BeatmapConverter {
 
     this._rng = new FastRandom(Math.trunc(seed));
 
-    const converted = this.createBeatmap(original);
+    this._converted = this.createBeatmap();
 
-    for (const hitObject of this.convertHitObjects(converted)) {
-      converted.hitObjects.push(hitObject);
+    this._converted.general = original.general.clone();
+    this._converted.editor = original.editor.clone();
+    this._converted.difficulty = original.difficulty.clone();
+    this._converted.metadata = original.metadata.clone();
+    this._converted.colours = original.colours.clone();
+    this._converted.events = original.events.clone();
+    this._converted.controlPoints = original.controlPoints.clone();
+    this._converted.fileFormat = original.fileFormat;
+
+    for (const hitObject of this.convertHitObjects(original)) {
+      this._converted.hitObjects.push(hitObject);
     }
 
-    converted.hitObjects.forEach((h) => (h.originalColumn = h.column));
-    converted.hitObjects.sort((a, b) => a.startTime - b.startTime);
-
-    const base = (converted as Beatmap).base;
-
-    difficulty = base ? base.difficulty : converted.difficulty;
+    this._converted.hitObjects.forEach((h) => (h.originalColumn = h.column));
+    this._converted.hitObjects.sort((a, b) => a.startTime - b.startTime);
 
     /**
      * Since all conveted beatmaps receive osu!mania ruleset ID,
      * the calculation of the columns will be done differently.
      * We need to update CS to keep the correct number of columns in game.
      */
-    difficulty.circleSize = converted.totalColumns;
+    this._converted.difficulty.circleSize = this._converted.totalColumns;
 
-    return converted;
+    return this._converted;
   }
 
-  *convertHitObjects(beatmap: ManiaBeatmap): Generator<ManiaHitObject> {
-    const hitObjects = this.originalRuleset === 3
-      ? this._generateSpecific(beatmap)
-      : this._generateConverted(beatmap);
+  *convertHitObjects(beatmap: IBeatmap): Generator<ManiaHitObject> {
+    const hitObjects = beatmap.hitObjects;
 
     for (const hitObject of hitObjects) {
-      yield hitObject;
+      if (hitObject instanceof ManiaHitObject) {
+        yield hitObject.clone() as ManiaHitObject;
+        continue;
+      }
+
+      const generated = this.originalRuleset === 3
+        ? this._generateSpecific(hitObject, beatmap)
+        : this._generateConverted(hitObject, beatmap);
+
+      for (const object of generated) {
+        yield object;
+      }
     }
   }
 
-  createBeatmap(original: IBeatmap): ManiaBeatmap {
-    const stage = new StageDefinition();
+  /**
+   * Method that generates hit objects for osu!mania specific beatmaps.
+   * @param hitObject The hit object that will be converted.
+   * @param beatmap The beatmap which objects will be converted.
+   * This is used to look-up any values dependent on a fully-loaded beatmap.
+   * @returns The hit objects generated.
+   */
+  private *_generateSpecific(hitObject: IHitObject, beatmap: IBeatmap): Generator<ManiaHitObject> {
+    const random = this._rng as FastRandom;
+    const converted = this._converted as ManiaBeatmap;
+    const pattern = this._lastPattern;
+    const cloned = hitObject.clone();
 
-    stage.columns = this.targetColumns;
+    const generator = new SpecificBeatmapPatternGenerator(cloned, converted, beatmap, pattern, random);
 
-    const beatmap = new ManiaBeatmap(original, stage, this.originalTargetColumns);
+    for (const generated of generator.generate()) {
+      this._lastPattern = generated;
 
-    if (this.isDual) {
-      const dualStage = new StageDefinition();
+      for (const obj of generated.hitObjects) {
+        yield obj;
+      }
+    }
+  }
 
-      dualStage.columns = this.targetColumns;
+  /**
+   * Method that generates hit objects for non-osu!mania beatmaps.
+   * @param hitObject The hit object that will be converted.
+   * @param beatmap The beatmap which objects will be converted.
+   * This is used to look-up any values dependent on a fully-loaded beatmap.
+   * @returns The hit objects generated.
+   */
+  private *_generateConverted(hitObject: IHitObject, beatmap: IBeatmap): Generator<ManiaHitObject> {
+    const random = this._rng as FastRandom;
+    const converted = this._converted as ManiaBeatmap;
+    const pattern = this._lastPattern;
+    const cloned = hitObject.clone();
 
-      beatmap.stages.push(dualStage);
+    let conversion: PatternGenerator | null = null;
+
+    if ((cloned as unknown as IHasPath).path) {
+      const generator = new DistanceObjectPatternGenerator(
+        cloned,
+        converted,
+        beatmap,
+        pattern,
+        random,
+      );
+
+      const position = (cloned as unknown as IHasPosition).startPosition;
+
+      for (let i = 0; i <= generator.spanCount; ++i) {
+        const time = cloned.startTime + generator.segmentDuration * i;
+
+        this._recordNote(time, position || new Vector2(0, 0));
+        this._computeDensity(time);
+      }
+
+      conversion = generator;
+    }
+    else if ((cloned as unknown as IHasDuration).endTime) {
+      const generator = new EndTimeObjectPatternGenerator(
+        cloned,
+        converted,
+        beatmap,
+        pattern,
+        random,
+      );
+
+      const spinner = cloned as ISpinnableObject;
+
+      this._recordNote(spinner.endTime, new Vector2(256, 192));
+      this._computeDensity(spinner.endTime);
+
+      conversion = generator;
+    }
+    else if ((cloned as unknown as IHasPosition).startPosition) {
+      this._computeDensity(cloned.startTime);
+
+      const lastTime = this._lastTime as number;
+      const lastPosition = this._lastPosition;
+      const density = this._density;
+      const lastStair = this._lastStair;
+
+      const generator = new HitObjectPatternGenerator(
+        cloned,
+        converted,
+        beatmap,
+        pattern,
+        random,
+        lastTime,
+        lastPosition,
+        density,
+        lastStair,
+      );
+
+      const position = (cloned as unknown as IHasPosition).startPosition;
+
+      this._recordNote(cloned.startTime, position);
+
+      conversion = generator;
     }
 
-    return beatmap;
+    if (conversion === null) return;
+
+    for (const generated of conversion.generate()) {
+      if (!(conversion instanceof EndTimeObjectPatternGenerator)) {
+        this._lastPattern = generated;
+      }
+
+      if (conversion instanceof HitObjectPatternGenerator) {
+        this._lastStair = conversion.stairType;
+      }
+
+      for (const obj of generated.hitObjects) {
+        yield obj;
+      }
+    }
   }
 
   private _updateTargetColumns(original: IBeatmap): void {
@@ -192,128 +312,21 @@ export class ManiaBeatmapConverter extends BeatmapConverter {
     this._lastPosition = position;
   }
 
-  /**
-   * Method that generates hit objects for osu!mania specific beatmaps.
-   * @param beatmap The osu!mania beatmap.
-   * This is used to look-up any values dependent on a fully-loaded beatmap.
-   * @returns The hit objects generated.
-   */
-  private *_generateSpecific(beatmap: ManiaBeatmap): Generator<ManiaHitObject> {
-    const random = this._rng as FastRandom;
-    const hitObjects = beatmap.base.hitObjects;
+  createBeatmap(): ManiaBeatmap {
+    const stage = new StageDefinition();
 
-    for (const hitObject of hitObjects) {
-      const cloned = hitObject.clone();
-      const pattern = this._lastPattern;
+    stage.columns = this.targetColumns;
 
-      const generator = new SpecificBeatmapPatternGenerator(
-        cloned,
-        beatmap,
-        pattern,
-        random
-      );
+    const beatmap = new ManiaBeatmap(stage, this.originalTargetColumns);
 
-      for (const generated of generator.generate()) {
-        this._lastPattern = generated;
+    if (this.isDual) {
+      const dualStage = new StageDefinition();
 
-        for (const obj of generated.hitObjects) {
-          yield obj;
-        }
-      }
+      dualStage.columns = this.targetColumns;
+
+      beatmap.stages.push(dualStage);
     }
-  }
 
-  /**
-   * Method that generates hit objects for non-osu!mania beatmaps.
-   * @param beatmap The osu!mania beatmap.
-   * This is used to look-up any values dependent on a fully-loaded beatmap.
-   * @returns The hit objects generated.
-   */
-  private *_generateConverted(beatmap: ManiaBeatmap): Generator<ManiaHitObject> {
-    const random = this._rng as FastRandom;
-    const hitObjects = beatmap.base.hitObjects;
-
-    for (const hitObject of hitObjects) {
-      const cloned = hitObject.clone();
-      const pattern = this._lastPattern;
-
-      let conversion: PatternGenerator | null = null;
-
-      if ((cloned as unknown as IHasPath).path) {
-        const generator = new DistanceObjectPatternGenerator(
-          cloned,
-          beatmap,
-          pattern,
-          random
-        );
-
-        const position = (cloned as unknown as IHasPosition).startPosition;
-
-        for (let i = 0; i <= generator.spanCount; ++i) {
-          const time = cloned.startTime + generator.segmentDuration * i;
-
-          this._recordNote(time, position || new Vector2(0, 0));
-          this._computeDensity(time);
-        }
-
-        conversion = generator;
-      }
-      else if ((cloned as unknown as IHasDuration).endTime) {
-        const generator = new EndTimeObjectPatternGenerator(
-          cloned,
-          beatmap,
-          pattern,
-          random
-        );
-
-        const spinner = cloned as ISpinnableObject;
-
-        this._recordNote(spinner.endTime, new Vector2(256, 192));
-        this._computeDensity(spinner.endTime);
-
-        conversion = generator;
-      }
-      else if ((cloned as unknown as IHasPosition).startPosition) {
-        this._computeDensity(cloned.startTime);
-
-        const lastTime = this._lastTime as number;
-        const lastPosition = this._lastPosition;
-        const density = this._density;
-        const lastStair = this._lastStair;
-
-        const generator = new HitObjectPatternGenerator(
-          cloned,
-          beatmap,
-          pattern,
-          random,
-          lastTime,
-          lastPosition,
-          density,
-          lastStair
-        );
-
-        const position = (cloned as unknown as IHasPosition).startPosition;
-
-        this._recordNote(cloned.startTime, position);
-
-        conversion = generator;
-      }
-
-      if (conversion === null) continue;
-
-      for (const generated of conversion.generate()) {
-        if (!(conversion instanceof EndTimeObjectPatternGenerator)) {
-          this._lastPattern = generated;
-        }
-
-        if (conversion instanceof HitObjectPatternGenerator) {
-          this._lastStair = conversion.stairType;
-        }
-
-        for (const obj of generated.hitObjects) {
-          yield obj;
-        }
-      }
-    }
+    return beatmap;
   }
 }
