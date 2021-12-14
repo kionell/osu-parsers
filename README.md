@@ -23,21 +23,24 @@ npm install osu-mania-stable
 
 Since this project uses ES Modules, it is recommended to use Node.js 12.22.0 or newer.
 
-## How to use it
+## Example of converting beatmap to the osu!mania ruleset
 
 ```js
-import { BeatmapDecoder, BeatmapEncoder } from "osu-parsers";
-import { ManiaRuleset } from 'osu-mania-stable';
+import { BeatmapDecoder, BeatmapEncoder } from 'osu-parsers';
+import { maniaRuleset } from 'osu-mania-stable';
+
+const decoder = new BeatmapDecoder();
+const encoder = new BeatmapEncoder();
 
 const decodePath = 'path/to/your/decoding/file.osu';
 const encodePath = 'path/to/your/encoding/file.osu';
 const shouldParseSb = true;
 
 // Get beatmap object.
-const parsed = BeatmapDecoder.decodeFromPath(decodePath, shouldParseSb);
+const parsed = decoder.decodeFromPath(decodePath, shouldParseSb);
 
 // Create a new osu!mania ruleset.
-const ruleset = new ManiaRuleset();
+const ruleset = new maniaRuleset();
 
 // This will create a new copy of a beatmap with applied osu!mania ruleset.
 // This method implicitly applies mod combination of 0.
@@ -51,10 +54,102 @@ const mods = ruleset.createModCombination(1337);
 const maniaWithMods = ruleset.applyToBeatmapWithMods(parsed, mods);
 
 // It will write osu!mania beatmap with no mods.
-BeatmapEncoder.encodeToPath(encodePath, maniaWithNoMod1);
+encoder.encodeToPath(encodePath, maniaWithNoMod1);
 
 // It will write osu!mania beatmap with applied mods.
-BeatmapEncoder.encodeToPath(encodePath, maniaWithMods);
+encoder.encodeToPath(encodePath, maniaWithMods);
+```
+
+## Example of difficulty calculation
+
+```js
+import { BeatmapDecoder } from 'osu-parsers';
+import { maniaRuleset } from 'osu-mania-stable';
+
+const decoder = new BeatmapDecoder();
+
+const decodePath = 'path/to/your/decoding/file.osu';
+
+// Get beatmap object.
+const parsed = decoder.decodeFromPath(decodePath);
+
+// Create a new osu!mania ruleset.
+const ruleset = new maniaRuleset();
+
+// Create mod combination and apply it to beatmap.
+const mods = ruleset.createModCombination(1337); // HD, HR, FL, SD, HT
+const maniaWithMods = ruleset.applyToBeatmapWithMods(parsed, mods);
+
+// Create difficulty calculator for IBeatmap object.
+const difficultyCalculator1 = ruleset.createDifficultyCalculator(parsed);
+
+// Create difficulty calculator for osu!mania beatmap.
+const difficultyCalculator2 = ruleset.createDifficultyCalculator(maniaWithMods);
+
+// This will force NoMod even if beatmap has its own mods.
+// Difficulty calculator will implicitly apply osu!mania ruleset to every beatmap.
+const difficultyAttributesWithNoMod1 = difficultyCalculator1.calculate();
+const difficultyAttributesWithNoMod2 = difficultyCalculator2.calculate();
+
+// Calculate difficulty with mods.
+const difficultyAttributesWithMods1 = difficultyCalculator1.calculateWithMods(mods);
+const difficultyAttributesWithMods2 = difficultyCalculator2.calculateWithMods(mods);
+
+// Get difficulty attributes for every mod combination.
+const difficultyAtts1 = [...difficultyCalculator1.calculateAll()];
+const difficultyAtts2 = [...difficultyCalculator2.calculateAll()];
+```
+
+## Example of performance calculation
+
+```js
+import { ScoreInfo } from 'osu-classes';
+import { BeatmapDecoder } from 'osu-parsers';
+import { ManiaRuleset } from 'osu-mania-stable';
+
+const decoder = new BeatmapDecoder();
+
+const decodePath = 'path/to/your/decoding/file.osu';
+
+// Get beatmap object.
+const parsed = decoder.decodeFromPath(decodePath);
+
+// Create a new osu!mania ruleset.
+const ruleset = new ManiaRuleset();
+
+// Apply osu!mania ruleset to the beatmap.
+const maniaBeatmap = ruleset.applyToBeatmap(parsed);
+
+// Create difficulty calculator for osu!mania beatmap.
+const difficultyCalculator = ruleset.createDifficultyCalculator(maniaBeatmap);
+
+// Calculate difficulty attributes with mods.
+const mods = ruleset.createModCombination('NM');
+const difficultyAttributes = difficultyCalculator.calculateWithMods(mods);
+
+// Create new Score.
+const score = new ScoreInfo();
+
+// xi - Last Resort [[7K] Jakads' LASTING LEGACY]
+// Jakads + NM 1351 pp.
+score.beatmap = maniaBeatmap;
+score.mods = mods;
+score.totalScore = 989698;
+score.statistics.perfect = 2747;
+score.statistics.great = 608;
+score.statistics.good = 13;
+score.statistics.ok = 0;
+score.statistics.meh = 0;
+score.statistics.miss = 1;
+
+// Create performance calculator for osu!mania ruleset.
+const performanceCalculator = ruleset.createPerformanceCalculator(difficultyAttributes, score);
+
+// Calculate total performance for a map.
+const totalPerformance = performanceCalculator.calculate();
+
+// 1350.7482145000727
+console.log(totalPerformance);
 ```
 
 ## Other projects
