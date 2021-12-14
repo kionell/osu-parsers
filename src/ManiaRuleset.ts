@@ -1,10 +1,18 @@
+import { Ruleset, ScoreInfo } from 'osu-resources';
+
 import {
   ManiaBeatmapProcessor,
   ManiaBeatmapConverter,
+  ManiaBeatmap,
 } from './Beatmaps';
 
+import {
+  ManiaDifficultyAttributes,
+  ManiaDifficultyCalculator,
+  ManiaPerformanceCalculator,
+} from './Difficulty';
+
 import { ManiaModCombination } from './Mods/ManiaModCombination';
-import { Ruleset } from 'osu-resources';
 
 /**
  * osu!mania ruleset.
@@ -38,5 +46,22 @@ export class ManiaRuleset extends Ruleset {
    */
   createBeatmapConverter(): ManiaBeatmapConverter {
     return new ManiaBeatmapConverter();
+  }
+
+  /**
+   * @param beatmap The beatmap for which the calculation will be done.
+   * @returns A new osu!mania difficulty calculator.
+   */
+  createDifficultyCalculator(beatmap: ManiaBeatmap): ManiaDifficultyCalculator {
+    return new ManiaDifficultyCalculator(beatmap, this);
+  }
+
+  /**
+   * @param attributes The difficulty attributes.
+   * @param score Score information.
+   * @returns A new osu!mania performance calculator.
+   */
+  createPerformanceCalculator(attributes: ManiaDifficultyAttributes, score: ScoreInfo): ManiaPerformanceCalculator {
+    return new ManiaPerformanceCalculator(this, attributes, score);
   }
 }
