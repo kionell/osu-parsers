@@ -1,8 +1,18 @@
-import { CatchBeatmapProcessor } from './Beatmaps/CatchBeatmapProcessor';
-import { CatchBeatmapConverter } from './Beatmaps/CatchBeatmapConverter';
-import { CatchModCombination } from './Mods/CatchModCombination';
+import { Ruleset, ScoreInfo } from 'osu-resources';
 
-import { Ruleset } from 'osu-resources';
+import {
+  CatchBeatmapProcessor,
+  CatchBeatmapConverter,
+  CatchBeatmap,
+} from './Beatmaps';
+
+import {
+  CatchDifficultyAttributes,
+  CatchDifficultyCalculator,
+  CatchPerformanceCalculator,
+} from './Difficulty';
+
+import { CatchModCombination } from './Mods';
 
 /**
  * osu!catch ruleset.
@@ -36,5 +46,22 @@ export class CatchRuleset extends Ruleset {
    */
   createBeatmapConverter(): CatchBeatmapConverter {
     return new CatchBeatmapConverter();
+  }
+
+  /**
+   * @param beatmap The beatmap for which the calculation will be done.
+   * @returns A new osu!catch difficulty calculator.
+   */
+  createDifficultyCalculator(beatmap: CatchBeatmap): CatchDifficultyCalculator {
+    return new CatchDifficultyCalculator(beatmap, this);
+  }
+
+  /**
+   * @param attributes The difficulty attributes.
+   * @param score Score information.
+   * @returns A new osu!catch performance calculator.
+   */
+  createPerformanceCalculator(attributes: CatchDifficultyAttributes, score: ScoreInfo): CatchPerformanceCalculator {
+    return new CatchPerformanceCalculator(this, attributes, score);
   }
 }
