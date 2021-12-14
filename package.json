@@ -1,6 +1,6 @@
 {
   "name": "osu-taiko-stable",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "osu!stable version of osu!taiko ruleset based on osu!lazer source code.",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
