@@ -1,6 +1,3 @@
-import { StandardHitObject } from '../Objects/StandardHitObject';
-import { Slider } from '../Objects/Slider';
-
 import {
   HardRock,
   Vector2,
@@ -9,7 +6,13 @@ import {
   SliderPath,
   PathType,
 } from 'osu-classes';
-import { SliderRepeat, SliderTick } from '..';
+
+import {
+  StandardHitObject,
+  Slider,
+  SliderRepeat,
+  SliderTick,
+} from '../Objects';
 
 export class StandardHardRock extends HardRock implements IApplicableToHitObjects {
   static BASE_SIZE: Vector2 = new Vector2(512, 384);
