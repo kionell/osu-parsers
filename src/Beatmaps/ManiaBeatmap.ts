@@ -1,4 +1,4 @@
-import { IBeatmap, RulesetBeatmap, HitType } from 'osu-resources';
+import { RulesetBeatmap, HitType } from 'osu-resources';
 import { ManiaModCombination } from '../Mods/ManiaModCombination';
 import { StageDefinition } from './StageDefinition';
 import { ManiaHitObject } from '../Objects/ManiaHitObject';
@@ -19,8 +19,8 @@ export class ManiaBeatmap extends RulesetBeatmap {
 
   hitObjects: ManiaHitObject[] = [];
 
-  constructor(beatmap: IBeatmap, stage: StageDefinition, columns?: number) {
-    super(beatmap);
+  constructor(stage: StageDefinition, columns?: number) {
+    super();
 
     this.stages.push(stage);
     this.originalTotalColumns = columns || stage.columns;
