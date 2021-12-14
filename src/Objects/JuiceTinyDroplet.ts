@@ -1,8 +1,8 @@
-import { PalpableHitObject } from './PalpableHitObject';
+import { JuiceDroplet } from './JuiceDroplet';
 
-export class JuiceDroplet extends PalpableHitObject {
-  clone(): JuiceDroplet {
-    const cloned = new JuiceDroplet();
+export class JuiceTinyDroplet extends JuiceDroplet {
+  clone(): JuiceTinyDroplet {
+    const cloned = new JuiceTinyDroplet();
 
     cloned.startPosition = this.startPosition.clone();
     cloned.startX = this.startX;
