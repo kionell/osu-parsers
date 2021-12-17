@@ -3,6 +3,17 @@ import { IRuleset } from '../Rulesets';
 import { ModCombination } from '../Mods';
 import { ScoreRank } from './Enums/ScoreRank';
 
+interface IParams {
+  beatmap: IBeatmap;
+  mods: ModCombination;
+  maxCombo: number;
+  great: number;
+  ok: number;
+  meh: number;
+  miss: number;
+  accuracy: number;
+}
+
 /**
  * A score info.
  */
@@ -102,6 +113,28 @@ export class ScoreInfo {
    * Hash of the beatmap.
    */
   hash = '';
+
+  /**
+   * Possible constructor.
+   * @param beatmap Beatmap of the play.
+   * @param maxCombo Max combo of the play.
+   * @param great Count of 300x. 
+   * @param ok Count of 100x.
+   * @param meh Count of 50x.
+   * @param miss Count of misses.
+   * @param accuracy Total accuracy of the play.
+   * @param mods Mods of the play.
+   */
+  constructor({ beatmap, maxCombo, great, ok, meh, miss, accuracy, mods } : Partial<IParams> = {}) {
+    if (beatmap) this.beatmap = beatmap;
+    if (maxCombo) this.maxCombo = maxCombo;
+    if (great) this.statistics.great = great;
+    if (ok) this.statistics.ok = ok;
+    if (meh) this.statistics.meh = meh;
+    if (miss) this.statistics.miss = miss;
+    if (accuracy) this.accuracy = accuracy;
+    if (mods) this.mods = mods;
+  }
 
   /**
    * Creates a deep copy of the score info.
