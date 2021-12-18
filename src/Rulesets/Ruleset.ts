@@ -59,12 +59,10 @@ export abstract class Ruleset implements IRuleset {
 
     const converter = this.createBeatmapConverter();
 
-    const cloned = beatmap.clone();
-
     /**
      * Check if the beatmap can be converted.
      */
-    if (beatmap.hitObjects.length > 0 && !converter.canConvert(cloned)) {
+    if (beatmap.hitObjects.length > 0 && !converter.canConvert(beatmap)) {
       throw new Error('Beatmap can not be converted!');
     }
 
@@ -73,7 +71,7 @@ export abstract class Ruleset implements IRuleset {
      */
     mods.converterMods.forEach((m) => m.applyToConverter(converter));
 
-    const converted = converter.convertBeatmap(cloned);
+    const converted = converter.convertBeatmap(beatmap);
 
     converted.mods = mods;
 
