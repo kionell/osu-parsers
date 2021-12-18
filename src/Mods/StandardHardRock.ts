@@ -2,9 +2,6 @@ import {
   HardRock,
   Vector2,
   IApplicableToHitObjects,
-  PathPoint,
-  SliderPath,
-  PathType,
 } from 'osu-classes';
 
 import {
@@ -24,10 +21,7 @@ export class StandardHardRock extends HardRock implements IApplicableToHitObject
   }
 
   private static _reflectVertically(hitObject: StandardHitObject) {
-    const x = hitObject.startX;
-    const y = StandardHardRock.BASE_SIZE.y - hitObject.startY;
-
-    hitObject.startPosition = new Vector2(x, y);
+    hitObject.startY = StandardHardRock.BASE_SIZE.y - hitObject.startY;
 
     if (!(hitObject instanceof Slider)) return;
 
@@ -36,20 +30,16 @@ export class StandardHardRock extends HardRock implements IApplicableToHitObject
 
     nestedHitObjects.forEach((nested) => {
       if (nested instanceof SliderTick || nested instanceof SliderRepeat) {
-        const x = nested.startX;
-        const y = StandardHardRock.BASE_SIZE.y - nested.startY;
-
-        nested.startPosition = new Vector2(x, y);
+        nested.startY = StandardHardRock.BASE_SIZE.y - nested.startY;
       }
     });
 
-    const controlPoints = slider.path.controlPoints.map((p) => new PathPoint(p.position, p.type));
-    const curveType = controlPoints[0].type as PathType;
-
-    controlPoints.forEach((point) => {
-      point.position = new Vector2(point.position.x, -point.position.y);
+    slider.path.controlPoints.forEach((point) => {
+      point.position.y *= -1;
     });
 
-    slider.path = new SliderPath(curveType, controlPoints, slider.path.expectedDistance);
+    slider.path.invalidate();
+
+    slider.endY = slider.endPosition.y;
   }
 }

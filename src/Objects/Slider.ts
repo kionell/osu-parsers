@@ -47,28 +47,60 @@ export class Slider extends StandardHitObject implements ISlidableObject {
 
   startPosition: Vector2 = new Vector2(0, 0);
 
+  get startX(): number {
+    this._updateHeadPosition();
+
+    return this.startPosition.x;
+  }
+
+  set startX(value: number) {
+    this.startPosition.x = value;
+    this._updateHeadPosition();
+  }
+
+  get startY(): number {
+    this._updateHeadPosition();
+
+    return this.startPosition.y;
+  }
+
+  set startY(value: number) {
+    this.startPosition.y = value;
+    this._updateHeadPosition();
+  }
+
+  get endX(): number {
+    this._updateTailPosition();
+
+    return this.endPosition.x;
+  }
+
+  set endX(value: number) {
+    this.endPosition.x = value;
+    this._updateTailPosition();
+  }
+
+  get endY(): number {
+    this._updateTailPosition();
+
+    return this.endPosition.y;
+  }
+
+  set endY(value: number) {
+    this.endPosition.y = value;
+    this._updateTailPosition();
+  }
+
   get head(): SliderHead | null {
     const obj = this.nestedHitObjects.find((n) => n instanceof SliderHead);
-    const head = obj as SliderHead;
 
-    if (head) {
-      head.startX = this.startX;
-      head.startY = this.startY;
-    }
-
-    return head || null;
+    return obj as SliderHead || null;
   }
 
   get tail(): SliderTail | null {
     const obj = this.nestedHitObjects.find((n) => n instanceof SliderTail);
-    const tail = obj as SliderTail;
 
-    if (tail) {
-      tail.startX = this.endX;
-      tail.startY = this.endY;
-    }
-
-    return tail || null;
+    return obj as SliderTail || null;
   }
 
   get distance(): number {
@@ -140,11 +172,13 @@ export class Slider extends StandardHitObject implements ISlidableObject {
     }
   }
 
-  private _updateNestedPositions(): void {
+  private _updateHeadPosition(): void {
     if (this.head !== null) {
       this.head.startPosition = this.startPosition;
     }
+  }
 
+  private _updateTailPosition(): void {
     if (this.tail !== null) {
       this.tail.startPosition = this.endPosition;
     }
