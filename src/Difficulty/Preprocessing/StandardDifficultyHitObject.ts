@@ -85,7 +85,7 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
      * We will scale distances by this factor, 
      * so we can assume a uniform CircleSize among beatmaps.
      */
-    let scalingFactor = this._NORMALIZED_RADIUS / Math.fround(baseObj.radius);
+    let scalingFactor = Math.fround(this._NORMALIZED_RADIUS / Math.fround(baseObj.radius));
 
     if (baseObj.radius < 30) {
       const smallCircleBonus = Math.min(30 - baseObj.radius, 5) / 50;
