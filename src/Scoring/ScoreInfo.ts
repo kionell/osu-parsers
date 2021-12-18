@@ -2,22 +2,13 @@ import { Beatmap, IBeatmap } from '../Beatmaps';
 import { IRuleset } from '../Rulesets';
 import { ModCombination } from '../Mods';
 import { ScoreRank } from './Enums/ScoreRank';
-
-interface IParams {
-  beatmap: IBeatmap;
-  mods: ModCombination;
-  maxCombo: number;
-  great: number;
-  ok: number;
-  meh: number;
-  miss: number;
-  accuracy: number;
-}
+import { IHitStatistics } from './IHitStatistics';
+import { IScoreInfo } from './IScoreInfo';
 
 /**
  * A score info.
  */
-export class ScoreInfo {
+export class ScoreInfo implements IScoreInfo {
   /**
    * A score ID.
    */
@@ -115,25 +106,11 @@ export class ScoreInfo {
   hash = '';
 
   /**
-   * Possible constructor.
-   * @param beatmap Beatmap of the play.
-   * @param maxCombo Max combo of the play.
-   * @param great Count of 300x. 
-   * @param ok Count of 100x.
-   * @param meh Count of 50x.
-   * @param miss Count of misses.
-   * @param accuracy Total accuracy of the play.
-   * @param mods Mods of the play.
+   * Creates a new instance of score information.
+   * @param options The score information options.
    */
-  constructor({ beatmap, maxCombo, great, ok, meh, miss, accuracy, mods } : Partial<IParams> = {}) {
-    if (beatmap) this.beatmap = beatmap;
-    if (maxCombo) this.maxCombo = maxCombo;
-    if (great) this.statistics.great = great;
-    if (ok) this.statistics.ok = ok;
-    if (meh) this.statistics.meh = meh;
-    if (miss) this.statistics.miss = miss;
-    if (accuracy) this.accuracy = accuracy;
-    if (mods) this.mods = mods;
+  constructor(params: Partial<IScoreInfo> = {}) {
+    Object.assign(this, params);
   }
 
   /**
