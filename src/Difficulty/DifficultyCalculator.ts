@@ -39,8 +39,10 @@ export abstract class DifficultyCalculator {
   }
 
   /**
-   * Calculates the difficulty of the beatmap using * all mod combinations applicable to the beatmap.
-   * @returns A collection of structures describing * the difficulty of the beatmap for each mod combination.
+   * Calculates the difficulty of the beatmap using 
+   * all mod combinations applicable to the beatmap.
+   * @returns A collection of structures describing 
+   * the difficulty of the beatmap for each mod combination.
    */
   *calculateAll(): Generator<DifficultyAttributes> {
     for (const combination of this._createDifficultyModCombinations()) {
@@ -89,9 +91,11 @@ export abstract class DifficultyCalculator {
   }
 
   /**
-   * Calculates the difficulty of the beatmap using a specific mod combination and returns a set of TimedDifficultyAttributes representing the difficulty at every relevant time value in the beatmap.
+   * Calculates the difficulty of the beatmap using a specific mod combination 
+   * and returns a set of timed difficulty attributes representing 
+   * the difficulty at every relevant time value in the beatmap.
    * @param mods The mods that should be applied to the beatmap.
-   * @returns The set of TimedDifficultyAttributes.
+   * @returns The set of timed difficulty attributes.
    */
   calculateTimedWithMods(mods: ModCombination): TimedDifficultyAttributes[] {
     const beatmap = this._ruleset.applyToBeatmapWithMods(this._beatmap, mods);
@@ -120,7 +124,7 @@ export abstract class DifficultyCalculator {
 
   /**
    * @param beatmap The beatmap for creating difficulty hit objects.
-   * Retrieves the DifficultyHitObjects to calculate against.
+   * @returns The difficulty hit objects to calculate against.
    */
   private _getDifficultyHitObjects(beatmap: IBeatmap): Iterable<DifficultyHitObject> {
     return this._sortObjects(this._createDifficultyHitObjects(beatmap));
@@ -128,15 +132,15 @@ export abstract class DifficultyCalculator {
 
   /**
    * Sorts a given set of DifficultyHitObjects.
-   * @param input The DifficultyHitObjects to sort.
-   * @returns The sorted DifficultyHitObjects.
+   * @param input The difficulty hit objects to sort.
+   * @returns The sorted difficulty hit objects.
    */
   protected _sortObjects(input: Generator<DifficultyHitObject>): Iterable<DifficultyHitObject> {
     return [...input].sort((a, b) => a.startTime - b.startTime);
   }
 
   /**
-   * Creates all Mod combinations which adjust the Beatmaps.Beatmap difficulty.
+   * Creates all mod combinations which adjust the beatmap difficulty.
    */
   protected _createDifficultyModCombinations(): Generator<ModCombination> {
     const ruleset = this._ruleset;
@@ -189,18 +193,18 @@ export abstract class DifficultyCalculator {
   }
 
   /**
-   * Creates DifficultyAttributes to describe beatmap's calculated difficulty.
+   * Creates difficulty attributes to describe beatmap's calculated difficulty.
    * @param beatmap The IBeatmap whose difficulty was calculated.
    * This may differ from Beatmap in the case of timed calculation.
-   * @param mods The Mods that difficulty was calculated with.
+   * @param mods The mods that difficulty was calculated with.
    * @param skills The skills which processed the beatmap.
    */
   protected abstract _createDifficultyAttributes(beatmap: IBeatmap, mods: ModCombination, skills: Skill[]): DifficultyAttributes;
 
   /**
-   * Enumerates DifficultyHitObjects to be processed from HitObjects in the IBeatmap.
-   * @param beatmap The IBeatmap providing the HitObjects to enumerate.
-   * @returns The enumerated DifficultyHitObjects.
+   * Enumerates difficulty hit objects to be processed from hit objects in the IBeatmap.
+   * @param beatmap The IBeatmap providing the hit objects to enumerate.
+   * @returns The enumerated difficulty hit objects.
    */
   protected abstract _createDifficultyHitObjects(beatmap: IBeatmap): Generator<DifficultyHitObject>;
 
@@ -208,8 +212,8 @@ export abstract class DifficultyCalculator {
    * Creates the Skills to calculate the difficulty of an IBeatmap.
    * @param beatmap The IBeatmap whose difficulty will be calculated.
    * This may differ from Beatmap in the case of timed calculation.
-   * @param mods Mods to calculate difficulty with.
-   * @returns The Skills.
+   * @param mods The mods to calculate difficulty with.
+   * @returns The skills.
    */
   protected abstract _createSkills(beatmap: IBeatmap, mods: ModCombination): Skill[];
 }
