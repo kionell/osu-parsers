@@ -53,25 +53,9 @@ export class TaikoBeatmapConverter extends BeatmapConverter {
     /**
      * Rewrite the beatmap info to add the slider velocity multiplier.
      */
-    const converted = this.createBeatmap();
-
-    converted.general = original.general.clone();
-    converted.editor = original.editor.clone();
-    converted.difficulty = original.difficulty.clone();
-    converted.metadata = original.metadata.clone();
-    converted.colours = original.colours.clone();
-    converted.events = original.events.clone();
-    converted.controlPoints = original.controlPoints.clone();
-    converted.fileFormat = original.fileFormat;
-    converted.originalMode = original.originalMode;
+    const converted = super.convertBeatmap(original) as TaikoBeatmap;
 
     converted.difficulty.sliderMultiplier *= TaikoBeatmapConverter.VELOCITY_MULTIPLIER;
-
-    for (const hitObject of this.convertHitObjects(original)) {
-      converted.hitObjects.push(hitObject);
-    }
-
-    converted.hitObjects.sort((a, b) => a.startTime - b.startTime);
 
     if (original.mode === 3) {
       /**
