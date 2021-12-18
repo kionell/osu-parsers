@@ -56,15 +56,7 @@ export abstract class DifficultyCalculator {
    * @returns A structure describing the difficulty of the beatmap.
    */
   calculateWithMods(mods: ModCombination): DifficultyAttributes {
-    let beatmap = this._beatmap as RulesetBeatmap;
-
-    const sameRuleset = beatmap.mode === this._ruleset.id;
-    const sameMods = beatmap?.mods?.bitwise === mods.bitwise;
-
-    if (!sameRuleset || !sameMods) {
-      beatmap = this._ruleset.applyToBeatmapWithMods(this._beatmap, mods);
-    }
-
+    const beatmap = this._getWorkingBeatmap(mods);
     const skills = this._createSkills(beatmap, mods);
 
     if (!beatmap.hitObjects.length) {
@@ -98,7 +90,7 @@ export abstract class DifficultyCalculator {
    * @returns The set of timed difficulty attributes.
    */
   calculateTimedWithMods(mods: ModCombination): TimedDifficultyAttributes[] {
-    const beatmap = this._ruleset.applyToBeatmapWithMods(this._beatmap, mods);
+    const beatmap = this._getWorkingBeatmap(mods);
     const attributes: TimedDifficultyAttributes[] = [];
 
     if (!beatmap.hitObjects.length) return attributes;
@@ -120,6 +112,31 @@ export abstract class DifficultyCalculator {
     }
 
     return attributes;
+  }
+
+  /**
+   * Creates a new copy of a beatmap and applies ruleset & mods to it.
+   * @param mods The mods that should be applied to the beatmap.
+   * @returns The properly converted beatmap.
+   */
+  private _getWorkingBeatmap(mods: ModCombination): RulesetBeatmap {
+    const beatmap = this._beatmap as RulesetBeatmap;
+
+    const sameRuleset = beatmap.mode === this._ruleset.id;
+    const sameMods = beatmap?.mods?.bitwise === mods.bitwise;
+
+    if (!sameRuleset || !sameMods) {
+      /**
+       * Prefer base beatmap over converted beatmaps.
+       * Applying different rulesets or mod combinations 
+       * for already converted beatmaps is broken.
+       */
+      const original = this._beatmap.base ?? this._beatmap;
+
+      return this._ruleset.applyToBeatmapWithMods(original, mods);
+    }
+
+    return beatmap;
   }
 
   /**
