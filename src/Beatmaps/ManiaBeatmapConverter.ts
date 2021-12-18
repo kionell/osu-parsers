@@ -92,7 +92,12 @@ export class ManiaBeatmapConverter extends BeatmapConverter {
     this._converted.fileFormat = original.fileFormat;
     this._converted.originalMode = original.originalMode;
 
-    for (const hitObject of this.convertHitObjects(original)) {
+    /**
+     * Save original beatmap as base beatmap for further convertations.
+     */
+    this._converted.base = original.base ?? original;
+
+    for (const hitObject of this.convertHitObjects(this._converted.base)) {
       this._converted.hitObjects.push(hitObject);
     }
 
