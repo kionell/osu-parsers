@@ -53,7 +53,7 @@ export abstract class Ruleset implements IRuleset {
     /**
      * We should apply mods only from the same ruleset.
      */
-    if (beatmap.mode !== mods.mode) {
+    if (this.id !== mods.mode) {
       mods = this.createModCombination(mods.bitwise);
     }
 
