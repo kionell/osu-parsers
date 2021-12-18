@@ -91,7 +91,7 @@ export class ScoreInfo {
   /**
    * Hit statistics.
    */
-  statistics = {
+  statistics: IHitStatistics = {
     none: 0,
     miss: 0,
     meh: 0,
