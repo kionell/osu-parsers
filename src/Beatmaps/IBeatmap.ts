@@ -12,6 +12,12 @@ import { IHitObject } from '../Objects/IHitObject';
  */
 export interface IBeatmap {
   /**
+   * The optional link to the base beatmap.
+   * Base beatmap prefered for beatmap convertation.
+   */
+  base?: IBeatmap;
+
+  /**
    * Beatmap general info.
    */
   general: BeatmapGeneralSection;

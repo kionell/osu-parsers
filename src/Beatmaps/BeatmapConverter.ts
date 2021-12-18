@@ -24,7 +24,12 @@ export abstract class BeatmapConverter {
     converted.fileFormat = beatmap.fileFormat;
     converted.originalMode = beatmap.originalMode;
 
-    for (const hitObject of this.convertHitObjects(beatmap)) {
+    /**
+     * Save original beatmap as base beatmap for further convertations.
+     */
+    converted.base = beatmap.base ?? beatmap;
+
+    for (const hitObject of this.convertHitObjects(converted.base)) {
       converted.hitObjects.push(hitObject);
     }
 

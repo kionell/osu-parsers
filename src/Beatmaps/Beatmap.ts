@@ -14,6 +14,12 @@ import { IBeatmap } from './IBeatmap';
  */
 export class Beatmap implements IBeatmap {
   /**
+   * The optional link to the base beatmap.
+   * Base beatmap prefered for beatmap convertation.
+   */
+  base?: IBeatmap;
+
+  /**
    * Beatmap general info.
    */
   general: BeatmapGeneralSection = new BeatmapGeneralSection();
@@ -187,6 +193,8 @@ export class Beatmap implements IBeatmap {
     cloned.hitObjects = this.hitObjects.map((h) => h.clone());
     cloned.originalMode = this.originalMode;
     cloned.fileFormat = this.fileFormat;
+
+    if (this.base) cloned.base = this.base;
 
     return cloned;
   }
