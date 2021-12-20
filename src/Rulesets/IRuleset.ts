@@ -36,7 +36,7 @@ export interface IRuleset {
    * @param mods Mod combination.
    * @returns A new beatmap with applied mods.
    */
-  applyToBeatmapWithMods(beatmap: IBeatmap, mods: ModCombination): RulesetBeatmap;
+  applyToBeatmapWithMods(beatmap: IBeatmap, mods?: ModCombination): RulesetBeatmap;
 
   /**
    * Resets a mod combination from a beatmap.
