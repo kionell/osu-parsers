@@ -11,7 +11,7 @@ import {
   PerformanceCalculator,
 } from '../Difficulty';
 
-import { ScoreInfo } from '../Scoring';
+import { IScoreInfo } from '../Scoring';
 import { ModCombination } from '../Mods/ModCombination';
 
 /**
@@ -73,5 +73,5 @@ export interface IRuleset {
    * @param score Score information.
    * @returns A new performance calculator.
    */
-  createPerformanceCalculator(attributes: DifficultyAttributes, score: ScoreInfo): PerformanceCalculator;
+  createPerformanceCalculator(attributes: DifficultyAttributes, score: IScoreInfo): PerformanceCalculator;
 }

@@ -1,17 +1,17 @@
 import { DifficultyAttributes } from './Attributes/DifficultyAttributes';
 import { ModBitwise } from '../Mods';
-import { Ruleset } from '../Rulesets';
-import { ScoreInfo } from '../Scoring';
+import { IRuleset } from '../Rulesets';
+import { IScoreInfo } from '../Scoring';
 
 export abstract class PerformanceCalculator {
   readonly attributes: DifficultyAttributes;
 
-  protected readonly _ruleset: Ruleset;
-  protected readonly _score: ScoreInfo;
+  protected readonly _ruleset: IRuleset;
+  protected readonly _score: IScoreInfo;
 
   protected _clockRate = 1;
 
-  constructor(ruleset: Ruleset, attributes: DifficultyAttributes, score: ScoreInfo) {
+  constructor(ruleset: IRuleset, attributes: DifficultyAttributes, score: IScoreInfo) {
     this._ruleset = ruleset;
     this._score = score;
 

@@ -12,7 +12,7 @@ import {
 } from '../Difficulty';
 
 import { ModCombination } from '../Mods';
-import { ScoreInfo } from '../Scoring';
+import { IScoreInfo } from '../Scoring';
 import { IRuleset } from './IRuleset';
 
 /**
@@ -144,5 +144,5 @@ export abstract class Ruleset implements IRuleset {
    * @param score Score information.
    * @returns A new performance calculator.
    */
-  abstract createPerformanceCalculator(attributes: DifficultyAttributes, score: ScoreInfo): PerformanceCalculator;
+  abstract createPerformanceCalculator(attributes: DifficultyAttributes, score: IScoreInfo): PerformanceCalculator;
 }
