@@ -291,6 +291,19 @@ export abstract class ModCombination {
     }, 0);
   }
 
+  /**
+   * Creates a new copy of this mod combination.
+   */
+  abstract clone(): ModCombination;
+
+  /**
+   * Wheter the mods are equal or not.
+   * @param other The other mod combination.
+   */
+  equals(other: ModCombination): boolean {
+    return this.bitwise === other.bitwise && this.mode === other.mode;
+  }
+
   protected get _availableMods(): IMod[] {
     return [];
   }
