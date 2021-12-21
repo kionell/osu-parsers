@@ -131,12 +131,12 @@ export abstract class ModCombination {
 
   /**
    * @param input The bitwise value or acronyms.
-   * @returns If the mod combination contain any of mods from this bitwise or acronyms.
+   * @returns If the mod combination contain all of the mods from this bitwise or acronyms.
    */
   has(input: number | string): boolean {
     const bitwise = this.toBitwise(input);
 
-    return (this.bitwise & bitwise) > 0 || this.bitwise === bitwise;
+    return (this.bitwise & bitwise) === bitwise || this.bitwise === bitwise;
   }
 
   /**
