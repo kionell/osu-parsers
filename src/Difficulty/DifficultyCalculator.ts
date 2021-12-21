@@ -120,23 +120,14 @@ export abstract class DifficultyCalculator {
    * @returns The properly converted beatmap.
    */
   private _getWorkingBeatmap(mods: ModCombination): RulesetBeatmap {
-    const beatmap = this._beatmap as RulesetBeatmap;
+    /**
+     * Prefer base beatmap over converted beatmaps.
+     * Applying different rulesets or mod combinations 
+     * for already converted beatmaps is broken.
+     */
+    const original = this._beatmap.base ?? this._beatmap;
 
-    const sameRuleset = beatmap.mode === this._ruleset.id;
-    const sameMods = beatmap?.mods?.bitwise === mods.bitwise;
-
-    if (!sameRuleset || !sameMods) {
-      /**
-       * Prefer base beatmap over converted beatmaps.
-       * Applying different rulesets or mod combinations 
-       * for already converted beatmaps is broken.
-       */
-      const original = this._beatmap.base ?? this._beatmap;
-
-      return this._ruleset.applyToBeatmapWithMods(original, mods);
-    }
-
-    return beatmap;
+    return this._ruleset.applyToBeatmapWithMods(original, mods);
   }
 
   /**
