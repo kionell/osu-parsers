@@ -1,4 +1,8 @@
-import { Ruleset, ScoreInfo } from 'osu-classes';
+import {
+  Ruleset,
+  IScoreInfo,
+  IBeatmap,
+} from 'osu-classes';
 
 import {
   StandardBeatmapProcessor,
@@ -23,6 +27,34 @@ export class StandardRuleset extends Ruleset {
    */
   get id(): number {
     return 0;
+  }
+
+  /**
+   * Applies osu!std ruleset to a beatmap.
+   * @param beatmap The beatmap.
+   * @returns A new osu!std beatmap with applied ruleset.
+   */
+  applyToBeatmap(beatmap: IBeatmap): StandardBeatmap {
+    return super.applyToBeatmap(beatmap) as StandardBeatmap;
+  }
+
+  /**
+   * Applies osu!std ruleset and mods to a beatmap.
+   * @param beatmap The beatmap.
+   * @param mods osu!std mod combination.
+   * @returns A new osu!std beatmap with applied mods.
+   */
+  applyToBeatmapWithMods(beatmap: IBeatmap, mods?: StandardModCombination): StandardBeatmap {
+    return super.applyToBeatmapWithMods(beatmap, mods) as StandardBeatmap;
+  }
+
+  /**
+   * Resets a mod combination from a beatmap.
+   * @param beatmap The beatmap.
+   * @returns A new beatmap with no mods.
+   */
+  resetMods(beatmap: IBeatmap): StandardBeatmap {
+    return super.resetMods(beatmap) as StandardBeatmap;
   }
 
   /**
@@ -61,7 +93,7 @@ export class StandardRuleset extends Ruleset {
    * @param score Score information.
    * @returns A new osu!std performance calculator.
    */
-  createPerformanceCalculator(attributes: StandardDifficultyAttributes, score: ScoreInfo): StandardPerformanceCalculator {
+  createPerformanceCalculator(attributes: StandardDifficultyAttributes, score: IScoreInfo): StandardPerformanceCalculator {
     return new StandardPerformanceCalculator(this, attributes, score);
   }
 }
