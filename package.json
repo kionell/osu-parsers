@@ -9,7 +9,7 @@
     "test": "jest --verbose",
     "fix": "eslint --fix ./src",
     "format": "eslint --fix ./lib/** --no-ignore",
-    "prepublish": "npm run build",
+    "prepublish": "npm run build && npm run test",
     "docs": "npx typedoc src/index.ts"
   },
   "type": "module",
