@@ -168,7 +168,11 @@ export class SliderPath {
   }
 
   clone(): SliderPath {
-    return new SliderPath(this._curveType, this._controlPoints, this._expectedDistance);
+    const controlPoints = this._controlPoints.map((p) => {
+      return new PathPoint(p.position.clone(), p.type);
+    });
+
+    return new SliderPath(this._curveType, controlPoints, this._expectedDistance);
   }
 
   private _ensureValid(): void {
