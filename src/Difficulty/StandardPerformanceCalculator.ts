@@ -1,4 +1,11 @@
-import { DifficultyAttributes, ModBitwise, PerformanceCalculator, Ruleset, ScoreInfo } from 'osu-classes';
+import {
+  DifficultyAttributes,
+  ModBitwise,
+  PerformanceCalculator,
+  IRuleset,
+  IScoreInfo,
+} from 'osu-classes';
+
 import { StandardModCombination } from '../Mods';
 import { StandardDifficultyAttributes } from './Attributes/StandardDifficultyAttributes';
 
@@ -16,17 +23,17 @@ export class StandardPerformanceCalculator extends PerformanceCalculator {
 
   private _effectiveMissCount = 0;
 
-  constructor(ruleset: Ruleset, attributes: DifficultyAttributes, score: ScoreInfo) {
+  constructor(ruleset: IRuleset, attributes: DifficultyAttributes, score: IScoreInfo) {
     super(ruleset, attributes, score);
 
     this.attributes = attributes as StandardDifficultyAttributes;
     this._mods = (score?.mods as StandardModCombination) ?? new StandardModCombination();
-    this._accuracy = this._score.accuracy;
-    this._scoreMaxCombo = this._score.maxCombo;
-    this._countGreat = this._score.statistics.great;
-    this._countOk = this._score.statistics.ok;
-    this._countMeh = this._score.statistics.meh;
-    this._countMiss = this._score.statistics.miss;
+    this._accuracy = this._score.accuracy ?? 1;
+    this._scoreMaxCombo = this._score.maxCombo ?? 0;
+    this._countGreat = this._score.statistics.great ?? 0;
+    this._countOk = this._score.statistics.ok ?? 0;
+    this._countMeh = this._score.statistics.meh ?? 0;
+    this._countMiss = this._score.statistics.miss ?? 0;
     this._effectiveMissCount = this._calculateEffectiveMissCount();
   }
 
