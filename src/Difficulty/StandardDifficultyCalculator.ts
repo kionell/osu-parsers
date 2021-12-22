@@ -28,6 +28,33 @@ export class StandardDifficultyCalculator extends DifficultyCalculator {
   private _DIFFICULTY_MULTIPLIER = 0.0675;
   private _hitWindowGreat = 0;
 
+  /**
+   * Calculates the difficulty of the beatmap with no mods applied.
+   * @returns A structure describing the difficulty of the beatmap.
+   */
+  calculate(): StandardDifficultyAttributes {
+    return super.calculate() as StandardDifficultyAttributes;
+  }
+
+  /**
+   * Calculates the difficulty of the beatmap using
+   * all mod combinations applicable to the beatmap.
+   * @returns A collection of structures describing
+   * the difficulty of the beatmap for each mod combination.
+   */
+  calculateAll(): Generator<StandardDifficultyAttributes> {
+    return super.calculateAll() as Generator<StandardDifficultyAttributes>;
+  }
+
+  /**
+   * Calculates the difficulty of the beatmap using a specific mod combination.
+   * @param mods The mods that should be applied to the beatmap.
+   * @returns A structure describing the difficulty of the beatmap.
+   */
+  calculateWithMods(mods: StandardModCombination): StandardDifficultyAttributes {
+    return super.calculateWithMods(mods) as StandardDifficultyAttributes;
+  }
+
   protected _createDifficultyAttributes(beatmap: IBeatmap, mods: StandardModCombination, skills: Skill[]): StandardDifficultyAttributes {
     if (beatmap.hitObjects.length === 0) {
       return new StandardDifficultyAttributes(mods, 0);
