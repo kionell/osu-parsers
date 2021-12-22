@@ -70,7 +70,7 @@
     "no-whitespace-before-property": "error",
     "object-curly-spacing": ["error", "always"],
     "object-property-newline": ["error", {
-      "allowMultiplePropertiesPerLine": false
+      "allowMultiplePropertiesPerLine": true
     }],
     "padding-line-between-statements": ["error", 
       {
