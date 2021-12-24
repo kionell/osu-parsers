@@ -1,7 +1,11 @@
-import { DifficultyAttributes } from './Attributes/DifficultyAttributes';
 import { ModBitwise } from '../Mods';
 import { IRuleset } from '../Rulesets';
 import { IScoreInfo } from '../Scoring';
+
+import {
+  DifficultyAttributes,
+  PerformanceAttributes,
+} from './Attributes';
 
 export abstract class PerformanceCalculator {
   readonly attributes: DifficultyAttributes;
@@ -30,5 +34,9 @@ export abstract class PerformanceCalculator {
     }
   }
 
-  abstract calculate(): number;
+  calculate(): number {
+    return this.calculateAttributes().totalPerformance;
+  }
+
+  abstract calculateAttributes(): PerformanceAttributes;
 }
