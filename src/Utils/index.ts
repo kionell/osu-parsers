@@ -1,5 +1,6 @@
-export { BinarySearch } from './BinarySearch';
-export { Colour } from './Colour';
-export { FastRandom } from './FastRandom';
-export { Interpolation } from './Interpolation';
-export { Vector2 } from './Vector2';
+export * from './BinarySearch';
+export * from './Colour';
+export * from './FastRandom';
+export * from './Interpolation';
+export * from './SortHelper';
+export * from './Vector2';
