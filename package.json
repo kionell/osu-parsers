@@ -1,6 +1,6 @@
 {
   "name": "osu-classes",
-  "version": "0.4.8",
+  "version": "0.4.9",
   "description": "Basic classes, interfaces and utils for creating new osu! rulesets",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
