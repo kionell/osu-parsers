@@ -60,6 +60,10 @@ export class FastRandom {
    * @returns The random integer value.
    */
   nextUInt(lowerBound = 0, upperBound = FastRandom.MAX_INT32): number {
+    if (lowerBound === 0 && upperBound === FastRandom.MAX_INT32) {
+      return this._next();
+    }
+
     return (lowerBound + this.nextDouble() * (upperBound - lowerBound)) >>> 0;
   }
 
