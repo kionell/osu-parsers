@@ -1,6 +1,10 @@
-import { CatchHitObject } from '../Objects/CatchHitObject';
+import {
+  CatchHitObject,
+  JuiceStream,
+  JuiceTinyDroplet,
+} from '../Objects';
+
 import { CatchModCombination } from '../Mods/CatchModCombination';
-import { JuiceTinyDroplet } from '../Objects/JuiceTinyDroplet';
 
 import {
   RulesetBeatmap,
@@ -17,19 +21,13 @@ export class CatchBeatmap extends RulesetBeatmap {
   }
 
   get maxCombo(): number {
-    return this.hitObjects.reduce((combo, obj) => {
-      if (obj.hitType & HitType.Normal) {
-        return combo + 1;
-      }
+    return this.hitObjects.reduce((c, h) => {
+      if (!(h instanceof JuiceStream)) return c;
 
-      if (obj.hitType & HitType.Slider) {
-        return combo + obj.nestedHitObjects.reduce((c, n) => {
-          return c + (n instanceof JuiceTinyDroplet ? 0 : 1);
-        }, 0);
-      }
-
-      return combo;
-    }, 0);
+      return c + h.nestedHitObjects.reduce((c, n) => {
+        return c + (n instanceof JuiceTinyDroplet ? 0 : 1);
+      }, 0);
+    }, this.fruits);
   }
 
   get fruits(): number {
