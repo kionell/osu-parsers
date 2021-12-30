@@ -1,6 +1,17 @@
-import { DifficultyAttributes, ModBitwise, PerformanceCalculator, Ruleset, ScoreInfo } from 'osu-classes';
+import {
+  DifficultyAttributes,
+  ModBitwise,
+  PerformanceCalculator,
+  IRuleset,
+  IScoreInfo,
+} from 'osu-classes';
+
+import {
+  CatchDifficultyAttributes,
+  CatchPerformanceAttributes,
+} from './Attributes';
+
 import { CatchModCombination } from '../Mods';
-import { CatchDifficultyAttributes } from './Attributes';
 
 export class CatchPerformanceCalculator extends PerformanceCalculator {
   readonly attributes: CatchDifficultyAttributes;
@@ -15,7 +26,7 @@ export class CatchPerformanceCalculator extends PerformanceCalculator {
 
   private _effectiveMissCount = 0;
 
-  constructor(ruleset: Ruleset, attributes: DifficultyAttributes, score: ScoreInfo) {
+  constructor(ruleset: IRuleset, attributes: DifficultyAttributes, score: IScoreInfo) {
     super(ruleset, attributes, score);
 
     this.attributes = attributes as CatchDifficultyAttributes;
