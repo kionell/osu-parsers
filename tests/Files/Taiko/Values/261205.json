@@ -1,0 +1,36 @@
+{
+  "hittable": 2672,
+  "slidable": 0,
+  "spinnable": 2,
+  "objects": 2674,
+  "maxCombo": 2672,
+  "moddedValues": [
+    {
+      "mods": "NM",
+      "difficulty": {
+        "circleSize": 5,
+        "approachRate": 5,
+        "drainRate": 5,
+        "overallDifficulty": 5
+      }
+    },
+    {
+      "mods": "EZ",
+      "difficulty": {
+        "circleSize": 2.5,
+        "approachRate": 2.5,
+        "drainRate": 2.5,
+        "overallDifficulty": 2.5
+      }
+    },
+    {
+      "mods": "HR",
+      "difficulty": {
+        "circleSize": 6.5,
+        "approachRate": 7,
+        "drainRate": 7,
+        "overallDifficulty": 7
+      }
+    }
+  ]
+}
