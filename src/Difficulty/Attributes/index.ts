@@ -1,1 +1,2 @@
-export { StandardDifficultyAttributes } from './StandardDifficultyAttributes';
+export * from './StandardDifficultyAttributes';
+export * from './StandardPerformanceAttributes';

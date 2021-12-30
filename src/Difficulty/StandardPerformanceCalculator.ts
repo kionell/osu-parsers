@@ -7,7 +7,11 @@ import {
 } from 'osu-classes';
 
 import { StandardModCombination } from '../Mods';
-import { StandardDifficultyAttributes } from './Attributes/StandardDifficultyAttributes';
+
+import {
+  StandardDifficultyAttributes,
+  StandardPerformanceAttributes,
+} from './Attributes';
 
 export class StandardPerformanceCalculator extends PerformanceCalculator {
   readonly attributes: StandardDifficultyAttributes;
@@ -37,7 +41,7 @@ export class StandardPerformanceCalculator extends PerformanceCalculator {
     this._effectiveMissCount = this._calculateEffectiveMissCount();
   }
 
-  calculate(): number {
+  calculateAttributes(): StandardPerformanceAttributes {
     /**
      * This is being adjusted to keep the final pp value scaled around what it used to be when changing things.
      */
@@ -79,7 +83,14 @@ export class StandardPerformanceCalculator extends PerformanceCalculator {
       Math.pow(flashlightValue, 1.1), 1.0 / 1.1,
     ) * multiplier;
 
-    return totalValue;
+    const attributes = new StandardPerformanceAttributes(this._mods, totalValue);
+
+    attributes.aimPerformance = aimValue;
+    attributes.speedPerformance = speedValue;
+    attributes.accuracyPerformance = accuracyValue;
+    attributes.flashlightPerformance = flashlightValue;
+
+    return attributes;
   }
 
   private _computeAimValue(): number {
