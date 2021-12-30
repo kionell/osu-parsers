@@ -14,10 +14,11 @@ export class TaikoPerformanceCalculator extends PerformanceCalculator {
 
   private _mods: TaikoModCombination;
 
-  private _countGreat = 0;
-  private _countOk = 0;
-  private _countMeh = 0;
-  private _countMiss = 0;
+  private _countGreat: number;
+  private _countOk: number;
+  private _countMeh: number;
+  private _countMiss: number;
+  private _accuracy: number;
 
   constructor(ruleset: IRuleset, attributes: DifficultyAttributes, score: IScoreInfo) {
     super(ruleset, attributes, score);
@@ -25,10 +26,11 @@ export class TaikoPerformanceCalculator extends PerformanceCalculator {
     this.attributes = attributes as TaikoDifficultyAttributes;
 
     this._mods = (score?.mods as TaikoModCombination) ?? new TaikoModCombination();
-    this._countGreat = this._score.statistics.great;
-    this._countOk = this._score.statistics.ok;
-    this._countMeh = this._score.statistics.meh;
-    this._countMiss = this._score.statistics.miss;
+    this._countGreat = this._score.statistics.great ?? 0;
+    this._countOk = this._score.statistics.ok ?? 0;
+    this._countMeh = this._score.statistics.meh ?? 0;
+    this._countMiss = this._score.statistics.miss ?? 0;
+    this._accuracy = this._score.accuracy ?? 1;
   }
 
   calculate(): number {
