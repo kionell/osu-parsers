@@ -11,6 +11,8 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "removeComments": false,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
   },
   "include": [
     "./src"

@@ -14,4 +14,5 @@
 !package.json
 !README.md
 !rollup.config.js
+!jest.config.js
 !tsconfig.json

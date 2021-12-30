@@ -1,0 +1,90 @@
+osu file format v7
+
+[General]
+AudioFilename: 1,2,3,4, 007 (Speed Pop Mix).mp3
+AudioLeadIn: 0
+PreviewTime: -1
+Countdown: 1
+SampleSet: Normal
+StackLeniency: 0.7
+Mode: 0
+LetterboxInBreaks: 1
+
+[Editor]
+DistanceSpacing: 1
+BeatDivisor: 4
+GridSize: 8
+
+[Metadata]
+Title:1,2,3,4, 007 [Wipeout Series]
+Artist:Ni-Ni
+Creator:MCXD
+Version:-Breezin-
+Source:
+Tags:
+
+[Difficulty]
+HPDrainRate:2
+CircleSize:4
+OverallDifficulty:3
+SliderMultiplier:0.7
+SliderTickRate:1
+
+[Events]
+//Background and Video events
+//Break Periods
+//Storyboard Layer 0 (Background)
+//Storyboard Layer 1 (Fail)
+//Storyboard Layer 2 (Pass)
+//Storyboard Layer 3 (Foreground)
+//Storyboard Sound Samples
+//Background Colour Transformations
+
+[TimingPoints]
+5562,348.837209302326,4,1,1,100,1,0
+
+[HitObjects]
+160,96,5562,1,0
+352,96,6957,1,0
+352,288,8352,5,0
+160,288,9748,1,0
+256,192,11143,5,0
+256,192,12538,1,0
+256,192,13934,1,0
+320,64,16724,6,0,C|320:352,1,272
+192,320,19515,2,0,C|192:32,1,272
+448,64,22306,5,0
+448,320,23701,1,0
+64,352,25096,2,0,C|256:64|448:128,1,544
+64,64,29282,5,0
+448,64,30678,1,0
+256,256,32073,1,0
+256,256,33468,1,0
+64,320,34864,5,0
+448,320,36259,1,0
+256,128,37655,1,0
+256,128,39050,1,0
+64,64,40794,5,0
+64,160,42189,1,0
+64,256,43585,1,0
+448,64,46375,5,0
+448,160,47771,1,0
+448,256,49166,1,0
+64,64,51608,6,0,C|352:96,3,272
+448,288,57189,2,0,C|160:320,3,272
+64,320,62771,5,0
+64,64,64166,1,0
+256,64,64864,1,0
+448,64,65562,1,0
+448,320,66957,1,0
+256,320,67655,1,0
+64,320,68352,5,0
+64,64,69748,1,0
+256,64,70445,1,0
+448,64,71143,1,0
+256,320,72538,5,0
+64,64,73934,6,0,C|224:64,3,136
+448,64,76724,2,0,C|288:64,3,136
+64,320,79515,5,0
+256,320,80910,1,0
+256,192,82306,12,0,86143
