@@ -2,6 +2,7 @@ import {
   BeatmapConverter,
   BeatmapDifficultySection,
   HitSound,
+  HitType,
   IBeatmap,
   IHitObject,
   ISlidableObject,
@@ -122,7 +123,7 @@ export class TaikoBeatmapConverter extends BeatmapConverter {
     const converted = new Hit();
 
     converted.startTime = hittable.startTime;
-    converted.hitType = hittable.hitType;
+    converted.hitType = HitType.Normal | (hittable.hitType & HitType.NewCombo);
     converted.hitSound = hittable.hitSound;
     converted.samples = hittable.samples.map((s) => s.clone());
 
@@ -143,6 +144,7 @@ export class TaikoBeatmapConverter extends BeatmapConverter {
 
         hit.startTime = time;
         hit.samples = allSamples[sampleIndex];
+        hit.hitType = HitType.Normal;
 
         hit.hitSound = hit.samples.reduce((s, h) => {
           return s + (HitSound as any)[h.hitSound];
@@ -164,7 +166,7 @@ export class TaikoBeatmapConverter extends BeatmapConverter {
       drumRoll.duration = this.taikoDuration;
       drumRoll.tickRate = sliderTickRate === 3 ? 3 : 4;
       drumRoll.startTime = slidable.startTime;
-      drumRoll.hitType = slidable.hitType;
+      drumRoll.hitType = HitType.Slider | (slidable.hitType & HitType.NewCombo);
       drumRoll.hitSound = slidable.hitSound;
       drumRoll.samples = slidable.samples.map((s) => s.clone());
 
@@ -181,7 +183,7 @@ export class TaikoBeatmapConverter extends BeatmapConverter {
     const swell = new Swell();
 
     swell.startTime = spinnable.startTime;
-    swell.hitType = spinnable.hitType;
+    swell.hitType = HitType.Spinner | (spinnable.hitType & HitType.NewCombo);
     swell.hitSound = spinnable.hitSound;
     swell.samples = spinnable.samples.map((s) => s.clone());
     swell.requiredHits = Math.trunc(Math.max(1, (swell.duration / 1000) * hitMultiplier));
