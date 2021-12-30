@@ -27,7 +27,7 @@ export class CatchPerformanceCalculator extends PerformanceCalculator {
     this._misses = this._score.statistics.miss;
   }
 
-  calculate(): number {
+  calculateAttributes(): CatchPerformanceAttributes {
     /**
      * We are heavily relying on aim in catch the beat.
      */
@@ -126,7 +126,7 @@ export class CatchPerformanceCalculator extends PerformanceCalculator {
       totalValue *= 0.9;
     }
 
-    return totalValue;
+    return new CatchPerformanceAttributes(this._mods, totalValue);
   }
 
   private get _accuracy(): number {
