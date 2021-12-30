@@ -14,12 +14,12 @@ export class StandardPerformanceCalculator extends PerformanceCalculator {
 
   private _mods: StandardModCombination;
 
-  private _accuracy = 0;
-  private _scoreMaxCombo = 0;
-  private _countGreat = 0;
-  private _countOk = 0;
-  private _countMeh = 0;
-  private _countMiss = 0;
+  private _scoreMaxCombo: number;
+  private _countGreat: number;
+  private _countOk: number;
+  private _countMeh: number;
+  private _countMiss: number;
+  private _accuracy: number;
 
   private _effectiveMissCount = 0;
 
@@ -28,12 +28,12 @@ export class StandardPerformanceCalculator extends PerformanceCalculator {
 
     this.attributes = attributes as StandardDifficultyAttributes;
     this._mods = (score?.mods as StandardModCombination) ?? new StandardModCombination();
-    this._accuracy = this._score.accuracy ?? 1;
     this._scoreMaxCombo = this._score.maxCombo ?? 0;
     this._countGreat = this._score.statistics.great ?? 0;
     this._countOk = this._score.statistics.ok ?? 0;
     this._countMeh = this._score.statistics.meh ?? 0;
     this._countMiss = this._score.statistics.miss ?? 0;
+    this._accuracy = this._score.accuracy ?? 1;
     this._effectiveMissCount = this._calculateEffectiveMissCount();
   }
 
