@@ -102,7 +102,7 @@ export class TaikoPerformanceCalculator extends PerformanceCalculator {
     /**
      * Scale the speed value with accuracy slightly.
      */
-    return strainValue * this._score.accuracy;
+    return strainValue * this._accuracy;
   }
 
   private _computeAccuracyValue(): number {
