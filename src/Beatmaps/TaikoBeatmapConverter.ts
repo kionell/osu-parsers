@@ -74,7 +74,15 @@ export class TaikoBeatmapConverter extends BeatmapConverter {
 
       const grouped = Object.values(groups);
 
-      converted.hitObjects = grouped.map((h) => h[0]);
+      converted.hitObjects = grouped.map((hitObjects) => {
+        const first = hitObjects[0];
+
+        if (hitObjects.length > 1 && first instanceof TaikoStrongHitObject) {
+          first.isStrong = true;
+        }
+
+        return first;
+      });
     }
 
     return converted;

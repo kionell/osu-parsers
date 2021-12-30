@@ -12,4 +12,10 @@ export abstract class TaikoStrongHitObject extends TaikoHitObject {
       return s.hitSound === HitSound[HitSound.Finish];
     });
   }
+
+  set isStrong(value: boolean) {
+    if (this.samples.length > 0) {
+      this.samples[0].hitSound = HitSound[value ? HitSound.Finish : HitSound.Normal];
+    }
+  }
 }
