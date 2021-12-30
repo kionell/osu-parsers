@@ -38,6 +38,8 @@ export class TaikoBeatmapConverter extends BeatmapConverter {
 
   isForCurrentRuleset = true;
 
+  isForManiaRuleset = false;
+
   taikoDistance = 0;
 
   taikoDuration = 0;
@@ -53,6 +55,7 @@ export class TaikoBeatmapConverter extends BeatmapConverter {
 
   convertBeatmap(original: IBeatmap): TaikoBeatmap {
     this.isForCurrentRuleset = original.originalMode === 1;
+    this.isForManiaRuleset = original.originalMode === 3;
 
     /**
      * Rewrite the beatmap info to add the slider velocity multiplier.
@@ -61,7 +64,7 @@ export class TaikoBeatmapConverter extends BeatmapConverter {
 
     converted.difficulty.sliderMultiplier *= TaikoBeatmapConverter.VELOCITY_MULTIPLIER;
 
-    if (original.mode === 3) {
+    if (this.isForManiaRuleset) {
       /**
        * Post processing step to transform mania hit objects
        * with the same start time into strong hits.
