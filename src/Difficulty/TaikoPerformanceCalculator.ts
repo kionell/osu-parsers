@@ -6,9 +6,12 @@
   IScoreInfo,
 } from 'osu-classes';
 
-import { TaikoModCombination } from '../Mods';
-import { TaikoDifficultyAttributes } from './Attributes';
+import {
+  TaikoDifficultyAttributes,
+  TaikoPerformanceAttributes,
+} from './Attributes';
 
+import { TaikoModCombination } from '../Mods';
 export class TaikoPerformanceCalculator extends PerformanceCalculator {
   readonly attributes: TaikoDifficultyAttributes;
 
@@ -33,7 +36,7 @@ export class TaikoPerformanceCalculator extends PerformanceCalculator {
     this._accuracy = this._score.accuracy ?? 1;
   }
 
-  calculate(): number {
+  calculateAttributes(): TaikoPerformanceAttributes {
     /**
      * Custom multipliers for NoFail and SpunOut.
      * This is being adjusted to keep the final pp value 
@@ -57,7 +60,12 @@ export class TaikoPerformanceCalculator extends PerformanceCalculator {
       Math.pow(accuracyValue, 1.1), 1.0 / 1.1,
     ) * multiplier;
 
-    return totalValue;
+    const attributes = new TaikoPerformanceAttributes(this._mods, totalValue);
+
+    attributes.strainPerformance = strainValue;
+    attributes.accuracyPerformance = accuracyValue;
+
+    return attributes;
   }
 
   private _computeStrainValue(): number {
