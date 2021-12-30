@@ -18,24 +18,22 @@ export class CatchPerformanceCalculator extends PerformanceCalculator {
 
   private _mods: CatchModCombination;
 
-  private _fruitsHit = 0;
-  private _ticksHit = 0;
-  private _tinyTicksHit = 0;
-  private _tinyTicksMissed = 0;
-  private _misses = 0;
-
-  private _effectiveMissCount = 0;
+  private _fruitsHit: number;
+  private _ticksHit: number;
+  private _tinyTicksHit: number;
+  private _tinyTicksMissed: number;
+  private _misses: number;
 
   constructor(ruleset: IRuleset, attributes: DifficultyAttributes, score: IScoreInfo) {
     super(ruleset, attributes, score);
 
     this.attributes = attributes as CatchDifficultyAttributes;
     this._mods = (score?.mods as CatchModCombination) ?? new CatchModCombination();
-    this._fruitsHit = this._score.statistics.great;
-    this._ticksHit = this._score.statistics.largeTickHit;
-    this._tinyTicksHit = this._score.statistics.smallTickHit;
-    this._tinyTicksMissed = this._score.statistics.smallTickMiss;
-    this._misses = this._score.statistics.miss;
+    this._fruitsHit = this._score.statistics.great ?? 0;
+    this._ticksHit = this._score.statistics.largeTickHit ?? 0;
+    this._tinyTicksHit = this._score.statistics.smallTickHit ?? 0;
+    this._tinyTicksMissed = this._score.statistics.smallTickMiss ?? 0;
+    this._misses = this._score.statistics.miss ?? 0;
   }
 
   calculateAttributes(): CatchPerformanceAttributes {
