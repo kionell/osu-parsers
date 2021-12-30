@@ -1,11 +1,15 @@
 import { CatchBeatmap } from './CatchBeatmap';
-import { CatchHitObject } from '../Objects/CatchHitObject';
-import { Fruit } from '../Objects/Fruit';
-import { JuiceStream } from '../Objects/JuiceStream';
-import { BananaShower } from '../Objects/BananaShower';
+
+import {
+  CatchHitObject,
+  Fruit,
+  JuiceStream,
+  BananaShower,
+} from '../Objects';
 
 import {
   BeatmapConverter,
+  HitType,
   IBeatmap,
   IHasPosition,
   IHasX,
@@ -54,6 +58,7 @@ export class CatchBeatmapConverter extends BeatmapConverter {
 
     this._copyBaseProperties(slidable, converted);
 
+    converted.hitType = HitType.Slider | (slidable.hitType & HitType.NewCombo);
     converted.repeats = slidable.repeats;
     converted.nodeSamples = slidable.nodeSamples.map((n) => n.map((s) => s.clone()));
     converted.path = slidable.path.clone();
@@ -67,6 +72,7 @@ export class CatchBeatmapConverter extends BeatmapConverter {
 
     this._copyBaseProperties(spinnable, converted);
 
+    converted.hitType = HitType.Spinner | (spinnable.hitType & HitType.NewCombo);
     converted.endTime = spinnable.endTime;
 
     return converted;
@@ -77,6 +83,8 @@ export class CatchBeatmapConverter extends BeatmapConverter {
 
     this._copyBaseProperties(hittable, converted);
 
+    converted.hitType |= hittable.hitType & HitType.NewCombo;
+
     return converted;
   }
 
@@ -86,7 +94,6 @@ export class CatchBeatmapConverter extends BeatmapConverter {
     converted.startX = posObj?.startX ?? 0;
     converted.startY = posObj?.startY ?? 192;
     converted.startTime = hitObject.startTime;
-    converted.hitType = hitObject.hitType;
     converted.hitSound = hitObject.hitSound;
     converted.samples = hitObject.samples.map((s) => s.clone());
   }
