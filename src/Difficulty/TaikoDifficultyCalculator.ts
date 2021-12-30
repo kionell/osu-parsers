@@ -12,6 +12,7 @@ import {
   TaikoEasy,
   TaikoHalfTime,
   TaikoHardRock,
+  TaikoModCombination,
 } from '../Mods';
 
 import {
@@ -36,6 +37,33 @@ export class TaikoDifficultyCalculator extends DifficultyCalculator {
   private static _COLOUR_SKILL_MULTIPLIER = 0.01;
   private static _RHYTHM_SKILL_MULTIPLIER = 0.014;
   private static _STAMINA_SKILL_MULTIPLIER = 0.02;
+
+  /**
+   * Calculates the difficulty of the beatmap with no mods applied.
+   * @returns A structure describing the difficulty of the beatmap.
+   */
+  calculate(): TaikoDifficultyAttributes {
+    return super.calculate() as TaikoDifficultyAttributes;
+  }
+
+  /**
+   * Calculates the difficulty of the beatmap using
+   * all mod combinations applicable to the beatmap.
+   * @returns A collection of structures describing
+   * the difficulty of the beatmap for each mod combination.
+   */
+  calculateAll(): Generator<TaikoDifficultyAttributes> {
+    return super.calculateAll() as Generator<TaikoDifficultyAttributes>;
+  }
+
+  /**
+   * Calculates the difficulty of the beatmap using a specific mod combination.
+   * @param mods The mods that should be applied to the beatmap.
+   * @returns A structure describing the difficulty of the beatmap.
+   */
+  calculateWithMods(mods: TaikoModCombination): TaikoDifficultyAttributes {
+    return super.calculateWithMods(mods) as TaikoDifficultyAttributes;
+  }
 
   protected _createSkills(beatmap: IBeatmap, mods: ModCombination): Skill[] {
     return [

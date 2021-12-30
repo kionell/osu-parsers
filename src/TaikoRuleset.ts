@@ -1,4 +1,8 @@
-import { Ruleset, ScoreInfo } from 'osu-classes';
+import {
+  IBeatmap,
+  Ruleset,
+  ScoreInfo,
+} from 'osu-classes';
 
 import {
   TaikoBeatmapProcessor,
@@ -23,6 +27,34 @@ export class TaikoRuleset extends Ruleset {
    */
   get id(): number {
     return 1;
+  }
+
+  /**
+   * Applies osu!taiko ruleset to a beatmap.
+   * @param beatmap The beatmap.
+   * @returns A new osu!taiko beatmap with applied ruleset.
+   */
+  applyToBeatmap(beatmap: IBeatmap): TaikoBeatmap {
+    return super.applyToBeatmap(beatmap) as TaikoBeatmap;
+  }
+
+  /**
+   * Applies osu!taiko ruleset and mods to a beatmap.
+   * @param beatmap The beatmap.
+   * @param mods osu!taiko mod combination.
+   * @returns A new osu!taiko beatmap with applied mods.
+   */
+  applyToBeatmapWithMods(beatmap: IBeatmap, mods?: TaikoModCombination): TaikoBeatmap {
+    return super.applyToBeatmapWithMods(beatmap, mods) as TaikoBeatmap;
+  }
+
+  /**
+   * Resets a mod combination from a beatmap.
+   * @param beatmap The beatmap.
+   * @returns A new beatmap with no mods.
+   */
+  resetMods(beatmap: IBeatmap): TaikoBeatmap {
+    return super.resetMods(beatmap) as TaikoBeatmap;
   }
 
   /**
