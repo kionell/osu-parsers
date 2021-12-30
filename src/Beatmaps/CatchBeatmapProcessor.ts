@@ -1,11 +1,15 @@
 import { CatchBeatmap } from './CatchBeatmap';
-import { CatchHitObject } from '../Objects/CatchHitObject';
 
-import { PalpableHitObject } from '../Objects/PalpableHitObject';
-import { Fruit } from '../Objects/Fruit';
-import { JuiceStream } from '../Objects/JuiceStream';
-import { BananaShower } from '../Objects/BananaShower';
-import { Banana } from '../Objects/Banana';
+import {
+  CatchHitObject,
+  PalpableHitObject,
+  Fruit,
+  JuiceStream,
+  JuiceDroplet,
+  JuiceTinyDroplet,
+  BananaShower,
+  Banana,
+} from '../Objects';
 
 import {
   FastRandom,
@@ -14,7 +18,6 @@ import {
   ModBitwise,
   HitType,
 } from 'osu-classes';
-import { JuiceDroplet, JuiceTinyDroplet } from '../Objects';
 
 export class CatchBeatmapProcessor extends BeatmapProcessor {
   static RNG_SEED = 1337;
