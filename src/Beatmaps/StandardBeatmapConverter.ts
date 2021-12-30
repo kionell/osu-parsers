@@ -6,6 +6,7 @@ import { Spinner } from '../Objects/Spinner';
 
 import {
   BeatmapConverter,
+  HitType,
   IBeatmap,
   IHasPosition,
   IHitObject,
@@ -55,7 +56,7 @@ export class StandardBeatmapConverter extends BeatmapConverter {
 
     converted.startPosition = posObj?.startPosition?.clone() ?? new Vector2(0, 0);
     converted.startTime = obj.startTime;
-    converted.hitType = obj.hitType;
+    converted.hitType = HitType.Normal | (obj.hitType & HitType.NewCombo);
     converted.hitSound = obj.hitSound;
     converted.samples = obj.samples.map((s) => s.clone());
 
@@ -68,7 +69,7 @@ export class StandardBeatmapConverter extends BeatmapConverter {
 
     converted.startPosition = posObj?.startPosition?.clone() ?? new Vector2(0, 0);
     converted.startTime = obj.startTime;
-    converted.hitType = obj.hitType;
+    converted.hitType = HitType.Slider | (obj.hitType & HitType.NewCombo);
     converted.hitSound = obj.hitSound;
     converted.repeats = obj.repeats;
     converted.samples = obj.samples.map((s) => s.clone());
@@ -100,7 +101,7 @@ export class StandardBeatmapConverter extends BeatmapConverter {
     converted.startPosition = posObj?.startPosition?.clone() ?? new Vector2(256, 192);
     converted.startTime = obj.startTime;
     converted.endTime = obj.endTime;
-    converted.hitType = obj.hitType;
+    converted.hitType = HitType.Spinner | (obj.hitType & HitType.NewCombo);
     converted.hitSound = obj.hitSound;
     converted.samples = obj.samples.map((s) => s.clone());
 
