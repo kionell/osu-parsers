@@ -139,7 +139,7 @@ export class CatchBeatmapProcessor extends BeatmapProcessor {
       return;
     }
 
-    if (Math.abs(xDiff) < timeDiff / 3) {
+    if (Math.abs(xDiff) < Math.trunc(timeDiff / 3)) {
       positionX = this._applyOffset(positionX, xDiff);
     }
 
