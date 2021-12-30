@@ -9,12 +9,15 @@ import {
   ISpinnableObject,
 } from 'osu-classes';
 
-import { TaikoBeatmap } from './TaikoBeatmap';
-import { TaikoHitObject } from '../Objects/TaikoHitObject';
-import { Hit } from '../Objects/Hit';
-import { DrumRoll } from '../Objects/DrumRoll';
-import { Swell } from '../Objects/Swell';
+import {
+  TaikoHitObject,
+  Hit,
+  DrumRoll,
+  Swell,
+  TaikoStrongHitObject,
+} from '../Objects';
 
+import { TaikoBeatmap } from './TaikoBeatmap';
 export class TaikoBeatmapConverter extends BeatmapConverter {
   /**
    * Osu!std is generally slower than taiko, so a factor is added to increase
@@ -267,12 +270,10 @@ export class TaikoBeatmapConverter extends BeatmapConverter {
      * If the drum roll is to be split into hit circles,
      * assume the ticks are 1/8 spaced within the duration of one beat.
      */
-    this.tickInterval = Math.min(beatLength / sliderTickRate,
-      this.taikoDuration / spans);
+    this.tickInterval = Math.min(beatLength / sliderTickRate, this.taikoDuration / spans);
 
     return (
-      this.tickInterval > 0 &&
-      (this.taikoDistance / osuVelocity) * 1000 < 2 * beatLength
+      this.tickInterval > 0 && (this.taikoDistance / osuVelocity) * 1000 < 2 * beatLength
     );
   }
 
