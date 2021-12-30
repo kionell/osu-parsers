@@ -17,6 +17,7 @@ import {
   IHitObject,
   ModBitwise,
   HitType,
+  SortHelper,
 } from 'osu-classes';
 
 export class CatchBeatmapProcessor extends BeatmapProcessor {
@@ -225,7 +226,7 @@ export class CatchBeatmapProcessor extends BeatmapProcessor {
       }
     });
 
-    palpableObjects.sort((a, b) => a.startTime - b.startTime);
+    SortHelper.introSort(palpableObjects, (a, b) => a.startTime - b.startTime);
 
     const scale = 1 - (0.7 * (beatmap.difficulty.circleSize - 5)) / 5;
 
