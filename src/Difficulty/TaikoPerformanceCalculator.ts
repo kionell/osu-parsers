@@ -2,8 +2,8 @@
   DifficultyAttributes,
   ModBitwise,
   PerformanceCalculator,
-  Ruleset,
-  ScoreInfo,
+  IRuleset,
+  IScoreInfo,
 } from 'osu-classes';
 
 import { TaikoModCombination } from '../Mods';
@@ -19,7 +19,7 @@ export class TaikoPerformanceCalculator extends PerformanceCalculator {
   private _countMeh = 0;
   private _countMiss = 0;
 
-  constructor(ruleset: Ruleset, attributes: DifficultyAttributes, score: ScoreInfo) {
+  constructor(ruleset: IRuleset, attributes: DifficultyAttributes, score: IScoreInfo) {
     super(ruleset, attributes, score);
 
     this.attributes = attributes as TaikoDifficultyAttributes;
