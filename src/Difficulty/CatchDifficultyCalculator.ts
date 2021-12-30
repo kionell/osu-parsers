@@ -1,5 +1,4 @@
 import {
-  DifficultyAttributes,
   DifficultyCalculator,
   DifficultyRange,
   IBeatmap,
@@ -20,6 +19,7 @@ import {
   CatchEasy,
   CatchHalfTime,
   CatchHardRock,
+  CatchModCombination,
 } from '../Mods';
 
 import { CatchBeatmap } from '../Beatmaps';
@@ -32,7 +32,34 @@ export class CatchDifficultyCalculator extends DifficultyCalculator {
 
   private _halfCatcherWidth = 0;
 
-  protected _createDifficultyAttributes(beatmap: IBeatmap, mods: ModCombination, skills: Skill[]): DifficultyAttributes {
+  /**
+   * Calculates the difficulty of the beatmap with no mods applied.
+   * @returns A structure describing the difficulty of the beatmap.
+   */
+  calculate(): CatchDifficultyAttributes {
+    return super.calculate() as CatchDifficultyAttributes;
+  }
+
+  /**
+   * Calculates the difficulty of the beatmap using
+   * all mod combinations applicable to the beatmap.
+   * @returns A collection of structures describing
+   * the difficulty of the beatmap for each mod combination.
+   */
+  calculateAll(): Generator<CatchDifficultyAttributes> {
+    return super.calculateAll() as Generator<CatchDifficultyAttributes>;
+  }
+
+  /**
+   * Calculates the difficulty of the beatmap using a specific mod combination.
+   * @param mods The mods that should be applied to the beatmap.
+   * @returns A structure describing the difficulty of the beatmap.
+   */
+  calculateWithMods(mods: CatchModCombination): CatchDifficultyAttributes {
+    return super.calculateWithMods(mods) as CatchDifficultyAttributes;
+  }
+
+  protected _createDifficultyAttributes(beatmap: IBeatmap, mods: ModCombination, skills: Skill[]): CatchDifficultyAttributes {
     if (beatmap.hitObjects.length === 0) {
       return new CatchDifficultyAttributes(mods, 0);
     }

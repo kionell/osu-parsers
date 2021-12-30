@@ -1,4 +1,8 @@
-import { Ruleset, ScoreInfo } from 'osu-classes';
+import {
+  IBeatmap,
+  Ruleset,
+  ScoreInfo,
+} from 'osu-classes';
 
 import {
   CatchBeatmapProcessor,
@@ -23,6 +27,34 @@ export class CatchRuleset extends Ruleset {
    */
   get id(): number {
     return 2;
+  }
+
+  /**
+   * Applies osu!catch ruleset to a beatmap.
+   * @param beatmap The beatmap.
+   * @returns A new osu!catch beatmap with applied ruleset.
+   */
+  applyToBeatmap(beatmap: IBeatmap): CatchBeatmap {
+    return super.applyToBeatmap(beatmap) as CatchBeatmap;
+  }
+
+  /**
+   * Applies osu!catch ruleset and mods to a beatmap.
+   * @param beatmap The beatmap.
+   * @param mods osu!catch mod combination.
+   * @returns A new osu!catch beatmap with applied mods.
+   */
+  applyToBeatmapWithMods(beatmap: IBeatmap, mods?: CatchModCombination): CatchBeatmap {
+    return super.applyToBeatmapWithMods(beatmap, mods) as CatchBeatmap;
+  }
+
+  /**
+   * Resets a mod combination from a beatmap.
+   * @param beatmap The beatmap.
+   * @returns A new beatmap with no mods.
+   */
+  resetMods(beatmap: IBeatmap): CatchBeatmap {
+    return super.resetMods(beatmap) as CatchBeatmap;
   }
 
   /**
