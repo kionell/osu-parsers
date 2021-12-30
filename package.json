@@ -9,7 +9,7 @@
     "test": "jest --verbose",
     "fix": "eslint --fix ./src",
     "format": "eslint --fix ./lib/** --no-ignore",
-    "prepublish": "npm run build",
+    "prepublish": "npm run build && npm run test",
     "docs": "npx typedoc src/index.ts"
   },
   "type": "module",
@@ -19,22 +19,29 @@
     "osu!taiko"
   ],
   "author": "Kionell",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kionell/osu-taiko-stable"
+  },
   "license": "MIT",
   "devDependencies": {
     "@rollup/plugin-typescript": "^8.2.1",
-    "@types/jest": "^26.0.22",
-    "@types/node": "^14.14.35",
+    "@types/jest": "^27.0.3",
+    "@types/node": "^17.0.2",
     "@typescript-eslint/eslint-plugin": "^4.20.0",
     "@typescript-eslint/parser": "^4.21.0",
     "eslint": "^7.23.0",
     "eslint-plugin-import": "^2.22.1",
-    "jest": "^26.6.3",
+    "jest": "^27.4.5",
+    "jest-esm-transformer": "^1.0.0",
+    "osu-parsers": "^2.0.1",
     "rollup": "^2.44.0",
     "rollup-plugin-dts": "^3.0.1",
+    "ts-jest": "^27.1.2",
     "typedoc": "^0.22.6",
     "typescript": "^4.1.5"
   },
   "dependencies": {
-    "osu-classes": "^0.4.3"
+    "osu-classes": "^0.4.9"
   }
 }
