@@ -1,5 +1,5 @@
 import { Beatmap } from './Beatmap';
-import { ModCombination } from '../Mods/ModCombination';
+import { ModCombination } from '../Mods';
 
 /**
  * A ruleset beatmap.

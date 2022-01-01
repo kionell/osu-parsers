@@ -1,5 +1,5 @@
-import { ControlPointInfo } from '../Beatmaps/ControlPoints/ControlPointInfo';
-import { BeatmapDifficultySection } from '../Beatmaps/Sections/BeatmapDifficultySection';
+import { ControlPointInfo } from '../Beatmaps/ControlPoints';
+import { BeatmapDifficultySection } from '../Beatmaps/Sections';
 import { Vector2 } from '../Utils/Vector2';
 import { HitSound } from './Enums/HitSound';
 import { HitType } from './Enums/HitType';

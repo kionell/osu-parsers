@@ -1,6 +1,6 @@
 import { RulesetBeatmap } from './RulesetBeatmap';
-import { HitObject } from '../Objects/HitObject';
 import { IBeatmap } from './IBeatmap';
+import { HitObject } from '../Objects';
 
 /**
  * A beatmap converter.

@@ -1,13 +1,16 @@
-import { BeatmapGeneralSection } from './Sections/BeatmapGeneralSection';
-import { BeatmapEditorSection } from './Sections/BeatmapEditorSection';
-import { BeatmapDifficultySection } from './Sections/BeatmapDifficultySection';
-import { BeatmapMetadataSection } from './Sections/BeatmapMetadataSection';
-import { BeatmapColoursSection } from './Sections/BeatmapColoursSection';
-import { BeatmapEventsSection } from './Sections/BeatmapEventsSection';
-import { ControlPointInfo } from './ControlPoints/ControlPointInfo';
-import { HitObject } from '../Objects/HitObject';
-import { IHasDuration } from '../Objects/Types/IHasDuration';
+import {
+  BeatmapGeneralSection,
+  BeatmapEditorSection,
+  BeatmapDifficultySection,
+  BeatmapMetadataSection,
+  BeatmapColoursSection,
+  BeatmapEventsSection,
+} from './Sections';
+
+import { ControlPointInfo } from './ControlPoints';
+
 import { IBeatmap } from './IBeatmap';
+import { HitObject, IHasDuration } from '../Objects';
 
 /**
  * A parsed beatmap.
