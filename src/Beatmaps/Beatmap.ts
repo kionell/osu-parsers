@@ -11,6 +11,7 @@ import { ControlPointInfo } from './ControlPoints';
 
 import { IBeatmap } from './IBeatmap';
 import { HitObject, IHasDuration } from '../Objects';
+import { RoundHelper } from '../Utils';
 
 /**
  * A parsed beatmap.
@@ -157,7 +158,7 @@ export class Beatmap implements IBeatmap {
       }
 
       nextTime = i === len - 1 ? lastTime : timingPoints[i + 1].startTime;
-      nextBeat = Math.round(timingPoints[i].beatLength * 1000) / 1000;
+      nextBeat = RoundHelper.round(timingPoints[i].beatLength * 1000) / 1000;
 
       if (!groups[nextBeat]) {
         groups[nextBeat] = 0;
