@@ -27,7 +27,7 @@ Since this project uses ES Modules, it is recommended to use Node.js 12.22.0 or 
 
 ```js
 import { BeatmapDecoder, BeatmapEncoder } from 'osu-parsers';
-import { maniaRuleset } from 'osu-mania-stable';
+import { ManiaRuleset } from 'osu-mania-stable';
 
 const decoder = new BeatmapDecoder();
 const encoder = new BeatmapEncoder();
@@ -40,7 +40,7 @@ const shouldParseSb = true;
 const parsed = decoder.decodeFromPath(decodePath, shouldParseSb);
 
 // Create a new osu!mania ruleset.
-const ruleset = new maniaRuleset();
+const ruleset = new ManiaRuleset();
 
 // This will create a new copy of a beatmap with applied osu!mania ruleset.
 // This method implicitly applies mod combination of 0.
@@ -64,7 +64,7 @@ encoder.encodeToPath(encodePath, maniaWithMods);
 
 ```js
 import { BeatmapDecoder } from 'osu-parsers';
-import { maniaRuleset } from 'osu-mania-stable';
+import { ManiaRuleset } from 'osu-mania-stable';
 
 const decoder = new BeatmapDecoder();
 
@@ -74,7 +74,7 @@ const decodePath = 'path/to/your/decoding/file.osu';
 const parsed = decoder.decodeFromPath(decodePath);
 
 // Create a new osu!mania ruleset.
-const ruleset = new maniaRuleset();
+const ruleset = new ManiaRuleset();
 
 // Create mod combination and apply it to beatmap.
 const mods = ruleset.createModCombination(1337); // HD, HR, FL, SD, HT
