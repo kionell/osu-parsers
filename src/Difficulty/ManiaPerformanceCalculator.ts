@@ -7,17 +7,17 @@ export class ManiaPerformanceCalculator extends PerformanceCalculator {
 
   private _mods: ManiaModCombination;
 
-  private _countPerfect = 0;
-  private _countGreat = 0;
-  private _countGood = 0;
-  private _countOk = 0;
-  private _countMeh = 0;
-  private _countMiss = 0;
+  private _countPerfect;
+  private _countGreat;
+  private _countGood;
+  private _countOk;
+  private _countMeh;
+  private _countMiss;
 
   /**
    * Score after being scaled by non-difficulty-increasing mods.
    */
-  private _scaledScore = 0;
+  private _scaledScore;
 
   constructor(ruleset: Ruleset, attributes: DifficultyAttributes, score: ScoreInfo) {
     super(ruleset, attributes, score);
@@ -25,13 +25,13 @@ export class ManiaPerformanceCalculator extends PerformanceCalculator {
     this.attributes = attributes as ManiaDifficultyAttributes;
     this._mods = (score?.mods as ManiaModCombination) ?? new ManiaModCombination();
 
-    this._scaledScore = score.totalScore;
-    this._countPerfect = score.statistics.perfect;
-    this._countGreat = score.statistics.great;
-    this._countGood = score.statistics.good;
-    this._countOk = score.statistics.ok;
-    this._countMeh = score.statistics.meh;
-    this._countMiss = score.statistics.miss;
+    this._scaledScore = score.totalScore ?? 0;
+    this._countPerfect = score.statistics.perfect ?? 0;
+    this._countGreat = score.statistics.great ?? 0;
+    this._countGood = score.statistics.good ?? 0;
+    this._countOk = score.statistics.ok ?? 0;
+    this._countMeh = score.statistics.meh ?? 0;
+    this._countMiss = score.statistics.miss ?? 0;
   }
 
   calculate(): number {
