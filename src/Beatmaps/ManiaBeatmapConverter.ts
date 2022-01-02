@@ -68,7 +68,9 @@ export class ManiaBeatmapConverter extends BeatmapConverter {
   }
 
   convertBeatmap(original: IBeatmap): ManiaBeatmap {
-    this.originalRuleset = original.mode;
+    original = original.base ?? original;
+
+    this.originalRuleset = original.originalMode;
 
     this._updateTargetColumns(original);
 
@@ -96,9 +98,9 @@ export class ManiaBeatmapConverter extends BeatmapConverter {
     /**
      * Save original beatmap as base beatmap for further convertations.
      */
-    this._converted.base = original.base ?? original;
+    this._converted.base = original;
 
-    for (const hitObject of this.convertHitObjects(this._converted.base)) {
+    for (const hitObject of this.convertHitObjects(original)) {
       this._converted.hitObjects.push(hitObject);
     }
 
