@@ -9,6 +9,7 @@ import {
   FastRandom,
   HitSample,
   HitSound,
+  HitType,
   IBeatmap,
   IHasPosition,
   IHitObject,
@@ -101,6 +102,7 @@ export class EndTimeObjectPatternGenerator extends PatternGenerator {
       hold.startTime = this.hitObject.startTime;
       hold.endTime = this.endTime;
       hold.originalColumn = column;
+      hold.hitType = HitType.Hold | (this.hitObject.hitType & HitType.NewCombo);
       hold.samples = this.hitObject.samples.map((s) => s.clone());
       hold.nodeSamples = (this.hitObject as IHoldableObject).nodeSamples ?? [];
       hold.startPosition = posData?.startPosition?.clone() ?? new Vector2(256, 192);
@@ -113,6 +115,7 @@ export class EndTimeObjectPatternGenerator extends PatternGenerator {
 
       note.startTime = this.hitObject.startTime;
       note.originalColumn = column;
+      note.hitType = HitType.Normal | (this.hitObject.hitType & HitType.NewCombo);
       note.samples = this.hitObject.samples.map((s) => s.clone());
       note.startPosition = posData?.startPosition?.clone() ?? new Vector2(256, 192);
 

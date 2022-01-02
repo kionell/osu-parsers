@@ -12,6 +12,7 @@ import {
   IHitObject,
   IHasPosition,
   IBeatmap,
+  HitType,
 } from 'osu-classes';
 
 export class HitObjectPatternGenerator extends PatternGenerator {
@@ -548,6 +549,7 @@ export class HitObjectPatternGenerator extends PatternGenerator {
 
     note.startTime = this.hitObject.startTime;
     note.originalColumn = column;
+    note.hitType = HitType.Normal | (this.hitObject.hitType & HitType.NewCombo);
     note.samples = this.hitObject.samples.map((s) => s.clone());
     note.startPosition = posData?.startPosition?.clone() ?? new Vector2(256, 192);
 
