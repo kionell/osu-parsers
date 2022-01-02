@@ -1,4 +1,13 @@
-﻿import { DifficultyAttributes, IMod, ModBitwise, ModType, PerformanceCalculator, Ruleset, ScoreInfo } from 'osu-classes';
+﻿import {
+  DifficultyAttributes,
+  IMod,
+  ModBitwise,
+  ModType,
+  PerformanceCalculator,
+  IRuleset,
+  IScoreInfo,
+} from 'osu-classes';
+
 import { ManiaModCombination } from '../Mods';
 import { ManiaDifficultyAttributes } from './Attributes';
 
@@ -19,7 +28,7 @@ export class ManiaPerformanceCalculator extends PerformanceCalculator {
    */
   private _scaledScore;
 
-  constructor(ruleset: Ruleset, attributes: DifficultyAttributes, score: ScoreInfo) {
+  constructor(ruleset: IRuleset, attributes: DifficultyAttributes, score: IScoreInfo) {
     super(ruleset, attributes, score);
 
     this.attributes = attributes as ManiaDifficultyAttributes;
