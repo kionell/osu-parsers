@@ -174,31 +174,10 @@ export class ManiaDifficultyCalculator extends DifficultyCalculator {
       return applyModAdjustments(34 + 3 * od);
     }
 
-    if (Math.round(this._originalOverallDifficulty) > 4) {
+    if (RoundHelper.round(this._originalOverallDifficulty) > 4) {
       return applyModAdjustments(34);
     }
 
     return applyModAdjustments(47);
-  }
-
-  private _getScoreMultiplier(mods: ModCombination) {
-    let scoreMultiplier = 1;
-
-    if (mods.has(ModBitwise.NoFail | ModBitwise.Easy | ModBitwise.HalfTime)) {
-      scoreMultiplier *= 0.5;
-    }
-
-    const maniaBeatmap = this._beatmap as ManiaBeatmap;
-
-    const diff = maniaBeatmap.totalColumns - maniaBeatmap.originalTotalColumns;
-
-    if (diff > 0) {
-      scoreMultiplier *= 0.9;
-    }
-    else if (diff < 0) {
-      scoreMultiplier *= 0.9 + 0.04 * diff;
-    }
-
-    return scoreMultiplier;
   }
 }
