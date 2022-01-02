@@ -121,19 +121,25 @@ export class ManiaDifficultyCalculator extends DifficultyCalculator {
   }
 
   get difficultyMods(): IMod[] {
-    return [
+    const mods = [
       new ManiaDoubleTime(),
       new ManiaHalfTime(),
       new ManiaEasy(),
       new ManiaHardRock(),
-      new ManiaKey1(),
-      new ManiaKey2(),
-      new ManiaKey3(),
-      new ManiaKey4(),
+    ];
+
+    if (this._isForCurrentRuleset) return mods;
+
+    return [
+      ...mods,
 
       /**
        * If we are a convert, we can be played in any key mod.
        */
+      new ManiaKey1(),
+      new ManiaKey2(),
+      new ManiaKey3(),
+      new ManiaKey4(),
       new ManiaKey5(),
       new ManiaKey6(),
       new ManiaKey7(),
