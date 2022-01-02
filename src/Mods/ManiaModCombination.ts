@@ -62,4 +62,8 @@ export class ManiaModCombination extends ModCombination {
       new ManiaMirror(),
     ];
   }
+
+  clone(): ManiaModCombination {
+    return new ManiaModCombination(this.bitwise);
+  }
 }
