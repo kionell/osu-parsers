@@ -8,8 +8,12 @@
   IScoreInfo,
 } from 'osu-classes';
 
+import {
+  ManiaDifficultyAttributes,
+  ManiaPerformanceAttributes,
+} from './Attributes';
+
 import { ManiaModCombination } from '../Mods';
-import { ManiaDifficultyAttributes } from './Attributes';
 
 export class ManiaPerformanceCalculator extends PerformanceCalculator {
   readonly attributes: ManiaDifficultyAttributes;
@@ -43,7 +47,7 @@ export class ManiaPerformanceCalculator extends PerformanceCalculator {
     this._countMiss = score.statistics.miss ?? 0;
   }
 
-  calculate(): number {
+  calculateAttributes(): ManiaPerformanceAttributes {
     let scoreMultiplier = 1;
 
     for (const mod of this._mods.all) {
@@ -81,7 +85,12 @@ export class ManiaPerformanceCalculator extends PerformanceCalculator {
       Math.pow(accValue, 1.1), 1.0 / 1.1,
     ) * multiplier;
 
-    return totalValue;
+    const attributes = new ManiaPerformanceAttributes(this._mods, totalValue);
+
+    attributes.strainPerformance = strainValue;
+    attributes.accuracyPerformance = accValue;
+
+    return attributes;
   }
 
   private _computeStrainValue(): number {
