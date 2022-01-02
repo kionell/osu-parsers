@@ -24,6 +24,7 @@ import {
   ManiaKey7,
   ManiaKey8,
   ManiaKey9,
+  ManiaModCombination,
 } from '../Mods';
 
 import { ManiaBeatmap } from '../Beatmaps';
@@ -44,7 +45,34 @@ export class ManiaDifficultyCalculator extends DifficultyCalculator {
     super(beatmap, ruleset);
 
     this._isForCurrentRuleset = beatmap.originalMode === ruleset.id;
-    this._originalOverallDifficulty = beatmap.difficulty.overallDifficulty;
+    this._originalOverallDifficulty = (beatmap.base ?? beatmap).difficulty.overallDifficulty;
+  }
+
+  /**
+   * Calculates the difficulty of the beatmap with no mods applied.
+   * @returns A structure describing the difficulty of the beatmap.
+   */
+  calculate(): ManiaDifficultyAttributes {
+    return super.calculate() as ManiaDifficultyAttributes;
+  }
+
+  /**
+   * Calculates the difficulty of the beatmap using
+   * all mod combinations applicable to the beatmap.
+   * @returns A collection of structures describing
+   * the difficulty of the beatmap for each mod combination.
+   */
+  calculateAll(): Generator<ManiaDifficultyAttributes> {
+    return super.calculateAll() as Generator<ManiaDifficultyAttributes>;
+  }
+
+  /**
+   * Calculates the difficulty of the beatmap using a specific mod combination.
+   * @param mods The mods that should be applied to the beatmap.
+   * @returns A structure describing the difficulty of the beatmap.
+   */
+  calculateWithMods(mods: ManiaModCombination): ManiaDifficultyAttributes {
+    return super.calculateWithMods(mods) as ManiaDifficultyAttributes;
   }
 
   protected _createDifficultyAttributes(beatmap: IBeatmap, mods: ModCombination, skills: Skill[]): DifficultyAttributes {
