@@ -17,6 +17,7 @@ import {
   IHasPosition,
   IBeatmap,
   Vector2,
+  RoundHelper,
 } from 'osu-classes';
 
 /**
@@ -61,7 +62,7 @@ export class DistanceObjectPatternGenerator extends PatternGenerator {
     const beatLength = timingPoint.beatLength * difficultyPoint.bpmMultiplier;
 
     this.spanCount = slider.repeats + 1 || 1;
-    this.startTime = Math.trunc(Math.round(hitObject.startTime));
+    this.startTime = RoundHelper.round(hitObject.startTime);
 
     const sliderMultiplier = beatmap.difficulty.sliderMultiplier;
 
@@ -96,7 +97,7 @@ export class DistanceObjectPatternGenerator extends PatternGenerator {
 
       endTime = endTime || hitObject.startTime;
 
-      if (this.endTime !== Math.trunc(Math.round(endTime))) {
+      if (this.endTime !== RoundHelper.round(endTime)) {
         intermediatePattern.addHitObject(hitObject);
       }
       else {

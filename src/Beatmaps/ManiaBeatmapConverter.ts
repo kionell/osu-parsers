@@ -9,6 +9,7 @@ import {
   ISpinnableObject,
   IHasX,
   IHitObject,
+  RoundHelper,
 } from 'osu-classes';
 
 import {
@@ -73,9 +74,9 @@ export class ManiaBeatmapConverter extends BeatmapConverter {
 
     const difficulty = original.difficulty;
 
-    let seed = Math.trunc(Math.round(difficulty.approachRate));
+    let seed = RoundHelper.round(difficulty.approachRate);
 
-    seed += Math.round(difficulty.drainRate + difficulty.circleSize) * 20;
+    seed += RoundHelper.round(difficulty.drainRate + difficulty.circleSize) * 20;
     seed += Math.trunc(difficulty.overallDifficulty * 41.2);
 
     this._rng = new FastRandom(Math.trunc(seed));
@@ -256,8 +257,8 @@ export class ManiaBeatmapConverter extends BeatmapConverter {
     const difficulty = original.difficulty;
     const hitObjects = original.hitObjects;
 
-    const roundedCS = Math.round(difficulty.circleSize);
-    const roundedOD = Math.round(difficulty.overallDifficulty);
+    const roundedCS = RoundHelper.round(difficulty.circleSize);
+    const roundedOD = RoundHelper.round(difficulty.overallDifficulty);
 
     if (this.targetColumns) {
       if (!this.originalTargetColumns) {

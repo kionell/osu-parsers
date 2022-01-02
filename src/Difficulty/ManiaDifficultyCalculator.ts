@@ -6,6 +6,7 @@ import {
   IRuleset,
   ModBitwise,
   ModCombination,
+  RoundHelper,
   Skill,
 } from 'osu-classes';
 
@@ -103,7 +104,7 @@ export class ManiaDifficultyCalculator extends DifficultyCalculator {
     const hitObjects = beatmap.hitObjects.slice() as ManiaHitObject[];
 
     const comparerFn = (a: ManiaHitObject, b: ManiaHitObject) => {
-      return Math.trunc(Math.round(a.startTime)) - Math.trunc(Math.round(b.startTime));
+      return RoundHelper.round(a.startTime) - RoundHelper.round(b.startTime);
     };
 
     const sortedObjects = SortHelper.sort(hitObjects, comparerFn);
