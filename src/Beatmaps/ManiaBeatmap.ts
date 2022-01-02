@@ -1,7 +1,11 @@
-import { RulesetBeatmap, HitType } from 'osu-classes';
-import { ManiaModCombination } from '../Mods/ManiaModCombination';
+import {
+  RulesetBeatmap,
+  HitType,
+} from 'osu-classes';
+
+import { ManiaHitObject } from '../Objects';
+import { ManiaModCombination } from '../Mods';
 import { StageDefinition } from './StageDefinition';
-import { ManiaHitObject } from '../Objects/ManiaHitObject';
 
 export class ManiaBeatmap extends RulesetBeatmap {
   mods: ManiaModCombination = new ManiaModCombination();
@@ -42,16 +46,8 @@ export class ManiaBeatmap extends RulesetBeatmap {
 
   get maxCombo(): number {
     return this.hitObjects.reduce((combo, obj) => {
-      if (obj.hitType & HitType.Normal) {
-        return combo + 1;
-      }
-
-      if (obj.hitType & HitType.Hold) {
-        return combo + obj.nestedHitObjects.length;
-      }
-
-      return combo;
-    }, 0);
+      return combo + (obj.hitType & HitType.Hold ? obj.nestedHitObjects.length : 0);
+    }, this.notes);
   }
 
   get notes(): number {
