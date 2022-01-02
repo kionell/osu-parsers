@@ -322,10 +322,7 @@ export class ManiaBeatmapConverter extends BeatmapConverter {
   }
 
   createBeatmap(): ManiaBeatmap {
-    const stage = new StageDefinition();
-
-    stage.columns = this.targetColumns;
-
+    const stage = new StageDefinition(this.targetColumns);
     const beatmap = new ManiaBeatmap(stage, this.originalTargetColumns);
 
     if (this.isDual) {
