@@ -8,6 +8,7 @@ import {
   ModCombination,
   RoundHelper,
   Skill,
+  SortHelper,
 } from 'osu-classes';
 
 import {
@@ -34,7 +35,6 @@ import { ManiaHitWindows } from '../Scoring';
 import { ManiaDifficultyAttributes } from './Attributes';
 import { ManiaDifficultyHitObject } from './Preprocessing';
 import { Strain } from './Skills';
-import { SortHelper } from './Utils';
 
 export class ManiaDifficultyCalculator extends DifficultyCalculator {
   private static _STAR_SCALING_FACTOR = 0.018;
@@ -107,7 +107,7 @@ export class ManiaDifficultyCalculator extends DifficultyCalculator {
       return RoundHelper.round(a.startTime) - RoundHelper.round(b.startTime);
     };
 
-    const sortedObjects = SortHelper.sort(hitObjects, comparerFn);
+    const sortedObjects = SortHelper.depthSort(hitObjects, comparerFn);
 
     for (let i = 1; i < sortedObjects.length; ++i) {
       yield new ManiaDifficultyHitObject(sortedObjects[i], sortedObjects[i - 1], clockRate);
