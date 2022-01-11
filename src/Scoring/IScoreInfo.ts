@@ -74,6 +74,11 @@ export interface IScoreInfo {
   beatmap: IBeatmap;
 
   /**
+   * Beatmap ID.
+   */
+  beatmapID: number;
+
+  /**
    * The date when this play was set.
    */
   date: Date;
@@ -82,9 +87,4 @@ export interface IScoreInfo {
    * Hit statistics.
    */
   statistics: Partial<IHitStatistics>;
-
-  /**
-   * Hash of the beatmap.
-   */
-  hash: string;
 }

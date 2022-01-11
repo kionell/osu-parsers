@@ -75,6 +75,11 @@ export class ScoreInfo implements IScoreInfo {
   beatmap: IBeatmap = new Beatmap();
 
   /**
+   * Beatmap ID.
+   */
+  beatmapID = 0;
+
+  /**
    * The date when this play was set.
    */
   date: Date = new Date();
@@ -99,11 +104,6 @@ export class ScoreInfo implements IScoreInfo {
     ignoreMiss: 0,
     ignoreHit: 0,
   };
-
-  /**
-   * Hash of the beatmap.
-   */
-  hash = '';
 
   /**
    * Creates a new instance of score information.
@@ -132,8 +132,8 @@ export class ScoreInfo implements IScoreInfo {
     cloned.username = this.username;
     cloned.userID = this.userID;
     cloned.beatmap = this.beatmap;
+    cloned.beatmapID = this.beatmap.metadata.beatmapId;
     cloned.date = this.date;
-    cloned.hash = this.hash;
 
     if (this.pp) cloned.pp = this.pp;
 
@@ -151,10 +151,6 @@ export class ScoreInfo implements IScoreInfo {
 
     if (this.id !== 0 && other.id !== 0) {
       return this.id === other.id;
-    }
-
-    if (!this.hash && !other.hash) {
-      return this.hash === other.hash;
     }
 
     return false;
