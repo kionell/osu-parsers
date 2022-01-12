@@ -17,7 +17,7 @@ export class ScoreInfo implements IScoreInfo {
   /**
    * A rank of the play.
    */
-  rank: ScoreRank = ScoreRank.F;
+  rank: keyof typeof ScoreRank = 'F';
 
   /**
    * Total score of the play.

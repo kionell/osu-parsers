@@ -16,7 +16,7 @@ export interface IScoreInfo {
   /**
    * A rank of the play.
    */
-  rank: ScoreRank;
+  rank: keyof typeof ScoreRank;
 
   /**
    * Total score of the play.
