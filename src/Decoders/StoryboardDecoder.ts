@@ -1,4 +1,4 @@
-import { readFileSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 
 import {
   Storyboard,
@@ -30,6 +30,10 @@ export class StoryboardDecoder {
   decodeFromPath(path: string): Storyboard {
     if (!path.endsWith('.osb')) {
       throw new Error('Wrong file format! Only .osb files are supported!');
+    }
+
+    if (!existsSync(path)) {
+      throw new Error('File doesn\'t exists!');
     }
 
     const str = readFileSync(path).toString();
