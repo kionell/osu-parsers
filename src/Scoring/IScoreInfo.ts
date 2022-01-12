@@ -71,7 +71,7 @@ export interface IScoreInfo {
   /**
    * Beatmap of the play.
    */
-  beatmap: IBeatmap;
+  beatmap: IBeatmap | null;
 
   /**
    * Beatmap ID.

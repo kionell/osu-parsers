@@ -1,4 +1,4 @@
-import { Beatmap, IBeatmap } from '../Beatmaps';
+import { IBeatmap } from '../Beatmaps';
 import { IRuleset } from '../Rulesets';
 import { ModCombination } from '../Mods';
 import { ScoreRank } from './Enums/ScoreRank';
@@ -72,7 +72,7 @@ export class ScoreInfo implements IScoreInfo {
   /**
    * Beatmap of the play.
    */
-  beatmap: IBeatmap = new Beatmap();
+  beatmap: IBeatmap | null = null;
 
   /**
    * Beatmap ID.
@@ -132,7 +132,7 @@ export class ScoreInfo implements IScoreInfo {
     cloned.username = this.username;
     cloned.userID = this.userID;
     cloned.beatmap = this.beatmap;
-    cloned.beatmapID = this.beatmap.metadata.beatmapId;
+    cloned.beatmapID = this.beatmapID;
     cloned.date = this.date;
 
     if (this.pp) cloned.pp = this.pp;
