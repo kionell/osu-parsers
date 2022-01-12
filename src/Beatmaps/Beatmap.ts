@@ -69,6 +69,11 @@ export class Beatmap implements IBeatmap {
   fileFormat = 14;
 
   /**
+   * The date when the beatmap file was updated last time.
+   */
+  fileUpdateDate: Date = new Date();
+
+  /**
    * Beatmap original gamemode.
    */
   originalMode = 0;
