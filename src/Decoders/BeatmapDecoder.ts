@@ -34,8 +34,11 @@ export class BeatmapDecoder {
     }
 
     const str = readFileSync(path).toString();
+    const beatmap = this.decodeFromString(str, parseSb);
 
-    return this.decodeFromString(str, parseSb);
+    beatmap.fileUpdateDate = statSync(path).mtime;
+
+    return beatmap;
   }
 
   /**
