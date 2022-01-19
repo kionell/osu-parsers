@@ -26,6 +26,10 @@
     ".osb"
   ],
   "author": "Kionell",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kionell/osu-parsers"
+  },
   "license": "MIT",
   "devDependencies": {
     "@rollup/plugin-typescript": "^8.2.1",
