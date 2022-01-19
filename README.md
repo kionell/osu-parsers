@@ -19,10 +19,6 @@ Add a new dependency to your project via npm:
 npm install osu-standard-stable
 ```
 
-### Requirements
-
-Since this project uses ES Modules, it is recommended to use Node.js 12.22.0 or newer.
-
 ## Example of converting beatmap to the osu!std ruleset
 
 ```js
