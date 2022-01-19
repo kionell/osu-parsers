@@ -2,8 +2,9 @@
   "name": "osu-parsers",
   "version": "2.0.2",
   "description": "A bundle of parsers for osu! file formats based on the osu!lazer source code.",
-  "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
+  "main": "./lib/cjs/index.js",
+  "module": "./lib/esm/index.js",
+  "types": "./lib/emd/index.d.ts",
   "scripts": {
     "build": "rollup -c && npm run format",
     "test": "jest --verbose",
@@ -12,7 +13,6 @@
     "prepublishOnly": "npm run build",
     "docs": "npx typedoc src/index.ts"
   },
-  "type": "module",
   "keywords": [
     "osu",
     "beatmap",
@@ -32,6 +32,7 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^21.0.1",
     "@rollup/plugin-typescript": "^8.2.1",
     "@types/jest": "^26.0.22",
     "@types/node": "^14.14.35",

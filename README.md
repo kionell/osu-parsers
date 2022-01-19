@@ -19,10 +19,6 @@ Add a new dependency to your project via npm:
 npm install osu-parsers
 ```
 
-### Requirements
-
-Since this project uses ES Modules, it is recommended to use Node.js 12.22.0 or newer.
-
 ## Decoding
 
 There are 3 ways to read data through decoders:
