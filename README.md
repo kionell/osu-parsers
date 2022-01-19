@@ -18,10 +18,6 @@ Add a new dependency to your project via npm:
 npm install osu-classes
 ```
 
-### Requirements
-
-Since this project uses ES Modules, it is recommended to use Node.js 12.22.0 or newer.
-
 ## Other projects
 
 All projects below are based on this code.
