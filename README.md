@@ -19,10 +19,6 @@ Add a new dependency to your project via npm:
 npm install osu-catch-stable
 ```
 
-### Requirements
-
-Since this project uses ES Modules, it is recommended to use Node.js 12.22.0 or newer.
-
 ## Example of converting beatmap to the osu!catch ruleset
 
 ```js
