@@ -231,7 +231,7 @@ export class Speed extends StandardStrainSkill {
 
     const distance = Math.min(
       this._SINGLE_SPACING_THRESHOLD,
-      osuCurrObj.travelDistance + osuCurrObj.jumpDistance,
+      osuCurrObj.travelDistance + osuCurrObj.lazyJumpDistance,
     );
 
     const pow = Math.pow(distance / this._SINGLE_SPACING_THRESHOLD, 3.5);

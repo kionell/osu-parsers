@@ -11,38 +11,44 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
   private _ASSUMED_SLIDER_RADIUS = this._NORMALIZED_RADIUS * Math.fround(1.8);
 
   /**
-   * Normalized distance from the end position of the previous 
-   * difficulty hit object to the start position of this difficulty hit object.
-   */
-  jumpDistance = 0;
-
-  /**
-   * Minimum distance from the end position of the previous difficulty hit object 
-   * to the start position of this difficulty hit object.
-   */
-  movementDistance = 0;
-
-  /**
-   * Normalized distance between the start and end position 
-   * of the previous difficulty hit object.
-   */
-  travelDistance = 0;
-
-  /**
    * Angle the player has to take to hit this difficulty hit object.
    * Calculated as the angle between the circles (current-2, current-1, current).
    */
   angle: number | null = null;
 
   /**
-   * Milliseconds elapsed since the end time of the previous 
-   * difficulty hit object, with a minimum of 25ms.
+   * Normalised distance from the "lazy" end position of the previous 
+   * difficulty hit object to the start position of this difficulty hit object.
+   * 
+   * The "lazy" end position is the position at which the cursor ends up 
+   * if the previous hitobject is followed with as minimal movement as possible 
+   * (i.e. on the edge of slider follow circles).
    */
-  movementTime = 0;
+  lazyJumpDistance = 0;
 
   /**
-   * Milliseconds elapsed since the start time of the previous difficulty hit object 
-   * to the end time of the same previous difficulty hit object, with a minimum of 25ms.
+   * Normalised shortest distance to consider for a jump between 
+   * the previous and this difficulty hit objects.
+   * This is bounded from above by lazy jump distance, and is smaller than the former 
+   * if a more natural path is able to be taken through the previous difficulty hit object.
+   */
+  minimumJumpDistance = 0;
+
+  /**
+   * The time taken to travel through minimum jump distance, 
+   * with a minimum value of 25ms.
+   */
+  minimumJumpTime = 0;
+
+  /**
+   * Normalised distance between the start and end position 
+   * of this difficulty hit object.
+   */
+  travelDistance = 0;
+
+  /**
+   * The time taken to travel through travel distance, 
+   * with a minimum value of 25ms for a non-zero distance.
    */
   travelTime = 0;
 
@@ -73,6 +79,13 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
     const baseObj = this.baseObject as StandardHitObject;
     const lastObj = this.lastObject as StandardHitObject;
 
+    if (baseObj instanceof Slider) {
+      this._computeSliderCursorPosition(baseObj);
+
+      this.travelDistance = baseObj.lazyTravelDistance;
+      this.travelTime = Math.max(baseObj.lazyTravelTime / clockRate, this._MIN_DELTA_TIME);
+    }
+
     /**
      * We don't need to calculate either angle or distance 
      * when one of the last->curr objects is a spinner.
@@ -98,45 +111,48 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
     const scaledStackPos = baseObj.stackedStartPosition.scale(scalingFactor);
     const scaledCursorPos = lastCursorPosition.scale(scalingFactor);
 
-    this.jumpDistance = scaledStackPos.subtract(scaledCursorPos).flength();
+    this.lazyJumpDistance = scaledStackPos.subtract(scaledCursorPos).flength();
+    this.minimumJumpDistance = this.lazyJumpDistance;
+    this.minimumJumpTime = this.strainTime;
 
     if (lastObj instanceof Slider) {
-      this._computeSliderCursorPosition(lastObj);
+      const lastTravelTime = Math.max(lastObj.lazyTravelTime / clockRate, this._MIN_DELTA_TIME);
 
-      this.travelDistance = lastObj.lazyTravelDistance;
-      this.travelTime = Math.max(lastObj.lazyTravelTime / clockRate, this._MIN_DELTA_TIME);
-      this.movementTime = Math.max(this.strainTime - this.travelTime, this._MIN_DELTA_TIME);
+      this.minimumJumpTime = Math.max(this.strainTime - lastTravelTime, this._MIN_DELTA_TIME);
 
       /**
-       * Jump distance from the slider tail to the next object, 
-       * as opposed to the lazy position of JumpDistance.
+       * There are two types of slider-to-object patterns to consider in order to better approximate the real movement a player will take to jump between the hitobjects.
+       * 
+       * 1. The anti-flow pattern, where players cut the slider short in order to move to the next hitobject.
+       * 
+       *      <======o==>  ← slider
+       *             |     ← most natural jump path
+       *             o     ← a follow-up hitcircle
+       * 
+       * In this case the most natural jump path is approximated by LazyJumpDistance.
+       * 
+       * 2. The flow pattern, where players follow through the slider to its visual extent into the next hitobject.
+       * 
+       *      <======o==>---o
+       *                  ↑
+       *        most natural jump path
+       * 
+       * In this case the most natural jump path is better approximated by a new distance called "tailJumpDistance" - the distance between the slider's tail and the next hitobject.
+       * 
+       * Thus, the player is assumed to jump the minimum of these two distances in all cases.
        */
+
       const tailStackPos = lastObj.tail?.stackedStartPosition ?? lastObj.stackedStartPosition;
       const baseStackPos = baseObj.stackedStartPosition;
 
       const tailJumpDistance = tailStackPos.subtract(baseStackPos).flength() * scalingFactor;
 
-      /**
-       * For hitobjects which continue in the direction of the slider, 
-       * the player will normally follow through the slider,
-       * such that they're not jumping from the lazy position 
-       * but rather from very close to (or the end of) the slider.
-       * In such cases, a leniency is applied by also considering the jump distance 
-       * from the tail of the slider, and taking the minimum jump distance.
-       * Additional distance is removed based on position of jump relative to slider follow circle radius.
-       * JumpDistance is the leniency distance beyond the assumed_slider_radius. 
-       * tailJumpDistance is maximum_slider_radius since the full distance of radial leniency is still possible.
-       */
-      const movementDistance = Math.min(
-        this.jumpDistance - (this._MAXIMUM_SLIDER_RADIUS - this._ASSUMED_SLIDER_RADIUS),
+      const minimumJumpDistance = Math.min(
+        this.lazyJumpDistance - (this._MAXIMUM_SLIDER_RADIUS - this._ASSUMED_SLIDER_RADIUS),
         tailJumpDistance - this._MAXIMUM_SLIDER_RADIUS,
       );
 
-      this.movementDistance = Math.max(0, movementDistance);
-    }
-    else {
-      this.movementTime = this.strainTime;
-      this.movementDistance = this.jumpDistance;
+      this.minimumJumpDistance = Math.max(0, minimumJumpDistance);
     }
 
     if (this._lastLastObject !== null && !(this._lastLastObject instanceof Spinner)) {

@@ -42,7 +42,7 @@ export class Aim extends StandardStrainSkill {
      * Calculate the velocity to the current hitobject, which starts with 
      * a base distance / time assuming the last object is a hitcircle.
      */
-    let currVelocity = osuCurrObj.jumpDistance / osuCurrObj.strainTime;
+    let currVelocity = osuCurrObj.lazyJumpDistance / osuCurrObj.strainTime;
 
     /**
      * But if the last object is a slider, then we extend 
@@ -52,7 +52,7 @@ export class Aim extends StandardStrainSkill {
       /**
        * Calculate the movement velocity from slider end to current object
        */
-      const movementVelocity = osuCurrObj.movementDistance / osuCurrObj.movementTime;
+      const movementVelocity = osuCurrObj.minimumJumpDistance / osuCurrObj.minimumJumpTime;
 
       /**
        * Calculate the slider velocity from slider head to slider end.
@@ -68,10 +68,10 @@ export class Aim extends StandardStrainSkill {
     /**
      * As above, do the same for the previous hitobject.
      */
-    let prevVelocity = osuLastObj.jumpDistance / osuLastObj.strainTime;
+    let prevVelocity = osuLastObj.lazyJumpDistance / osuLastObj.strainTime;
 
     if ((osuLastLastObj.baseObject instanceof Slider) && this._withSliders) {
-      const movementVelocity = osuLastObj.movementDistance / osuLastObj.movementTime;
+      const movementVelocity = osuLastObj.minimumJumpDistance / osuLastObj.minimumJumpTime;
       const travelVelocity = osuLastObj.travelDistance / osuLastObj.travelTime;
 
       prevVelocity = Math.max(prevVelocity, movementVelocity + travelVelocity);
@@ -134,7 +134,7 @@ export class Aim extends StandardStrainSkill {
           /**
            * Buff distance exceeding 50 (radius) up to 100 (diameter).
            */
-          const clamp = Math.min(Math.max(osuCurrObj.jumpDistance, 50), 100);
+          const clamp = Math.min(Math.max(osuCurrObj.lazyJumpDistance, 50), 100);
           const x2 = Math.PI / 2 * (clamp - 50) / 50;
 
           acuteAngleBonus *= Math.pow(Math.sin(x2), 2);
@@ -163,8 +163,8 @@ export class Aim extends StandardStrainSkill {
        *  We want to use the average velocity over the whole object 
        * when awarding differences, not the individual jump and slider path velocities.
        */
-      prevVelocity = (osuLastObj.jumpDistance + osuLastObj.travelDistance) / osuLastObj.strainTime;
-      currVelocity = (osuCurrObj.jumpDistance + osuCurrObj.travelDistance) / osuCurrObj.strainTime;
+      prevVelocity = (osuLastObj.lazyJumpDistance + osuLastObj.travelDistance) / osuLastObj.strainTime;
+      currVelocity = (osuCurrObj.lazyJumpDistance + osuCurrObj.travelDistance) / osuCurrObj.strainTime;
 
       /**
        * Scale with ratio of difference compared to 0.5 * max dist.
@@ -190,7 +190,7 @@ export class Aim extends StandardStrainSkill {
       /**
        * Do not award overlap.
        */
-      const min3 = Math.min(osuCurrObj.jumpDistance, osuLastObj.jumpDistance);
+      const min3 = Math.min(osuCurrObj.lazyJumpDistance, osuLastObj.lazyJumpDistance);
       const x2 = Math.PI / 2 * Math.min(1, min3 / 100);
 
       nonOverlapVelocityBuff *= Math.pow(Math.sin(x2), 2);

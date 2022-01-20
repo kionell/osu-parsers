@@ -41,7 +41,7 @@ export class Flashlight extends StandardStrainSkill {
       const osuPreviousHitObject = osuPrevious.baseObject as StandardHitObject;
 
       if (!(osuPrevious.baseObject instanceof Spinner)) {
-        const jumpDistance = osuHitObject.stackedStartPosition
+        const lazyJumpDistance = osuHitObject.stackedStartPosition
           .fsubtract(osuPreviousHitObject.endPosition)
           .flength();
 
@@ -52,16 +52,16 @@ export class Flashlight extends StandardStrainSkill {
          * within the Flashlight circle radius.
          */
         if (i === 0) {
-          smallDistNerf = Math.min(1.0, jumpDistance / 75.0);
+          smallDistNerf = Math.min(1.0, lazyJumpDistance / 75.0);
         }
 
         /**
          * We also want to nerf stacks so that only 
          * the first object of the stack is accounted for.
          */
-        const stackNerf = Math.min(1.0, (osuPrevious.jumpDistance / scalingFactor) / 25.0);
+        const stackNerf = Math.min(1.0, (osuPrevious.lazyJumpDistance / scalingFactor) / 25.0);
 
-        result += Math.pow(0.8, i) * stackNerf * scalingFactor * jumpDistance / cumulativeStrainTime;
+        result += Math.pow(0.8, i) * stackNerf * scalingFactor * lazyJumpDistance / cumulativeStrainTime;
       }
     }
 
