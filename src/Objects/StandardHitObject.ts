@@ -79,6 +79,10 @@ export abstract class StandardHitObject extends HitObject implements IHasPositio
 
     this._stackOffset.x = Math.fround(-6.4) * Math.fround(this._scale) * value;
     this._stackOffset.y = Math.fround(-6.4) * Math.fround(this._scale) * value;
+
+    this.nestedHitObjects.forEach((n) => {
+      (n as StandardHitObject).stackHeight = this._stackHeight;
+    });
   }
 
   get stackedOffset(): Vector2 {

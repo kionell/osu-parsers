@@ -24,7 +24,6 @@ export class StandardEventGenerator extends EventGenerator {
 
           head.startPosition = slider.startPosition;
           head.startTime = event.startTime;
-          head.stackHeight = slider.stackHeight;
 
           yield head;
 
@@ -36,7 +35,6 @@ export class StandardEventGenerator extends EventGenerator {
           repeat.repeatIndex = event.spanIndex;
           repeat.startTime = event.startTime;
           repeat.startPosition = slider.startPosition.add(offset);
-          repeat.stackHeight = slider.stackHeight;
           repeat.scale = slider.scale;
 
           yield repeat;
@@ -56,7 +54,6 @@ export class StandardEventGenerator extends EventGenerator {
           tail.repeatIndex = event.spanIndex as number;
           tail.startTime = event.startTime;
           tail.startPosition = slider.endPosition;
-          tail.stackHeight = slider.stackHeight;
 
           yield tail;
 
@@ -69,7 +66,6 @@ export class StandardEventGenerator extends EventGenerator {
           tick.spanStartTime = event.spanStartTime as number;
           tick.startTime = event.startTime;
           tick.startPosition = slider.startPosition.add(offset);
-          tick.stackHeight = slider.stackHeight;
           tick.scale = slider.scale;
 
           yield tick;
