@@ -1,6 +1,6 @@
 {
   "name": "osu-standard-stable",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "osu!stable version of osu!standard ruleset based on osu!lazer source code.",
   "main": "./lib/cjs/index.js",
   "module": "./lib/esm/index.js",
