@@ -19,16 +19,6 @@ import {
  */
 export class BeatmapDecoder {
   /**
-   * Should time offsets be applied or not?
-   */
-  private static _applyOffsets = true;
-
-  /**
-   * The offset to apply to all time values.
-   */
-  private static _offset = 24;
-
-  /**
    * Performs beatmap decoding from the specified .osu file.
    * @param path Path to the .osu file.
    * @param parseSb Should a storyboard be parsed?
@@ -89,6 +79,7 @@ export class BeatmapDecoder {
     }
 
     let sectionName = '';
+    let offset = 0;
 
     for (let i = 0, len = lines.length; i < len; ++i) {
       // Skip empty lines and comments.
@@ -99,6 +90,13 @@ export class BeatmapDecoder {
       // .osu file version
       if (lines[i].startsWith('osu file format v')) {
         beatmap.fileFormat = Number(lines[i].slice(17));
+
+        /**
+         * Beatmaps of version 4 and lower had an incorrect offset 
+         * (stable has this set as 24ms off).
+         */
+        offset = beatmap.fileFormat <= 4 ? 24 : 0;
+
         continue;
       }
 
@@ -111,7 +109,7 @@ export class BeatmapDecoder {
       // Section data
       switch (sectionName) {
         case 'General':
-          GeneralHandler.handleLine(lines[i], beatmap, this._offset);
+          GeneralHandler.handleLine(lines[i], beatmap, offset);
           break;
 
         case 'Editor':
@@ -131,15 +129,15 @@ export class BeatmapDecoder {
           break;
 
         case 'Events':
-          EventHandler.handleLine(lines[i], beatmap, sbLines, this._offset);
+          EventHandler.handleLine(lines[i], beatmap, sbLines, offset);
           break;
 
         case 'TimingPoints':
-          TimingPointHandler.handleLine(lines[i], beatmap, this._offset);
+          TimingPointHandler.handleLine(lines[i], beatmap, offset);
           break;
 
         case 'HitObjects': {
-          const hitObject = HitObjectHandler.handleLine(lines[i], this._offset);
+          const hitObject = HitObjectHandler.handleLine(lines[i], offset);
 
           beatmap.hitObjects.push(hitObject);
         }
@@ -162,12 +160,5 @@ export class BeatmapDecoder {
     }
 
     return beatmap;
-  }
-
-  /**
-   * Additional offset for the old beatmaps.
-   */
-  private get _offset(): number {
-    return BeatmapDecoder._applyOffsets ? BeatmapDecoder._offset : 0;
   }
 }
