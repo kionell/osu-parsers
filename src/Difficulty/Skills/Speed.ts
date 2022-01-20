@@ -56,7 +56,14 @@ export class Speed extends StandardStrainSkill {
 
     let firstDeltaSwitch = false;
 
-    for (let i = this._previous.count - 2; i > 0; --i) {
+    let rhythmStart = 0;
+
+    while (rhythmStart < this._previous.count - 2
+      && current.startTime - this._previous.get(rhythmStart).startTime < this._HISTORY_TIME_MAX) {
+      ++rhythmStart;
+    }
+
+    for (let i = rhythmStart; i > 0; --i) {
       const currObj = this._previous.get(i - 1) as StandardDifficultyHitObject;
       const prevObj = this._previous.get(i) as StandardDifficultyHitObject;
       const lastObj = this._previous.get(i + 1) as StandardDifficultyHitObject;
@@ -65,111 +72,109 @@ export class Speed extends StandardStrainSkill {
        * Scales note 0 to 1 from history to now.
        */
       const historyTime = this._HISTORY_TIME_MAX - (current.startTime - currObj.startTime);
-      let currHistoricalDecay = Math.max(0, historyTime) / this._HISTORY_TIME_MAX;
+      let currHistoricalDecay = historyTime / this._HISTORY_TIME_MAX;
 
-      if (currHistoricalDecay !== 0) {
-        /**
-         * Either we're limited by time or limited by object count.
-         */
-        const objectCount = (this._previous.count - i) / this._previous.count;
+      /**
+       * Either we're limited by time or limited by object count.
+       */
+      const objectCount = (this._previous.count - i) / this._previous.count;
 
-        currHistoricalDecay = Math.min(objectCount, currHistoricalDecay);
+      currHistoricalDecay = Math.min(objectCount, currHistoricalDecay);
 
-        const currDelta = currObj.strainTime;
-        const prevDelta = prevObj.strainTime;
-        const lastDelta = lastObj.strainTime;
+      const currDelta = currObj.strainTime;
+      const prevDelta = prevObj.strainTime;
+      const lastDelta = lastObj.strainTime;
 
-        /**
-         * Fancy function to calculate rhythmbonuses.
-         */
-        const x = Math.PI / (Math.min(prevDelta, currDelta) / Math.max(prevDelta, currDelta));
-        const currRatio = 1.0 + 6.0 * Math.min(0.5, Math.pow(Math.sin(x), 2));
+      /**
+       * Fancy function to calculate rhythmbonuses.
+       */
+      const x = Math.PI / (Math.min(prevDelta, currDelta) / Math.max(prevDelta, currDelta));
+      const currRatio = 1.0 + 6.0 * Math.min(0.5, Math.pow(Math.sin(x), 2));
 
-        const max = Math.max(0, Math.abs(prevDelta - currDelta) - this._greatWindow * 0.6);
-        const windowPenalty = Math.min(1, Math.min(1, max / (this._greatWindow * 0.6)));
+      const max = Math.max(0, Math.abs(prevDelta - currDelta) - this._greatWindow * 0.6);
+      const windowPenalty = Math.min(1, Math.min(1, max / (this._greatWindow * 0.6)));
 
-        let effectiveRatio = windowPenalty * currRatio;
+      let effectiveRatio = windowPenalty * currRatio;
 
-        if (firstDeltaSwitch) {
-          if (!(prevDelta > 1.25 * currDelta || prevDelta * 1.25 < currDelta)) {
-            /**
-             * Island is still progressing, count size.
-             */
-            if (islandSize < 7) ++islandSize;
-          }
-          else {
-            /**
-             * BPM change is into slider, this is easy acc window.
-             */
-            if (this._previous.get(i - 1).baseObject instanceof Slider) {
-              effectiveRatio *= 0.125;
-            }
-
-            /**
-             * BPM change was from a slider, this is easier typically than circle -> circle
-             */
-            if (this._previous.get(i).baseObject instanceof Slider) {
-              effectiveRatio *= 0.25;
-            }
-
-            /**
-             * Repeated island size (ex: triplet -> triplet)
-             */
-            if (previousIslandSize === islandSize) {
-              effectiveRatio *= 0.25;
-            }
-
-            /**
-             * Repeated island polartiy (2 -> 4, 3 -> 5)
-             */
-            if (previousIslandSize % 2 === islandSize % 2) {
-              effectiveRatio *= 0.50;
-            }
-
-            /**
-             * Previous increase happened a note ago, 1/1 -> 1/2-1/4, dont want to buff this.
-             */
-            if (lastDelta > prevDelta + 10 && prevDelta > currDelta + 10) {
-              effectiveRatio *= 0.125;
-            }
-
-            const sqrt1 = Math.sqrt(effectiveRatio * startRatio);
-            const sqrt2 = Math.sqrt(4 + islandSize);
-            const sqrt3 = Math.sqrt(4 + previousIslandSize);
-
-            rhythmComplexitySum += sqrt1 * currHistoricalDecay * sqrt2 / 2 * sqrt3 / 2;
-
-            startRatio = effectiveRatio;
-
-            /**
-             * Log the last island size.
-             */
-            previousIslandSize = islandSize;
-
-            /**
-             * We're slowing down, stop counting.
-             */
-            if (prevDelta * 1.25 < currDelta) {
-              /**
-               * If we're speeding up, this stays true and  we keep counting island size.
-               */
-              firstDeltaSwitch = false;
-            }
-
-            islandSize = 1;
-          }
-        }
-        /**
-         * We want to be speeding up.
-         */
-        else if (prevDelta > 1.25 * currDelta) {
+      if (firstDeltaSwitch) {
+        if (!(prevDelta > 1.25 * currDelta || prevDelta * 1.25 < currDelta)) {
           /**
-           * Begin counting island until we change speed again.
+           * Island is still progressing, count size.
            */
-          firstDeltaSwitch = true;
+          if (islandSize < 7) ++islandSize;
+        }
+        else {
+          /**
+           * BPM change is into slider, this is easy acc window.
+           */
+          if (this._previous.get(i - 1).baseObject instanceof Slider) {
+            effectiveRatio *= 0.125;
+          }
+
+          /**
+           * BPM change was from a slider, this is easier typically than circle -> circle
+           */
+          if (this._previous.get(i).baseObject instanceof Slider) {
+            effectiveRatio *= 0.25;
+          }
+
+          /**
+           * Repeated island size (ex: triplet -> triplet)
+           */
+          if (previousIslandSize === islandSize) {
+            effectiveRatio *= 0.25;
+          }
+
+          /**
+           * Repeated island polartiy (2 -> 4, 3 -> 5)
+           */
+          if (previousIslandSize % 2 === islandSize % 2) {
+            effectiveRatio *= 0.50;
+          }
+
+          /**
+           * Previous increase happened a note ago, 1/1 -> 1/2-1/4, dont want to buff this.
+           */
+          if (lastDelta > prevDelta + 10 && prevDelta > currDelta + 10) {
+            effectiveRatio *= 0.125;
+          }
+
+          const sqrt1 = Math.sqrt(effectiveRatio * startRatio);
+          const sqrt2 = Math.sqrt(4 + islandSize);
+          const sqrt3 = Math.sqrt(4 + previousIslandSize);
+
+          rhythmComplexitySum += sqrt1 * currHistoricalDecay * sqrt2 / 2 * sqrt3 / 2;
+
           startRatio = effectiveRatio;
+
+          /**
+           * Log the last island size.
+           */
+          previousIslandSize = islandSize;
+
+          /**
+           * We're slowing down, stop counting.
+           */
+          if (prevDelta * 1.25 < currDelta) {
+            /**
+             * If we're speeding up, this stays true and  we keep counting island size.
+             */
+            firstDeltaSwitch = false;
+          }
+
           islandSize = 1;
         }
+      }
+      /**
+       * We want to be speeding up.
+       */
+      else if (prevDelta > 1.25 * currDelta) {
+        /**
+         * Begin counting island until we change speed again.
+         */
+        firstDeltaSwitch = true;
+        startRatio = effectiveRatio;
+        islandSize = 1;
       }
     }
 
@@ -229,10 +234,8 @@ export class Speed extends StandardStrainSkill {
       speedBonus = 1 + 0.75 * Math.pow(bonus, 2);
     }
 
-    const distance = Math.min(
-      this._SINGLE_SPACING_THRESHOLD,
-      osuCurrObj.travelDistance + osuCurrObj.lazyJumpDistance,
-    );
+    const travelDistance = (osuPrevObj?.travelDistance ?? 0) + osuCurrObj.minimumJumpDistance;
+    const distance = Math.min(this._SINGLE_SPACING_THRESHOLD, travelDistance);
 
     const pow = Math.pow(distance / this._SINGLE_SPACING_THRESHOLD, 3.5);
 

@@ -8,10 +8,10 @@ import { StandardStrainSkill } from './StandardStrainSkill';
  * every object in a map with the Flashlight mod enabled.
  */
 export class Flashlight extends StandardStrainSkill {
-  private _skillMultiplier = 0.15;
+  private _skillMultiplier = 0.07;
   private _strainDecayBase = 0.15;
 
-  protected _decayWeight = 1.0;
+  protected _decayWeight = 1;
 
   private _currentStrain = 0;
 
@@ -30,42 +30,46 @@ export class Flashlight extends StandardStrainSkill {
     const osuCurrent = current as StandardDifficultyHitObject;
     const osuHitObject = osuCurrent.baseObject as StandardHitObject;
 
-    const scalingFactor = 52.0 / osuHitObject.radius;
-    let smallDistNerf = 1.0;
-    let cumulativeStrainTime = 0.0;
+    const scalingFactor = 52 / osuHitObject.radius;
 
-    let result = 0.0;
+    let smallDistNerf = 1;
+    let cumulativeStrainTime = 0;
+    let result = 0;
+
+    let lastObj = osuCurrent;
 
     for (let i = 0; i < this._previous.count; ++i) {
-      const osuPrevious = this._previous.get(i) as StandardDifficultyHitObject;
-      const osuPreviousHitObject = osuPrevious.baseObject as StandardHitObject;
+      const currentObj = this._previous.get(i) as StandardDifficultyHitObject;
+      const currentHitObject = currentObj.baseObject as StandardHitObject;
 
-      if (!(osuPrevious.baseObject instanceof Spinner)) {
-        const lazyJumpDistance = osuHitObject.stackedStartPosition
-          .fsubtract(osuPreviousHitObject.endPosition)
+      if (!(currentObj.baseObject instanceof Spinner)) {
+        const jumpDistance = osuHitObject.stackedStartPosition
+          .fsubtract(currentHitObject.endPosition)
           .flength();
 
-        cumulativeStrainTime += osuPrevious.strainTime;
+        cumulativeStrainTime += lastObj.strainTime;
 
         /**
          * We want to nerf objects that can be easily seen 
          * within the Flashlight circle radius.
          */
         if (i === 0) {
-          smallDistNerf = Math.min(1.0, lazyJumpDistance / 75.0);
+          smallDistNerf = Math.min(1, jumpDistance / 75);
         }
 
         /**
          * We also want to nerf stacks so that only 
          * the first object of the stack is accounted for.
          */
-        const stackNerf = Math.min(1.0, (osuPrevious.lazyJumpDistance / scalingFactor) / 25.0);
+        const stackNerf = Math.min(1, (currentObj.lazyJumpDistance / scalingFactor) / 25);
 
-        result += Math.pow(0.8, i) * stackNerf * scalingFactor * lazyJumpDistance / cumulativeStrainTime;
+        result += stackNerf * scalingFactor * jumpDistance / cumulativeStrainTime;
       }
+
+      lastObj = currentObj;
     }
 
-    return Math.pow(smallDistNerf * result, 2.0);
+    return Math.pow(smallDistNerf * result, 2);
   }
 
   private _strainDecay(ms: number): number {

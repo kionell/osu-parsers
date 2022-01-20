@@ -50,14 +50,14 @@ export class Aim extends StandardStrainSkill {
      */
     if ((osuLastObj.baseObject instanceof Slider) && this._withSliders) {
       /**
+       * Calculate the slider velocity from slider head to slider end.
+       */
+      const travelVelocity = osuLastObj.travelDistance / osuLastObj.travelTime;
+
+      /**
        * Calculate the movement velocity from slider end to current object
        */
       const movementVelocity = osuCurrObj.minimumJumpDistance / osuCurrObj.minimumJumpTime;
-
-      /**
-       * Calculate the slider velocity from slider head to slider end.
-       */
-      const travelVelocity = osuCurrObj.travelDistance / osuCurrObj.travelTime;
 
       /**
        * Take the larger total combined velocity.
@@ -71,8 +71,8 @@ export class Aim extends StandardStrainSkill {
     let prevVelocity = osuLastObj.lazyJumpDistance / osuLastObj.strainTime;
 
     if ((osuLastLastObj.baseObject instanceof Slider) && this._withSliders) {
+      const travelVelocity = osuLastLastObj.travelDistance / osuLastLastObj.travelTime;
       const movementVelocity = osuLastObj.minimumJumpDistance / osuLastObj.minimumJumpTime;
-      const travelVelocity = osuLastObj.travelDistance / osuLastObj.travelTime;
 
       prevVelocity = Math.max(prevVelocity, movementVelocity + travelVelocity);
     }
@@ -160,11 +160,11 @@ export class Aim extends StandardStrainSkill {
 
     if (Math.max(prevVelocity, currVelocity) !== 0) {
       /**
-       *  We want to use the average velocity over the whole object 
+       * We want to use the average velocity over the whole object 
        * when awarding differences, not the individual jump and slider path velocities.
        */
-      prevVelocity = (osuLastObj.lazyJumpDistance + osuLastObj.travelDistance) / osuLastObj.strainTime;
-      currVelocity = (osuCurrObj.lazyJumpDistance + osuCurrObj.travelDistance) / osuCurrObj.strainTime;
+      prevVelocity = (osuLastObj.lazyJumpDistance + osuLastLastObj.travelDistance) / osuLastObj.strainTime;
+      currVelocity = (osuCurrObj.lazyJumpDistance + osuLastObj.travelDistance) / osuCurrObj.strainTime;
 
       /**
        * Scale with ratio of difference compared to 0.5 * max dist.
@@ -212,8 +212,8 @@ export class Aim extends StandardStrainSkill {
     /**
      * Reward sliders based on velocity.
      */
-    if (osuCurrObj.travelTime !== 0) {
-      sliderBonus = osuCurrObj.travelDistance / osuCurrObj.travelTime;
+    if (osuLastObj.travelTime !== 0) {
+      sliderBonus = osuLastObj.travelDistance / osuLastObj.travelTime;
     }
 
     /**
