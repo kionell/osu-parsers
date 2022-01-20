@@ -24,9 +24,10 @@ export abstract class HitObjectHandler {
   /**
    * Decodes a hit object line to get a parsed hit object.
    * @param line A hit object line.
+   * @param offset The offset to apply to all time values.
    * @returns A new parsed hit object.
    */
-  static handleLine(line: string): HitObject {
+  static handleLine(line: string, offset: number): HitObject {
     // x,y,time,type,hitSound,objectParams,hitSample
 
     const data = line.split(',').map((v) => v.trim());
@@ -37,11 +38,11 @@ export abstract class HitObjectHandler {
 
     hitObject.startX = parseInt(data[0]);
     hitObject.startY = parseInt(data[1]);
-    hitObject.startTime = parseInt(data[2]);
+    hitObject.startTime = parseInt(data[2]) + offset;
     hitObject.hitType = hitType;
     hitObject.hitSound = parseInt(data[4]);
 
-    HitObjectHandler.addExtras(data.slice(5), hitObject);
+    HitObjectHandler.addExtras(data.slice(5), hitObject, offset);
 
     return hitObject;
   }
@@ -71,8 +72,9 @@ export abstract class HitObjectHandler {
    * Adds extra data to the parsed hit object.
    * @param data The data of a hit object line.
    * @param hitObject A parsed hit object.
+   * @param offset The offset to apply to all time values.
    */
-  static addExtras(data: string[], hitObject: HitObject): void {
+  static addExtras(data: string[], hitObject: HitObject, offset: number): void {
     const hitType = hitObject.hitType;
 
     let extras: string[] = [];
@@ -85,14 +87,14 @@ export abstract class HitObjectHandler {
     else if (hitType & HitType.Spinner) {
       extras = data.splice(0, 1);
 
-      HitObjectHandler.addSpinnerExtras(extras, hitObject as SpinnableObject);
+      HitObjectHandler.addSpinnerExtras(extras, hitObject as SpinnableObject, offset);
     }
     else if (hitType & HitType.Hold) {
       data = data.join('').split(':');
       extras = data.splice(0, 1);
       data = data.join(':').split(',');
 
-      HitObjectHandler.addHoldExtras(extras, hitObject as HoldableObject);
+      HitObjectHandler.addHoldExtras(extras, hitObject as HoldableObject, offset);
     }
 
     const sampleData = data.join('');
@@ -146,22 +148,24 @@ export abstract class HitObjectHandler {
    * Adds spinner extra data to a parsed spinner.
    * @param extras Extra data of spinnable object.
    * @param slider A parsed spinner.
+   * @param offset The offset to apply to all time values.
    */
-  static addSpinnerExtras(extras: string[], spinner: SpinnableObject): void {
+  static addSpinnerExtras(extras: string[], spinner: SpinnableObject, offset: number): void {
     // endTime
 
-    spinner.endTime = parseInt(extras[0]);
+    spinner.endTime = parseInt(extras[0]) + offset;
   }
 
   /**
    * Adds hold extra data to a parsed hold.
    * @param extras Extra data of a holdable object.
    * @param slider A parsed hold.
+   * @param offset The offset to apply to all time values.
    */
-  static addHoldExtras(extras: string[], hold: HoldableObject): void {
+  static addHoldExtras(extras: string[], hold: HoldableObject, offset: number): void {
     // endTime
 
-    hold.endTime = parseInt(extras[0]);
+    hold.endTime = parseInt(extras[0]) + offset;
   }
 
   /**

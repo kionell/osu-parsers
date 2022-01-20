@@ -8,8 +8,9 @@ export abstract class GeneralHandler {
    * Decodes beatmap general line and adds general info to a beatmap.
    * @param line General section line.
    * @param beatmap A parsed beatmap.
+   * @param offset The offset to apply to all time values.
    */
-  static handleLine(line: string, beatmap: Beatmap): void {
+  static handleLine(line: string, beatmap: Beatmap, offset: number): void {
     const [key, ...values] = line.split(':').map((v) => v.trim());
     const value = values.join(' ');
 
@@ -35,7 +36,7 @@ export abstract class GeneralHandler {
         break;
 
       case 'PreviewTime':
-        beatmap.general.previewTime = parseInt(value);
+        beatmap.general.previewTime = parseInt(value) + offset;
         break;
 
       case 'Countdown':

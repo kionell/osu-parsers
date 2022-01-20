@@ -11,8 +11,9 @@ export abstract class EventHandler {
    * @param line Beatmap event line.
    * @param beatmap Beatmap to which the event data will be added.
    * @param sbLines Array for storing storyboard lines.
+   * @param offset The offset to apply to all time values.
    */
-  static handleLine(line: string, beatmap: Beatmap, sbLines: string[] | null): void {
+  static handleLine(line: string, beatmap: Beatmap, sbLines: string[] | null, offset: number): void {
     // EventType,startTime,eventParams
 
     const data = line.split(',').map((v) => v.trim());
@@ -44,6 +45,9 @@ export abstract class EventHandler {
         if (!beatmap.events.breaks) {
           beatmap.events.breaks = [];
         }
+
+        breakEvent.startTime += offset;
+        breakEvent.endTime += offset;
 
         beatmap.events.breaks.push(breakEvent);
         break;

@@ -40,8 +40,9 @@ export abstract class TimingPointHandler {
    * Decodes timing point line and adds control points to a beatmap.
    * @param line A timing point line.
    * @param beatmap A parsed beatmap.
+   * @param offset The offset to apply to all time values.
    */
-  static handleLine(line: string, beatmap: Beatmap): void {
+  static handleLine(line: string, beatmap: Beatmap, offset: number): void {
     // Time,beatLength,meter,sampleSet,sampleIndex,volume,uninherited,effects
 
     TimingPointHandler.controlPoints = beatmap.controlPoints;
@@ -52,7 +53,7 @@ export abstract class TimingPointHandler {
     let sampleSet = SampleSet[SampleSet.None];
     let customIndex = 0;
     let volume = 100;
-    let uninherited = false;
+    let uninherited = true;
     let effects = EffectType.None;
 
     switch (data.length) {
@@ -71,7 +72,7 @@ export abstract class TimingPointHandler {
     }
 
     const beatLength = data[1];
-    const startTime = data[0];
+    const startTime = data[0] + offset;
 
     let bpmMultiplier = 1;
     let speedMultiplier = 1;

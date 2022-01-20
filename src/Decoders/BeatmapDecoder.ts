@@ -19,6 +19,16 @@ import {
  */
 export class BeatmapDecoder {
   /**
+   * Should time offsets be applied or not?
+   */
+  private static _applyOffsets = true;
+
+  /**
+   * The offset to apply to all time values.
+   */
+  private static _offset = 24;
+
+  /**
    * Performs beatmap decoding from the specified .osu file.
    * @param path Path to the .osu file.
    * @param parseSb Should a storyboard be parsed?
@@ -101,7 +111,7 @@ export class BeatmapDecoder {
       // Section data
       switch (sectionName) {
         case 'General':
-          GeneralHandler.handleLine(lines[i], beatmap);
+          GeneralHandler.handleLine(lines[i], beatmap, this._offset);
           break;
 
         case 'Editor':
@@ -121,15 +131,15 @@ export class BeatmapDecoder {
           break;
 
         case 'Events':
-          EventHandler.handleLine(lines[i], beatmap, sbLines);
+          EventHandler.handleLine(lines[i], beatmap, sbLines, this._offset);
           break;
 
         case 'TimingPoints':
-          TimingPointHandler.handleLine(lines[i], beatmap);
+          TimingPointHandler.handleLine(lines[i], beatmap, this._offset);
           break;
 
         case 'HitObjects': {
-          const hitObject = HitObjectHandler.handleLine(lines[i]);
+          const hitObject = HitObjectHandler.handleLine(lines[i], this._offset);
 
           beatmap.hitObjects.push(hitObject);
         }
@@ -152,5 +162,12 @@ export class BeatmapDecoder {
     }
 
     return beatmap;
+  }
+
+  /**
+   * Additional offset for the old beatmaps.
+   */
+  private get _offset(): number {
+    return BeatmapDecoder._applyOffsets ? BeatmapDecoder._offset : 0;
   }
 }
