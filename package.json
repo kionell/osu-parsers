@@ -4,7 +4,7 @@
   "description": "A bundle of parsers for osu! file formats based on the osu!lazer source code.",
   "main": "./lib/cjs/index.js",
   "module": "./lib/esm/index.js",
-  "types": "./lib/emd/index.d.ts",
+  "types": "./lib/esm/index.d.ts",
   "scripts": {
     "build": "rollup -c && npm run format",
     "test": "jest --verbose",
