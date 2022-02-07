@@ -109,8 +109,8 @@ export class ScoreInfo implements IScoreInfo {
    * Creates a new instance of score information.
    * @param options The score information options.
    */
-  constructor(params: Partial<IScoreInfo> = {}) {
-    Object.assign(this, params);
+  constructor(options: Partial<IScoreInfo> = {}) {
+    Object.assign(this, options);
   }
 
   /**
