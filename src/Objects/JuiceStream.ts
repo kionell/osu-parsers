@@ -77,26 +77,15 @@ export class JuiceStream extends CatchHitObject implements ISlidableObject {
     }
   }
 
-  clone(): JuiceStream {
-    const cloned = new JuiceStream();
+  clone(): this {
+    const cloned = super.clone();
 
-    cloned.startPosition = this.startPosition.clone();
-    cloned.startX = this.startX;
-    cloned.startTime = this.startTime;
-    cloned.hitType = this.hitType;
-    cloned.hitSound = this.hitSound;
-    cloned.samples = this.samples.map((s) => s.clone());
     cloned.nodeSamples = this.nodeSamples.map((n) => n.map((s) => s.clone()));
     cloned.velocity = this.velocity;
     cloned.repeats = this.repeats;
     cloned.path = this.path.clone();
-    cloned.kiai = this.kiai;
     cloned.tickDistance = this.tickDistance;
     cloned.legacyLastTickOffset = this.legacyLastTickOffset;
-    cloned.scale = this.scale;
-    cloned.timePreempt = this.timePreempt;
-    cloned.scale = this.scale;
-    cloned.offsetX = this.offsetX;
 
     return cloned;
   }

@@ -38,8 +38,4 @@ export class CatchModCombination extends ModCombination {
       new CatchCinema(),
     ];
   }
-
-  clone(): CatchModCombination {
-    return new CatchModCombination(this.bitwise);
-  }
 }

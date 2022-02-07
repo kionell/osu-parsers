@@ -74,4 +74,14 @@ export abstract class CatchHitObject extends HitObject implements IHasCombo, IHa
   get isNewCombo(): boolean {
     return (this.hitType & HitType.NewCombo) > 0;
   }
+
+  clone(): this {
+    const cloned = super.clone();
+
+    cloned.timePreempt = this.timePreempt;
+    cloned.scale = this.scale;
+    cloned.offsetX = this.offsetX;
+
+    return cloned;
+  }
 }

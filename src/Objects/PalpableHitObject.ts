@@ -8,4 +8,13 @@ export abstract class PalpableHitObject extends CatchHitObject {
   get hasHyperDash(): boolean {
     return this.hyperDashTarget !== null;
   }
+
+  clone(): this {
+    const cloned = super.clone();
+
+    cloned.hyperDashTarget = this.hyperDashTarget;
+    cloned.distanceToHyperDash = this.distanceToHyperDash;
+
+    return cloned;
+  }
 }
