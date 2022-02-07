@@ -38,8 +38,4 @@ export class TaikoModCombination extends ModCombination {
       new TaikoCinema(),
     ];
   }
-
-  clone(): TaikoModCombination {
-    return new TaikoModCombination(this.bitwise);
-  }
 }

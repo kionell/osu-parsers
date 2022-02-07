@@ -24,17 +24,11 @@ export class Swell extends TaikoHitObject implements ISpinnableObject {
     }
   }
 
-  clone(): Swell {
-    const cloned = new Swell();
+  clone(): this {
+    const cloned = super.clone();
 
-    cloned.startPosition = this.startPosition.clone();
-    cloned.startTime = this.startTime;
     cloned.endTime = this.endTime;
     cloned.requiredHits = this.requiredHits;
-    cloned.hitType = this.hitType;
-    cloned.hitSound = this.hitSound;
-    cloned.samples = this.samples.map((s) => s.clone());
-    cloned.kiai = this.kiai;
 
     return cloned;
   }

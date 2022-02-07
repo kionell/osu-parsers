@@ -19,15 +19,9 @@ export class DrumRollTick extends TaikoHitObject {
     return this.tickInterval / 2;
   }
 
-  clone(): DrumRollTick {
-    const cloned = new DrumRollTick();
+  clone(): this {
+    const cloned = super.clone();
 
-    cloned.startPosition = this.startPosition.clone();
-    cloned.startTime = this.startTime;
-    cloned.hitType = this.hitType;
-    cloned.hitSound = this.hitSound;
-    cloned.samples = this.samples.map((s) => s.clone());
-    cloned.kiai = this.kiai;
     cloned.firstTick = this.firstTick;
     cloned.tickInterval = this.tickInterval;
 

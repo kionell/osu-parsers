@@ -81,19 +81,13 @@ export class DrumRoll extends TaikoStrongHitObject implements ISlidableObject {
       * Math.min(0.3, 0.1 + (0.2 / 6) * this.overallDifficulty);
   }
 
-  clone(): DrumRoll {
-    const cloned = new DrumRoll();
+  clone(): this {
+    const cloned = super.clone();
 
-    cloned.startPosition = this.startPosition.clone();
-    cloned.startTime = this.startTime;
-    cloned.hitType = this.hitType;
-    cloned.hitSound = this.hitSound;
-    cloned.samples = this.samples.map((s) => s.clone());
     cloned.nodeSamples = this.nodeSamples.map((n) => n.map((s) => s.clone()));
     cloned.velocity = this.velocity;
     cloned.repeats = this.repeats;
     cloned.path = this.path.clone();
-    cloned.kiai = this.kiai;
     cloned.tickRate = this.tickRate;
     cloned.tickInterval = this.tickInterval;
     cloned.duration = this.duration;

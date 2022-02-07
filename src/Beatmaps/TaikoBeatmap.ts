@@ -35,26 +35,4 @@ export class TaikoBeatmap extends RulesetBeatmap {
       return c + (h.hitType & HitType.Spinner ? 1 : 0);
     }, 0);
   }
-
-  clone(): TaikoBeatmap {
-    const cloned = new TaikoBeatmap();
-
-    cloned.general = this.general.clone();
-    cloned.editor = this.editor.clone();
-    cloned.difficulty = this.difficulty.clone();
-    cloned.metadata = this.metadata.clone();
-    cloned.colours = this.colours.clone();
-    cloned.events = this.events.clone();
-    cloned.controlPoints = this.controlPoints.clone();
-    cloned.hitObjects = this.hitObjects.map((h) => h.clone() as TaikoHitObject);
-    cloned.originalMode = this.originalMode;
-    cloned.fileFormat = this.fileFormat;
-    cloned.mods = this.mods.clone();
-
-    if (this.base) {
-      cloned.base = this.base;
-    }
-
-    return cloned;
-  }
 }

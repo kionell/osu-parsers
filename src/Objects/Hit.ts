@@ -8,17 +8,4 @@ export class Hit extends TaikoStrongHitObject {
         || s.hitSound === HitSound[HitSound.Whistle];
     });
   }
-
-  clone(): Hit {
-    const cloned = new Hit();
-
-    cloned.startPosition = this.startPosition.clone();
-    cloned.startTime = this.startTime;
-    cloned.hitType = this.hitType;
-    cloned.hitSound = this.hitSound;
-    cloned.samples = this.samples.map((s) => s.clone());
-    cloned.kiai = this.kiai;
-
-    return cloned;
-  }
 }
