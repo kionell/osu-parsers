@@ -6,7 +6,7 @@ import { IHitStatistics } from './IHitStatistics';
 import { IScoreInfo } from './IScoreInfo';
 
 /**
- * A score info.
+ * A score information.
  */
 export class ScoreInfo implements IScoreInfo {
   /**
@@ -42,7 +42,7 @@ export class ScoreInfo implements IScoreInfo {
   /**
    * Ruleset ID of the play.
    */
-  rulesetID = 0;
+  rulesetId = 0;
 
   /**
    * Whether the map was passed or not.
@@ -67,7 +67,7 @@ export class ScoreInfo implements IScoreInfo {
   /**
    * User ID of the player who set this play.
    */
-  userID = 0;
+  userId = 0;
 
   /**
    * Beatmap of the play.
@@ -77,7 +77,7 @@ export class ScoreInfo implements IScoreInfo {
   /**
    * Beatmap ID.
    */
-  beatmapID = 0;
+  beatmapId = 0;
 
   /**
    * The date when this play was set.
@@ -127,14 +127,14 @@ export class ScoreInfo implements IScoreInfo {
     cloned.totalScore = this.totalScore;
     cloned.accuracy = this.accuracy;
     cloned.maxCombo = this.maxCombo;
-    cloned.rulesetID = this.rulesetID;
+    cloned.rulesetId = this.rulesetId;
     cloned.passed = this.passed;
     cloned.ruleset = this.ruleset;
     cloned.mods = this.mods;
     cloned.username = this.username;
-    cloned.userID = this.userID;
+    cloned.userId = this.userId;
     cloned.beatmap = this.beatmap;
-    cloned.beatmapID = this.beatmapID;
+    cloned.beatmapId = this.beatmapId;
     cloned.date = this.date;
 
     if (this.pp) cloned.pp = this.pp;

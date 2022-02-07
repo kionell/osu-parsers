@@ -5,7 +5,7 @@ import { ScoreRank } from './Enums/ScoreRank';
 import { IHitStatistics } from './IHitStatistics';
 
 /**
- * A score info.
+ * A score information.
  */
 export interface IScoreInfo {
   /**
@@ -41,7 +41,7 @@ export interface IScoreInfo {
   /**
    * Ruleset ID of the play.
    */
-  rulesetID: number;
+  rulesetId: number;
 
   /**
    * Whether the map was passed or not.
@@ -66,7 +66,7 @@ export interface IScoreInfo {
   /**
    * User ID of the player who set this play.
    */
-  userID: number;
+  userId: number;
 
   /**
    * Beatmap of the play.
@@ -76,7 +76,7 @@ export interface IScoreInfo {
   /**
    * Beatmap ID.
    */
-  beatmapID: number;
+  beatmapId: number;
 
   /**
    * The date when this play was set.
