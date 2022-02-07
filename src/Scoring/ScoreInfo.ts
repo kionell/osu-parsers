@@ -148,7 +148,7 @@ export class ScoreInfo implements IScoreInfo {
    * @param other Other score info.
    * @returns If two scores are equal.
    */
-  equals(other: ScoreInfo): boolean {
+  equals(other: IScoreInfo): boolean {
     if (!other) return false;
 
     if (this.id !== 0 && other.id !== 0) {
