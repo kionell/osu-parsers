@@ -1,18 +1,3 @@
 import { Note } from './Note';
 
-export class HoldTail extends Note {
-  clone(): HoldTail {
-    const cloned = new HoldTail();
-
-    cloned.startPosition = this.startPosition.clone();
-    cloned.startTime = this.startTime;
-    cloned.hitType = this.hitType;
-    cloned.hitSound = this.hitSound;
-    cloned.samples = this.samples.map((s) => s.clone());
-    cloned.kiai = this.kiai;
-    cloned.originalColumn = this.originalColumn;
-    cloned.column = this.column;
-
-    return cloned;
-  }
-}
+export class HoldTail extends Note {}

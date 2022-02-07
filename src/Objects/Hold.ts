@@ -82,20 +82,12 @@ export class Hold extends ManiaHitObject implements IHoldableObject {
     }
   }
 
-  clone(): Hold {
-    const cloned = new Hold();
+  clone(): this {
+    const cloned = super.clone();
 
-    cloned.startPosition = this.startPosition.clone();
-    cloned.startTime = this.startTime;
     cloned.endTime = this.endTime;
-    cloned.hitType = this.hitType;
-    cloned.hitSound = this.hitSound;
-    cloned.samples = this.samples.map((s) => s.clone());
     cloned.nodeSamples = this.nodeSamples.map((n) => n.map((s) => s.clone()));
-    cloned.kiai = this.kiai;
     cloned.tickInterval = this.tickInterval;
-    cloned.originalColumn = this.originalColumn;
-    cloned.column = this.column;
 
     return cloned;
   }

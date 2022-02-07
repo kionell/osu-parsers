@@ -61,35 +61,4 @@ export class ManiaBeatmap extends RulesetBeatmap {
       return c + (h.hitType & HitType.Hold ? 1 : 0);
     }, 0);
   }
-
-  clone(): ManiaBeatmap {
-    const stage = this.stages[0]?.clone()
-      ?? new StageDefinition(this.originalTotalColumns);
-
-    const cloned = new ManiaBeatmap(stage);
-
-    if (this.stages.length > 1) {
-      const dualStage = this.stages[1].clone();
-
-      cloned.stages.push(dualStage);
-    }
-
-    cloned.general = this.general.clone();
-    cloned.editor = this.editor.clone();
-    cloned.difficulty = this.difficulty.clone();
-    cloned.metadata = this.metadata.clone();
-    cloned.colours = this.colours.clone();
-    cloned.events = this.events.clone();
-    cloned.controlPoints = this.controlPoints.clone();
-    cloned.hitObjects = this.hitObjects.map((h) => h.clone() as ManiaHitObject);
-    cloned.originalMode = this.originalMode;
-    cloned.fileFormat = this.fileFormat;
-    cloned.mods = this.mods.clone();
-
-    if (this.base) {
-      cloned.base = this.base;
-    }
-
-    return cloned;
-  }
 }

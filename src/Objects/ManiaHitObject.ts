@@ -41,4 +41,13 @@ export abstract class ManiaHitObject extends HitObject implements IHasColumn, IH
   get endX(): number {
     return this.startX;
   }
+
+  clone(): this {
+    const cloned = super.clone();
+
+    cloned.originalColumn = this.originalColumn;
+    cloned.column = this.column;
+
+    return cloned;
+  }
 }
