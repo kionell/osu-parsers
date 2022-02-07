@@ -47,7 +47,7 @@ export class ScoreInfo implements IScoreInfo {
   /**
    * Whether the map was passed or not.
    */
-  passed = true;
+  passed = false;
 
   /**
    * Ruleset instance.
