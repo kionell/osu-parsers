@@ -60,18 +60,10 @@ export class Spinner extends StandardHitObject implements ISpinnableObject {
     }
   }
 
-  clone(): Spinner {
-    const cloned = new Spinner();
+  clone(): this {
+    const cloned = super.clone();
 
-    cloned.startPosition = this.startPosition.clone();
-    cloned.startTime = this.startTime;
     cloned.endTime = this.endTime;
-    cloned.hitType = this.hitType;
-    cloned.hitSound = this.hitSound;
-    cloned.samples = this.samples.map((s) => s.clone());
-    cloned.kiai = this.kiai;
-    cloned.stackHeight = this.stackHeight;
-    cloned.scale = this.scale;
     cloned.spinsRequired = this.spinsRequired;
     cloned.maximumBonusSpins = this.maximumBonusSpins;
 

@@ -118,4 +118,17 @@ export abstract class StandardHitObject extends HitObject implements IHasPositio
      */
     this.scale = Math.fround((1 - Math.fround(0.7) * (difficulty.circleSize - 5) / 5) / 2);
   }
+
+  /**
+   * Creates a deep copy of this standard hit object.
+   * @returns Cloned standard hit object.
+   */
+  clone(): this {
+    const cloned = super.clone();
+
+    cloned.stackHeight = this.stackHeight;
+    cloned.scale = this.scale;
+
+    return cloned;
+  }
 }

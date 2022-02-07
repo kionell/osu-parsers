@@ -184,24 +184,20 @@ export class Slider extends StandardHitObject implements ISlidableObject {
     }
   }
 
-  clone(): Slider {
-    const cloned = new Slider();
+  /**
+   * Creates a deep copy of this slider.
+   * @returns Cloned slider.
+   */
+  clone(): this {
+    const cloned = super.clone();
 
-    cloned.startPosition = this.startPosition.clone();
-    cloned.startTime = this.startTime;
-    cloned.hitType = this.hitType;
-    cloned.hitSound = this.hitSound;
-    cloned.samples = this.samples.map((s) => s.clone());
     cloned.nodeSamples = this.nodeSamples.map((n) => n.map((s) => s.clone()));
     cloned.velocity = this.velocity;
     cloned.repeats = this.repeats;
     cloned.path = this.path.clone();
-    cloned.kiai = this.kiai;
     cloned.tickDistance = this.tickDistance;
     cloned.tickRate = this.tickRate;
     cloned.legacyLastTickOffset = this.legacyLastTickOffset;
-    cloned.stackHeight = this.stackHeight;
-    cloned.scale = this.scale;
 
     return cloned;
   }

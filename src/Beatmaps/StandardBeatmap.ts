@@ -47,26 +47,4 @@ export class StandardBeatmap extends RulesetBeatmap {
       return c + (h.hitType & HitType.Spinner ? 1 : 0);
     }, 0);
   }
-
-  clone(): StandardBeatmap {
-    const cloned = new StandardBeatmap();
-
-    cloned.general = this.general.clone();
-    cloned.editor = this.editor.clone();
-    cloned.difficulty = this.difficulty.clone();
-    cloned.metadata = this.metadata.clone();
-    cloned.colours = this.colours.clone();
-    cloned.events = this.events.clone();
-    cloned.controlPoints = this.controlPoints.clone();
-    cloned.hitObjects = this.hitObjects.map((h) => h.clone() as StandardHitObject);
-    cloned.originalMode = this.originalMode;
-    cloned.fileFormat = this.fileFormat;
-    cloned.mods = this.mods.clone();
-
-    if (this.base) {
-      cloned.base = this.base;
-    }
-
-    return cloned;
-  }
 }

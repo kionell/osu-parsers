@@ -44,8 +44,4 @@ export class StandardModCombination extends ModCombination {
       new StandardCinema(),
     ];
   }
-
-  clone(): StandardModCombination {
-    return new StandardModCombination(this.bitwise);
-  }
 }

@@ -23,19 +23,15 @@ export class SliderTick extends StandardHitObject {
     this.timePreempt = (this.startTime - this.spanStartTime) / 2 + offset;
   }
 
-  clone(): SliderTick {
-    const cloned = new SliderTick();
+  /**
+   * Creates a deep copy of this slider tick.
+   * @returns Cloned slider tick.
+   */
+  clone(): this {
+    const cloned = super.clone();
 
     cloned.spanIndex = this.spanIndex;
     cloned.spanStartTime = this.spanStartTime;
-    cloned.startPosition = this.startPosition.clone();
-    cloned.startTime = this.startTime;
-    cloned.hitType = this.hitType;
-    cloned.hitSound = this.hitSound;
-    cloned.samples = this.samples.map((s) => s.clone());
-    cloned.kiai = this.kiai;
-    cloned.stackHeight = this.stackHeight;
-    cloned.scale = this.scale;
 
     return cloned;
   }
