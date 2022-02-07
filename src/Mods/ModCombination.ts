@@ -294,7 +294,11 @@ export abstract class ModCombination {
   /**
    * Creates a new copy of this mod combination.
    */
-  abstract clone(): ModCombination;
+  clone(): this {
+    const ModCombination = this.constructor as new (input?: number | string) => this;
+
+    return new ModCombination(this.bitwise);
+  }
 
   /**
    * Wheter the mods are equal or not.

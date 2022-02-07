@@ -14,4 +14,16 @@ export abstract class RulesetBeatmap extends Beatmap {
    * Applied mods of a beatmap.
    */
   abstract mods: ModCombination;
+
+  /**
+   * Creates a deep copy of this ruleset beatmap.
+   * @returns Cloned ruleset beatmap.
+   */
+  clone(): this {
+    const cloned = super.clone();
+
+    cloned.mods = this.mods.clone();
+
+    return cloned;
+  }
 }

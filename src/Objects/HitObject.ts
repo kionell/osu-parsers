@@ -115,5 +115,18 @@ export abstract class HitObject implements IHitObject {
    * Create a new copy of a hit object. 
    * @returns A clone of this hit object.
    */
-  abstract clone(): HitObject;
+  clone(): this {
+    const HitObject = this.constructor as new () => this;
+
+    const cloned = new HitObject();
+
+    cloned.startPosition = this.startPosition.clone();
+    cloned.startTime = this.startTime;
+    cloned.hitType = this.hitType;
+    cloned.hitSound = this.hitSound;
+    cloned.samples = this.samples.map((s) => s.clone());
+    cloned.kiai = this.kiai;
+
+    return cloned;
+  }
 }

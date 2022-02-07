@@ -117,7 +117,9 @@ export class ScoreInfo implements IScoreInfo {
    * Creates a deep copy of the score info.
    * @returns Cloned score info.
    */
-  clone(): ScoreInfo {
+  clone(): this {
+    const ScoreInfo = this.constructor as new (params?: Partial<IScoreInfo>) => this;
+
     const cloned = new ScoreInfo();
 
     cloned.id = this.id;

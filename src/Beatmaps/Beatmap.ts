@@ -189,7 +189,9 @@ export class Beatmap implements IBeatmap {
    * Non-primitive properties will be copied via their own clone() method.
    * @returns A copied beatmap.
    */
-  clone(): Beatmap {
+  clone(): this {
+    const Beatmap = this.constructor as new () => this;
+
     const cloned = new Beatmap();
 
     cloned.general = this.general.clone();
@@ -203,7 +205,9 @@ export class Beatmap implements IBeatmap {
     cloned.originalMode = this.originalMode;
     cloned.fileFormat = this.fileFormat;
 
-    if (this.base) cloned.base = this.base;
+    if (this.base) {
+      cloned.base = this.base;
+    }
 
     return cloned;
   }
