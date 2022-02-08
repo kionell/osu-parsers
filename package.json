@@ -1,6 +1,6 @@
 {
   "name": "osu-classes",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Basic classes, interfaces and utils for creating new osu! rulesets",
   "main": "./lib/cjs/index.js",
   "module": "./lib/esm/index.js",
