@@ -31,3 +31,5 @@ export { ProgressiveCalculationBeatmap } from './ProgressiveCalculationBeatmap';
 export { RulesetBeatmap } from './RulesetBeatmap';
 export { Beatmap } from './Beatmap';
 export { IBeatmap } from './IBeatmap';
+export { BeatmapInfo } from './BeatmapInfo';
+export { IBeatmapInfo } from './IBeatmapInfo';
