@@ -1,4 +1,4 @@
-import { IBeatmap } from '../Beatmaps';
+import { IBeatmapInfo } from '../Beatmaps';
 import { IRuleset } from '../Rulesets';
 import { ModCombination } from '../Mods';
 import { ScoreRank } from './Enums/ScoreRank';
@@ -71,7 +71,7 @@ export interface IScoreInfo {
   /**
    * Beatmap of the play.
    */
-  beatmap: IBeatmap | null;
+  beatmap: IBeatmapInfo | null;
 
   /**
    * Beatmap ID.
