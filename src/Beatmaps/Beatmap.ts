@@ -111,7 +111,9 @@ export class Beatmap implements IBeatmap {
       .filter((t) => t >= 0);
 
     if (beats.length) {
-      return beats.reduce((bpm, beat) => Math.min(bpm, beat), Infinity);
+      const bpm = beats.reduce((bpm, beat) => Math.min(bpm, beat), Infinity);
+
+      return bpm * this.difficulty.clockRate;
     }
 
     return 60;
@@ -126,7 +128,9 @@ export class Beatmap implements IBeatmap {
       .filter((t) => t >= 0);
 
     if (beats.length) {
-      return beats.reduce((bpm, beat) => Math.max(bpm, beat), 0);
+      const bpm = beats.reduce((bpm, beat) => Math.max(bpm, beat), 0);
+
+      return bpm * this.difficulty.clockRate;
     }
 
     return 60;
@@ -174,7 +178,7 @@ export class Beatmap implements IBeatmap {
 
     const entries = Object.entries(groups).sort((a, b) => b[1] - a[1]);
 
-    return 60000 / Number(entries[0][0]);
+    return 60000 / Number(entries[0][0]) * this.difficulty.clockRate;
   }
 
   /**
