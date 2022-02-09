@@ -86,6 +86,21 @@ export interface IBeatmapInfo {
   length: number;
 
   /**
+   * Minimal BPM of a beatmap.
+   */
+  bpmMin: number;
+
+  /**
+   * Maximal BPM of a beatmap.
+   */
+  bpmMax: number;
+
+  /**
+   * The most common BPM of a beatmap.
+   */
+  bpmMode: number;
+
+  /**
    * Circle size of the beatmap.
    */
   circleSize: number;

@@ -87,6 +87,21 @@ export class BeatmapInfo implements IBeatmapInfo {
   length = 0;
 
   /**
+   * Minimal BPM of a beatmap.
+   */
+  bpmMin = 0;
+
+  /**
+   * Maximal BPM of a beatmap.
+   */
+  bpmMax = 0;
+
+  /**
+   * The most common BPM of a beatmap.
+   */
+  bpmMode = 0;
+
+  /**
    * Circle size of the beatmap.
    */
   circleSize = 0;
