@@ -139,9 +139,24 @@ export abstract class HitObjectHandler {
      */
     slider.repeats = Math.max(0, parseInt(extras[1]) - 1);
 
+    if (slider.repeats > 9000) {
+      throw new Error('Repeat count is way too high');
+    }
+
     slider.path.controlPoints = HitObjectHandler.convertPathString(pathString, offset);
     slider.path.curveType = slider.path.controlPoints[0].type as PathType;
-    slider.path.expectedDistance = parseFloat(extras[2]) || 0;
+
+    const MAX_COORDINATE_VALUE = 131072;
+
+    if (parseFloat(extras[2]) < -MAX_COORDINATE_VALUE) {
+      throw new Error('Value is too low!');
+    }
+
+    if (parseFloat(extras[2]) > MAX_COORDINATE_VALUE) {
+      throw new Error('Value is too high!');
+    }
+
+    slider.path.expectedDistance = Math.max(0, parseFloat(extras[2])) || 0;
   }
 
   /**

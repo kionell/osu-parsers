@@ -137,9 +137,14 @@ export class BeatmapDecoder {
           break;
 
         case 'HitObjects': {
-          const hitObject = HitObjectHandler.handleLine(lines[i], offset);
+          try {
+            const hitObject = HitObjectHandler.handleLine(lines[i], offset);
 
-          beatmap.hitObjects.push(hitObject);
+            beatmap.hitObjects.push(hitObject);
+          }
+          catch (err) {
+            continue;
+          }
         }
       }
     }
