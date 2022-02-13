@@ -24,16 +24,10 @@ export class SpinnableObject extends HitObject implements ISpinnableObject {
    * Non-primitive properties will be copied via their own clone() method.
    * @returns A copied parsed spinner.
    */
-  clone(): SpinnableObject {
-    const cloned = new SpinnableObject();
+  clone(): this {
+    const cloned = super.clone();
 
-    cloned.startTime = this.startTime;
     cloned.endTime = this.endTime;
-    cloned.hitType = this.hitType;
-    cloned.hitSound = this.hitSound;
-    cloned.samples = this.samples.map((s) => s.clone());
-    cloned.startPosition = this.startPosition.clone();
-    cloned.kiai = this.kiai;
 
     return cloned;
   }

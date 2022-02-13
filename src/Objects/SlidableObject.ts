@@ -108,19 +108,14 @@ export class SlidableObject extends HitObject implements ISlidableObject {
    * Non-primitive properties will be copied via their own clone() method.
    * @returns A copied parsed slider.
    */
-  clone(): SlidableObject {
-    const cloned = new SlidableObject();
+  clone(): this {
+    const cloned = super.clone();
 
-    cloned.startPosition = this.startPosition.clone();
-    cloned.startTime = this.startTime;
-    cloned.hitType = this.hitType;
-    cloned.hitSound = this.hitSound;
-    cloned.samples = this.samples.map((s) => s.clone());
+    cloned.legacyLastTickOffset = this.legacyLastTickOffset;
     cloned.nodeSamples = this.nodeSamples.map((n) => n.map((s) => s.clone()));
     cloned.velocity = this.velocity;
     cloned.repeats = this.repeats;
     cloned.path = this.path.clone();
-    cloned.kiai = this.kiai;
 
     return cloned;
   }

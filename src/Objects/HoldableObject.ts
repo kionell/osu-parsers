@@ -36,18 +36,12 @@ export class HoldableObject extends HitObject implements IHoldableObject {
    * Non-primitive properties will be copied via their own clone() method.
    * @returns A copied holdable object.
    */
-  clone(): HoldableObject {
-    const cloned = new HoldableObject();
+  clone(): this {
+    const cloned = super.clone();
 
-    cloned.startTime = this.startTime;
     cloned.endTime = this.endTime;
-    cloned.hitType = this.hitType;
-    cloned.hitSound = this.hitSound;
     cloned.nestedHitObjects = this.nestedHitObjects.map((h) => h.clone());
-    cloned.samples = this.samples.map((s) => s.clone());
     cloned.nodeSamples = this.nodeSamples.map((n) => n.map((s) => s.clone()));
-    cloned.startPosition = this.startPosition.clone();
-    cloned.kiai = this.kiai;
 
     return cloned;
   }
