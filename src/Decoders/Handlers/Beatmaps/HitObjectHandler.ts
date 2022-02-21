@@ -53,6 +53,10 @@ export abstract class HitObjectHandler {
    * @returns A new parsed hit object.
    */
   static createHitObject(hitType: HitType): HitObject {
+    if (hitType & HitType.NewCombo) {
+      return new HittableObject();
+    }
+
     if (hitType & HitType.Slider) {
       return new SlidableObject();
     }
@@ -65,7 +69,7 @@ export abstract class HitObjectHandler {
       return new HoldableObject();
     }
 
-    return new HittableObject();
+    throw new Error(`Unknown hit object type: ${hitType}!`);
   }
 
   /**
