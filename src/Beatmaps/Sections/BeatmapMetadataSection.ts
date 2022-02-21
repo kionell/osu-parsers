@@ -8,19 +8,9 @@ export class BeatmapMetadataSection {
   title = 'Unknown Title';
 
   /**
-   * Song title.
-   */
-  titleUnicode = 'Unknown Title';
-
-  /**
    * Romanised song artist.
    */
   artist = 'Unknown Artist';
-
-  /**
-   * Song artist.
-   */
-  artistUnicode = 'Unknown Artist';
 
   /**
    * Beatmap creator.
@@ -51,6 +41,34 @@ export class BeatmapMetadataSection {
    * Beatmapset ID.
    */
   beatmapSetId = 0;
+
+  /**
+   * Song title.
+   */
+  private _titleUnicode = 'Unknown Title';
+
+  get titleUnicode(): string {
+    return this._titleUnicode !== 'Unknown Title'
+      ? this._titleUnicode : this.title;
+  }
+
+  set titleUnicode(value: string) {
+    this._titleUnicode = value;
+  }
+
+  /**
+   * Song artist.
+   */
+  private _artistUnicode = 'Unknown Artist';
+
+  get artistUnicode(): string {
+    return this._artistUnicode !== 'Unknown Artist'
+      ? this._artistUnicode : this.artist;
+  }
+
+  set artistUnicode(value: string) {
+    this._artistUnicode = value;
+  }
 
   /**
    * Creates a copy of this beatmap metadata section.
