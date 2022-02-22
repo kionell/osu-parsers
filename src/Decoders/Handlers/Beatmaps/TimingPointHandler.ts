@@ -92,7 +92,7 @@ export abstract class TimingPointHandler {
       timingPoint.beatLength = beatLength;
       timingPoint.timeSignature = timeSignature;
 
-      TimingPointHandler.addControlPoint(timingPoint, startTime);
+      TimingPointHandler.addControlPoint(timingPoint, startTime, true);
     }
 
     const difficultyPoint = new DifficultyPoint();
@@ -100,14 +100,18 @@ export abstract class TimingPointHandler {
     difficultyPoint.bpmMultiplier = bpmMultiplier;
     difficultyPoint.speedMultiplier = speedMultiplier;
 
-    TimingPointHandler.addControlPoint(difficultyPoint, startTime);
+    TimingPointHandler.addControlPoint(difficultyPoint, startTime, timingChange);
 
     const effectPoint = new EffectPoint();
 
     effectPoint.kiai = (effects & EffectType.Kiai) > 0;
     effectPoint.omitFirstBarLine = (effects & EffectType.OmitFirstBarLine) > 0;
 
-    TimingPointHandler.addControlPoint(effectPoint, startTime);
+    if (beatmap.originalMode !== 0) {
+      effectPoint.scrollSpeed = speedMultiplier;
+    }
+
+    TimingPointHandler.addControlPoint(effectPoint, startTime, timingChange);
 
     const samplePoint = new SamplePoint();
 
@@ -115,7 +119,7 @@ export abstract class TimingPointHandler {
     samplePoint.customIndex = customIndex;
     samplePoint.volume = volume;
 
-    TimingPointHandler.addControlPoint(samplePoint, startTime);
+    TimingPointHandler.addControlPoint(samplePoint, startTime, timingChange);
   }
 
   /**
@@ -123,13 +127,16 @@ export abstract class TimingPointHandler {
    * and flushes all stored data on time change.
    * @param point A control point
    * @param time The time at which control point starts.
+   * @param timingChange 
    */
-  static addControlPoint(point: ControlPoint, time: number): void {
+  static addControlPoint(point: ControlPoint, time: number, timingChange: boolean): void {
     if (time !== TimingPointHandler.pendingTime) {
       TimingPointHandler.flushPendingPoints();
     }
 
-    TimingPointHandler.pendingPoints.push(point);
+    timingChange
+      ? TimingPointHandler.pendingPoints.unshift(point)
+      : TimingPointHandler.pendingPoints.push(point);
 
     TimingPointHandler.pendingTime = time;
   }
