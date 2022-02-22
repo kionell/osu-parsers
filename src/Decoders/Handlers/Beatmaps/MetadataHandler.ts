@@ -1,4 +1,5 @@
 import { Beatmap } from 'osu-classes';
+import { Parsing } from '../../../Utils';
 
 /**
  * A decoder for beatmap metadata.
@@ -47,11 +48,11 @@ export abstract class MetadataHandler {
         break;
 
       case 'BeatmapID':
-        beatmap.metadata.beatmapId = +value;
+        beatmap.metadata.beatmapId = Parsing.parseInt(value);
         break;
 
       case 'BeatmapSetID':
-        beatmap.metadata.beatmapSetId = +value;
+        beatmap.metadata.beatmapSetId = Parsing.parseInt(value);
     }
   }
 }

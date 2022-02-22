@@ -1,4 +1,5 @@
 import { Beatmap, SampleSet } from 'osu-classes';
+import { Parsing } from '../../../Utils';
 
 /**
  * A decoder for general info of a beatmap.
@@ -32,27 +33,27 @@ export abstract class GeneralHandler {
         break;
 
       case 'AudioLeadIn':
-        beatmap.general.audioLeadIn = parseInt(value);
+        beatmap.general.audioLeadIn = Parsing.parseInt(value);
         break;
 
       case 'PreviewTime':
-        beatmap.general.previewTime = parseInt(value) + offset;
+        beatmap.general.previewTime = Parsing.parseInt(value) + offset;
         break;
 
       case 'Countdown':
-        beatmap.general.countdown = parseInt(value);
+        beatmap.general.countdown = Parsing.parseInt(value);
         break;
 
       case 'StackLeniency':
-        beatmap.general.stackLeniency = parseFloat(value);
+        beatmap.general.stackLeniency = Parsing.parseFloat(value);
         break;
 
       case 'Mode':
-        beatmap.originalMode = parseInt(value);
+        beatmap.originalMode = Parsing.parseInt(value);
         break;
 
       case 'CountdownOffset':
-        beatmap.general.countdownOffset = parseInt(value);
+        beatmap.general.countdownOffset = Parsing.parseInt(value);
         break;
 
       case 'SampleSet':

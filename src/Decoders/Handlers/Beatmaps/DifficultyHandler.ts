@@ -1,4 +1,5 @@
 import { Beatmap } from 'osu-classes';
+import { Parsing } from '../../../Utils';
 
 /**
  * A decoder for beatmap difficulty.
@@ -15,27 +16,27 @@ export abstract class DifficultyHandler {
 
     switch (key) {
       case 'CircleSize':
-        beatmap.difficulty.circleSize = parseFloat(value);
+        beatmap.difficulty.circleSize = Parsing.parseFloat(value);
         break;
 
       case 'HPDrainRate':
-        beatmap.difficulty.drainRate = parseFloat(value);
+        beatmap.difficulty.drainRate = Parsing.parseFloat(value);
         break;
 
       case 'OverallDifficulty':
-        beatmap.difficulty.overallDifficulty = parseFloat(value);
+        beatmap.difficulty.overallDifficulty = Parsing.parseFloat(value);
         break;
 
       case 'ApproachRate':
-        beatmap.difficulty.approachRate = parseFloat(value);
+        beatmap.difficulty.approachRate = Parsing.parseFloat(value);
         break;
 
       case 'SliderMultiplier':
-        beatmap.difficulty.sliderMultiplier = parseFloat(value);
+        beatmap.difficulty.sliderMultiplier = Parsing.parseFloat(value);
         break;
 
       case 'SliderTickRate':
-        beatmap.difficulty.sliderTickRate = parseFloat(value);
+        beatmap.difficulty.sliderTickRate = Parsing.parseFloat(value);
     }
   }
 }

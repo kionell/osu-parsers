@@ -1,4 +1,5 @@
 import { Beatmap, BeatmapBreakEvent, EventType } from 'osu-classes';
+import { Parsing } from '../../../Utils';
 
 /**
  * A decoder for beatmap events.
@@ -16,18 +17,9 @@ export abstract class EventHandler {
   static handleLine(line: string, beatmap: Beatmap, sbLines: string[] | null, offset: number): void {
     // EventType,startTime,eventParams
 
-    const data = line.split(',').map((v) => v.trim());
+    const data = line.split(',').map((v, i) => i ? v.trim() : v);
 
-    let eventType: EventType = parseInt(data[0]);
-
-    if (line.startsWith(' ') || line.startsWith('_')) {
-      eventType = EventType.StoryboardCommand;
-    }
-    else {
-      eventType = !isFinite(eventType)
-        ? (EventType as any)[data[0]]
-        : eventType;
-    }
+    const eventType = this._getEventType(data[0]);
 
     switch (eventType) {
       case EventType.Background:
@@ -35,19 +27,19 @@ export abstract class EventHandler {
         break;
 
       case EventType.Video:
-        beatmap.events.videoOffset = parseInt(data[1]);
+        beatmap.events.videoOffset = Parsing.parseInt(data[1]);
         beatmap.events.video = data[2].replace(/"/g, '');
         break;
 
       case EventType.Break: {
-        const breakEvent = new BeatmapBreakEvent(+data[1], +data[2]);
+        const start = Parsing.parseFloat(data[1]) + offset;
+        const end = Math.max(start, Parsing.parseFloat(data[2]) + offset);
+
+        const breakEvent = new BeatmapBreakEvent(start, end);
 
         if (!beatmap.events.breaks) {
           beatmap.events.breaks = [];
         }
-
-        breakEvent.startTime += offset;
-        breakEvent.endTime += offset;
 
         beatmap.events.breaks.push(breakEvent);
         break;
@@ -59,5 +51,21 @@ export abstract class EventHandler {
       case EventType.StoryboardCommand:
         if (sbLines) sbLines.push(line);
     }
+  }
+
+  private static _getEventType(input: string): EventType {
+    if (input.startsWith(' ') || input.startsWith('_')) {
+      return EventType.StoryboardCommand;
+    }
+
+    input = input.trim();
+
+    let eventType = parseInt(input);
+
+    eventType = isFinite(eventType) ? eventType : (EventType as any)[input];
+
+    if (EventType[eventType]) return eventType;
+
+    throw new Error(`Unknown event type: ${input}!`);
   }
 }

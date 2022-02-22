@@ -12,6 +12,8 @@ import {
   Beatmap,
 } from 'osu-classes';
 
+import { Parsing } from '../../../Utils';
+
 /**
  * A decoder for beatmap control points.
  */
@@ -47,32 +49,33 @@ export abstract class TimingPointHandler {
 
     TimingPointHandler.controlPoints = beatmap.controlPoints;
 
-    const data = line.split(',').map((v) => +v.trim());
+    const data = line.split(',');
 
     let timeSignature = TimeSignature.SimpleQuadruple;
     let sampleSet = SampleSet[SampleSet.None];
     let customIndex = 0;
     let volume = 100;
-    let uninherited = true;
+    let timingChange = true;
     let effects = EffectType.None;
 
-    switch (data.length) {
-      case 8:
-        effects = data[7];
-      case 7:
-        uninherited = !!data[6];
-      case 6:
-        volume = data[5];
-      case 5:
-        customIndex = data[4];
-      case 4:
-        sampleSet = SampleSet[data[3]];
-      case 3:
-        timeSignature = data[2];
+    if (data.length > 2) {
+      switch (data.length) {
+        default:
+        case 8: effects = Parsing.parseInt(data[7]);
+        case 7: timingChange = data[6] === '1';
+        case 6: volume = Parsing.parseInt(data[5]);
+        case 5: customIndex = Parsing.parseInt(data[4]);
+        case 4: sampleSet = SampleSet[Parsing.parseInt(data[3])];
+        case 3: timeSignature = Parsing.parseInt(data[2]);
+      }
     }
 
-    const beatLength = data[1];
-    const startTime = data[0] + offset;
+    if (timeSignature < 1) {
+      throw new Error('The numerator of a time signature must be positive.');
+    }
+
+    const beatLength = Parsing.parseFloat(data[1]);
+    const startTime = Parsing.parseFloat(data[0]) + offset;
 
     let bpmMultiplier = 1;
     let speedMultiplier = 1;
@@ -83,7 +86,7 @@ export abstract class TimingPointHandler {
       bpmMultiplier = Math.max(10, bpmMultiplier) / 100;
     }
 
-    if (uninherited) {
+    if (timingChange) {
       const timingPoint = new TimingPoint();
 
       timingPoint.beatLength = beatLength;
@@ -152,7 +155,6 @@ export abstract class TimingPointHandler {
       }
 
       pendingTypes.push(pendingPoints[i].pointType);
-
       controlPoints.add(pendingPoints[i], pendingTime);
     }
 

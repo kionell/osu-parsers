@@ -20,11 +20,13 @@ import {
   BlendingCommand,
   EventType,
   LayerType,
-  Origins,
-  LoopType,
   CommandType,
   ParameterType,
+  Origins,
+  LoopType,
 } from 'osu-classes';
+
+import { Parsing } from '../../../Utils';
 
 /**
  * A decoder for storyboard elements, compounds and commands.
@@ -40,13 +42,15 @@ export abstract class StoryboardHandler {
 
     let eventType: EventType = parseInt(data[0]);
 
-    eventType = isFinite(eventType) ? eventType : (EventType as any)[data[0]];
+    eventType = isFinite(eventType)
+      ? eventType
+      : (EventType as any)[data[0]];
 
     const index = eventType === EventType.Sample ? 2 : 1;
 
     let layerType: LayerType = parseInt(data[index]);
 
-    layerType = isFinite(parseInt(data[index]))
+    layerType = isFinite(layerType)
       ? layerType
       : (LayerType as any)[data[index]];
 
@@ -56,8 +60,8 @@ export abstract class StoryboardHandler {
 
         element.layer = layerType;
         element.filePath = data[3].replace(/"/g, '');
-        element.startX = parseInt(data[4]);
-        element.startY = parseInt(data[5]);
+        element.startX = Parsing.parseInt(data[4]);
+        element.startY = Parsing.parseInt(data[5]);
         element.origin = parseInt(data[2]);
         element.origin = isFinite(element.origin)
           ? element.origin
@@ -76,10 +80,10 @@ export abstract class StoryboardHandler {
           : (Origins as any)[data[2]];
 
         element.filePath = data[3].replace(/"/g, '');
-        element.startX = parseInt(data[4]);
-        element.startY = parseInt(data[5]);
-        element.frames = parseInt(data[6]);
-        element.frameDelay = parseInt(data[7]);
+        element.startX = Parsing.parseInt(data[4]);
+        element.startY = Parsing.parseInt(data[5]);
+        element.frames = Parsing.parseInt(data[6]);
+        element.frameDelay = Parsing.parseInt(data[7]);
         element.loop = parseInt(data[8]);
         element.loop = isFinite(element.loop)
           ? element.loop
@@ -92,9 +96,9 @@ export abstract class StoryboardHandler {
         const element = new StoryboardSample();
 
         element.layer = layerType;
-        element.startTime = parseInt(data[1]);
+        element.startTime = Parsing.parseInt(data[1]);
         element.filePath = data[3].replace(/"/g, '');
-        element.volume = data.length > 4 ? parseInt(data[4]) : 100;
+        element.volume = data.length > 4 ? Parsing.parseInt(data[4]) : 100;
 
         return element;
       }
@@ -114,8 +118,8 @@ export abstract class StoryboardHandler {
 
     const loop = new CommandLoop();
 
-    loop.loopStartTime = parseInt(data[1]);
-    loop.loopCount = parseInt(data[2]);
+    loop.loopStartTime = Parsing.parseInt(data[1]);
+    loop.loopCount = Parsing.parseInt(data[2]);
 
     return loop;
   }
@@ -131,9 +135,9 @@ export abstract class StoryboardHandler {
     const trigger = new CommandTrigger();
 
     trigger.triggerName = data[1];
-    trigger.startTime = parseInt(data[2]) || 0;
-    trigger.endTime = parseInt(data[3]) || 0;
-    trigger.groupNumber = parseInt(data[4]) || 0;
+    trigger.startTime = Parsing.parseInt(data[2]) || 0;
+    trigger.endTime = Parsing.parseInt(data[3]) || 0;
+    trigger.groupNumber = Parsing.parseInt(data[4]) || 0;
 
     return trigger;
   }
@@ -153,88 +157,88 @@ export abstract class StoryboardHandler {
     switch (commandType) {
       case CommandType.Fade:
         command = new FadeCommand();
-        (command as FadeCommand).startOpacity = parseFloat(data[4]);
+        (command as FadeCommand).startOpacity = Parsing.parseFloat(data[4]);
 
         if (data.length > 5) {
-          (command as FadeCommand).endOpacity = parseFloat(data[5]);
+          (command as FadeCommand).endOpacity = Parsing.parseFloat(data[5]);
         }
 
         break;
 
       case CommandType.Movement:
         command = new MoveCommand();
-        (command as MoveCommand).startX = parseFloat(data[4]);
-        (command as MoveCommand).startY = parseFloat(data[5]);
+        (command as MoveCommand).startX = Parsing.parseFloat(data[4]);
+        (command as MoveCommand).startY = Parsing.parseFloat(data[5]);
 
         if (data.length > 6) {
-          (command as MoveCommand).endX = parseFloat(data[6]);
-          (command as MoveCommand).endY = parseFloat(data[7]);
+          (command as MoveCommand).endX = Parsing.parseFloat(data[6]);
+          (command as MoveCommand).endY = Parsing.parseFloat(data[7]);
         }
 
         break;
 
       case CommandType.MovementX:
         command = new MoveXCommand();
-        (command as MoveXCommand).startX = parseFloat(data[4]);
+        (command as MoveXCommand).startX = Parsing.parseFloat(data[4]);
 
         if (data.length > 5) {
-          (command as MoveXCommand).endX = parseFloat(data[5]);
+          (command as MoveXCommand).endX = Parsing.parseFloat(data[5]);
         }
 
         break;
 
       case CommandType.MovementY:
         command = new MoveYCommand();
-        (command as MoveYCommand).startY = parseFloat(data[4]);
+        (command as MoveYCommand).startY = Parsing.parseFloat(data[4]);
 
         if (data.length > 5) {
-          (command as MoveYCommand).endY = parseFloat(data[5]);
+          (command as MoveYCommand).endY = Parsing.parseFloat(data[5]);
         }
 
         break;
 
       case CommandType.Scale:
         command = new ScaleCommand();
-        (command as ScaleCommand).startScaling = parseFloat(data[4]);
+        (command as ScaleCommand).startScaling = Parsing.parseFloat(data[4]);
 
         if (data.length > 5) {
-          (command as ScaleCommand).endScaling = parseFloat(data[5]);
+          (command as ScaleCommand).endScaling = Parsing.parseFloat(data[5]);
         }
 
         break;
 
       case CommandType.VectorScale:
         command = new VectorScaleCommand();
-        (command as VectorScaleCommand).startScaleX = parseFloat(data[4]);
-        (command as VectorScaleCommand).startScaleY = parseFloat(data[5]);
+        (command as VectorScaleCommand).startScaleX = Parsing.parseFloat(data[4]);
+        (command as VectorScaleCommand).startScaleY = Parsing.parseFloat(data[5]);
 
         if (data.length > 6) {
-          (command as VectorScaleCommand).endScaleX = parseFloat(data[6]);
-          (command as VectorScaleCommand).endScaleY = parseFloat(data[7]);
+          (command as VectorScaleCommand).endScaleX = Parsing.parseFloat(data[6]);
+          (command as VectorScaleCommand).endScaleY = Parsing.parseFloat(data[7]);
         }
 
         break;
 
       case CommandType.Rotation:
         command = new RotateCommand();
-        (command as RotateCommand).startRotate = parseFloat(data[4]);
+        (command as RotateCommand).startRotate = Parsing.parseFloat(data[4]);
 
         if (data.length > 5) {
-          (command as RotateCommand).endRotate = parseFloat(data[5]);
+          (command as RotateCommand).endRotate = Parsing.parseFloat(data[5]);
         }
 
         break;
 
       case CommandType.Colour:
         command = new ColourCommand();
-        (command as ColourCommand).startRed = parseInt(data[4]);
-        (command as ColourCommand).startGreen = parseInt(data[5]);
-        (command as ColourCommand).startBlue = parseInt(data[6]);
+        (command as ColourCommand).startRed = Parsing.parseInt(data[4]);
+        (command as ColourCommand).startGreen = Parsing.parseInt(data[5]);
+        (command as ColourCommand).startBlue = Parsing.parseInt(data[6]);
 
         if (data.length > 7) {
-          (command as ColourCommand).endRed = parseInt(data[7]);
-          (command as ColourCommand).endGreen = parseInt(data[8]);
-          (command as ColourCommand).endBlue = parseInt(data[9]);
+          (command as ColourCommand).endRed = Parsing.parseInt(data[7]);
+          (command as ColourCommand).endGreen = Parsing.parseInt(data[8]);
+          (command as ColourCommand).endBlue = Parsing.parseInt(data[9]);
         }
 
         break;
@@ -243,9 +247,9 @@ export abstract class StoryboardHandler {
         command = StoryboardHandler.handleParameterCommand(data);
     }
 
-    command.easing = parseInt(data[1]);
-    command.startTime = parseInt(data[2]);
-    command.endTime = parseInt(data[3]);
+    command.easing = Parsing.parseInt(data[1]);
+    command.startTime = Parsing.parseInt(data[2]);
+    command.endTime = Parsing.parseInt(data[3]);
 
     return command;
   }
@@ -273,9 +277,9 @@ export abstract class StoryboardHandler {
         command = new BlendingCommand();
     }
 
-    command.easing = parseInt(data[1]);
-    command.startTime = parseInt(data[2]);
-    command.endTime = parseInt(data[3]);
+    command.easing = Parsing.parseInt(data[1]);
+    command.startTime = Parsing.parseInt(data[2]);
+    command.endTime = Parsing.parseInt(data[3]);
 
     return command;
   }

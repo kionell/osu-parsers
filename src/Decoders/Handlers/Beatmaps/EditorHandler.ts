@@ -1,4 +1,5 @@
 import { Beatmap } from 'osu-classes';
+import { Parsing } from '../../../Utils';
 
 /**
  * A decoder for beatmap editor settings.
@@ -19,19 +20,19 @@ export abstract class EditorHandler {
         break;
 
       case 'DistanceSpacing':
-        beatmap.editor.distanceSpacing = +value;
+        beatmap.editor.distanceSpacing = Math.max(0, Parsing.parseFloat(value));
         break;
 
       case 'BeatDivisor':
-        beatmap.editor.beatDivisor = +value;
+        beatmap.editor.beatDivisor = Parsing.parseInt(value);
         break;
 
       case 'GridSize':
-        beatmap.editor.gridSize = +value;
+        beatmap.editor.gridSize = Parsing.parseInt(value);
         break;
 
       case 'TimelineZoom':
-        beatmap.editor.timelineZoom = +value;
+        beatmap.editor.timelineZoom = Math.max(0, Parsing.parseFloat(value));
     }
   }
 }

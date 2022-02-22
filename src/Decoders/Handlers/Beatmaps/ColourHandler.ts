@@ -1,4 +1,5 @@
 import { Beatmap, Colour } from 'osu-classes';
+import { Parsing } from '../../../Utils';
 
 /**
  * A decoder for beatmap colours.
@@ -14,7 +15,7 @@ export abstract class ColourHandler {
     const value = values
       .join(' ')
       .split(',')
-      .map((c) => +c);
+      .map((c) => Parsing.parseInt(c));
 
     const colour = new Colour(value[0], value[1], value[2]);
 

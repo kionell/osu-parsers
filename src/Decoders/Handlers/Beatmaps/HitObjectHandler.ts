@@ -17,6 +17,8 @@ import {
   SpinnableObject,
 } from '../../../Objects';
 
+import { Parsing } from '../../../Utils';
+
 /**
  * A decoder for beatmap hit objects.
  */
@@ -32,15 +34,15 @@ export abstract class HitObjectHandler {
 
     const data = line.split(',').map((v) => v.trim());
 
-    const hitType = parseInt(data[3]);
+    const hitType = Parsing.parseInt(data[3]);
 
     const hitObject = HitObjectHandler.createHitObject(hitType);
 
-    hitObject.startX = parseInt(data[0]);
-    hitObject.startY = parseInt(data[1]);
-    hitObject.startTime = parseInt(data[2]) + offset;
+    hitObject.startX = Parsing.parseInt(data[0], Parsing.MAX_COORDINATE_VALUE);
+    hitObject.startY = Parsing.parseInt(data[1], Parsing.MAX_COORDINATE_VALUE);
+    hitObject.startTime = Parsing.parseFloat(data[2]) + offset;
     hitObject.hitType = hitType;
-    hitObject.hitSound = parseInt(data[4]);
+    hitObject.hitSound = Parsing.parseInt(data[4]);
 
     HitObjectHandler.addExtras(data.slice(5), hitObject, offset);
 
@@ -141,7 +143,7 @@ export abstract class HitObjectHandler {
      * osu!stable treated the first span of the slider as a repeat,
      * but no repeats are happening.
      */
-    slider.repeats = Math.max(0, parseInt(extras[1]) - 1);
+    slider.repeats = Math.max(0, Parsing.parseInt(extras[1]) - 1);
 
     if (slider.repeats > 9000) {
       throw new Error('Repeat count is way too high');
@@ -170,7 +172,9 @@ export abstract class HitObjectHandler {
    * @param offset The offset to apply to all time values.
    */
   static addSpinnerExtras(extras: string[], spinner: SpinnableObject, offset: number): void {
-    // endTime
+    // endTime,hitSample
+
+    spinner.endTime = Parsing.parseInt(extras[0]) + offset;
 
     spinner.endTime = parseInt(extras[0]) + offset;
   }
@@ -345,7 +349,10 @@ export abstract class HitObjectHandler {
     }
 
     function readPoint(point: string, offset: Vector2): PathPoint {
-      const coords = point.split(':').map((v) => +v.trim());
+      const coords = point.split(':').map((v) => {
+        return Parsing.parseFloat(v, Parsing.MAX_COORDINATE_VALUE);
+      });
+
       const pos = new Vector2(coords[0], coords[1]).subtract(offset);
 
       return new PathPoint(pos);
@@ -355,7 +362,9 @@ export abstract class HitObjectHandler {
       const yx = (p[1].position.y - p[0].position.y) * (p[2].position.x - p[0].position.x);
       const xy = (p[1].position.x - p[0].position.x) * (p[2].position.y - p[0].position.y);
 
-      return Math.abs(yx - xy) < 0.001;
+      const acceptableDifference = 0.001;
+
+      return Math.abs(yx - xy) < acceptableDifference;
     }
   }
 
