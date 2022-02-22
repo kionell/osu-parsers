@@ -122,39 +122,57 @@ export class ControlPointInfo {
    * @returns Whether the control point has been added to the group.
    */
   add(point: ControlPoint, time: number): boolean {
-    let list: ControlPoint[];
-    let existing: ControlPoint | null;
-
-    switch (point.pointType) {
-      case ControlPointType.DifficultyPoint:
-        list = this.difficultyPoints;
-        existing = this.difficultyPointAt(time);
-        break;
-
-      case ControlPointType.EffectPoint:
-        list = this.effectPoints;
-        existing = this.effectPointAt(time);
-        break;
-
-      case ControlPointType.SamplePoint:
-        list = this.samplePoints;
-        existing = this.samplePointAt(time);
-        break;
-
-      default:
-        list = this.timingPoints;
-        existing = BinarySearch.findControlPoint(list, time);
-    }
-
-    if (point.isRedundant(existing as ControlPoint)) {
+    if (this.checkAlreadyExisting(time, point)) {
       return false;
     }
 
-    list.push(point);
+    const list = this.getCurrentList(point);
+    const index = BinarySearch.findControlPointIndex(list, time);
+
+    /**
+     * We need to imitate C# sorted list here.
+     * Since we already have binary search function for control points,
+     * we can just insert new elements via splice by found index.
+     */
+    list.splice(index + 1, 0, point);
 
     this.groupAt(time).add(point);
 
     return true;
+  }
+
+  getCurrentList(newPoint: ControlPoint): ControlPoint[] {
+    switch (newPoint.pointType) {
+      case ControlPointType.DifficultyPoint: return this.difficultyPoints;
+      case ControlPointType.EffectPoint: return this.effectPoints;
+      case ControlPointType.SamplePoint: return this.samplePoints;
+      case ControlPointType.TimingPoint: return this.timingPoints;
+    }
+
+    throw new TypeError(`Unknown control point type: ${newPoint.pointType}!`);
+  }
+
+  checkAlreadyExisting(time: number, newPoint: ControlPoint): boolean {
+    let existing = null;
+
+    switch (newPoint.pointType) {
+      case ControlPointType.DifficultyPoint:
+        existing = this.difficultyPointAt(time);
+        break;
+
+      case ControlPointType.EffectPoint:
+        existing = this.effectPointAt(time);
+        break;
+
+      case ControlPointType.SamplePoint:
+        existing = BinarySearch.findControlPoint(this.samplePoints, time);
+        break;
+
+      case ControlPointType.TimingPoint:
+        existing = BinarySearch.findControlPoint(this.timingPoints, time);
+    }
+
+    return newPoint?.isRedundant(existing);
   }
 
   /**
