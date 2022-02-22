@@ -19,7 +19,15 @@ export class TimingPoint extends ControlPoint {
   /**
    * The beat length of this timing point. 
    */
-  beatLength = 0;
+  private _beatLength = 1000;
+
+  get beatLength(): number {
+    return Math.max(6, Math.min(this._beatLength, 60000));
+  }
+
+  set beatLength(value: number) {
+    this._beatLength = value;
+  }
 
   /**
    * The time signature of this timing point.

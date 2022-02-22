@@ -26,6 +26,19 @@ export class EffectPoint extends ControlPoint {
   omitFirstBarLine = false;
 
   /**
+   * The relative scroll speed at this control point.
+   */
+  private _scrollSpeed = 1;
+
+  get scrollSpeed(): number {
+    return Math.max(0.1, Math.min(this._scrollSpeed, 10));
+  }
+
+  set scrollSpeed(value: number) {
+    this._scrollSpeed = value;
+  }
+
+  /**
    * Checks if this effect point is redundant to an another one.
    * @param existing The another effect point.
    * @returns Whether the effect point is redundant.
@@ -36,6 +49,7 @@ export class EffectPoint extends ControlPoint {
         && existing !== null
         && this.kiai === existing.kiai
         && this.omitFirstBarLine === existing.omitFirstBarLine
+        && this.scrollSpeed === existing.scrollSpeed
     );
   }
 }

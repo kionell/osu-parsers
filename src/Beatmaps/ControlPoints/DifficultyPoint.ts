@@ -18,7 +18,16 @@ export class DifficultyPoint extends ControlPoint {
   /**
    * The speed multiplier of this difficulty point.
    */
-  speedMultiplier = 1;
+  private _speedMultiplier = 1;
+
+  get speedMultiplier(): number {
+    // Imitate bindable value with range [0.1, 10].
+    return Math.max(0.1, Math.min(this._speedMultiplier, 10));
+  }
+
+  set speedMultiplier(value: number) {
+    this._speedMultiplier = value;
+  }
 
   /**
    * The bpm multiplier of this difficulty point.
@@ -31,7 +40,6 @@ export class DifficultyPoint extends ControlPoint {
    * @returns Whether the difficulty point is redundant.
    */
   isRedundant(existing: DifficultyPoint | null): boolean {
-    return existing !== null
-      && existing.speedMultiplier === this.speedMultiplier;
+    return existing !== null && existing.speedMultiplier === this.speedMultiplier;
   }
 }
