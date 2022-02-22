@@ -39,17 +39,17 @@ export class BinarySearch {
    * @param time The time to search for.
    * @returns Found control point.
    */
-  static findControlPoint(arr: ControlPoint[], time: number): ControlPoint | null {
+  static findControlPointIndex(arr: ControlPoint[], time: number): number {
     if (!arr.length) {
-      return null;
+      return -1;
     }
 
     if (time < arr[0].startTime) {
-      return null;
+      return -1;
     }
 
     if (time >= arr[arr.length - 1].startTime) {
-      return arr[arr.length - 1];
+      return arr.length - 1;
     }
 
     let l = 0;
@@ -65,11 +65,25 @@ export class BinarySearch {
         r = pivot - 1;
       }
       else {
-        return arr[pivot];
+        return pivot;
       }
     }
 
     // L will be the first control point with startTime > time, but we want the one before it
-    return arr[l - 1];
+    return l - 1;
+  }
+
+  /**
+   * Searches a control point at the specified time.
+   * @param arr The list of control points.
+   * @param time The time to search for.
+   * @returns Found control point.
+   */
+  static findControlPoint(arr: ControlPoint[], time: number): ControlPoint | null {
+    const index = this.findControlPointIndex(arr, time);
+
+    if (index === -1) return null;
+
+    return arr[index];
   }
 }
