@@ -1,7 +1,5 @@
 import { existsSync, readFileSync, statSync } from 'fs';
-
 import { Beatmap } from 'osu-classes';
-import { StoryboardDecoder } from './StoryboardDecoder';
 
 import {
   GeneralHandler,
@@ -14,10 +12,33 @@ import {
   TimingPointHandler,
 } from './Handlers';
 
+import { StoryboardDecoder } from './StoryboardDecoder';
+import { Parsing } from '../Utils';
+
 /**
  * Beatmap decoder.
  */
 export class BeatmapDecoder {
+  /**
+   * Current section name.
+   */
+  private _sectionName = '';
+
+  /** 
+   * Current offset for all time values.
+   */
+  private _offset = 0;
+
+  /**
+   * Current beatmap lines.
+   */
+  private _lines: string[] | null = null;
+
+  /**
+   * Current storyboard lines.
+   */
+  private _sbLines: string[] | null = null;
+
   /**
    * Performs beatmap decoding from the specified .osu file.
    * @param path Path to the .osu file.
@@ -64,90 +85,29 @@ export class BeatmapDecoder {
   decodeFromLines(data: string[], parseSb = true): Beatmap {
     const beatmap = new Beatmap();
 
-    let lines: string[] = [];
-    let sbLines: string[] | null = null;
+    this._lines = null;
+    this._sbLines = null;
 
     // This array isn't needed if we don't parse a storyboard. 
-    if (parseSb) sbLines = [];
+    if (parseSb) this._sbLines = [];
 
     if (data.constructor === Array) {
-      lines = data.map((l) => l.toString());
+      this._lines = data.map((l) => l.toString());
     }
 
-    if (!lines.length) {
+    if (!this._lines || !this._lines.length) {
       throw new Error('Beatmap data not found!');
     }
 
-    let sectionName = '';
-    let offset = 0;
-
-    for (let i = 0, len = lines.length; i < len; ++i) {
-      // Skip empty lines and comments.
-      if (!lines[i] || lines[i].startsWith('//')) {
-        continue;
-      }
-
-      // .osu file version
-      if (lines[i].startsWith('osu file format v')) {
-        beatmap.fileFormat = Number(lines[i].slice(17));
-
-        /**
-         * Beatmaps of version 4 and lower had an incorrect offset 
-         * (stable has this set as 24ms off).
-         */
-        offset = beatmap.fileFormat <= 4 ? 24 : 0;
-
-        continue;
-      }
-
-      // .osu file section
-      if (lines[i].startsWith('[') && lines[i].endsWith(']')) {
-        sectionName = lines[i].slice(1, -1);
-        continue;
-      }
-
-      // Section data
-      switch (sectionName) {
-        case 'General':
-          GeneralHandler.handleLine(lines[i], beatmap, offset);
-          break;
-
-        case 'Editor':
-          EditorHandler.handleLine(lines[i], beatmap);
-          break;
-
-        case 'Metadata':
-          MetadataHandler.handleLine(lines[i], beatmap);
-          break;
-
-        case 'Difficulty':
-          DifficultyHandler.handleLine(lines[i], beatmap);
-          break;
-
-        case 'Colours':
-          ColourHandler.handleLine(lines[i], beatmap);
-          break;
-
-        case 'Events':
-          EventHandler.handleLine(lines[i], beatmap, sbLines, offset);
-          break;
-
-        case 'TimingPoints':
-          TimingPointHandler.handleLine(lines[i], beatmap, offset);
-          break;
-
-        case 'HitObjects': {
-          try {
-            const hitObject = HitObjectHandler.handleLine(lines[i], offset);
-
-            beatmap.hitObjects.push(hitObject);
-          }
-          catch (err) {
-            continue;
-          }
-        }
-      }
+    if (!this._lines[0].startsWith('osu file format v')) {
+      throw new Error('Not a valid beatmap!');
     }
+
+    this._offset = 0;
+    this._sectionName = '';
+
+    // Parse beatmap lines.
+    this._lines.forEach((line) => this._parseLine(line, beatmap));
 
     // Flush last control point group.
     TimingPointHandler.flushPendingPoints();
@@ -157,13 +117,84 @@ export class BeatmapDecoder {
       h.applyDefaults(beatmap.controlPoints, beatmap.difficulty);
     });
 
+    // Use stable sorting to keep objects in the right order.
+    beatmap.hitObjects.sort((a, b) => a.startTime - b.startTime);
+
     // Storyboard
-    if (parseSb && sbLines && sbLines.length) {
+    if (parseSb && this._sbLines && this._sbLines.length) {
       const storyboardDecoder = new StoryboardDecoder();
 
-      beatmap.events.storyboard = storyboardDecoder.decodeFromLines(sbLines);
+      beatmap.events.storyboard = storyboardDecoder.decodeFromLines(this._sbLines);
     }
 
     return beatmap;
+  }
+
+  private _parseLine(line: string, beatmap: Beatmap): void {
+    // Skip empty lines and comments.
+    if (!line || line.startsWith('//')) return;
+
+    // .osu file version
+    if (line.startsWith('osu file format v')) {
+      beatmap.fileFormat = Parsing.parseInt(line.slice(17));
+
+      /**
+       * Beatmaps of version 4 and lower had an incorrect offset 
+       * (stable has this set as 24ms off).
+       */
+      this._offset = beatmap.fileFormat <= 4 ? 24 : 0;
+
+      return;
+    }
+
+    // .osu file section
+    if (line.startsWith('[') && line.endsWith(']')) {
+      this._sectionName = line.slice(1, -1);
+
+      return;
+    }
+
+    try {
+      // Section data
+      this._parseSectionData(line, beatmap);
+    }
+    catch {
+      return;
+    }
+  }
+
+  private _parseSectionData(line: string, beatmap: Beatmap) {
+    switch (this._sectionName) {
+      case 'General':
+        GeneralHandler.handleLine(line, beatmap, this._offset);
+        break;
+
+      case 'Editor':
+        EditorHandler.handleLine(line, beatmap);
+        break;
+
+      case 'Metadata':
+        MetadataHandler.handleLine(line, beatmap);
+        break;
+
+      case 'Difficulty':
+        DifficultyHandler.handleLine(line, beatmap);
+        break;
+
+      case 'Colours':
+        ColourHandler.handleLine(line, beatmap);
+        break;
+
+      case 'Events':
+        EventHandler.handleLine(line, beatmap, this._sbLines, this._offset);
+        break;
+
+      case 'TimingPoints':
+        TimingPointHandler.handleLine(line, beatmap, this._offset);
+        break;
+
+      case 'HitObjects':
+        HitObjectHandler.handleLine(line, beatmap, this._offset);
+    }
   }
 }
