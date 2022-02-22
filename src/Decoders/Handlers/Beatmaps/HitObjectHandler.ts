@@ -8,6 +8,7 @@ import {
   HitType,
   HitSound,
   SampleSet,
+  Beatmap,
 } from 'osu-classes';
 
 import {
@@ -29,7 +30,7 @@ export abstract class HitObjectHandler {
    * @param offset The offset to apply to all time values.
    * @returns A new parsed hit object.
    */
-  static handleLine(line: string, offset: number): HitObject {
+  static handleLine(line: string, beatmap: Beatmap, offset: number): void {
     // x,y,time,type,hitSound,objectParams,hitSample
 
     const data = line.split(',').map((v) => v.trim());
@@ -46,32 +47,7 @@ export abstract class HitObjectHandler {
 
     HitObjectHandler.addExtras(data.slice(5), hitObject, offset);
 
-    return hitObject;
-  }
-
-  /**
-   * Creates a new parsed hit object based on hit type.
-   * @param hitType Hit type data.
-   * @returns A new parsed hit object.
-   */
-  static createHitObject(hitType: HitType): HitObject {
-    if (hitType & HitType.NewCombo) {
-      return new HittableObject();
-    }
-
-    if (hitType & HitType.Slider) {
-      return new SlidableObject();
-    }
-
-    if (hitType & HitType.Spinner) {
-      return new SpinnableObject();
-    }
-
-    if (hitType & HitType.Hold) {
-      return new HoldableObject();
-    }
-
-    throw new Error(`Unknown hit object type: ${hitType}!`);
+    beatmap.hitObjects.push(hitObject);
   }
 
   /**
@@ -81,50 +57,22 @@ export abstract class HitObjectHandler {
    * @param offset The offset to apply to all time values.
    */
   static addExtras(data: string[], hitObject: HitObject, offset: number): void {
-    const hitType = hitObject.hitType;
-
-    let extras: string[] = [];
-
-    if (hitType & HitType.Slider) {
-      extras = data.splice(0, 5);
-
-      HitObjectHandler.addSliderExtras(extras, hitObject as SlidableObject);
-    }
-    else if (hitType & HitType.Spinner) {
-      extras = data.splice(0, 1);
-
-      HitObjectHandler.addSpinnerExtras(extras, hitObject as SpinnableObject, offset);
-    }
-    else if (hitType & HitType.Hold) {
-      data = data.join('').split(':');
-      extras = data.splice(0, 1);
-      data = data.join(':').split(',');
-
-      HitObjectHandler.addHoldExtras(extras, hitObject as HoldableObject, offset);
-    }
-
-    const sampleData = data.join('');
-    const hitSound = hitObject.hitSound;
-
-    // Create a new default sample bank.
-    const bank = new SampleBank();
-
-    hitObject.samples = HitObjectHandler.getDefaultSamples(sampleData, hitSound, bank);
-
     if (hitObject.hitType & HitType.Slider) {
-      const slider = hitObject as SlidableObject;
-
-      const nodeData = extras.splice(3, 5);
-
-      // One node for each repeat + the start and end nodes
-      const nodes = slider.repeats + 2 || 2;
-
-      slider.nodeSamples = HitObjectHandler.getNodeSamples(nodeData, nodes, hitSound, bank);
+      return HitObjectHandler.addSliderExtras(data, hitObject as SlidableObject);
     }
-    else if (hitObject.hitType & HitType.Hold) {
-      const hold = hitObject as HoldableObject;
 
-      hold.nodeSamples = [hold.samples];
+    if (hitObject.hitType & HitType.Spinner) {
+      return HitObjectHandler.addSpinnerExtras(data, hitObject as SpinnableObject, offset);
+    }
+
+    if (hitObject.hitType & HitType.Hold) {
+      return HitObjectHandler.addHoldExtras(data, hitObject as HoldableObject, offset);
+    }
+
+    if (data.length > 0) {
+      const sampleBank = HitObjectHandler.getSampleBank(data[0]);
+
+      hitObject.samples = this.convertSoundType(hitObject.hitSound, sampleBank);
     }
   }
 
@@ -134,7 +82,7 @@ export abstract class HitObjectHandler {
    * @param slider A parsed slider.
    */
   static addSliderExtras(extras: string[], slider: SlidableObject): void {
-    // curveType|curvePoints,slides,length,edgeSounds,edgeSets
+    // curveType|curvePoints,slides,length,edgeSounds,edgeSets,hitSample
 
     const pathString = extras[0];
     const offset = slider.startPosition;
@@ -152,17 +100,16 @@ export abstract class HitObjectHandler {
     slider.path.controlPoints = HitObjectHandler.convertPathString(pathString, offset);
     slider.path.curveType = slider.path.controlPoints[0].type as PathType;
 
-    const MAX_COORDINATE_VALUE = 131072;
+    if (extras.length > 2) {
+      const length = Parsing.parseFloat(extras[2], Parsing.MAX_COORDINATE_VALUE);
 
-    if (parseFloat(extras[2]) < -MAX_COORDINATE_VALUE) {
-      throw new Error('Value is too low!');
+      slider.path.expectedDistance = Math.max(0, length);
     }
 
-    if (parseFloat(extras[2]) > MAX_COORDINATE_VALUE) {
-      throw new Error('Value is too high!');
-    }
+    const sampleBank = this.getSampleBank(extras[5]);
 
-    slider.path.expectedDistance = Math.max(0, parseFloat(extras[2])) || 0;
+    slider.samples = this.convertSoundType(slider.hitSound, sampleBank);
+    slider.nodeSamples = this.getSliderNodeSamples(extras, slider, sampleBank);
   }
 
   /**
@@ -176,7 +123,11 @@ export abstract class HitObjectHandler {
 
     spinner.endTime = Parsing.parseInt(extras[0]) + offset;
 
-    spinner.endTime = parseInt(extras[0]) + offset;
+    if (extras.length > 1) {
+      const sampleBank = this.getSampleBank(extras[1]);
+
+      spinner.samples = this.convertSoundType(spinner.hitSound, sampleBank);
+    }
   }
 
   /**
@@ -186,9 +137,95 @@ export abstract class HitObjectHandler {
    * @param offset The offset to apply to all time values.
    */
   static addHoldExtras(extras: string[], hold: HoldableObject, offset: number): void {
-    // endTime
+    // endTime:hitSample
 
-    hold.endTime = parseInt(extras[0]) + offset;
+    hold.endTime = hold.startTime;
+
+    if (extras.length > 0 && extras[0]) {
+      const ss = extras[0].split(':');
+
+      hold.endTime = Math.max(hold.endTime, Parsing.parseFloat(ss[0])) + offset;
+
+      const sampleBank = this.getSampleBank(ss.slice(1).join(':'));
+
+      hold.samples = this.convertSoundType(hold.hitSound, sampleBank);
+    }
+  }
+
+  /**
+   * Get sample bank from hit sample data.
+   * @param hitSample The hit sample data.
+   */
+  static getSampleBank(hitSample?: string): SampleBank {
+    const bankInfo = new SampleBank();
+
+    if (hitSample) {
+      this.readCustomSampleBanks(hitSample, bankInfo);
+    }
+
+    return bankInfo;
+  }
+
+  static getSliderNodeSamples(extras: string[], slider: SlidableObject, bankInfo: SampleBank): HitSample[][] {
+    /**
+     * One node for each repeat + the start and end nodes.
+     */
+    const nodes = slider.repeats + 2;
+
+    /**
+     * Populate node sample bank infos with the default hit object sample bank.
+     */
+    const nodeBankInfos: SampleBank[] = [];
+
+    for (let i = 0; i < nodes; ++i) {
+      nodeBankInfos.push(bankInfo.clone());
+    }
+
+    /**
+     * Read any per-node sample banks.
+     */
+    if (extras.length > 4 && extras[4].length > 0) {
+      const sets = extras[4].split('|');
+
+      for (let i = 0; i < nodes; ++i) {
+        if (i >= sets.length) break;
+
+        this.readCustomSampleBanks(sets[i], nodeBankInfos[i]);
+      }
+    }
+
+    /**
+     * Populate node sound types with the default hit object sound type.
+     */
+    const nodeSoundTypes: HitSound[] = [];
+
+    for (let i = 0; i < nodes; ++i) {
+      nodeSoundTypes.push(slider.hitSound);
+    }
+
+    /**
+     * Read any per-node sound types.
+     */
+    if (extras.length > 3 && extras[3].length > 0) {
+      const adds = extras[3].split('|');
+
+      for (let i = 0; i < nodes; ++i) {
+        if (i >= adds.length) break;
+
+        nodeSoundTypes[i] = parseInt(adds[i]) || HitSound.None;
+      }
+    }
+
+    /**
+     * Generate the final per-node samples.
+     */
+    const nodeSamples: HitSample[][] = [];
+
+    for (let i = 0; i < nodes; i++) {
+      nodeSamples.push(this.convertSoundType(nodeSoundTypes[i], nodeBankInfos[i]));
+    }
+
+    return nodeSamples;
   }
 
   /**
@@ -385,205 +422,111 @@ export abstract class HitObjectHandler {
     }
   }
 
-  /**
-   * Rewrites a sample bank with hit sample data.
-   * @param line A line with hit sample data.  
-   * @param bank A sample bank.
-   * @returns The link to the same sample bank.
-   */
-  static rewriteSampleBank(line: string, bank: SampleBank): SampleBank {
-    // normalSet:additionSet:index:volume:filename
+  static readCustomSampleBanks(hitSample: string, bankInfo: SampleBank): void {
+    if (!hitSample) return;
 
-    const set = line.split(':').map((v) => v.trim());
+    const split = hitSample.split(':');
 
-    switch (set.length) {
-      case 5:
-        bank.filename = set[4];
-      case 4:
-        bank.volume = parseInt(set[3]);
-      case 3:
-        bank.customIndex = parseInt(set[2]);
+    bankInfo.normalSet = Parsing.parseInt(split[0]);
+    bankInfo.additionSet = Parsing.parseInt(split[1]);
+
+    if (bankInfo.additionSet === SampleSet.None) {
+      bankInfo.additionSet = bankInfo.normalSet;
     }
 
-    const normalSet = parseInt(set[0]);
-    const additionSet = parseInt(set[1]);
+    if (split.length > 2) {
+      bankInfo.customIndex = Parsing.parseInt(split[2]);
+    }
 
-    bank.normalSet = normalSet;
-    bank.additionSet = additionSet || normalSet;
+    if (split.length > 3) {
+      bankInfo.volume = Math.max(0, Parsing.parseInt(split[3]));
+    }
 
-    return bank;
+    bankInfo.filename = split.length > 4 ? split[4] : '';
   }
 
-  /**
-   * Creates a list of basic hit object samples.
-   * @param rewritable A line with rewritable hit sample data.
-   * @param hitSound Hit sound data.
-   * @param bank A sample bank.
-   * @returns A new list of samples.
-   */
-  static getDefaultSamples(
-    rewritable: string,
-    hitSound: HitSound,
-    bank: SampleBank,
-  ): HitSample[] {
-    // Rewrite default sample bank.
-    HitObjectHandler.rewriteSampleBank(rewritable, bank);
+  static convertSoundType(type: HitSound, bankInfo: SampleBank): HitSample[] {
+    // TODO: This should return the normal SampleInfos if the specified sample file isn't found, but that's a pretty edge-case scenario
+    if (bankInfo.filename) {
+      const sample = new HitSample();
 
-    return HitObjectHandler.getHitSamples(hitSound, bank);
-  }
+      sample.filename = bankInfo.filename;
+      sample.volume = bankInfo.volume;
 
-  /**
-   * Creates a list of hit samples for every node of a hit object.
-   * @param rewritable A list of rewritable data for every node.
-   * @param nodes Amount of nodes.
-   * @param hitSound Hit sound data.
-   * @param bank A sample bank.
-   * @returns A new list of node samples.
-   */
-  static getNodeSamples(
-    rewritable: string[],
-    nodes: number,
-    hitSound: HitSound,
-    bank: SampleBank,
-  ): HitSample[][] {
-    /**
-     * Populate node sound types and node sample banks 
-     * with the default hit object values.
-     */
-    const nodeSounds: HitSound[] = [];
-    const nodeBanks: SampleBank[] = [];
-
-    for (let i = 0; i < nodes; ++i) {
-      nodeSounds.push(hitSound);
-      nodeBanks.push(bank.clone());
+      return [ sample ];
     }
 
-    const adds = (rewritable[0] && rewritable[0].split('|')) || [];
-    const sets = (rewritable[1] && rewritable[1].split('|')) || [];
+    const soundTypes: HitSample[] = [ new HitSample() ];
 
-    // Read any per-node sample banks & sound types.
-    for (let i = 0; i < nodes; ++i) {
-      if (i >= adds.length && i >= sets.length) {
-        break;
-      }
-
-      if (i < adds.length) {
-        nodeSounds[i] = parseInt(adds[i]);
-      }
-
-      if (i < sets.length) {
-        HitObjectHandler.rewriteSampleBank(sets[i], nodeBanks[i]);
-      }
-    }
-
-    // Generate the final per-node samples
-    const nodeSamples: HitSample[][] = [];
-    let samples: HitSample[];
-
-    for (let i = 0; i < nodes; ++i) {
-      samples = HitObjectHandler.getHitSamples(nodeSounds[i], nodeBanks[i]);
-
-      nodeSamples.push(samples);
-    }
-
-    return nodeSamples;
-  }
-
-  /**
-   * Creates a list of hit samples based on sample bank and hit sound data. 
-   * @param hitSound Hit sound data.
-   * @param bank A sample bank.
-   * @returns A list of hit samples.
-   */
-  static getHitSamples(hitSound: HitSound, bank: SampleBank): HitSample[] {
-    const samples: HitSample[] = [];
-
-    if (bank.filename) {
-      const hitSample = new HitSample();
-
-      hitSample.filename = bank.filename;
-      hitSample.volume = bank.volume;
-
-      samples.push(hitSample);
-
-      return samples;
-    }
-
-    samples.push(HitObjectHandler.getNormalSample(hitSound, bank));
-
-    if (hitSound & HitSound.Finish) {
-      samples.push(HitObjectHandler.getAdditionSample(HitSound.Finish, bank));
-    }
-
-    if (hitSound & HitSound.Whistle) {
-      samples.push(HitObjectHandler.getAdditionSample(HitSound.Whistle, bank));
-    }
-
-    if (hitSound & HitSound.Clap) {
-      samples.push(HitObjectHandler.getAdditionSample(HitSound.Clap, bank));
-    }
-
-    return samples;
-  }
-
-  /**
-   * Creates a new hit sample based on the sample bank and hit sound type.
-   * This is only used with the normal hit sound.
-   * @param hitSound Hit sound data.
-   * @param bank A sample bank.
-   * @returns A new hit sample.
-   */
-  static getNormalSample(hitSound: HitSound, bank: SampleBank): HitSample {
-    const hitSample = new HitSample();
-
-    const sampleSetName = SampleSet[bank.normalSet];
-
-    if (sampleSetName) {
-      hitSample.sampleSet = sampleSetName;
-    }
-
-    hitSample.volume = bank.volume;
-    hitSample.customIndex = bank.customIndex;
-
-    if (bank.customIndex >= 2) {
-      hitSample.suffix = bank.customIndex.toString();
-    }
+    soundTypes[0].hitSound = HitSound[HitSound.Normal];
+    soundTypes[0].sampleSet = SampleSet[bankInfo.normalSet];
 
     /**
-     * If the sound type doesn't have the Normal flag set,
+     * if the sound type doesn't have the Normal flag set, 
      * attach it anyway as a layered sample.
      * None also counts as a normal non-layered sample.
      */
-    hitSample.isLayered =
-      hitSound !== HitSound.None && !(hitSound & HitSound.Normal);
+    soundTypes[0].isLayered = type !== HitSound.None && !(type & HitSound.Normal);
 
-    return hitSample;
+    if (type & HitSound.Finish) {
+      const sample = new HitSample();
+
+      sample.hitSound = HitSound[HitSound.Finish];
+      soundTypes.push(sample);
+    }
+
+    if (type & HitSound.Whistle) {
+      const sample = new HitSample();
+
+      sample.hitSound = HitSound[HitSound.Whistle];
+      soundTypes.push(sample);
+    }
+
+    if (type & HitSound.Clap) {
+      const sample = new HitSample();
+
+      sample.hitSound = HitSound[HitSound.Clap];
+      soundTypes.push(sample);
+    }
+
+    soundTypes.forEach((sound, i) => {
+      sound.sampleSet = i !== 0
+        ? SampleSet[bankInfo.additionSet]
+        : SampleSet[bankInfo.normalSet];
+
+      sound.volume = bankInfo.volume;
+      sound.customIndex = 0;
+
+      if (bankInfo.customIndex >= 2) {
+        sound.customIndex = bankInfo.customIndex;
+      }
+    });
+
+    return soundTypes;
   }
 
   /**
-   * Creates a new hit sample based on the sample bank and hit sound type.
-   * This is used with all types of the hit sound except normal.
-   * @param hitSound Hit sound data.
-   * @param bank A sample bank.
-   * @returns A new hit sample.
+   * Creates a new parsed hit object based on hit type.
+   * @param hitType Hit type data.
+   * @returns A new parsed hit object.
    */
-  static getAdditionSample(hitSound: HitSound, bank: SampleBank): HitSample {
-    const hitSample = new HitSample();
-
-    const hitSoundName = HitSound[hitSound];
-    const sampleSetName = SampleSet[bank.additionSet];
-
-    if (hitSoundName) {
-      hitSample.hitSound = hitSoundName;
+  static createHitObject(hitType: HitType): HitObject {
+    if (hitType & HitType.Normal) {
+      return new HittableObject();
     }
 
-    if (sampleSetName) {
-      hitSample.sampleSet = sampleSetName;
+    if (hitType & HitType.Slider) {
+      return new SlidableObject();
     }
 
-    hitSample.volume = bank.volume;
-    hitSample.customIndex = bank.customIndex;
+    if (hitType & HitType.Spinner) {
+      return new SpinnableObject();
+    }
 
-    return hitSample;
+    if (hitType & HitType.Hold) {
+      return new HoldableObject();
+    }
+
+    throw new Error(`Unknown hit object type: ${hitType}!`);
   }
 }
