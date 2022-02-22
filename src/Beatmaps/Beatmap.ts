@@ -86,7 +86,7 @@ export class Beatmap implements IBeatmap {
   }
 
   /**
-   * Beatmap length in milliseconds.
+   * Playable beatmap length in milliseconds.
    */
   get length(): number {
     if (!this.hitObjects.length) {
@@ -95,11 +95,28 @@ export class Beatmap implements IBeatmap {
 
     const first = this.hitObjects[0];
     const last = this.hitObjects[this.hitObjects.length - 1];
+    const durationLast = last as unknown as IHasDuration;
 
     const startTime = first.startTime;
-    const endTime = (last as unknown as IHasDuration).endTime || last.startTime;
+    const endTime = durationLast.endTime || last.startTime;
 
     return (endTime - startTime) / this.difficulty.clockRate;
+  }
+
+  /**
+   * Total beatmap length in milliseconds.
+   */
+  get totalLength(): number {
+    if (!this.hitObjects.length) {
+      return 0;
+    }
+
+    const last = this.hitObjects[this.hitObjects.length - 1];
+    const durationObject = last as unknown as IHasDuration;
+
+    const endTime = durationObject.endTime || last.startTime;
+
+    return endTime / this.difficulty.clockRate;
   }
 
   /**
