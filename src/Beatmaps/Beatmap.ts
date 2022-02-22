@@ -99,7 +99,7 @@ export class Beatmap implements IBeatmap {
     const startTime = first.startTime;
     const endTime = (last as unknown as IHasDuration).endTime || last.startTime;
 
-    return endTime - startTime;
+    return (endTime - startTime) / this.difficulty.clockRate;
   }
 
   /**
