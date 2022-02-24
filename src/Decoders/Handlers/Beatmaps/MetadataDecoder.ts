@@ -4,7 +4,7 @@ import { Parsing } from '../../../Utils';
 /**
  * A decoder for beatmap metadata.
  */
-export abstract class MetadataHandler {
+export abstract class MetadataDecoder {
   /**
    * Decodes beatmap metadata line and adds metadata to a beatmap.
    * @param line Metadata section line.

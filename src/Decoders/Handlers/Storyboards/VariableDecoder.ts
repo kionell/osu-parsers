@@ -1,7 +1,7 @@
 /**
  * A decoder for storyboard variables.
  */
-export abstract class VariableHandler {
+export abstract class VariableDecoder {
   /**
    * Decodes all variables from storyboard lines.
    * @param lines Storyboard lines.

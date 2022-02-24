@@ -4,7 +4,7 @@ import { Parsing } from '../../../Utils';
 /**
  * A decoder for beatmap difficulty.
  */
-export abstract class DifficultyHandler {
+export abstract class DifficultyDecoder {
   /**
    * Decodes beatmap difficulty line and adds difficulty data to a beatmap.
    * @param line Difficulty section line.

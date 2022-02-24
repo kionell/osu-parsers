@@ -4,7 +4,7 @@ import { Parsing } from '../../../Utils';
 /**
  * A decoder for general info of a beatmap.
  */
-export abstract class GeneralHandler {
+export abstract class GeneralDecoder {
   /**
    * Decodes beatmap general line and adds general info to a beatmap.
    * @param line General section line.

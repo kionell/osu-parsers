@@ -4,7 +4,7 @@ import { Parsing } from '../../../Utils';
 /**
  * A decoder for beatmap events.
  */
-export abstract class EventHandler {
+export abstract class EventDecoder {
   /**
    * Decodes event line.
    * If line contains any beatmap events, then it is added to the beatmap.

@@ -23,7 +23,7 @@ import { Parsing } from '../../../Utils';
 /**
  * A decoder for beatmap hit objects.
  */
-export abstract class HitObjectHandler {
+export abstract class HitObjectDecoder {
   /**
    * Decodes a hit object line to get a parsed hit object.
    * @param line A hit object line.
@@ -37,7 +37,7 @@ export abstract class HitObjectHandler {
 
     const hitType = Parsing.parseInt(data[3]);
 
-    const hitObject = HitObjectHandler.createHitObject(hitType);
+    const hitObject = HitObjectDecoder.createHitObject(hitType);
 
     hitObject.startX = Parsing.parseInt(data[0], Parsing.MAX_COORDINATE_VALUE);
     hitObject.startY = Parsing.parseInt(data[1], Parsing.MAX_COORDINATE_VALUE);
@@ -45,7 +45,7 @@ export abstract class HitObjectHandler {
     hitObject.hitType = hitType;
     hitObject.hitSound = Parsing.parseInt(data[4]);
 
-    HitObjectHandler.addExtras(data.slice(5), hitObject, offset);
+    HitObjectDecoder.addExtras(data.slice(5), hitObject, offset);
 
     beatmap.hitObjects.push(hitObject);
   }
@@ -58,19 +58,19 @@ export abstract class HitObjectHandler {
    */
   static addExtras(data: string[], hitObject: HitObject, offset: number): void {
     if (hitObject.hitType & HitType.Slider) {
-      return HitObjectHandler.addSliderExtras(data, hitObject as SlidableObject);
+      return HitObjectDecoder.addSliderExtras(data, hitObject as SlidableObject);
     }
 
     if (hitObject.hitType & HitType.Spinner) {
-      return HitObjectHandler.addSpinnerExtras(data, hitObject as SpinnableObject, offset);
+      return HitObjectDecoder.addSpinnerExtras(data, hitObject as SpinnableObject, offset);
     }
 
     if (hitObject.hitType & HitType.Hold) {
-      return HitObjectHandler.addHoldExtras(data, hitObject as HoldableObject, offset);
+      return HitObjectDecoder.addHoldExtras(data, hitObject as HoldableObject, offset);
     }
 
     if (data.length > 0) {
-      const sampleBank = HitObjectHandler.getSampleBank(data[0]);
+      const sampleBank = HitObjectDecoder.getSampleBank(data[0]);
 
       hitObject.samples = this.convertSoundType(hitObject.hitSound, sampleBank);
     }
@@ -97,7 +97,7 @@ export abstract class HitObjectHandler {
       throw new Error('Repeat count is way too high');
     }
 
-    slider.path.controlPoints = HitObjectHandler.convertPathString(pathString, offset);
+    slider.path.controlPoints = HitObjectDecoder.convertPathString(pathString, offset);
     slider.path.curveType = slider.path.controlPoints[0].type as PathType;
 
     if (extras.length > 2) {
@@ -269,7 +269,7 @@ export abstract class HitObjectHandler {
        * The start of the next segment is the index after the type descriptor.
        */
       const endPoint = endIndex < pathSplit.length - 1 ? pathSplit[endIndex + 1] : null;
-      const convertedPoints = HitObjectHandler.convertPoints(points, endPoint, isFirst, offset);
+      const convertedPoints = HitObjectDecoder.convertPoints(points, endPoint, isFirst, offset);
 
       for (const point of convertedPoints) {
         controlPoints.push(...point);
@@ -281,7 +281,7 @@ export abstract class HitObjectHandler {
 
     if (endIndex > startIndex) {
       const points = pathSplit.slice(startIndex, endIndex);
-      const convertedPoints = HitObjectHandler.convertPoints(points, null, isFirst, offset);
+      const convertedPoints = HitObjectDecoder.convertPoints(points, null, isFirst, offset);
 
       for (const point of convertedPoints) {
         controlPoints.push(...point);
@@ -330,7 +330,7 @@ export abstract class HitObjectHandler {
       vertices[vertices.length - 1] = readPoint(endPoint, offset);
     }
 
-    let type: PathType = HitObjectHandler.convertPathType(points[0]);
+    let type: PathType = HitObjectDecoder.convertPathType(points[0]);
 
     // Edge-case rules (to match stable).
     if (type === PathType.PerfectCurve) {

@@ -14,8 +14,8 @@ import {
 } from 'osu-classes';
 
 import {
-  StoryboardHandler,
-  VariableHandler,
+  StoryboardDataDecoder,
+  VariableDecoder,
 } from './Handlers';
 
 /**
@@ -97,7 +97,7 @@ export class StoryboardDecoder {
     this._command = null;
 
     // Get all variables before processing.
-    storyboard.variables = VariableHandler.getVariables(this._lines);
+    storyboard.variables = VariableDecoder.getVariables(this._lines);
 
     // Parse storyboard lines.
     this._lines.forEach((line) => this._parseLine(line, storyboard));
@@ -113,7 +113,7 @@ export class StoryboardDecoder {
     if (line.startsWith('[') && line.endsWith(']')) return;
 
     // Preprocess variables in the current line.
-    line = VariableHandler.preProcess(line, storyboard.variables);
+    line = VariableDecoder.preProcess(line, storyboard.variables);
 
     let depth = 0;
 
@@ -145,7 +145,7 @@ export class StoryboardDecoder {
   }
 
   private _parseDepth0(line: string, storyboard: Storyboard): void {
-    this._element = StoryboardHandler.handleElement(line);
+    this._element = StoryboardDataDecoder.handleElement(line);
 
     // Force push Samples to their own layer.
     if (this._element instanceof StoryboardSample) {
@@ -161,23 +161,23 @@ export class StoryboardDecoder {
     // Compound command or default command
     switch (line[0]) {
       case CompoundType.Loop:
-        this._compound = StoryboardHandler.handleLoop(line);
+        this._compound = StoryboardDataDecoder.handleLoop(line);
         (this._element as IHasCommands).loops.push(this._compound);
         break;
 
       case CompoundType.Trigger:
-        this._compound = StoryboardHandler.handleTrigger(line);
+        this._compound = StoryboardDataDecoder.handleTrigger(line);
         (this._element as IHasCommands).triggers.push(this._compound);
         break;
 
       default:
-        this._command = StoryboardHandler.handleCommand(line);
+        this._command = StoryboardDataDecoder.handleCommand(line);
         (this._element as IHasCommands).commands.push(this._command);
     }
   }
 
   private _parseDepth2(line: string): void {
-    this._command = StoryboardHandler.handleCommand(line);
+    this._command = StoryboardDataDecoder.handleCommand(line);
     (this._compound as Compound).commands.push(this._command);
   }
 }

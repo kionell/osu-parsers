@@ -17,7 +17,7 @@ import { Parsing } from '../../../Utils';
 /**
  * A decoder for beatmap control points.
  */
-export abstract class TimingPointHandler {
+export abstract class TimingPointDecoder {
   /**
    * The time for the next flush of control points.
    */
@@ -47,7 +47,7 @@ export abstract class TimingPointHandler {
   static handleLine(line: string, beatmap: Beatmap, offset: number): void {
     // Time,beatLength,meter,sampleSet,sampleIndex,volume,uninherited,effects
 
-    TimingPointHandler.controlPoints = beatmap.controlPoints;
+    TimingPointDecoder.controlPoints = beatmap.controlPoints;
 
     const data = line.split(',');
 
@@ -92,7 +92,7 @@ export abstract class TimingPointHandler {
       timingPoint.beatLength = beatLength;
       timingPoint.timeSignature = timeSignature;
 
-      TimingPointHandler.addControlPoint(timingPoint, startTime, true);
+      TimingPointDecoder.addControlPoint(timingPoint, startTime, true);
     }
 
     const difficultyPoint = new DifficultyPoint();
@@ -100,7 +100,7 @@ export abstract class TimingPointHandler {
     difficultyPoint.bpmMultiplier = bpmMultiplier;
     difficultyPoint.speedMultiplier = speedMultiplier;
 
-    TimingPointHandler.addControlPoint(difficultyPoint, startTime, timingChange);
+    TimingPointDecoder.addControlPoint(difficultyPoint, startTime, timingChange);
 
     const effectPoint = new EffectPoint();
 
@@ -111,7 +111,7 @@ export abstract class TimingPointHandler {
       effectPoint.scrollSpeed = speedMultiplier;
     }
 
-    TimingPointHandler.addControlPoint(effectPoint, startTime, timingChange);
+    TimingPointDecoder.addControlPoint(effectPoint, startTime, timingChange);
 
     const samplePoint = new SamplePoint();
 
@@ -119,7 +119,7 @@ export abstract class TimingPointHandler {
     samplePoint.customIndex = customIndex;
     samplePoint.volume = volume;
 
-    TimingPointHandler.addControlPoint(samplePoint, startTime, timingChange);
+    TimingPointDecoder.addControlPoint(samplePoint, startTime, timingChange);
   }
 
   /**
@@ -130,25 +130,25 @@ export abstract class TimingPointHandler {
    * @param timingChange 
    */
   static addControlPoint(point: ControlPoint, time: number, timingChange: boolean): void {
-    if (time !== TimingPointHandler.pendingTime) {
-      TimingPointHandler.flushPendingPoints();
+    if (time !== TimingPointDecoder.pendingTime) {
+      TimingPointDecoder.flushPendingPoints();
     }
 
     timingChange
-      ? TimingPointHandler.pendingPoints.unshift(point)
-      : TimingPointHandler.pendingPoints.push(point);
+      ? TimingPointDecoder.pendingPoints.unshift(point)
+      : TimingPointDecoder.pendingPoints.push(point);
 
-    TimingPointHandler.pendingTime = time;
+    TimingPointDecoder.pendingTime = time;
   }
 
   /**
    * Adds control points to their own group.
    */
   static flushPendingPoints(): void {
-    const pendingTime = TimingPointHandler.pendingTime;
-    const pendingPoints = TimingPointHandler.pendingPoints;
-    const controlPoints = TimingPointHandler.controlPoints;
-    const pendingTypes = TimingPointHandler.pendingTypes;
+    const pendingTime = TimingPointDecoder.pendingTime;
+    const pendingPoints = TimingPointDecoder.pendingPoints;
+    const controlPoints = TimingPointDecoder.controlPoints;
+    const pendingTypes = TimingPointDecoder.pendingTypes;
 
     let i = pendingPoints.length;
 
@@ -165,7 +165,7 @@ export abstract class TimingPointHandler {
       controlPoints.add(pendingPoints[i], pendingTime);
     }
 
-    TimingPointHandler.pendingPoints = [];
-    TimingPointHandler.pendingTypes = [];
+    TimingPointDecoder.pendingPoints = [];
+    TimingPointDecoder.pendingTypes = [];
   }
 }

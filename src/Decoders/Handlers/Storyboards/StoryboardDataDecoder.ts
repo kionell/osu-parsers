@@ -31,7 +31,7 @@ import { Parsing } from '../../../Utils';
 /**
  * A decoder for storyboard elements, compounds and commands.
  */
-export abstract class StoryboardHandler {
+export abstract class StoryboardDataDecoder {
   /**
    * Decodes a storyboard line to get an element.
    * @param line Storyboard line.
@@ -244,7 +244,7 @@ export abstract class StoryboardHandler {
         break;
 
       default:
-        command = StoryboardHandler.handleParameterCommand(data);
+        command = StoryboardDataDecoder.handleParameterCommand(data);
     }
 
     command.easing = Parsing.parseInt(data[1]);
