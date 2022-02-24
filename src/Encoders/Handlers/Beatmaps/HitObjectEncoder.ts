@@ -40,7 +40,7 @@ export abstract class HitObjectEncoder {
        */
       const startPosition = new Vector2(
         position ? position.x : 256,
-        position ? position.y : 192
+        position ? position.y : 192,
       );
 
       if (beatmap.mode === 3) {
