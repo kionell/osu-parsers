@@ -35,21 +35,21 @@ export class BeatmapEncoder {
    * @param beatmap Beatmap for encoding.
    * @returns A string with encoded beatmap data.
    */
-  encodeToString(beatmap: IBeatmap): string {
+  encodeToString(beatmap?: IBeatmap): string {
+    if (!beatmap?.fileFormat) return '';
+
     const encoded: string[] = [];
 
-    if (beatmap.fileFormat) {
-      encoded.push(`osu file format v${beatmap.fileFormat}`);
+    encoded.push(`osu file format v${beatmap.fileFormat ?? 0}`);
 
-      encoded.push(GeneralEncoder.encodeGeneralSection(beatmap));
-      encoded.push(EditorEncoder.encodeEditorSection(beatmap));
-      encoded.push(MetadataEncoder.encodeMetadataSection(beatmap));
-      encoded.push(DifficultyEncoder.encodeDifficultySection(beatmap));
-      encoded.push(EventsEncoder.encodeEventsSection(beatmap));
-      encoded.push(TimingPointEncoder.encodeControlPoints(beatmap));
-      encoded.push(ColourEncoder.encodeColours(beatmap));
-      encoded.push(HitObjectEncoder.encodeHitObjects(beatmap));
-    }
+    encoded.push(GeneralEncoder.encodeGeneralSection(beatmap));
+    encoded.push(EditorEncoder.encodeEditorSection(beatmap));
+    encoded.push(MetadataEncoder.encodeMetadataSection(beatmap));
+    encoded.push(DifficultyEncoder.encodeDifficultySection(beatmap));
+    encoded.push(EventsEncoder.encodeEventsSection(beatmap));
+    encoded.push(TimingPointEncoder.encodeControlPoints(beatmap));
+    encoded.push(ColourEncoder.encodeColours(beatmap));
+    encoded.push(HitObjectEncoder.encodeHitObjects(beatmap));
 
     return encoded.filter((x) => x).join('\n\n');
   }
