@@ -126,19 +126,24 @@ export interface IBeatmapInfo {
   drainRate: number;
 
   /**
+   * Ruleset instance.
+   */
+  ruleset: IRuleset | null;
+
+  /**
    * The ruleset ID of this beatmap info.
    */
   rulesetId: number;
 
   /**
-   * Ruleset instance.
+   * Mods of this beatmap info.
    */
-  ruleset?: IRuleset;
+  mods: ModCombination | null;
 
   /**
-   * Mods of the play.
+   * Raw mods of this beatmap info.
    */
-  mods?: ModCombination;
+  rawMods: string | number;
 
   /**
    * Total star rating of the beatmap.
