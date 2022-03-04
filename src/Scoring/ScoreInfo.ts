@@ -143,6 +143,11 @@ export class ScoreInfo extends ScoreExtensions implements IScoreInfo {
   };
 
   /**
+   * Beatmap MD5 hash.
+   */
+  beatmapHashMD5: string | null = null;
+
+  /**
    * Creates a new instance of score information.
    * @param options The score information options.
    */
@@ -166,12 +171,14 @@ export class ScoreInfo extends ScoreExtensions implements IScoreInfo {
     cloned.maxCombo = this.maxCombo;
     cloned.rulesetId = this.rulesetId;
     cloned.passed = this.passed;
+    cloned.perfect = this.perfect;
     cloned.ruleset = this.ruleset;
     cloned.mods = this.mods;
     cloned.username = this.username;
     cloned.userId = this.userId;
     cloned.beatmap = this.beatmap;
     cloned.beatmapId = this.beatmapId;
+    cloned.beatmapHashMD5 = this.beatmapHashMD5;
     cloned.date = this.date;
 
     if (this.pp) cloned.pp = this.pp;
