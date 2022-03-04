@@ -39,14 +39,14 @@ export interface IScoreInfo {
   maxCombo: number;
 
   /**
-   * Ruleset ID of the play.
-   */
-  rulesetId: number;
-
-  /**
    * Whether the map was passed or not.
    */
   passed: boolean;
+
+  /**
+   * Perfect combo or not?
+   */
+  perfect: boolean;
 
   /**
    * Ruleset instance.
