@@ -1,9 +1,10 @@
+import { IReplay } from './IReplay';
 import { ReplayFrame } from './ReplayFrame';
 
 /**
  * A replay.
  */
-export class Replay {
+export class Replay implements IReplay {
   /**
    * osu! game version of this replay.
    */
