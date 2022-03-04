@@ -53,4 +53,8 @@ export class Replay implements IReplay {
 
     return cloned;
   }
+
+  equals(other: IReplay): boolean {
+    return this.hashMD5 === other.hashMD5;
+  }
 }
