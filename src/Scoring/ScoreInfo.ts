@@ -30,14 +30,14 @@ export class ScoreInfo extends ScoreExtensions implements IScoreInfo {
   maxCombo = 0;
 
   /**
-   * Ruleset ID of the play.
-   */
-  rulesetId = 0;
-
-  /**
    * Whether the map was passed or not.
    */
-  passed = false;
+  passed = true;
+
+  /**
+   * Perfect combo or not?
+   */
+  perfect = false;
 
   /**
    * Ruleset instance.
