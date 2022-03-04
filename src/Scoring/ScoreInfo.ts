@@ -1,33 +1,23 @@
+import { IHitStatistics } from './IHitStatistics';
+import { IScoreInfo } from './IScoreInfo';
+import { ScoreExtensions } from './ScoreExtensions';
 import { IBeatmapInfo } from '../Beatmaps';
 import { IRuleset } from '../Rulesets';
 import { ModCombination } from '../Mods';
-import { ScoreRank } from './Enums/ScoreRank';
-import { IHitStatistics } from './IHitStatistics';
-import { IScoreInfo } from './IScoreInfo';
 
 /**
  * A score information.
  */
-export class ScoreInfo implements IScoreInfo {
+export class ScoreInfo extends ScoreExtensions implements IScoreInfo {
   /**
    * A score ID.
    */
   id = 0;
 
   /**
-   * A rank of the play.
-   */
-  rank: keyof typeof ScoreRank = 'F';
-
-  /**
    * Total score of the play.
    */
   totalScore = 0;
-
-  /**
-   * Total accuracy of the play.
-   */
-  accuracy = 0;
 
   /**
    * The performance of the play.
@@ -110,6 +100,8 @@ export class ScoreInfo implements IScoreInfo {
    * @param options The score information options.
    */
   constructor(options: Partial<IScoreInfo> = {}) {
+    super();
+
     Object.assign(this, options);
   }
 
@@ -123,9 +115,7 @@ export class ScoreInfo implements IScoreInfo {
     const cloned = new ScoreInfo();
 
     cloned.id = this.id;
-    cloned.rank = this.rank;
     cloned.totalScore = this.totalScore;
-    cloned.accuracy = this.accuracy;
     cloned.maxCombo = this.maxCombo;
     cloned.rulesetId = this.rulesetId;
     cloned.passed = this.passed;
