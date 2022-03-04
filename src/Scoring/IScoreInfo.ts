@@ -51,12 +51,22 @@ export interface IScoreInfo {
   /**
    * Ruleset instance.
    */
-  ruleset?: IRuleset;
+  ruleset: IRuleset | null;
+
+  /**
+   * Ruleset ID of the play.
+   */
+  rulesetId: number;
 
   /**
    * Mods of the play.
    */
-  mods?: ModCombination;
+  mods: ModCombination | null;
+
+  /**
+   * Raw mods of the play.
+   */
+  rawMods: string | number;
 
   /**
    * Username of the player who set this play.
