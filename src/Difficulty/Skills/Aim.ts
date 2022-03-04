@@ -247,10 +247,6 @@ export class Aim extends StandardStrainSkill {
     return 1 - this._calcWideAngleBonus(angle);
   }
 
-  private _applyDiminishingExp(val: number): number {
-    return Math.pow(val, 0.99);
-  }
-
   private _strainDecay(ms: number): number {
     return Math.pow(this._strainDecayBase, ms / 1000);
   }
