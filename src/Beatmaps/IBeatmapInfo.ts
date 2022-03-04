@@ -81,6 +81,11 @@ export interface IBeatmapInfo {
   holdable: number;
 
   /**
+   * Beatmap total hits.
+   */
+  totalHits: number;
+
+  /**
    * Length of the beatmap in seconds.
    */
   length: number;
