@@ -122,19 +122,61 @@ export class BeatmapInfo implements IBeatmapInfo {
   drainRate = 0;
 
   /**
-   * The ruleset ID of this beatmap info.
-   */
-  rulesetId = 0;
-
-  /**
    * Ruleset instance.
    */
-  ruleset?: IRuleset;
+  private _ruleset: IRuleset | null = null;
+
+  get ruleset(): IRuleset | null {
+    return this._ruleset;
+  }
+
+  set ruleset(value: IRuleset | null) {
+    this._ruleset = value;
+    this._mods = this.ruleset?.createModCombination(this.rawMods) ?? null;
+  }
 
   /**
-   * Mods of the play.
+   * Ruleset ID of this beatmap info.
    */
-  mods?: ModCombination;
+  private _rulesetId = 0;
+
+  get rulesetId(): number {
+    return this.ruleset?.id ?? this._rulesetId;
+  }
+
+  set rulesetId(value: number) {
+    this._rulesetId = value;
+  }
+
+  /**
+   * Mods of this beatmap info.
+   */
+  private _mods: ModCombination | null = null;
+
+  get mods(): ModCombination | null {
+    return this._mods;
+  }
+
+  set mods(value: ModCombination | null) {
+    this._mods = value;
+    this._rawMods = value?.bitwise ?? 0;
+  }
+
+  /**
+   * Raw mods of this beatmap info.
+   */
+  private _rawMods: string | number = 0;
+
+  get rawMods(): string | number {
+    return this._rawMods;
+  }
+
+  set rawMods(value: string | number) {
+    if (this._rawMods === value) return;
+
+    this._rawMods = value;
+    this._mods = this.ruleset?.createModCombination(value) ?? null;
+  }
 
   /**
    * Total star rating of the beatmap.
@@ -197,7 +239,10 @@ export class BeatmapInfo implements IBeatmapInfo {
     return false;
   }
 
-  get totalObjects(): number {
+  /**
+   * Beatmap total hits.
+   */
+  get totalHits(): number {
     return this.hittable + this.slidable + this.spinnable + this.holdable;
   }
 }
