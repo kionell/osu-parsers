@@ -22,7 +22,7 @@ export class ScoreInfo extends ScoreExtensions implements IScoreInfo {
   /**
    * The performance of the play.
    */
-  pp?: number;
+  pp: number | null = null;
 
   /**
    * Max combo of the play.
@@ -145,7 +145,7 @@ export class ScoreInfo extends ScoreExtensions implements IScoreInfo {
   /**
    * Beatmap MD5 hash.
    */
-  beatmapHashMD5: string | null = null;
+  beatmapHashMD5 = '';
 
   /**
    * Creates a new instance of score information.

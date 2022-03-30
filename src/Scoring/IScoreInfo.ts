@@ -31,7 +31,7 @@ export interface IScoreInfo {
   /**
    * The performance of the play.
    */
-  pp?: number;
+  pp: number | null;
 
   /**
    * Max combo of the play.
@@ -101,7 +101,7 @@ export interface IScoreInfo {
   /**
    * Beatmap MD5 hash.
    */
-  beatmapHashMD5: string | null;
+  beatmapHashMD5: string;
 
   /**
    * Number of Gekis in standard, Max 300s in mania.
