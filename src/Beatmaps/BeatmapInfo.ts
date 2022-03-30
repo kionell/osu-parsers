@@ -3,7 +3,7 @@ import { ModCombination } from '../Mods';
 import { IRuleset } from '../Rulesets';
 
 /**
- * A beatmap inforamtion.
+ * A beatmap information.
  */
 export class BeatmapInfo implements IBeatmapInfo {
   /**
