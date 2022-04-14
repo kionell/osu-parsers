@@ -62,7 +62,7 @@ export class ManiaRuleset extends Ruleset {
    * @param input Mod bitwise or acronyms.
    * @returns A new mod combination.
    */
-  createModCombination(input: number | string): ManiaModCombination {
+  createModCombination(input?: number | string): ManiaModCombination {
     return new ManiaModCombination(input);
   }
 
