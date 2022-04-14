@@ -40,23 +40,47 @@ const ruleset = new ManiaRuleset();
 
 // This will create a new copy of a beatmap with applied osu!mania ruleset.
 // This method implicitly applies mod combination of 0.
-const maniaWithNoMod1 = ruleset.applyToBeatmap(parsed);
-
-// Another way to create osu!mania beatmap with no mods. 
-const maniaWithNoMod2 = ruleset.applyToBeatmapWithMods(parsed);
+const maniaWithNoMod = ruleset.applyToBeatmap(parsed);
 
 // Create mod combination and apply it to beatmap.
 const mods = ruleset.createModCombination(1337);
 const maniaWithMods = ruleset.applyToBeatmapWithMods(parsed, mods);
 
 // It will write osu!mania beatmap with no mods.
-encoder.encodeToPath(encodePath, maniaWithNoMod1);
+encoder.encodeToPath(encodePath, maniaWithNoMod);
 
 // It will write osu!mania beatmap with applied mods.
 encoder.encodeToPath(encodePath, maniaWithMods);
 ```
 
-## Example of difficulty calculation
+## Example of basic difficulty calculation
+
+```js
+import { BeatmapDecoder } from 'osu-parsers';
+import { ManiaRuleset } from 'osu-mania-stable';
+
+const decoder = new BeatmapDecoder();
+
+const decodePath = 'path/to/your/decoding/file.osu';
+
+// Get beatmap object.
+const parsed = decoder.decodeFromPath(decodePath);
+
+// Create a new osu!mania ruleset.
+const ruleset = new ManiaRuleset();
+
+// Create mod combination and apply it to beatmap.
+const mods = ruleset.createModCombination(1337); // HD, HR, FL, SD, HT
+
+// Create difficulty calculator for IBeatmap object.
+const difficultyCalculator = ruleset.createDifficultyCalculator(parsed);
+
+// You can pass any IBeatmap object to the difficulty calculator.
+// Difficulty calculator will implicitly create a new beatmap with osu!mania ruleset.
+const difficultyAttributes = difficultyCalculator.calculateWithMods(mods);
+```
+
+## Example of advanced difficulty calculation
 
 ```js
 import { BeatmapDecoder } from 'osu-parsers';
@@ -76,23 +100,23 @@ const ruleset = new ManiaRuleset();
 const mods = ruleset.createModCombination(1337); // HD, HR, FL, SD, HT
 const maniaWithMods = ruleset.applyToBeatmapWithMods(parsed, mods);
 
-// Create difficulty calculator for IBeatmap object.
+/**
+ * Any IBeatmap object can be used to create difficulty calculator. 
+ * Difficulty calculator implicitly applies osu!mania ruleset with no mods.
+ */
 const difficultyCalculator1 = ruleset.createDifficultyCalculator(parsed);
+const difficultyAttributes1 = difficultyCalculator1.calculate(); // no mods.
+const moddedAttributes1 = difficultyCalculator1.calculateWithMods(mods); // with mods.
 
-// Create difficulty calculator for osu!mania beatmap.
+/**
+ * If you pass osu!mania beatmap then it will use its ruleset and mods.
+ */
 const difficultyCalculator2 = ruleset.createDifficultyCalculator(maniaWithMods);
-
-// Difficulty calculator will implicitly apply osu!mania ruleset to every beatmap.
-const difficultyAttributesWithNoMod1 = difficultyCalculator1.calculate();
-const difficultyAttributesWithNoMod2 = difficultyCalculator2.calculate();
-
-// Calculate difficulty with mods.
-const difficultyAttributesWithMods1 = difficultyCalculator1.calculateWithMods(mods);
-const difficultyAttributesWithMods2 = difficultyCalculator2.calculateWithMods(mods);
+const difficultyAttributes2 = difficultyCalculator2.calculate(); // with mods!
+const moddedAttributes2 = difficultyCalculator2.calculateWithMods(mods); // the same as previous line.
 
 // Get difficulty attributes for every mod combination.
-const difficultyAtts1 = [...difficultyCalculator1.calculateAll()];
-const difficultyAtts2 = [...difficultyCalculator2.calculateAll()];
+const allAttributes = [...difficultyCalculator1.calculateAll()];
 ```
 
 ## Example of performance calculation
@@ -119,32 +143,40 @@ const maniaBeatmap = ruleset.applyToBeatmap(parsed);
 const difficultyCalculator = ruleset.createDifficultyCalculator(maniaBeatmap);
 
 // Calculate difficulty attributes with mods.
-const mods = ruleset.createModCombination('NM');
+const mods = ruleset.createModCombination('NC');
 const difficultyAttributes = difficultyCalculator.calculateWithMods(mods);
 
 // Create new Score.
 const score = new ScoreInfo();
 
-// xi - Last Resort [[7K] Jakads' LASTING LEGACY]
-// Jakads + NM 1351 pp.
-score.beatmap = maniaBeatmap;
+// penoreri - Monochrome and Vivid [[7K] New Palettes]
+// Jakads + NC 1437.29 pp.
 score.mods = mods;
-score.totalScore = 989698;
-score.statistics.perfect = 2747;
-score.statistics.great = 608;
-score.statistics.good = 13;
-score.statistics.ok = 0;
-score.statistics.meh = 0;
-score.statistics.miss = 1;
+score.rulesetId = 3;
+score.totalScore = 975283;
+score.countGeki = 4288; // score.statistics.perfect
+score.count300 = 1180; // score.statistics.great
+score.countKatu = 57; // score.statistics.good
+score.count100 = 2; // score.statistics.ok
+score.count50 = 0; // score.statistics.meh
+score.countMiss = 6; // score.statistics.miss
 
 // Create performance calculator for osu!mania ruleset.
 const performanceCalculator = ruleset.createPerformanceCalculator(difficultyAttributes, score);
 
+// Calculate performance attributes for a map.
+const performanceAttributes = performanceCalculator.calculateAttributes();
+
 // Calculate total performance for a map.
 const totalPerformance = performanceCalculator.calculate();
 
-// 1350.7482145000727
-console.log(totalPerformance);
+/**
+ * Values may differ slightly from osu!stable 
+ * as performance calculations are based on osu!lazer code.
+ * The main goal of this library is to match 1:1 to osu!lazer values.
+ * If you want, you can compare the results with osu-tools.
+ */
+console.log(totalPerformance); // 1471.4490561186863
 ```
 
 ## Other projects
