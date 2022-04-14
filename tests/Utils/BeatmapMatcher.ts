@@ -6,7 +6,6 @@ import {
 import {
   ManiaBeatmap,
   ManiaDifficultyAttributes,
-  ManiaModCombination,
   ManiaRuleset,
 } from '../../src';
 
@@ -56,9 +55,9 @@ export class BeatmapMatcher {
       const beatmap = beatmaps.find((b) => b.mods.equals(atts.mods)) as ManiaBeatmap;
 
       const score = new ScoreInfo({
-        totalScore: atts.mods.all.reduce((score, mods) => score * mods.multiplier, 1e6),
+        totalScore: 1e6 * atts.scoreMultiplier,
         statistics: this._getStatistics(beatmap),
-        mods: atts.mods as ManiaModCombination,
+        mods: atts.mods,
       });
 
       const performanceCalculator = this._ruleset.createPerformanceCalculator(atts, score);
