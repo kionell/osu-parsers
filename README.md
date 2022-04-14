@@ -150,15 +150,16 @@ const difficultyAttributes = difficultyCalculator.calculate();
 const score = new ScoreInfo();
 
 // DragonForce - Extraction Zone [Tatsujin]
-// syaron105 + HDNC 659 pp.
+// syaron105 + HDNC 659.064 pp.
 score.mods = mods;
 score.maxCombo = 2472;
-score.statistics.great = 2445;
-score.statistics.ok = 27;
-score.statistics.miss = 0;
+score.rulesetId = 1;
+score.count300 = 2445; // score.statistics.great
+score.count100 = 27; // score.statistics.ok
+score.countMiss = 0; // score.statistics.miss
 
-score.accuracy = (score.statistics.great + score.statistics.ok / 2)
-  / (score.statistics.great + score.statistics.ok + score.statistics.miss);
+score.accuracy = (score.count300 + score.count100 / 2)
+  / (score.count300 + score.count100 + score.countMiss);
 
 // Create performance calculator for osu!taiko ruleset.
 const performanceCalculator = ruleset.createPerformanceCalculator(difficultyAttributes, score);
@@ -169,8 +170,13 @@ const performanceAttributes = performanceCalculator.calculateAttributes();
 // Calculate total performance for a map.
 const totalPerformance = performanceCalculator.calculate();
 
-// 659.0289505767282
-console.log(totalPerformance);
+/**
+ * Values may differ slightly from osu!stable 
+ * as performance calculations are based on osu!lazer code.
+ * The main goal of this library is to match 1:1 to osu!lazer values.
+ * If you want, you can compare the results with osu-tools.
+ */
+console.log(totalPerformance); // 659.0289505767282
 ```
 
 ## Other projects
