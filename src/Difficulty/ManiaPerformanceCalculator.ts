@@ -18,6 +18,7 @@ export class ManiaPerformanceCalculator extends PerformanceCalculator {
 
   private _mods: ManiaModCombination;
 
+  private _totalScore;
   private _countPerfect;
   private _countGreat;
   private _countGood;
@@ -28,7 +29,7 @@ export class ManiaPerformanceCalculator extends PerformanceCalculator {
   /**
    * Score after being scaled by non-difficulty-increasing mods.
    */
-  private _scaledScore;
+  private _scaledScore = 0;
 
   constructor(ruleset: IRuleset, attributes: DifficultyAttributes, score: IScoreInfo) {
     super(ruleset, attributes, score);
@@ -36,7 +37,7 @@ export class ManiaPerformanceCalculator extends PerformanceCalculator {
     this.attributes = attributes as ManiaDifficultyAttributes;
     this._mods = (score?.mods as ManiaModCombination) ?? new ManiaModCombination();
 
-    this._scaledScore = score.totalScore ?? 0;
+    this._totalScore = score.totalScore ?? 0;
     this._countPerfect = score.statistics.perfect ?? 0;
     this._countGreat = score.statistics.great ?? 0;
     this._countGood = score.statistics.good ?? 0;
@@ -50,7 +51,7 @@ export class ManiaPerformanceCalculator extends PerformanceCalculator {
       /**
        * Scale score up, so it's comparable to other keymods
        */
-      this._scaledScore *= 1.0 / this.attributes.scoreMultiplier;
+      this._scaledScore = this._totalScore * 1.0 / this.attributes.scoreMultiplier;
     }
 
     /**
