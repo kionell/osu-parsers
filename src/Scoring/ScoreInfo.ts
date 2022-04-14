@@ -1,6 +1,7 @@
+import { ScoreRank } from './Enums/ScoreRank';
 import { IHitStatistics } from './IHitStatistics';
 import { IScoreInfo } from './IScoreInfo';
-import { ScoreExtensions } from './ScoreExtensions';
+import { LegacyScoreExtensions } from './LegacyScoreExtensions';
 import { IBeatmapInfo } from '../Beatmaps';
 import { IRuleset } from '../Rulesets';
 import { ModCombination } from '../Mods';
@@ -8,7 +9,7 @@ import { ModCombination } from '../Mods';
 /**
  * A score information.
  */
-export class ScoreInfo extends ScoreExtensions implements IScoreInfo {
+export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
   /**
    * A score ID.
    */
@@ -38,6 +39,16 @@ export class ScoreInfo extends ScoreExtensions implements IScoreInfo {
    * Perfect combo or not?
    */
   perfect = false;
+
+  /**
+   * Score rank.
+   */
+  rank: keyof typeof ScoreRank = 'F';
+
+  /**
+   * Score accuracy.
+   */
+  accuracy = 0;
 
   /**
    * Ruleset instance.

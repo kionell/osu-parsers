@@ -6,5 +6,5 @@ export * from './IHitStatistics';
 export * from './IScore';
 export * from './IScoreInfo';
 export * from './Score';
-export * from './ScoreExtensions';
+export * from './LegacyScoreExtensions';
 export * from './ScoreInfo';
