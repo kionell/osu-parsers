@@ -92,7 +92,7 @@ export class BeatmapDecoder {
     if (parseSb) this._sbLines = [];
 
     if (data.constructor === Array) {
-      this._lines = data.map((l) => l.toString());
+      this._lines = data.filter((l) => typeof l === 'string');
     }
 
     if (!this._lines || !this._lines.length) {
