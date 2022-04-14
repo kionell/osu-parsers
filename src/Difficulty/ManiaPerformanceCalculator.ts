@@ -51,7 +51,7 @@ export class ManiaPerformanceCalculator extends PerformanceCalculator {
       /**
        * Scale score up, so it's comparable to other keymods
        */
-      this._scaledScore = this._totalScore * 1.0 / this.attributes.scoreMultiplier;
+      this._scaledScore = this._totalScore / this.attributes.scoreMultiplier;
     }
 
     /**
