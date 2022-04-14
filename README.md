@@ -19,14 +19,18 @@ Add a new dependency to your project via npm:
 npm install osu-parsers
 ```
 
-## Decoding
+## Beatmap decoding
 
-There are 3 ways to read data through decoders:
+Beatmap decoder is used to read .osu file and convert it to a plain Beatmap object.
+This decoder is fully synchronous and there is no support for async version right now.
+Note that beatmap decoder will return only parsed beatmap without max combo or mods!
+
+There are 3 ways to read data using this decoders:
 - via file path
 - via string
 - via array of split lines
 
-By default, beatmap decoding will decode storyboard as well. You can turn off this behavior by passing false as the second argument to any of the methods. If decoder fails to read your data then it will return default parsed beatmap object.
+By default, beatmap decoder will decode both beatmap and storyboard. If don't need to decode storyboard you can disable it by passing false as the second parameter to any of the methods.
 
 ### Example of beatmap decoding
 
@@ -42,6 +46,16 @@ const beatmap = decoder.decodeFromPath(path, shouldParseSb);
 console.log(beatmap) // Beatmap object.
 ```
 
+## Storyboard decoding
+
+Storyboard decoder is used to read .osb files and convert it to a Storyboard object.
+This decoder is also fully synchronous with no async support at all.
+
+As in beatmap decoder, there are 3 ways to decode your .osb files:
+- via file path
+- via string
+- via array of split lines
+
 ### Example of storyboard decoding
 
 ```js
@@ -55,13 +69,41 @@ const storyboard = decoder.decodeFromPath(path);
 console.log(storyboard); // Storyboard object.
 ```
 
+## Score & replay decoding
+
+Score decoder is used to decode .osr files and convert them to a Score object.
+Score object contains score information and replay data.
+This decoder is based on external lzma library and works asynchronously.
+
+There are 2 ways to read data through this decoder:
+- via string
+- via buffer
+
+By default, score decoder will decode both score information and replay. If don't need to decode replay you can disable it by passing false as the second parameter to any of the methods.
+
+### Example of score & replay decoding
+
+```js
+import { ScoreDecoder } from 'osu-parsers'
+
+const path = 'path/to/your/file.osr';
+const parseReplay = true; // This is optional.
+
+const decoder = new ScoreDecoder();
+
+decoder.decodeFromPath(path, parseReplay)
+  .then((score) => {
+    console.log(score.info); // ScoreInfo object.
+    console.log(score.replay); // Replay object or null.
+  });
+```
+
 ## Encoding
 
-Encoding can be done in 2 ways:
-- Encoding to file
-- Encoding to string
+All objects parsed by these decoders can easily be stringified and written to the files.
+Note that encoders will write object data without any changes. For example, if you try to encode beatmap with applied mods, it will write modded values!
 
-When the encoding is complete, the finished files can be used inside the game as usual.
+When encoding is complete you can import resulting files to the game.
 
 ### Example of beatmap encoding
 
@@ -80,7 +122,11 @@ const beatmap = decoder.decodeFromPath(decodePath, shouldParseSb);
 
 const encodePath = 'path/to/your/encoding/file.osu';
 
-encoder.encodeToPath(encodePath, beatmap); 
+// Write IBeatmap object to an .osu file.
+encoder.encodeToPath(encodePath, beatmap);
+
+// Encode IBeatmap object to a string.
+const stringified = encoder.encodeToString(storyboard);
 ```
 
 ### Example of storyboard encoding
@@ -99,12 +145,50 @@ const storyboard = decoder.decodeFromPath(decodePath);
 
 const encodePath = 'path/to/your/encoding/file.osb';
 
-encoder.encodeToPath(encodePath, storyboard); 
+// Write Storyboard object to an .osb file.
+encoder.encodeToPath(encodePath, storyboard);
+
+// Encode Storyboard object to a string.
+const stringified = encoder.encodeToString(storyboard);
+```
+
+### Example of score & replay encoding
+
+```js
+import { ScoreDecoder, ScoreEncoder } from 'osu-parsers'
+
+const decodePath = 'path/to/your/decoding/file.osr';
+
+const decoder = new StoryboardDecoder();
+const encoder = new StoryboardEncoder();
+
+const score = decoder.decodeFromPath(decodePath);
+
+// Do your stuff with score info and replay...
+
+const encodePath = 'path/to/your/encoding/file.osr';
+
+// Write IScore object to an .osr file.
+encoder.encodeToPath(encodePath, score)
+  .then(() => {
+    // Do something after .osr encoding...
+  }); 
+
+// Encode IScore object to a buffer.
+encoder.encodeToBuffer(score)
+  .then((buffer) => {
+    // Do something with .osr file buffer...
+  });
 ```
 
 ## Rulesets
 
-You always should apply one of the rulesets to your parsed beatmaps. There are 4 basic rulesets in total that support parsed beatmaps from this decoder. If necessary, you can always write your own ruleset using the classes from the [osu-classes](https://github.com/kionell/osu-classes.git) project. By applying a ruleset to a parsed beatmap, you get the ability to apply mods, calculate max combo and convert maps to other game modes.
+This library by itself doesn't provide any tools for difficulty and performance calculation!!!!
+If you are looking for something related to this, then rulesets may come in handy for you.
+Rulesets are a separate libraries based on the classes from the [osu-classes](https://github.com/kionell/osu-classes.git) project. They allow you to work with gamemode specific stuff as difficulty and performance, mods and max combo calculation. Because of the shared logic between all of the rulesets they are compatible between each other. If you want, you can even write your own custom ruleset!
+The great thing about all this stuff is a beatmap conversion. Any beatmap can be used with any ruleset library as long as they implement the same interfaces.
+
+There are 4 basic rulesets that support parsed beatmaps from this decoder:
 
 - [osu-standard-stable](https://github.com/kionell/osu-standard-stable.git) - The osu!std ruleset based on the osu!lazer source code.
 - [osu-taiko-stable](https://github.com/kionell/osu-taiko-stable.git) - The osu!taiko ruleset based on the osu!lazer source code.
