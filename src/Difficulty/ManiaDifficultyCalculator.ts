@@ -93,7 +93,7 @@ export class ManiaDifficultyCalculator extends DifficultyCalculator {
 
     attributes.mods = mods;
     attributes.greatHitWindow = Math.ceil(this._getHitWindow300(mods) / clockRate);
-    attributes.scoreMultiplier = mods.multiplier;
+    attributes.scoreMultiplier = this._getScoreMultiplier(mods);
     attributes.maxCombo = (beatmap as ManiaBeatmap).maxCombo;
 
     return attributes;
@@ -179,5 +179,29 @@ export class ManiaDifficultyCalculator extends DifficultyCalculator {
     }
 
     return applyModAdjustments(47);
+  }
+
+  private _getScoreMultiplier(mods: ModCombination): number {
+    let scoreMultiplier = 1;
+
+    if (mods.has('NF') || mods.has('EZ') || mods.has('HT')) {
+      scoreMultiplier *= 0.5;
+    }
+
+    const maniaBeatmap = this._beatmap as ManiaBeatmap;
+
+    const totalColumns = maniaBeatmap?.totalColumns ?? 0;
+    const originalTotalColumns = maniaBeatmap?.originalTotalColumns ?? 0;
+
+    const diff = totalColumns - originalTotalColumns;
+
+    if (diff > 0) {
+      scoreMultiplier *= 0.9;
+    }
+    else if (diff < 0) {
+      scoreMultiplier *= 0.9 + 0.04 * diff;
+    }
+
+    return scoreMultiplier;
   }
 }
