@@ -62,13 +62,11 @@ export class BeatmapMatcher {
   matchPerformances(performances: IPerformances): void {
     this.difficultyAttributes.forEach((atts) => {
       const mods = atts.mods as CatchModCombination;
-      const beatmap = this._ruleset.applyToBeatmapWithMods(this._beatmap, mods);
 
       const score = new ScoreInfo({
-        maxCombo: beatmap.maxCombo,
-        statistics: this._getStatistics(beatmap),
+        maxCombo: this._beatmap.maxCombo,
+        statistics: this._getStatistics(this._beatmap),
         accuracy: 1,
-        beatmap,
         mods,
       });
 
