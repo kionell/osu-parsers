@@ -62,7 +62,7 @@ export class StandardRuleset extends Ruleset {
    * @param input Mod bitwise or acronyms.
    * @returns A new mod combination.
    */
-  createModCombination(input: number | string): StandardModCombination {
+  createModCombination(input?: number | string): StandardModCombination {
     return new StandardModCombination(input);
   }
 
