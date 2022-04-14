@@ -62,7 +62,7 @@ export class CatchRuleset extends Ruleset {
    * @param input Mod bitwise or acronyms.
    * @returns A new mod combination.
    */
-  createModCombination(input: number | string): CatchModCombination {
+  createModCombination(input?: number | string): CatchModCombination {
     return new CatchModCombination(input);
   }
 
