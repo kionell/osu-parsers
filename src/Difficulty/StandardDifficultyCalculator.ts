@@ -8,9 +8,6 @@ import {
   Skill,
 } from 'osu-classes';
 
-import { StandardBeatmap } from '../Beatmaps';
-import { StandardHitWindows } from '../Scoring';
-
 import {
   StandardDoubleTime,
   StandardEasy,
@@ -21,8 +18,10 @@ import {
 } from '../Mods';
 
 import { Aim, Speed, Flashlight } from './Skills';
-import { StandardDifficultyAttributes } from './Attributes/StandardDifficultyAttributes';
-import { StandardDifficultyHitObject } from './Preprocessing/StandardDifficultyHitObject';
+import { StandardDifficultyAttributes } from './Attributes';
+import { StandardDifficultyHitObject } from './Preprocessing';
+import { StandardHitWindows } from '../Scoring';
+import { Circle, Slider, Spinner } from '../Objects';
 
 export class StandardDifficultyCalculator extends DifficultyCalculator {
   private _DIFFICULTY_MULTIPLIER = 0.0675;
@@ -73,6 +72,7 @@ export class StandardDifficultyCalculator extends DifficultyCalculator {
 
     const baseAimPerformance = Math.pow(5 * Math.max(1, aimRating / 0.0675) - 4, 3) / 100000;
     const baseSpeedPerformance = Math.pow(5 * Math.max(1, speedRating / 0.0675) - 4, 3) / 100000;
+
     let baseFlashlightPerformance = 0.0;
 
     if (mods.has(ModBitwise.Flashlight)) {
@@ -92,18 +92,18 @@ export class StandardDifficultyCalculator extends DifficultyCalculator {
         * (Math.cbrt(100000 / Math.pow(2, 1 / 1.1) * basePerformance) + 4);
     }
 
-    const standardBeatmap = beatmap as StandardBeatmap;
-
-    const approachRate = standardBeatmap.difficulty.approachRate;
-    const drainRate = standardBeatmap.difficulty.drainRate;
-    const clockRate = standardBeatmap.difficulty.clockRate;
+    const approachRate = beatmap.difficulty.approachRate;
+    const clockRate = beatmap.difficulty.clockRate;
 
     const preempt = DifficultyRange.map(approachRate, 1800, 1200, 450) / clockRate;
-    const maxCombo = standardBeatmap.maxCombo;
 
-    const hitCirclesCount = standardBeatmap.circles;
-    const sliderCount = standardBeatmap.sliders;
-    const spinnerCount = standardBeatmap.spinners;
+    const circles = beatmap.hitObjects.filter((h) => h instanceof Circle);
+    const sliders = beatmap.hitObjects.filter((h) => h instanceof Slider);
+    const spinners = beatmap.hitObjects.filter((h) => h instanceof Spinner);
+
+    const nested = sliders.reduce((sum, slider) => {
+      return sum + (slider as Slider).nestedHitObjects.length;
+    }, 0);
 
     const attributes = new StandardDifficultyAttributes(mods, starRating);
 
@@ -111,13 +111,15 @@ export class StandardDifficultyCalculator extends DifficultyCalculator {
     attributes.speedStrain = speedRating;
     attributes.flashlightRating = flashlightRating;
     attributes.sliderFactor = sliderFactor;
-    attributes.approachRate = preempt > 1200 ? (1800 - preempt) / 120 : (1200 - preempt) / 150 + 5;
+    attributes.hitCircleCount = circles.length;
+    attributes.sliderCount = sliders.length;
+    attributes.spinnerCount = spinners.length;
+    attributes.maxCombo = circles.length + spinners.length + nested;
+    attributes.drainRate = beatmap.difficulty.drainRate;
     attributes.overallDifficulty = (80 - this._hitWindowGreat) / 6;
-    attributes.drainRate = drainRate;
-    attributes.maxCombo = maxCombo;
-    attributes.hitCircleCount = hitCirclesCount;
-    attributes.sliderCount = sliderCount;
-    attributes.spinnerCount = spinnerCount;
+    attributes.approachRate = preempt > 1200
+      ? (1800 - preempt) / 120
+      : (1200 - preempt) / 150 + 5;
 
     return attributes;
   }
