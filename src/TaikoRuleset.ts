@@ -62,7 +62,7 @@ export class TaikoRuleset extends Ruleset {
    * @param input Mod bitwise or acronyms.
    * @returns A new mod combination.
    */
-  createModCombination(input: number | string): TaikoModCombination {
+  createModCombination(input?: number | string): TaikoModCombination {
     return new TaikoModCombination(input);
   }
 
