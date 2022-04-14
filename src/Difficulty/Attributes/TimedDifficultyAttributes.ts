@@ -2,7 +2,6 @@ import { DifficultyAttributes } from './DifficultyAttributes';
 
 /**
  * Wraps a DifficultyAttributes object and adds a time value for which the attribute is valid.
- * Output by DifficultyCalculator.CalculateTimed methods.
  */
 export class TimedDifficultyAttributes {
   /**
