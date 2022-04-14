@@ -1,8 +1,6 @@
 ﻿import {
   DifficultyAttributes,
-  IMod,
   ModBitwise,
-  ModType,
   PerformanceCalculator,
   IRuleset,
   IScoreInfo,
@@ -48,18 +46,12 @@ export class ManiaPerformanceCalculator extends PerformanceCalculator {
   }
 
   calculateAttributes(): ManiaPerformanceAttributes {
-    let scoreMultiplier = 1;
-
-    for (const mod of this._mods.all) {
-      if (this._scoreIncreaseMods.has(mod)) continue;
-
-      scoreMultiplier *= mod.multiplier;
+    if (this.attributes.scoreMultiplier > 0) {
+      /**
+       * Scale score up, so it's comparable to other keymods
+       */
+      this._scaledScore *= 1.0 / this.attributes.scoreMultiplier;
     }
-
-    /**
-     * Scale score up, so it's comparable to other keymods
-     */
-    this._scaledScore *= 1.0 / scoreMultiplier;
 
     /**
      * Arbitrary initial value for scaling pp in order 
@@ -153,9 +145,5 @@ export class ManiaPerformanceCalculator extends PerformanceCalculator {
   private get _totalHits(): number {
     return this._countPerfect + this._countOk + this._countGreat +
       this._countGood + this._countMeh + this._countMiss;
-  }
-
-  private get _scoreIncreaseMods(): Set<IMod> {
-    return new Set(this._mods.all.filter((m) => m.type === ModType.DifficultyIncrease));
   }
 }
