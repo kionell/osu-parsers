@@ -136,6 +136,7 @@ export class TaikoDifficultyCalculator extends DifficultyCalculator {
 
     const combinedRating = this._locallyCombinedDifficulty(colour, rhythm, staminaRight, staminaLeft, staminaPenalty);
     const separatedRating = TaikoDifficultyCalculator._norm(1.5, [colourRating, rhythmRating, staminaRating]);
+
     let starRating = 1.4 * separatedRating + 0.5 * combinedRating;
 
     starRating = TaikoDifficultyCalculator._rescale(starRating);
