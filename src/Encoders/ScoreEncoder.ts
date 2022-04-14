@@ -16,22 +16,24 @@ export class ScoreEncoder {
       path += '.osr';
     }
 
-    const data = await this.encodeToString(score);
+    const data = await this.encodeToBuffer(score);
 
     writeFileSync(path, data);
   }
 
   /**
-   * Performs score encoding to a string.
+   * Performs score encoding to a buffer.
    * @param score Score info for encoding.
-   * @returns A string with encoded storyboard data.
+   * @returns A buffer with encoded score & replay data.
    */
-  async encodeToString(score: IScore): Promise<string> {
-    if (typeof score?.info?.id !== 'number') return '';
+  async encodeToBuffer(score: IScore): Promise<Buffer> {
+    const encoded: Buffer = Buffer.from([]);
 
-    const encoded: string[] = [];
+    if (typeof score?.info?.id !== 'number') {
+      return encoded;
+    }
 
-    const writer = new SerializationWriter(Buffer.from([]));
+    const writer = new SerializationWriter(encoded);
 
     writer.writeByte(score.info.rulesetId);
 
@@ -75,6 +77,6 @@ export class ScoreEncoder {
 
     writer.writeLong(BigInt(score.info.id));
 
-    return encoded.filter((x) => x).join('');
+    return encoded;
   }
 }
