@@ -99,7 +99,14 @@ export class BeatmapDecoder {
       throw new Error('Beatmap data not found!');
     }
 
-    if (!this._lines[0].startsWith('osu file format v')) {
+    /**
+     * There is one known case of .osu file starting with "\uFEFF" symbol
+     * We need to use trim function to handle it. 
+     * Beatmap: https://osu.ppy.sh/beatmapsets/310499#osu/771496
+     */
+    const fileFormatLine = this._lines[0].toString().trim();
+
+    if (!fileFormatLine.startsWith('osu file format v')) {
       throw new Error('Not a valid beatmap!');
     }
 
@@ -135,8 +142,8 @@ export class BeatmapDecoder {
     if (!line || line.startsWith('//')) return;
 
     // .osu file version
-    if (line.startsWith('osu file format v')) {
-      beatmap.fileFormat = Parsing.parseInt(line.slice(17));
+    if (line.includes('osu file format v')) {
+      beatmap.fileFormat = Parsing.parseInt(line.split('v')[1]);
 
       /**
        * Beatmaps of version 4 and lower had an incorrect offset 
