@@ -40,23 +40,47 @@ const ruleset = new StandardRuleset();
 
 // This will create a new copy of a beatmap with applied osu!standard ruleset.
 // This method implicitly applies mod combination of 0.
-const standardWithNoMod1 = ruleset.applyToBeatmap(parsed);
-
-// Another way to create osu!standard beatmap with no mods. 
-const standardWithNoMod2 = ruleset.applyToBeatmapWithMods(parsed);
+const standardWithNoMod = ruleset.applyToBeatmap(parsed);
 
 // Create mod combination and apply it to beatmap.
 const mods = ruleset.createModCombination(1337);
 const standardWithMods = ruleset.applyToBeatmapWithMods(parsed, mods);
 
-// It will write osu!standard beatmap with no mods.
-encoder.encodeToPath(encodePath, standardWithNoMod1);
+// It will write osu!standard beatmap with no mods to a file.
+encoder.encodeToPath(encodePath, standardWithNoMod);
 
-// It will write osu!standard beatmap with applied mods.
+// It will write osu!standard beatmap with applied mods to a file.
 encoder.encodeToPath(encodePath, standardWithMods);
 ```
 
-## Example of difficulty calculation
+## Example of basic difficulty calculation
+
+```js
+import { BeatmapDecoder } from 'osu-parsers';
+import { StandardRuleset } from 'osu-standard-stable';
+
+const decoder = new BeatmapDecoder();
+
+const decodePath = 'path/to/your/decoding/file.osu';
+
+// Get beatmap object.
+const parsed = decoder.decodeFromPath(decodePath);
+
+// Create a new osu!standard ruleset.
+const ruleset = new StandardRuleset();
+
+// Create mod combination and apply it to beatmap.
+const mods = ruleset.createModCombination(1337); // HD, HR, FL, SD, HT
+
+// Create difficulty calculator for IBeatmap object.
+const difficultyCalculator = ruleset.createDifficultyCalculator(parsed);
+
+// You can pass any IBeatmap object to the difficulty calculator.
+// Difficulty calculator will implicitly create a new beatmap with osu!standard ruleset.
+const difficultyAttributes = difficultyCalculator.calculateWithMods(mods);
+```
+
+## Example of advanced difficulty calculation
 
 ```js
 import { BeatmapDecoder } from 'osu-parsers';
@@ -76,23 +100,23 @@ const ruleset = new StandardRuleset();
 const mods = ruleset.createModCombination(1337); // HD, HR, FL, SD, HT
 const standardWithMods = ruleset.applyToBeatmapWithMods(parsed, mods);
 
-// Create difficulty calculator for IBeatmap object.
+/**
+ * Any IBeatmap object can be used to create difficulty calculator. 
+ * Difficulty calculator implicitly applies osu!standard ruleset with no mods.
+ */
 const difficultyCalculator1 = ruleset.createDifficultyCalculator(parsed);
+const difficultyAttributes1 = difficultyCalculator1.calculate(); // no mods.
+const moddedAttributes1 = difficultyCalculator1.calculateWithMods(mods); // with mods.
 
-// Create difficulty calculator for osu!std beatmap.
+/**
+ * If you pass osu!standard beatmap then it will use its ruleset and mods.
+ */
 const difficultyCalculator2 = ruleset.createDifficultyCalculator(standardWithMods);
+const difficultyAttributes2 = difficultyCalculator2.calculate(); // with mods!
+const moddedAttributes2 = difficultyCalculator2.calculateWithMods(mods); // the same as previous line.
 
-// Difficulty calculator will implicitly apply osu!std ruleset to every beatmap.
-const difficultyAttributesWithNoMod1 = difficultyCalculator1.calculate();
-const difficultyAttributesWithNoMod2 = difficultyCalculator2.calculate();
-
-// Calculate difficulty with mods.
-const difficultyAttributesWithMods1 = difficultyCalculator1.calculateWithMods(mods);
-const difficultyAttributesWithMods2 = difficultyCalculator2.calculateWithMods(mods);
-
-// Get difficulty attributes for every mod combination.
-const difficultyAtts1 = [...difficultyCalculator1.calculateAll()];
-const difficultyAtts2 = [...difficultyCalculator2.calculateAll()];
+// Get difficulty attributes for every mod combination of difficulty increase mods.
+const allAttributes = [...difficultyCalculator1.calculateAll()];
 ```
 
 ## Example of performance calculation
@@ -126,26 +150,34 @@ const difficultyAttributes = difficultyCalculator.calculate();
 const score = new ScoreInfo();
 
 // Stella-rium (Asterisk MAKINA Remix) [Starlight]
-// mrekk + HDDT 1192 pp.
-score.beatmap = standardBeatmap;
+// sakamata1 + HDDT 1192.44 pp.
 score.mods = mods;
 score.maxCombo = 2078;
-score.statistics.great = 1576;
-score.statistics.ok = 24;
-score.statistics.meh = 0;
-score.statistics.miss = 0;
+score.rulesetId = 0;
+score.count300 = 1576; // score.statistics.great
+score.count100 = 24; // score.statistics.good
+score.count50 = 0; // score.statistics.meh
+score.countMiss = 0; // score.statistics.miss
 
-score.accuracy = (score.statistics.great + (score.statistics.ok / 3) + (score.statistics.meh / 6)) 
-  / (score.statistics.great + score.statistics.ok + score.statistics.meh + score.statistics.miss);
+score.accuracy = (score.count300 + (score.count100 / 3) + (score.count50 / 6)) 
+  / (score.count300 + score.count100 + score.count50 + score.countMiss);
 
 // Create performance calculator for osu!std ruleset.
 const performanceCalculator = ruleset.createPerformanceCalculator(difficultyAttributes, score);
 
+// Calculate performance attributes for a map.
+const performanceAttributes = performanceCalculator.calculateAttributes();
+
 // Calculate total performance for a map.
 const totalPerformance = performanceCalculator.calculate();
 
-// 1192.4434422818401
-console.log(totalPerformance);
+/**
+ * Values may differ slightly from osu!stable 
+ * as performance calculations are based on osu!lazer code.
+ * The main goal of this library is to match 1:1 to osu!lazer values.
+ * If you want, you can compare the results with osu-tools.
+ */
+console.log(totalPerformance); // 1185.4179868162294
 ```
 
 ## Other projects
