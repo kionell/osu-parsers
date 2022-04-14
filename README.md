@@ -40,23 +40,48 @@ const ruleset = new CatchRuleset();
 
 // This will create a new copy of a beatmap with applied osu!catch ruleset.
 // This method implicitly applies mod combination of 0.
-const catchWithNoMod1 = ruleset.applyToBeatmap(parsed);
-
-// Another way to create osu!catch beatmap with no mods. 
-const catchWithNoMod2 = ruleset.applyToBeatmapWithMods(parsed);
+const catchWithNoMod = ruleset.applyToBeatmap(parsed);
 
 // Create mod combination and apply it to beatmap.
 const mods = ruleset.createModCombination(1337);
 const catchWithMods = ruleset.applyToBeatmapWithMods(parsed, mods);
 
-// It will write osu!catch beatmap with no mods.
+// It will write osu!catch beatmap with no mods to a file.
 encoder.encodeToPath(encodePath, catchWithNoMod1);
 
-// It will write osu!catch beatmap with applied mods.
+// It will write osu!catch beatmap with applied mods to a file.
 encoder.encodeToPath(encodePath, catchWithMods);
 ```
 
-## Example of difficulty calculation
+## Example of basic difficulty calculation
+
+```js
+import { BeatmapDecoder } from 'osu-parsers';
+import { CatchRuleset } from 'osu-catchstable';
+
+const decoder = new BeatmapDecoder();
+
+const decodePath = 'path/to/your/decoding/file.osu';
+
+// Get beatmap object.
+const parsed = decoder.decodeFromPath(decodePath);
+
+// Create a new osu!catchruleset.
+const ruleset = new CatchRuleset();
+
+// Create mod combination and apply it to beatmap.
+const mods = ruleset.createModCombination(1337); // HD, HR, FL, SD, HT
+
+// Create difficulty calculator for IBeatmap object.
+const difficultyCalculator = ruleset.createDifficultyCalculator(parsed);
+
+// You can pass any IBeatmap object to the difficulty calculator.
+// Difficulty calculator will implicitly create a new beatmap with osu!catch ruleset.
+const difficultyAttributes = difficultyCalculator.calculateWithMods(mods);
+```
+
+
+## Example of advanced difficulty calculation
 
 ```js
 import { BeatmapDecoder } from 'osu-parsers';
@@ -76,23 +101,23 @@ const ruleset = new CatchRuleset();
 const mods = ruleset.createModCombination(1337); // HD, HR, FL, SD, HT
 const catchWithMods = ruleset.applyToBeatmapWithMods(parsed, mods);
 
-// Create difficulty calculator for IBeatmap object.
+/**
+ * Any IBeatmap object can be used to create difficulty calculator. 
+ * Difficulty calculator implicitly applies osu!catchruleset with no mods.
+ */
 const difficultyCalculator1 = ruleset.createDifficultyCalculator(parsed);
+const difficultyAttributes1 = difficultyCalculator1.calculate(); // no mods.
+const moddedAttributes1 = difficultyCalculator1.calculateWithMods(mods); // with mods.
 
-// Create difficulty calculator for osu!catch beatmap.
+/**
+ * If you pass osu!catch beatmap then it will use its ruleset and mods.
+ */
 const difficultyCalculator2 = ruleset.createDifficultyCalculator(catchWithMods);
+const difficultyAttributes2 = difficultyCalculator2.calculate(); // with mods!
+const moddedAttributes2 = difficultyCalculator2.calculateWithMods(mods); // the same as previous line.
 
-// Difficulty calculator will implicitly apply osu!catch ruleset to every beatmap.
-const difficultyAttributesWithNoMod1 = difficultyCalculator1.calculate();
-const difficultyAttributesWithNoMod2 = difficultyCalculator2.calculate();
-
-// Calculate difficulty with mods.
-const difficultyAttributesWithMods1 = difficultyCalculator1.calculateWithMods(mods);
-const difficultyAttributesWithMods2 = difficultyCalculator2.calculateWithMods(mods);
-
-// Get difficulty attributes for every mod combination.
-const difficultyAtts1 = [...difficultyCalculator1.calculateAll()];
-const difficultyAtts2 = [...difficultyCalculator2.calculateAll()];
+// Get difficulty attributes for every mod combination of difficulty increase mods.
+const allAttributes = [...difficultyCalculator1.calculateAll()];
 ```
 
 ## Example of performance calculation
@@ -126,24 +151,32 @@ const difficultyAttributes = difficultyCalculator.calculateWithMods(mods);
 const score = new ScoreInfo();
 
 // Kaneko Chiharu - iLLness LiLin [CRYSTAL'S DYSTOPIA]
-// CTB Rushia1 + HDHR 1380 pp.
-score.beatmap = catchBeatmap;
+// YesMyDarknesss + HDHR 1380.09 pp.
 score.mods = mods;
+score.rulesetId = 2;
 score.maxCombo = 1420;
-score.statistics.great = 1358;
-score.statistics.largeTickHit = 62;
-score.statistics.smallTickHit = 83;
-score.statistics.smallTickMiss = 2;
-score.statistics.miss = 0;
+score.count300 = 1358; // score.statistics.great
+score.count100 = 62; // score.statistics.largeTickHit
+score.count50 = 83; // score.statistics.smallTickHit
+score.countKatu = 2; // score.statistics.smallTickMiss
+score.countMiss = 0; // score.statistics.misses
 
 // Create performance calculator for osu!catch ruleset.
 const performanceCalculator = ruleset.createPerformanceCalculator(difficultyAttributes, score);
 
+// Calculate performance attributes for a map.
+const performanceAttributes = performanceCalculator.calculateAttributes();
+
 // Calculate total performance for a map.
 const totalPerformance = performanceCalculator.calculate();
 
-// 1380.0841687636698
-console.log(totalPerformance);
+/**
+ * Values may differ slightly from osu!stable 
+ * as performance calculations are based on osu!lazer code.
+ * The main goal of this library is to match 1:1 to osu!lazer values.
+ * If you want, you can compare the results with osu-tools.
+ */
+console.log(totalPerformance); // 1380.0841687636698
 ```
 
 ## Other projects
