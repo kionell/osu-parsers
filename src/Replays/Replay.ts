@@ -1,4 +1,5 @@
 import { IReplay } from './IReplay';
+import { LifeBarFrame } from './LifeBarFrame';
 import { ReplayFrame } from './ReplayFrame';
 
 /**
@@ -24,6 +25,11 @@ export class Replay implements IReplay {
    * Replay frames.
    */
   frames: ReplayFrame[] = [];
+
+  /**
+   * Life bar of the replay.
+   */
+  lifeBar: LifeBarFrame[] = [];
 
   /**
    * Replay length in milliseconds.

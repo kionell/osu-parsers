@@ -1,3 +1,4 @@
+import { ILifeBarFrame } from './ILifeBarFrame';
 import { IReplayFrame } from './IReplayFrame';
 
 /**
@@ -23,4 +24,9 @@ export interface IReplay {
    * Replay frames.
    */
   frames: IReplayFrame[];
+
+  /**
+   * Life bar of the replay.
+   */
+  lifeBar: ILifeBarFrame[];
 }
