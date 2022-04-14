@@ -40,23 +40,47 @@ const ruleset = new TaikoRuleset();
 
 // This will create a new copy of a beatmap with applied osu!taiko ruleset.
 // This method implicitly applies mod combination of 0.
-const taikoWithNoMod1 = ruleset.applyToBeatmap(parsed);
-
-// Another way to create osu!taiko beatmap with no mods. 
-const taikoWithNoMod2 = ruleset.applyToBeatmapWithMods(parsed);
+const taikoWithNoMod = ruleset.applyToBeatmap(parsed);
 
 // Create mod combination and apply it to beatmap.
 const mods = ruleset.createModCombination(1337);
 const taikoWithMods = ruleset.applyToBeatmapWithMods(parsed, mods);
 
-// It will write osu!taiko beatmap with no mods.
-encoder.encodeToPath(encodePath, taikoWithNoMod1);
+// It will write osu!taiko beatmap with no mods to a file.
+encoder.encodeToPath(encodePath, taikoWithNoMod);
 
-// It will write osu!taiko beatmap with applied mods.
+// It will write osu!taiko beatmap with applied mods to a file.
 encoder.encodeToPath(encodePath, taikoWithMods);
 ```
 
-## Example of difficulty calculation
+## Example of basic difficulty calculation
+
+```js
+import { BeatmapDecoder } from 'osu-parsers';
+import { TaikoRuleset } from 'osu-taiko-stable';
+
+const decoder = new BeatmapDecoder();
+
+const decodePath = 'path/to/your/decoding/file.osu';
+
+// Get beatmap object.
+const parsed = decoder.decodeFromPath(decodePath);
+
+// Create a new osu!taiko ruleset.
+const ruleset = new TaikoRuleset();
+
+// Create mod combination and apply it to beatmap.
+const mods = ruleset.createModCombination(1337); // HD, HR, FL, SD, HT
+
+// Create difficulty calculator for IBeatmap object.
+const difficultyCalculator = ruleset.createDifficultyCalculator(parsed);
+
+// You can pass any IBeatmap object to the difficulty calculator.
+// Difficulty calculator will implicitly create a new beatmap with osu!taiko ruleset.
+const difficultyAttributes = difficultyCalculator.calculateWithMods(mods);
+```
+
+## Example of advanced difficulty calculation
 
 ```js
 import { BeatmapDecoder } from 'osu-parsers';
@@ -76,23 +100,23 @@ const ruleset = new TaikoRuleset();
 const mods = ruleset.createModCombination(1337); // HD, HR, FL, SD, HT
 const taikoWithMods = ruleset.applyToBeatmapWithMods(parsed, mods);
 
-// Create difficulty calculator for IBeatmap object.
+/**
+ * Any IBeatmap object can be used to create difficulty calculator. 
+ * Difficulty calculator implicitly applies osu!taiko ruleset with no mods.
+ */
 const difficultyCalculator1 = ruleset.createDifficultyCalculator(parsed);
+const difficultyAttributes1 = difficultyCalculator1.calculate(); // no mods.
+const moddedAttributes1 = difficultyCalculator1.calculateWithMods(mods); // with mods.
 
-// Create difficulty calculator for osu!taiko beatmap.
+/**
+ * If you pass osu!taiko beatmap then it will use its ruleset and mods.
+ */
 const difficultyCalculator2 = ruleset.createDifficultyCalculator(taikoWithMods);
-
-// Difficulty calculator will implicitly apply osu!taiko ruleset to every beatmap.
-const difficultyAttributesWithNoMod1 = difficultyCalculator1.calculate();
-const difficultyAttributesWithNoMod2 = difficultyCalculator2.calculate();
-
-// Calculate difficulty with mods.
-const difficultyAttributesWithMods1 = difficultyCalculator1.calculateWithMods(mods);
-const difficultyAttributesWithMods2 = difficultyCalculator2.calculateWithMods(mods);
+const difficultyAttributes2 = difficultyCalculator2.calculate(); // with mods!
+const moddedAttributes2 = difficultyCalculator2.calculateWithMods(mods); // the same as previous line.
 
 // Get difficulty attributes for every mod combination.
-const difficultyAtts1 = [...difficultyCalculator1.calculateAll()];
-const difficultyAtts2 = [...difficultyCalculator2.calculateAll()];
+const allAttributes = [...difficultyCalculator1.calculateAll()];
 ```
 
 ## Example of performance calculation
@@ -127,7 +151,6 @@ const score = new ScoreInfo();
 
 // DragonForce - Extraction Zone [Tatsujin]
 // syaron105 + HDNC 659 pp.
-score.beatmap = taikoBeatmap;
 score.mods = mods;
 score.maxCombo = 2472;
 score.statistics.great = 2445;
@@ -139,6 +162,9 @@ score.accuracy = (score.statistics.great + score.statistics.ok / 2)
 
 // Create performance calculator for osu!taiko ruleset.
 const performanceCalculator = ruleset.createPerformanceCalculator(difficultyAttributes, score);
+
+// Calculate performance attributes for a map.
+const performanceAttributes = performanceCalculator.calculateAttributes();
 
 // Calculate total performance for a map.
 const totalPerformance = performanceCalculator.calculate();
