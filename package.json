@@ -17,13 +17,16 @@
     "osu",
     "beatmap",
     "storyboard",
+    "score",
+    "replay",
     "parser",
     "osu!std",
     "osu!taiko",
     "osu!mania",
     "osu!catch",
     ".osu",
-    ".osb"
+    ".osb",
+    ".osr"
   ],
   "author": "Kionell",
   "repository": {
