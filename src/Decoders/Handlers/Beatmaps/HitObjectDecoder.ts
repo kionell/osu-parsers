@@ -45,7 +45,13 @@ export abstract class HitObjectDecoder {
     hitObject.hitType = hitType;
     hitObject.hitSound = Parsing.parseInt(data[4]);
 
-    HitObjectDecoder.addExtras(data.slice(5), hitObject, offset);
+    const bankInfo = new SampleBank();
+
+    HitObjectDecoder.addExtras(data.slice(5), hitObject, bankInfo, offset);
+
+    if (hitObject.samples.length === 0) {
+      hitObject.samples = this.convertSoundType(hitObject.hitSound, bankInfo);
+    }
 
     beatmap.hitObjects.push(hitObject);
   }
@@ -54,25 +60,24 @@ export abstract class HitObjectDecoder {
    * Adds extra data to the parsed hit object.
    * @param data The data of a hit object line.
    * @param hitObject A parsed hit object.
+   * @param bankInfo Sample bank.
    * @param offset The offset to apply to all time values.
    */
-  static addExtras(data: string[], hitObject: HitObject, offset: number): void {
+  static addExtras(data: string[], hitObject: HitObject, bankInfo: SampleBank, offset: number): void {
+    if ((hitObject.hitType & HitType.Normal) && data.length > 0) {
+      this.readCustomSampleBanks(data[0], bankInfo);
+    }
+
     if (hitObject.hitType & HitType.Slider) {
-      return HitObjectDecoder.addSliderExtras(data, hitObject as SlidableObject);
+      return HitObjectDecoder.addSliderExtras(data, hitObject as SlidableObject, bankInfo);
     }
 
     if (hitObject.hitType & HitType.Spinner) {
-      return HitObjectDecoder.addSpinnerExtras(data, hitObject as SpinnableObject, offset);
+      return HitObjectDecoder.addSpinnerExtras(data, hitObject as SpinnableObject, bankInfo, offset);
     }
 
     if (hitObject.hitType & HitType.Hold) {
-      return HitObjectDecoder.addHoldExtras(data, hitObject as HoldableObject, offset);
-    }
-
-    if (data.length > 0) {
-      const sampleBank = HitObjectDecoder.getSampleBank(data[0]);
-
-      hitObject.samples = this.convertSoundType(hitObject.hitSound, sampleBank);
+      return HitObjectDecoder.addHoldExtras(data, hitObject as HoldableObject, bankInfo, offset);
     }
   }
 
@@ -80,22 +85,25 @@ export abstract class HitObjectDecoder {
    * Adds slider extra data to a parsed slider.
    * @param extras Extra data of slidable object.
    * @param slider A parsed slider.
+   * @param bankInfo Sample bank.
    */
-  static addSliderExtras(extras: string[], slider: SlidableObject): void {
+  static addSliderExtras(extras: string[], slider: SlidableObject, bankInfo: SampleBank): void {
     // curveType|curvePoints,slides,length,edgeSounds,edgeSets,hitSample
 
     const pathString = extras[0];
     const offset = slider.startPosition;
 
-    /**
-     * osu!stable treated the first span of the slider as a repeat,
-     * but no repeats are happening.
-     */
-    slider.repeats = Math.max(0, Parsing.parseInt(extras[1]) - 1);
+    const repeats = Parsing.parseInt(extras[1]);
 
     if (slider.repeats > 9000) {
       throw new Error('Repeat count is way too high');
     }
+
+    /**
+     * osu!stable treated the first span of the slider as a repeat,
+     * but no repeats are happening.
+     */
+    slider.repeats = Math.max(0, repeats - 1);
 
     slider.path.controlPoints = HitObjectDecoder.convertPathString(pathString, offset);
     slider.path.curveType = slider.path.controlPoints[0].type as PathType;
@@ -106,37 +114,39 @@ export abstract class HitObjectDecoder {
       slider.path.expectedDistance = Math.max(0, length);
     }
 
-    const sampleBank = this.getSampleBank(extras[5]);
+    if (extras.length > 5) {
+      this.readCustomSampleBanks(extras[5], bankInfo);
+    }
 
-    slider.samples = this.convertSoundType(slider.hitSound, sampleBank);
-    slider.nodeSamples = this.getSliderNodeSamples(extras, slider, sampleBank);
+    slider.samples = this.convertSoundType(slider.hitSound, bankInfo);
+    slider.nodeSamples = this.getSliderNodeSamples(extras, slider, bankInfo);
   }
 
   /**
    * Adds spinner extra data to a parsed spinner.
    * @param extras Extra data of spinnable object.
-   * @param slider A parsed spinner.
+   * @param spinner A parsed spinner.
+   * @param bankInfo Sample bank.
    * @param offset The offset to apply to all time values.
    */
-  static addSpinnerExtras(extras: string[], spinner: SpinnableObject, offset: number): void {
+  static addSpinnerExtras(extras: string[], spinner: SpinnableObject, bankInfo: SampleBank, offset: number): void {
     // endTime,hitSample
 
     spinner.endTime = Parsing.parseInt(extras[0]) + offset;
 
     if (extras.length > 1) {
-      const sampleBank = this.getSampleBank(extras[1]);
-
-      spinner.samples = this.convertSoundType(spinner.hitSound, sampleBank);
+      this.readCustomSampleBanks(extras[1], bankInfo);
     }
   }
 
   /**
    * Adds hold extra data to a parsed hold.
    * @param extras Extra data of a holdable object.
-   * @param slider A parsed hold.
+   * @param hold A parsed hold.
+   * @param bankInfo Sample bank.
    * @param offset The offset to apply to all time values.
    */
-  static addHoldExtras(extras: string[], hold: HoldableObject, offset: number): void {
+  static addHoldExtras(extras: string[], hold: HoldableObject, bankInfo: SampleBank, offset: number): void {
     // endTime:hitSample
 
     hold.endTime = hold.startTime;
@@ -146,24 +156,8 @@ export abstract class HitObjectDecoder {
 
       hold.endTime = Math.max(hold.endTime, Parsing.parseFloat(ss[0])) + offset;
 
-      const sampleBank = this.getSampleBank(ss.slice(1).join(':'));
-
-      hold.samples = this.convertSoundType(hold.hitSound, sampleBank);
+      this.readCustomSampleBanks(ss.slice(1).join(':'), bankInfo);
     }
-  }
-
-  /**
-   * Get sample bank from hit sample data.
-   * @param hitSample The hit sample data.
-   */
-  static getSampleBank(hitSample?: string): SampleBank {
-    const bankInfo = new SampleBank();
-
-    if (hitSample) {
-      this.readCustomSampleBanks(hitSample, bankInfo);
-    }
-
-    return bankInfo;
   }
 
   static getSliderNodeSamples(extras: string[], slider: SlidableObject, bankInfo: SampleBank): HitSample[][] {
