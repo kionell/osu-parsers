@@ -44,6 +44,6 @@
   },
   "dependencies": {
     "osu-classes": "^0.6.0",
-    "osu-parsers": "^2.1.0"
+    "osu-parsers": "^2.1.1"
   }
 }
