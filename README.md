@@ -21,7 +21,7 @@ npm install osu-parsers
 
 ## Beatmap decoding
 
-Beatmap decoder is used to read .osu file and convert it to a plain Beatmap object.
+Beatmap decoder is used to read .osu files and convert them to the plain Beatmap objects.
 This decoder is fully synchronous and there is no support for async version right now.
 Note that beatmap decoder will return only parsed beatmap without max combo or mods!
 
@@ -30,7 +30,7 @@ There are 3 ways to read data using this decoders:
 - via string
 - via array of split lines
 
-By default, beatmap decoder will decode both beatmap and storyboard. If don't need to decode storyboard you can disable it by passing false as the second parameter to any of the methods.
+By default, beatmap decoder will decode both beatmap and storyboard. If you want to decode beatmap without storyboard, you can pass false as the second parameter to any of the methods.
 
 ### Example of beatmap decoding
 
@@ -38,6 +38,8 @@ By default, beatmap decoder will decode both beatmap and storyboard. If don't ne
 import { BeatmapDecoder } from 'osu-parsers'
 
 const path = 'path/to/your/file.osu';
+
+// This is optional and true by default.
 const shouldParseSb = true;
 
 const decoder = new BeatmapDecoder();
@@ -48,7 +50,7 @@ console.log(beatmap) // Beatmap object.
 
 ## Storyboard decoding
 
-Storyboard decoder is used to read .osb files and convert it to a Storyboard object.
+Storyboard decoder is used to read .osb files and convert them to the Storyboard objects.
 This decoder is also fully synchronous with no async support at all.
 
 As in beatmap decoder, there are 3 ways to decode your .osb files:
@@ -71,7 +73,7 @@ console.log(storyboard); // Storyboard object.
 
 ## Score & replay decoding
 
-Score decoder is used to decode .osr files and convert them to a Score object.
+Score decoder is used to decode .osr files and convert them to the Score objects.
 Score object contains score information and replay data.
 This decoder is based on external lzma library and works asynchronously.
 
@@ -79,7 +81,7 @@ There are 2 ways to read data through this decoder:
 - via string
 - via buffer
 
-By default, score decoder will decode both score information and replay. If don't need to decode replay you can disable it by passing false as the second parameter to any of the methods.
+By default, score decoder will decode both score information and replay. If you want to decode score information without replay, you can pass false as the second parameter to any of the methods.
 
 ### Example of score & replay decoding
 
@@ -87,7 +89,9 @@ By default, score decoder will decode both score information and replay. If don'
 import { ScoreDecoder } from 'osu-parsers'
 
 const path = 'path/to/your/file.osr';
-const parseReplay = true; // This is optional.
+
+// This is optional and true by default.
+const parseReplay = true;
 
 const decoder = new ScoreDecoder();
 
@@ -125,7 +129,7 @@ const encodePath = 'path/to/your/encoding/file.osu';
 // Write IBeatmap object to an .osu file.
 encoder.encodeToPath(encodePath, beatmap);
 
-// Encode IBeatmap object to a string.
+// Also you can encode IBeatmap object to a string.
 const stringified = encoder.encodeToString(storyboard);
 ```
 
@@ -148,7 +152,7 @@ const encodePath = 'path/to/your/encoding/file.osb';
 // Write Storyboard object to an .osb file.
 encoder.encodeToPath(encodePath, storyboard);
 
-// Encode Storyboard object to a string.
+// Also you can encode Storyboard object to a string.
 const stringified = encoder.encodeToString(storyboard);
 ```
 
@@ -174,7 +178,7 @@ encoder.encodeToPath(encodePath, score)
     // Do something after .osr encoding...
   }); 
 
-// Encode IScore object to a buffer.
+// Also you can encode IScore object to a buffer.
 encoder.encodeToBuffer(score)
   .then((buffer) => {
     // Do something with .osr file buffer...
