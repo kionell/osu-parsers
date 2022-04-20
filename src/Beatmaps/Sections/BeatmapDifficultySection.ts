@@ -59,7 +59,7 @@ export class BeatmapDifficultySection {
    * The approach rate of this beatmap.
    */
   get approachRate(): number {
-    return Math.fround(this._AR || this._OD);
+    return Math.fround(this._AR ?? this._OD);
   }
 
   set approachRate(value: number) {
