@@ -23,33 +23,36 @@ export class BeatmapDifficultySection {
    * The circle size of this beatmap.
    */
   get circleSize(): number {
-    return Math.fround(this._CS);
+    return Math.fround(Math.max(0, Math.min(this._CS, 10)));
   }
 
   set circleSize(value: number) {
-    this._CS = Math.max(0, Math.min(value, 10));
+    this._CS = value;
   }
 
   /**
    * The HP drain rate of this beatmap.
    */
   get drainRate(): number {
-    return Math.fround(this._HP);
+    return Math.fround(Math.max(0, Math.min(this._HP, 10)));
   }
 
   set drainRate(value: number) {
-    this._HP = Math.max(0, Math.min(value, 10));
+    this._HP = value;
   }
 
   /**
    * The overall difficulty of this beatmap.
    */
   get overallDifficulty(): number {
-    return Math.fround(this._OD);
+    const maxOD = this._rate >= 1.5 ? 11.11 : 10;
+    const clamp = Math.max(0, Math.min(this._OD, maxOD));
+
+    return Math.fround(clamp);
   }
 
   set overallDifficulty(value: number) {
-    this._OD = Math.max(0, Math.min(value, this._rate >= 1.5 ? 11 : 10));
+    this._OD = value;
   }
 
   /**
