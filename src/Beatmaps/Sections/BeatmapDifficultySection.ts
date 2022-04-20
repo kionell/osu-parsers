@@ -23,7 +23,7 @@ export class BeatmapDifficultySection {
    * The circle size of this beatmap.
    */
   get circleSize(): number {
-    return Math.fround(Math.max(0, Math.min(this._CS, 10)));
+    return Math.fround(this._CS);
   }
 
   set circleSize(value: number) {
@@ -34,7 +34,7 @@ export class BeatmapDifficultySection {
    * The HP drain rate of this beatmap.
    */
   get drainRate(): number {
-    return Math.fround(Math.max(0, Math.min(this._HP, 10)));
+    return Math.fround(this._HP);
   }
 
   set drainRate(value: number) {
@@ -45,10 +45,7 @@ export class BeatmapDifficultySection {
    * The overall difficulty of this beatmap.
    */
   get overallDifficulty(): number {
-    const maxOD = this._rate >= 1.5 ? 11.11 : 10;
-    const clamp = Math.max(0, Math.min(this._OD, maxOD));
-
-    return Math.fround(clamp);
+    return Math.fround(this._OD);
   }
 
   set overallDifficulty(value: number) {
@@ -63,7 +60,7 @@ export class BeatmapDifficultySection {
   }
 
   set approachRate(value: number) {
-    this._AR = Math.max(0, Math.min(value, this._rate >= 1.5 ? 11 : 10));
+    this._AR = value;
   }
 
   /**
