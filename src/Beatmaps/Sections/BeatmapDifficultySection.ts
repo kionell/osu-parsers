@@ -108,7 +108,7 @@ export class BeatmapDifficultySection {
     cloned.drainRate = this._HP;
     cloned.overallDifficulty = this._OD;
 
-    if (this._AR) {
+    if (typeof this._AR === 'number') {
       cloned.approachRate = this._AR;
     }
 
