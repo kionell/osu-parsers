@@ -89,6 +89,7 @@ export class StandardPerformanceCalculator extends PerformanceCalculator {
     attributes.speedPerformance = speedValue;
     attributes.accuracyPerformance = accuracyValue;
     attributes.flashlightPerformance = flashlightValue;
+    attributes.effectiveMissCount = this._effectiveMissCount;
 
     return attributes;
   }

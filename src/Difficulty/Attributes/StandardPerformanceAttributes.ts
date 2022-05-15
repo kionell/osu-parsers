@@ -28,6 +28,11 @@ export class StandardPerformanceAttributes extends PerformanceAttributes {
   flashlightPerformance = 0;
 
   /**
+   * Effective miss count.
+   */
+  effectiveMissCount = 0;
+
+  /**
    * Creates new difficulty attributes.
    * @param mods The mods which were applied to the beatmap.
    * @param totalPerformance The total performance of a score.
