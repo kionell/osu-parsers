@@ -82,6 +82,7 @@ export class ManiaPerformanceCalculator extends PerformanceCalculator {
 
     attributes.strainPerformance = strainValue;
     attributes.accuracyPerformance = accValue;
+    attributes.scaledScore = this._scaledScore;
 
     return attributes;
   }

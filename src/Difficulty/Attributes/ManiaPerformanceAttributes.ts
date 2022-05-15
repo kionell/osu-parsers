@@ -21,6 +21,11 @@ export class ManiaPerformanceAttributes extends PerformanceAttributes {
   accuracyPerformance = 0;
 
   /**
+   * Total score of the play scaled with mods.
+   */
+  scaledScore = 0;
+
+  /**
    * Creates new difficulty attributes.
    * @param mods The mods which were applied to the beatmap.
    * @param totalPerformance The total performance of a score.
