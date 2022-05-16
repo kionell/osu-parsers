@@ -2,9 +2,11 @@
   "name": "osu-classes",
   "version": "0.6.2",
   "description": "Basic classes, interfaces and utils for creating new osu! rulesets",
-  "main": "./lib/cjs/index.js",
-  "module": "./lib/esm/index.js",
-  "types": "./lib/esm/index.d.ts",
+  "exports": {
+    "import": "./lib/index.mjs",
+    "require": "./lib/index.cjs"
+  },
+  "types": "./lib/index.d.ts",
   "scripts": {
     "build": "rollup -c && npm run format",
     "test": "jest --verbose",
