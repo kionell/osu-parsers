@@ -262,6 +262,14 @@ export abstract class ModCombination {
   }
 
   /**
+   * Converts this mod combination to a string.
+   * @returns Stringified mod combination.
+   */
+  toJSON(): string {
+    return this.toString();
+  }
+
+  /**
    * Converts mod acronyms to a bitwise value. 
    * @param input The mod acronyms.
    * @returns The bitwise value.
