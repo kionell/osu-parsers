@@ -1,5 +1,6 @@
 import { ModCombination } from '../Mods';
 import { IRuleset } from '../Rulesets';
+import { IJsonableBeatmapInfo } from './IJsonableBeatmapInfo';
 
 /**
  * A beatmap information.
@@ -174,4 +175,10 @@ export interface IBeatmapInfo {
    * Beatmap MD5 hash.
    */
   md5: string;
+
+  /**
+   * Converts this beatmap information to JSON.
+   * @returns Beatmap information convertable to JSON.
+   */
+  toJSON(): IJsonableBeatmapInfo;
 }

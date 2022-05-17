@@ -1,6 +1,7 @@
 import { ScoreRank } from './Enums/ScoreRank';
 import { IHitStatistics } from './IHitStatistics';
 import { IScoreInfo } from './IScoreInfo';
+import { IJsonableScoreInfo, JsonableScoreInfo } from './IJsonableScoreInfo';
 import { LegacyScoreExtensions } from './LegacyScoreExtensions';
 import { IBeatmapInfo } from '../Beatmaps';
 import { IRuleset } from '../Rulesets';
@@ -170,21 +171,32 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
 
   /**
    * Converts this score information to JSON.
-   * @returns Stringified score information.
+   * @returns Score information convertable to JSON.
    */
-  toJSON(): string {
-    const result: Partial<this> = {};
+  toJSON(): IJsonableScoreInfo {
+    const partial: Partial<this> = {};
+    const deselect = ['beatmap', 'ruleset', 'rawMods', 'mods'];
 
     for (const key in this) {
       if (key.startsWith('_')) continue;
+      if (deselect.includes(key)) continue;
 
-      result[key] = this[key];
+      partial[key] = this[key];
     }
 
-    result.rulesetId = this.rulesetId;
-    result.mods = this.mods;
-
-    return JSON.stringify(result);
+    return {
+      ...partial as JsonableScoreInfo,
+      beatmap: this.beatmap?.toJSON() ?? null,
+      mods: this.mods?.toString() ?? 'NM',
+      rulesetId: this.rulesetId,
+      countGeki: this.countGeki,
+      count300: this.count300,
+      countKatu: this.countKatu,
+      count100: this.count100,
+      count50: this.count50,
+      countMiss: this.countMiss,
+      totalHits: this.totalHits,
+    };
   }
 
   /**

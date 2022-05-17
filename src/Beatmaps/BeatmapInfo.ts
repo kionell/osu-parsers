@@ -1,6 +1,7 @@
 import { IBeatmapInfo } from './IBeatmapInfo';
 import { ModCombination } from '../Mods';
 import { IRuleset } from '../Rulesets';
+import { IJsonableBeatmapInfo, JsonableBeatmapInfo } from './IJsonableBeatmapInfo';
 
 /**
  * A beatmap information.
@@ -218,21 +219,25 @@ export class BeatmapInfo implements IBeatmapInfo {
 
   /**
    * Converts this beatmap information to JSON.
-   * @returns Stringified beatmap information.
+   * @returns Beatmap information convertable to JSON.
    */
-  toJSON(): string {
-    const result: Partial<this> = {};
+  toJSON(): IJsonableBeatmapInfo {
+    const partial: Partial<this> = {};
+    const deselect = ['beatmap', 'ruleset', 'rawMods', 'mods'];
 
     for (const key in this) {
       if (key.startsWith('_')) continue;
+      if (deselect.includes(key)) continue;
 
-      result[key] = this[key];
+      partial[key] = this[key];
     }
 
-    result.rulesetId = this.rulesetId;
-    result.mods = this.mods;
-
-    return JSON.stringify(result);
+    return {
+      ...partial as JsonableBeatmapInfo,
+      mods: this.mods?.toString() ?? 'NM',
+      rulesetId: this.rulesetId,
+      totalHits: this.totalHits,
+    };
   }
 
   /**

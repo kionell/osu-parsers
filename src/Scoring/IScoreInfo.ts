@@ -3,6 +3,7 @@ import { IHitStatistics } from './IHitStatistics';
 import { IBeatmapInfo } from '../Beatmaps';
 import { IRuleset } from '../Rulesets';
 import { ModCombination } from '../Mods';
+import { IJsonableScoreInfo } from './IJsonableScoreInfo';
 
 /**
  * A score information.
@@ -137,4 +138,10 @@ export interface IScoreInfo {
    * Total hits of a score.
    */
   totalHits: number;
+
+  /**
+   * Converts this score information to JSON.
+   * @returns Score information convertable to JSON.
+   */
+  toJSON(): IJsonableScoreInfo;
 }

@@ -33,3 +33,4 @@ export { Beatmap } from './Beatmap';
 export { IBeatmap } from './IBeatmap';
 export { BeatmapInfo } from './BeatmapInfo';
 export { IBeatmapInfo } from './IBeatmapInfo';
+export { IJsonableBeatmapInfo } from './IJsonableBeatmapInfo';
