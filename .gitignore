@@ -16,3 +16,4 @@
 !rollup.config.js
 !jest.config.js
 !tsconfig.json
+!typedoc.json
