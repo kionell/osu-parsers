@@ -204,6 +204,11 @@ export class BeatmapInfo implements IBeatmapInfo {
   updatedAt: Date | null = null;
 
   /**
+   * Beatmap MD5 hash.
+   */
+  md5 = '';
+
+  /**
    * Creates a new instance of a beatmap information.
    * @param options The beatmap information options.
    */

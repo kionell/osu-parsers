@@ -169,4 +169,9 @@ export interface IBeatmapInfo {
    * The date of the last beatmap update.
    */
   updatedAt: Date | null;
+
+  /**
+   * Beatmap MD5 hash.
+   */
+  md5: string;
 }
