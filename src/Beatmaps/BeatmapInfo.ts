@@ -212,6 +212,25 @@ export class BeatmapInfo implements IBeatmapInfo {
   }
 
   /**
+   * Converts this beatmap information to JSON.
+   * @returns Stringified beatmap information.
+   */
+  toJSON(): string {
+    const result: Partial<this> = {};
+
+    for (const key in this) {
+      if (key.startsWith('_')) continue;
+
+      result[key] = this[key];
+    }
+
+    result.rulesetId = this.rulesetId;
+    result.mods = this.mods;
+
+    return JSON.stringify(result);
+  }
+
+  /**
    * Creates a new deep copy of a beatmap info.
    * @returns Cloned beatmap info.
    */

@@ -169,6 +169,25 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
   }
 
   /**
+   * Converts this score information to JSON.
+   * @returns Stringified score information.
+   */
+  toJSON(): string {
+    const result: Partial<this> = {};
+
+    for (const key in this) {
+      if (key.startsWith('_')) continue;
+
+      result[key] = this[key];
+    }
+
+    result.rulesetId = this.rulesetId;
+    result.mods = this.mods;
+
+    return JSON.stringify(result);
+  }
+
+  /**
    * Creates a deep copy of the score info.
    * @returns Cloned score info.
    */
