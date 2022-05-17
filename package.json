@@ -2,9 +2,11 @@
   "name": "osu-parsers",
   "version": "2.1.1",
   "description": "A bundle of parsers for osu! file formats based on the osu!lazer source code.",
-  "main": "./lib/cjs/index.js",
-  "module": "./lib/esm/index.js",
-  "types": "./lib/esm/index.d.ts",
+  "exports": {
+    "import": "./lib/index.mjs",
+    "require": "./lib/index.cjs"
+  },
+  "types": "./lib/index.d.ts",
   "scripts": {
     "build": "rollup -c && npm run format",
     "test": "jest --verbose",
