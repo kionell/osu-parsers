@@ -1,5 +1,4 @@
 import {
-  DifficultyAttributes,
   DifficultyCalculator,
   IBeatmap,
   IMod,
@@ -76,7 +75,7 @@ export class ManiaDifficultyCalculator extends DifficultyCalculator {
     return super.calculateWithMods(mods) as ManiaDifficultyAttributes;
   }
 
-  protected _createDifficultyAttributes(beatmap: IBeatmap, mods: ModCombination, skills: Skill[]): DifficultyAttributes {
+  protected _createDifficultyAttributes(beatmap: IBeatmap, mods: ModCombination, skills: Skill[]): ManiaDifficultyAttributes {
     if (beatmap.hitObjects.length === 0) {
       return new ManiaDifficultyAttributes(mods, 0);
     }
