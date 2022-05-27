@@ -189,7 +189,7 @@ encoder.encodeToBuffer(score)
 
 This library by itself doesn't provide any tools for difficulty and performance calculation!!!!
 If you are looking for something related to this, then rulesets may come in handy for you.
-Rulesets are a separate libraries based on the classes from the [osu-classes](https://github.com/kionell/osu-classes.git) project. They allow you to work with gamemode specific stuff as difficulty and performance, mods and max combo calculation. Because of the shared logic between all of the rulesets they are compatible between each other. If you want, you can even write your own custom ruleset!
+Rulesets are separate libraries based on the classes from the [osu-classes](https://github.com/kionell/osu-classes.git) project. They allow you to work with gamemode specific stuff as difficulty, performance, mods and max combo calculation. Because of the shared logic between all of the rulesets they are compatible between each other. If you want, you can even write your own custom ruleset!
 The great thing about all this stuff is a beatmap conversion. Any beatmap can be used with any ruleset library as long as they implement the same interfaces.
 
 There are 4 basic rulesets that support parsed beatmaps from this decoder:
