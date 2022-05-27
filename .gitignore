@@ -8,6 +8,7 @@
 !.eslintignore
 !.eslintrc.json
 !.gitignore
+!.npmignore
 !LICENSE
 !package-lock.json
 !package.json
