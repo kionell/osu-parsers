@@ -103,7 +103,12 @@ export abstract class StrainSkill extends Skill {
     let difficulty = 0;
     let weight = 1;
 
-    const peaks = [...this.getCurrentStrainPeaks()];
+    /**
+     * Sections with 0 strain are excluded to avoid 
+     * worst-case time complexity of the following sort (e.g. /b/2351871).
+     * These sections will not contribute to the difficulty.
+     */
+    const peaks = [...this.getCurrentStrainPeaks()].filter((p) => p > 0);
 
     peaks.sort((a, b) => b - a);
 
