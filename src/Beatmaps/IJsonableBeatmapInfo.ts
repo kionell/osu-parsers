@@ -10,5 +10,4 @@ export interface IJsonableBeatmapInfo extends JsonableBeatmapInfo {
    * Stringified mods of the play.
    */
   mods: string;
-
 }
