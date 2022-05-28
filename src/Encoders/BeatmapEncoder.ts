@@ -18,6 +18,11 @@ import {
  */
 export class BeatmapEncoder {
   /**
+   * First playable lazer version.
+   */
+  static readonly FIRST_LAZER_VERSION = 128;
+
+  /**
    * Performs beatmap encoding to the specified path.
    * @param path Path for writing the .osu file.
    * @param beatmap Beatmap for encoding.
@@ -39,8 +44,9 @@ export class BeatmapEncoder {
     if (!beatmap?.fileFormat) return '';
 
     const encoded: string[] = [];
+    const fileFormat = beatmap.fileFormat ?? BeatmapEncoder.FIRST_LAZER_VERSION;
 
-    encoded.push(`osu file format v${beatmap.fileFormat ?? 0}`);
+    encoded.push(`osu file format v${fileFormat}`);
 
     encoded.push(GeneralEncoder.encodeGeneralSection(beatmap));
     encoded.push(EditorEncoder.encodeEditorSection(beatmap));
