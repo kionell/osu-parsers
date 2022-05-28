@@ -72,13 +72,13 @@ export class ScoreDecoder {
     scoreInfo.date = reader.readDate();
 
     const replayLength = reader.readInteger();
+    const compressedBytes = reader.readBytes(replayLength);
 
     let replay = null;
 
     if (parseReplay && replayLength > 0) {
       replay = new Replay();
 
-      const compressedBytes = reader.readBytes(replayLength);
       const replayData = await ReplayDecoder.decompressReplayFrames(compressedBytes);
 
       replay.mode = scoreInfo.rulesetId;
