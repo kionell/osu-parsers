@@ -30,6 +30,8 @@ export class StandardPerformanceCalculator extends PerformanceCalculator {
   constructor(ruleset: IRuleset, attributes?: DifficultyAttributes, score?: IScoreInfo) {
     super(ruleset, attributes, score);
 
+    this.attributes = attributes as StandardDifficultyAttributes;
+
     this._addParams(attributes, score);
   }
 
