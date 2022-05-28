@@ -23,7 +23,9 @@ export abstract class StandardStrainSkill extends StrainSkill {
     let difficulty = 0;
     let weight = 1;
 
-    const strains = [...this.getCurrentStrainPeaks()].sort((a, b) => b - a);
+    const strains = [...this.getCurrentStrainPeaks()]
+      .filter((p) => p > 0)
+      .sort((a, b) => b - a);
 
     /**
      * We are reducing the highest strains first to account for extreme difficulty spikes
