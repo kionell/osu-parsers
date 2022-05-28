@@ -14,34 +14,32 @@ import {
 } from './Attributes';
 
 export class StandardPerformanceCalculator extends PerformanceCalculator {
-  readonly attributes: StandardDifficultyAttributes;
+  attributes?: StandardDifficultyAttributes;
 
-  private _mods: StandardModCombination;
+  private _mods = new StandardModCombination();
 
-  private _scoreMaxCombo: number;
-  private _countGreat: number;
-  private _countOk: number;
-  private _countMeh: number;
-  private _countMiss: number;
-  private _accuracy: number;
+  private _scoreMaxCombo = 0;
+  private _countGreat = 0;
+  private _countOk = 0;
+  private _countMeh = 0;
+  private _countMiss = 0;
+  private _accuracy = 1;
 
   private _effectiveMissCount = 0;
 
-  constructor(ruleset: IRuleset, attributes: DifficultyAttributes, score: IScoreInfo) {
+  constructor(ruleset: IRuleset, attributes?: DifficultyAttributes, score?: IScoreInfo) {
     super(ruleset, attributes, score);
 
-    this.attributes = attributes as StandardDifficultyAttributes;
-    this._mods = (score?.mods as StandardModCombination) ?? new StandardModCombination();
-    this._scoreMaxCombo = this._score.maxCombo ?? 0;
-    this._countGreat = this._score.statistics.great ?? 0;
-    this._countOk = this._score.statistics.ok ?? 0;
-    this._countMeh = this._score.statistics.meh ?? 0;
-    this._countMiss = this._score.statistics.miss ?? 0;
-    this._accuracy = this._score.accuracy ?? 1;
-    this._effectiveMissCount = this._calculateEffectiveMissCount();
+    this._addParams(attributes, score);
   }
 
-  calculateAttributes(): StandardPerformanceAttributes {
+  calculateAttributes(attributes?: StandardDifficultyAttributes, score?: IScoreInfo): StandardPerformanceAttributes {
+    this._addParams(attributes, score);
+
+    if (!this.attributes || !this._score) {
+      return new StandardPerformanceAttributes(this._mods, 0);
+    }
+
     /**
      * This is being adjusted to keep the final pp value scaled around what it used to be when changing things.
      */
@@ -71,10 +69,10 @@ export class StandardPerformanceCalculator extends PerformanceCalculator {
       multiplier *= 0.6;
     }
 
-    const aimValue = this._computeAimValue();
-    const speedValue = this._computeSpeedValue();
-    const accuracyValue = this._computeAccuracyValue();
-    const flashlightValue = this._computeFlashlightValue();
+    const aimValue = this._computeAimValue(this.attributes);
+    const speedValue = this._computeSpeedValue(this.attributes);
+    const accuracyValue = this._computeAccuracyValue(this.attributes);
+    const flashlightValue = this._computeFlashlightValue(this.attributes);
 
     const totalValue = Math.pow(
       Math.pow(aimValue, 1.1) +
@@ -83,19 +81,19 @@ export class StandardPerformanceCalculator extends PerformanceCalculator {
       Math.pow(flashlightValue, 1.1), 1.0 / 1.1,
     ) * multiplier;
 
-    const attributes = new StandardPerformanceAttributes(this._mods, totalValue);
+    const performance = new StandardPerformanceAttributes(this._mods, totalValue);
 
-    attributes.aimPerformance = aimValue;
-    attributes.speedPerformance = speedValue;
-    attributes.accuracyPerformance = accuracyValue;
-    attributes.flashlightPerformance = flashlightValue;
-    attributes.effectiveMissCount = this._effectiveMissCount;
+    performance.aimPerformance = aimValue;
+    performance.speedPerformance = speedValue;
+    performance.accuracyPerformance = accuracyValue;
+    performance.flashlightPerformance = flashlightValue;
+    performance.effectiveMissCount = this._effectiveMissCount;
 
-    return attributes;
+    return performance;
   }
 
-  private _computeAimValue(): number {
-    let rawAim = this.attributes.aimStrain;
+  private _computeAimValue(attributes: StandardDifficultyAttributes): number {
+    let rawAim = attributes.aimStrain;
 
     if (this._mods.has(ModBitwise.TouchDevice)) {
       rawAim = Math.pow(rawAim, 0.8);
@@ -124,20 +122,20 @@ export class StandardPerformanceCalculator extends PerformanceCalculator {
     /**
      * Combo scaling.
      */
-    if (this.attributes.maxCombo > 0) {
+    if (attributes.maxCombo > 0) {
       const pow1 = Math.pow(this._scoreMaxCombo, 0.8);
-      const pow2 = Math.pow(this.attributes.maxCombo, 0.8);
+      const pow2 = Math.pow(attributes.maxCombo, 0.8);
 
       aimValue *= Math.min(pow1 / pow2, 1.0);
     }
 
     let approachRateFactor = 0.0;
 
-    if (this.attributes.approachRate > 10.33) {
-      approachRateFactor = 0.3 * (this.attributes.approachRate - 10.33);
+    if (attributes.approachRate > 10.33) {
+      approachRateFactor = 0.3 * (attributes.approachRate - 10.33);
     }
-    else if (this.attributes.approachRate < 8.0) {
-      approachRateFactor = 0.1 * (8.0 - this.attributes.approachRate);
+    else if (attributes.approachRate < 8.0) {
+      approachRateFactor = 0.1 * (8.0 - attributes.approachRate);
     }
 
     /**
@@ -150,23 +148,23 @@ export class StandardPerformanceCalculator extends PerformanceCalculator {
        * We want to give more reward for lower AR when it comes to aim and HD. 
        * This nerfs high AR and buffs lower AR.
        */
-      aimValue *= 1.0 + 0.04 * (12.0 - this.attributes.approachRate);
+      aimValue *= 1.0 + 0.04 * (12.0 - attributes.approachRate);
     }
 
     /**
      * We assume 15% of sliders in a map are difficult 
      * since there's no way to tell from the performance calculator.
      */
-    const estimateDifficultSliders = this.attributes.sliderCount * 0.15;
+    const estimateDifficultSliders = attributes.sliderCount * 0.15;
 
-    if (this.attributes.sliderCount > 0) {
+    if (attributes.sliderCount > 0) {
       const counts = this._countOk + this._countMeh + this._countMiss;
-      const maxCombo = this.attributes.maxCombo - this._scoreMaxCombo;
+      const maxCombo = attributes.maxCombo - this._scoreMaxCombo;
       const min = Math.min(counts, maxCombo);
 
       const estimateSliderEndsDropped = Math.min(Math.max(min, 0), estimateDifficultSliders);
       const pow = Math.pow(1 - estimateSliderEndsDropped / estimateDifficultSliders, 3);
-      const sliderNerfFactor = (1 - this.attributes.sliderFactor) * pow + this.attributes.sliderFactor;
+      const sliderNerfFactor = (1 - attributes.sliderFactor) * pow + attributes.sliderFactor;
 
       aimValue *= sliderNerfFactor;
     }
@@ -176,13 +174,13 @@ export class StandardPerformanceCalculator extends PerformanceCalculator {
     /**
      * It is important to also consider accuracy difficulty when doing that.
      */
-    aimValue *= 0.98 + Math.pow(this.attributes.overallDifficulty, 2) / 2500;
+    aimValue *= 0.98 + Math.pow(attributes.overallDifficulty, 2) / 2500;
 
     return aimValue;
   }
 
-  private _computeSpeedValue(): number {
-    const max = Math.max(1.0, this.attributes.speedStrain / 0.0675);
+  private _computeSpeedValue(attributes: StandardDifficultyAttributes): number {
+    const max = Math.max(1.0, attributes.speedStrain / 0.0675);
     let speedValue = Math.pow(5.0 * max - 4.0, 3.0) / 100000.0;
 
     /**
@@ -206,17 +204,17 @@ export class StandardPerformanceCalculator extends PerformanceCalculator {
     /**
      * Combo scaling.
      */
-    if (this.attributes.maxCombo > 0) {
+    if (attributes.maxCombo > 0) {
       const pow1 = Math.pow(this._scoreMaxCombo, 0.8);
-      const pow2 = Math.pow(this.attributes.maxCombo, 0.8);
+      const pow2 = Math.pow(attributes.maxCombo, 0.8);
 
       speedValue *= Math.min(pow1 / pow2, 1.0);
     }
 
     let approachRateFactor = 0;
 
-    if (this.attributes.approachRate > 10.33) {
-      approachRateFactor = 0.3 * (this.attributes.approachRate - 10.33);
+    if (attributes.approachRate > 10.33) {
+      approachRateFactor = 0.3 * (attributes.approachRate - 10.33);
     }
 
     /**
@@ -229,14 +227,14 @@ export class StandardPerformanceCalculator extends PerformanceCalculator {
        * We want to give more reward for lower AR when it comes to aim and HD. 
        * This nerfs high AR and buffs lower AR.
        */
-      speedValue *= 1.0 + 0.04 * (12.0 - this.attributes.approachRate);
+      speedValue *= 1.0 + 0.04 * (12.0 - attributes.approachRate);
     }
 
     /**
      * Scale the speed value with accuracy and OD.
      */
-    const pow1 = Math.pow(this.attributes.overallDifficulty, 2) / 750;
-    const max2 = Math.max(this.attributes.overallDifficulty, 8);
+    const pow1 = Math.pow(attributes.overallDifficulty, 2) / 750;
+    const max2 = Math.max(attributes.overallDifficulty, 8);
     const pow2 = Math.pow(this._accuracy, (14.5 - max2) / 2);
 
     speedValue *= (0.95 + pow1) * pow2;
@@ -255,7 +253,7 @@ export class StandardPerformanceCalculator extends PerformanceCalculator {
     return speedValue;
   }
 
-  private _computeAccuracyValue() {
+  private _computeAccuracyValue(attributes: StandardDifficultyAttributes) {
     if (this._mods.has(ModBitwise.Relax)) {
       return 0.0;
     }
@@ -265,7 +263,7 @@ export class StandardPerformanceCalculator extends PerformanceCalculator {
      * of the calculation we focus on hitting the timing hit window.
      */
     let betterAccuracyPercentage = 0;
-    const amountHitObjectsWithAccuracy = this.attributes.hitCircleCount;
+    const amountHitObjectsWithAccuracy = attributes.hitCircleCount;
 
     if (amountHitObjectsWithAccuracy > 0) {
       const greats = this._countGreat - (this._totalHits - amountHitObjectsWithAccuracy);
@@ -285,7 +283,7 @@ export class StandardPerformanceCalculator extends PerformanceCalculator {
      * Considering to use derivation from perfect accuracy 
      * in a probabilistic manner - assume normal distribution.
      */
-    let accuracyValue = Math.pow(1.52163, this.attributes.overallDifficulty)
+    let accuracyValue = Math.pow(1.52163, attributes.overallDifficulty)
       * Math.pow(betterAccuracyPercentage, 24) * 2.83;
 
     /**
@@ -304,12 +302,12 @@ export class StandardPerformanceCalculator extends PerformanceCalculator {
     return accuracyValue;
   }
 
-  private _computeFlashlightValue(): number {
+  private _computeFlashlightValue(attributes: StandardDifficultyAttributes): number {
     if (!this._mods.has(ModBitwise.Flashlight)) {
       return 0.0;
     }
 
-    let rawFlashlight = this.attributes.flashlightRating;
+    let rawFlashlight = attributes.flashlightRating;
 
     if (this._mods.has(ModBitwise.TouchDevice)) {
       rawFlashlight = Math.pow(rawFlashlight, 0.8);
@@ -338,9 +336,9 @@ export class StandardPerformanceCalculator extends PerformanceCalculator {
     /**
      * Combo scaling.
      */
-    if (this.attributes.maxCombo > 0) {
+    if (attributes.maxCombo > 0) {
       const pow1 = Math.pow(this._scoreMaxCombo, 0.8);
-      const pow2 = Math.pow(this.attributes.maxCombo, 0.8);
+      const pow2 = Math.pow(attributes.maxCombo, 0.8);
 
       flashlightValue *= Math.min(pow1 / pow2, 1.0);
     }
@@ -359,19 +357,19 @@ export class StandardPerformanceCalculator extends PerformanceCalculator {
     /**
      * It is important to also consider accuracy difficulty when doing that.
      */
-    flashlightValue *= 0.98 + Math.pow(this.attributes.overallDifficulty, 2) / 2500;
+    flashlightValue *= 0.98 + Math.pow(attributes.overallDifficulty, 2) / 2500;
 
     return flashlightValue;
   }
 
-  private _calculateEffectiveMissCount() {
+  private _calculateEffectiveMissCount(attributes: StandardDifficultyAttributes): number {
     /**
      * Guess the number of misses + slider breaks from combo.
      */
     let comboBasedMissCount = 0;
 
-    if (this.attributes.sliderCount > 0) {
-      const fullComboThreshold = this.attributes.maxCombo - 0.1 * this.attributes.sliderCount;
+    if (attributes.sliderCount > 0) {
+      const fullComboThreshold = attributes.maxCombo - 0.1 * attributes.sliderCount;
 
       if (this._scoreMaxCombo < fullComboThreshold) {
         comboBasedMissCount = fullComboThreshold / Math.max(1.0, this._scoreMaxCombo);
@@ -385,6 +383,23 @@ export class StandardPerformanceCalculator extends PerformanceCalculator {
     comboBasedMissCount = Math.min(comboBasedMissCount, this._totalHits);
 
     return Math.max(this._countMiss, Math.floor(comboBasedMissCount));
+  }
+
+  private _addParams(attributes?: DifficultyAttributes, score?: IScoreInfo): void {
+    if (this._score) {
+      this._mods = score?.mods as StandardModCombination ?? new StandardModCombination();
+      this._scoreMaxCombo = this._score.maxCombo ?? this._scoreMaxCombo;
+      this._countGreat = this._score.statistics.great ?? this._countGreat;
+      this._countOk = this._score.statistics.ok ?? this._countOk;
+      this._countMeh = this._score.statistics.meh ?? this._countMeh;
+      this._countMiss = this._score.statistics.miss ?? this._countMiss;
+      this._accuracy = this._score.accuracy ?? this._accuracy;
+    }
+
+    if (attributes) {
+      this.attributes = attributes as StandardDifficultyAttributes;
+      this._effectiveMissCount = this._calculateEffectiveMissCount(this.attributes);
+    }
   }
 
   private get _totalHits(): number {

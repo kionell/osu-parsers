@@ -93,7 +93,7 @@ export class StandardRuleset extends Ruleset {
    * @param score Score information.
    * @returns A new osu!std performance calculator.
    */
-  createPerformanceCalculator(attributes: StandardDifficultyAttributes, score: IScoreInfo): StandardPerformanceCalculator {
+  createPerformanceCalculator(attributes?: StandardDifficultyAttributes, score?: IScoreInfo): StandardPerformanceCalculator {
     return new StandardPerformanceCalculator(this, attributes, score);
   }
 }
