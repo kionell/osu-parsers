@@ -73,5 +73,5 @@ export interface IRuleset {
    * @param score Score information.
    * @returns A new performance calculator.
    */
-  createPerformanceCalculator(attributes: DifficultyAttributes, score: IScoreInfo): PerformanceCalculator;
+  createPerformanceCalculator(attributes?: DifficultyAttributes, score?: IScoreInfo): PerformanceCalculator;
 }

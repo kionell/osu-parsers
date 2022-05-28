@@ -144,5 +144,5 @@ export abstract class Ruleset implements IRuleset {
    * @param score Score information.
    * @returns A new performance calculator.
    */
-  abstract createPerformanceCalculator(attributes: DifficultyAttributes, score: IScoreInfo): PerformanceCalculator;
+  abstract createPerformanceCalculator(attributes?: DifficultyAttributes, score?: IScoreInfo): PerformanceCalculator;
 }

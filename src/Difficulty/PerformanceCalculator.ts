@@ -1,4 +1,3 @@
-import { ModBitwise } from '../Mods';
 import { IRuleset } from '../Rulesets';
 import { IScoreInfo } from '../Scoring';
 
@@ -8,35 +7,37 @@ import {
 } from './Attributes';
 
 export abstract class PerformanceCalculator {
-  readonly attributes: DifficultyAttributes;
+  readonly attributes?: DifficultyAttributes;
 
   protected readonly _ruleset: IRuleset;
-  protected readonly _score: IScoreInfo;
+  protected readonly _score?: IScoreInfo;
 
-  protected _clockRate = 1;
-
-  constructor(ruleset: IRuleset, attributes: DifficultyAttributes, score: IScoreInfo) {
+  constructor(ruleset: IRuleset, attributes?: DifficultyAttributes, score?: IScoreInfo) {
     this._ruleset = ruleset;
     this._score = score;
 
     if (!attributes) {
-      throw new Error('Attributes are null!');
+      throw new Error('Wrong difficulty attributes!');
     }
 
     this.attributes = attributes;
-
-    if (score.mods?.has(ModBitwise.DoubleTime || ModBitwise.Nightcore)) {
-      this._clockRate = 1.5;
-    }
-
-    if (score.mods?.has(ModBitwise.HalfTime)) {
-      this._clockRate = 0.75;
-    }
   }
 
-  calculate(): number {
-    return this.calculateAttributes().totalPerformance;
+  /**
+   * Calculates total performance of a score by using difficulty attributes of a beatmap.
+   * @param attributes Difficulty attributes.
+   * @param score Score information.
+   * @returns Total performance of a score.
+   */
+  calculate(attributes?: DifficultyAttributes, score?: IScoreInfo): number {
+    return this.calculateAttributes(attributes, score).totalPerformance;
   }
 
-  abstract calculateAttributes(): PerformanceAttributes;
+  /**
+   * Calculates performance attributes of a score by using difficulty attributes of a beatmap.
+   * @param attributes Difficulty attributes.
+   * @param score Score information.
+   * @returns Performance attributes of a score.
+   */
+  abstract calculateAttributes(attributes?: DifficultyAttributes, score?: IScoreInfo): PerformanceAttributes;
 }
