@@ -66,23 +66,21 @@ export class StandardDifficultyCalculator extends DifficultyCalculator {
 
     const sliderFactor = aimRating > 0 ? aimRatingNoSliders / aimRating : 1;
 
-    if (mods.has(ModBitwise.Relax)) {
-      speedRating = 0.0;
-    }
+    if (mods.has(ModBitwise.Relax)) speedRating = 0;
 
     const baseAimPerformance = Math.pow(5 * Math.max(1, aimRating / 0.0675) - 4, 3) / 100000;
     const baseSpeedPerformance = Math.pow(5 * Math.max(1, speedRating / 0.0675) - 4, 3) / 100000;
 
-    let baseFlashlightPerformance = 0.0;
+    let baseFlashlightPerformance = 0;
 
     if (mods.has(ModBitwise.Flashlight)) {
-      baseFlashlightPerformance = Math.pow(flashlightRating, 2.0) * 25.0;
+      baseFlashlightPerformance = Math.pow(flashlightRating, 2) * 25;
     }
 
     const basePerformance = Math.pow(
       Math.pow(baseAimPerformance, 1.1) +
       Math.pow(baseSpeedPerformance, 1.1) +
-      Math.pow(baseFlashlightPerformance, 1.1), 1.0 / 1.1,
+      Math.pow(baseFlashlightPerformance, 1.1), 1 / 1.1,
     );
 
     let starRating = 0;
