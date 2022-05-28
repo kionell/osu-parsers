@@ -18,6 +18,7 @@ import {
   SpinnableObject,
 } from '../../../Objects';
 
+import { BeatmapEncoder } from '../../../Encoders';
 import { Parsing } from '../../../Utils';
 
 /**
@@ -47,7 +48,7 @@ export abstract class HitObjectDecoder {
 
     const bankInfo = new SampleBank();
 
-    HitObjectDecoder.addExtras(data.slice(5), hitObject, bankInfo, offset);
+    HitObjectDecoder.addExtras(data.slice(5), hitObject, bankInfo, offset, beatmap.fileFormat);
 
     if (hitObject.samples.length === 0) {
       hitObject.samples = this.convertSoundType(hitObject.hitSound, bankInfo);
@@ -62,14 +63,15 @@ export abstract class HitObjectDecoder {
    * @param hitObject A parsed hit object.
    * @param bankInfo Sample bank.
    * @param offset The offset to apply to all time values.
+   * @param fileFormat Beatmap file format.
    */
-  static addExtras(data: string[], hitObject: HitObject, bankInfo: SampleBank, offset: number): void {
+  static addExtras(data: string[], hitObject: HitObject, bankInfo: SampleBank, offset: number, fileFormat: number): void {
     if ((hitObject.hitType & HitType.Normal) && data.length > 0) {
       this.readCustomSampleBanks(data[0], bankInfo);
     }
 
     if (hitObject.hitType & HitType.Slider) {
-      return HitObjectDecoder.addSliderExtras(data, hitObject as SlidableObject, bankInfo);
+      return HitObjectDecoder.addSliderExtras(data, hitObject as SlidableObject, bankInfo, fileFormat);
     }
 
     if (hitObject.hitType & HitType.Spinner) {
@@ -86,8 +88,9 @@ export abstract class HitObjectDecoder {
    * @param extras Extra data of slidable object.
    * @param slider A parsed slider.
    * @param bankInfo Sample bank.
+   * @param fileFormat Beatmap file format.
    */
-  static addSliderExtras(extras: string[], slider: SlidableObject, bankInfo: SampleBank): void {
+  static addSliderExtras(extras: string[], slider: SlidableObject, bankInfo: SampleBank, fileFormat: number): void {
     // curveType|curvePoints,slides,length,edgeSounds,edgeSets,hitSample
 
     const pathString = extras[0];
@@ -105,7 +108,9 @@ export abstract class HitObjectDecoder {
      */
     slider.repeats = Math.max(0, repeats - 1);
 
-    slider.path.controlPoints = HitObjectDecoder.convertPathString(pathString, offset);
+    slider.path.controlPoints = HitObjectDecoder
+      .convertPathString(pathString, offset, fileFormat);
+
     slider.path.curveType = slider.path.controlPoints[0].type as PathType;
 
     if (extras.length > 2) {
@@ -233,9 +238,10 @@ export abstract class HitObjectDecoder {
    * 
    * @param pathString The path string.
    * @param offset The positional offset to apply to the control points.
+   * @param fileFormat Beatmap file format.
    * @returns All control points in the resultant path.
    */
-  static convertPathString(pathString: string, offset: Vector2): PathPoint[] {
+  static convertPathString(pathString: string, offset: Vector2, fileFormat: number): PathPoint[] {
     /**
      * This code takes on the responsibility of handling explicit segments of the path ("X" & "Y" from above).
      * Implicit segments are handled by calls to convertPoints().
@@ -263,7 +269,8 @@ export abstract class HitObjectDecoder {
        * The start of the next segment is the index after the type descriptor.
        */
       const endPoint = endIndex < pathSplit.length - 1 ? pathSplit[endIndex + 1] : null;
-      const convertedPoints = HitObjectDecoder.convertPoints(points, endPoint, isFirst, offset);
+      const convertedPoints = HitObjectDecoder
+        .convertPoints(points, endPoint, isFirst, offset, fileFormat);
 
       for (const point of convertedPoints) {
         controlPoints.push(...point);
@@ -275,7 +282,8 @@ export abstract class HitObjectDecoder {
 
     if (endIndex > startIndex) {
       const points = pathSplit.slice(startIndex, endIndex);
-      const convertedPoints = HitObjectDecoder.convertPoints(points, null, isFirst, offset);
+      const convertedPoints = HitObjectDecoder
+        .convertPoints(points, null, isFirst, offset, fileFormat);
 
       for (const point of convertedPoints) {
         controlPoints.push(...point);
@@ -292,6 +300,7 @@ export abstract class HitObjectDecoder {
    * @param isFisrt Whether this is the first segment in the set. 
    * If true the first of the returned segments will contain a zero point.
    * @param offset The positional offset to apply to the control points.
+   * @param fileFormat Beatmap file format.
    * @returns The set of points contained by point list as one or more segments of the path, 
    * prepended by an extra zero point if isFirst is true.
    */
@@ -300,6 +309,7 @@ export abstract class HitObjectDecoder {
     endPoint: string | null,
     isFirst: boolean,
     offset: Vector2,
+    fileFormat: number,
   ): Generator<PathPoint[]> {
     // First control point is zero for the first segment.
     const readOffset = isFirst ? 1 : 0;
@@ -358,6 +368,19 @@ export abstract class HitObjectDecoder {
     while (++endIndex < vertices.length - endPointLength) {
       // Keep incrementing while an implicit segment doesn't need to be started
       if (!vertices[endIndex].position.equals(vertices[endIndex - 1].position)) {
+        continue;
+      }
+
+      const isStableBeatmap = fileFormat < BeatmapEncoder.FIRST_LAZER_VERSION;
+
+      /**
+       * Legacy Catmull sliders don't support multiple segments, 
+       * so adjacent Catmull segments should be treated as a single one.
+       * Importantly, this is not applied to the first control point, 
+       * which may duplicate the slider path's position
+       * resulting in a duplicate (0,0) control point in the resultant list.
+       */
+      if (type === PathType.Catmull && endIndex > 1 && isStableBeatmap) {
         continue;
       }
 
