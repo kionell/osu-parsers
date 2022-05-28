@@ -1,5 +1,6 @@
 import { DifficultyHitObject, IHitObject, Vector2 } from 'osu-classes';
 import { Slider, SliderRepeat, Spinner, StandardHitObject } from '../../Objects';
+import { StandardHidden } from '../../Mods';
 
 export class StandardDifficultyHitObject extends DifficultyHitObject {
   /**
@@ -58,14 +59,16 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
    */
   readonly strainTime: number;
 
+  readonly baseObject: StandardHitObject;
+  readonly lastObject: StandardHitObject;
   private readonly _lastLastObject: StandardHitObject;
-  private readonly _lastObject: StandardHitObject;
 
   constructor(hitObject: IHitObject, lastLastObject: IHitObject | null, lastObject: IHitObject, clockRate: number) {
     super(hitObject, lastObject, clockRate);
 
+    this.baseObject = hitObject as StandardHitObject;
+    this.lastObject = lastObject as StandardHitObject;
     this._lastLastObject = lastLastObject as StandardHitObject;
-    this._lastObject = lastObject as StandardHitObject;
 
     /**
      * Capped to 25ms to prevent difficulty calculation breaking from simultaneous objects.
@@ -73,6 +76,38 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
     this.strainTime = Math.max(this.deltaTime, this._MIN_DELTA_TIME);
 
     this._setDistances(clockRate);
+  }
+
+  opacityAt(time: number, isHidden: boolean): number {
+    if (time > this.baseObject.startTime) {
+      /**
+       * Consider a hitobject as being invisible when its start time is passed.
+       * In reality the hitobject will be visible beyond 
+       * its start time up until its hittable window has passed,
+       * but this is an approximation and such a case 
+       * is unlikely to be hit where this function is used.
+       */
+      return 0;
+    }
+
+    const fadeInStartTime = this.baseObject.startTime - this.baseObject.timePreempt;
+    const fadeInDuration = this.baseObject.timeFadeIn;
+
+    if (isHidden) {
+      // This is taken from osu!standard Hidden mod.
+      const fadeOutStartTime = this.baseObject.startTime
+        - this.baseObject.timePreempt + this.baseObject.timeFadeIn;
+
+      const fadeOutDuration = this.baseObject.timePreempt
+        * StandardHidden.FADE_OUT_DURATION_MULTIPLIER;
+
+      const clamp1 = Math.max(0, Math.min((time - fadeInStartTime) / fadeInDuration, 1));
+      const clamp2 = Math.max(0, Math.min((time - fadeOutStartTime) / fadeOutDuration, 1));
+
+      return Math.min(clamp1, 1 - clamp2);
+    }
+
+    return Math.max(0, Math.min((time - fadeInStartTime) / fadeInDuration, 1));
   }
 
   private _setDistances(clockRate: number): void {
@@ -250,7 +285,7 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
     /**
      * Bonus for repeat sliders until a better per nested object strain system can be achieved.
      */
-    slider.lazyTravelDistance *= Math.fround(Math.pow(1 + slider.repeats / 2.5, 1.0 / 2.5));
+    slider.lazyTravelDistance *= Math.fround(Math.pow(1 + slider.repeats / 2.5, 1 / 2.5));
   }
 
   private _getEndCursorPosition(hitObject: StandardHitObject): Vector2 {

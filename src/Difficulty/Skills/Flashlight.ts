@@ -1,4 +1,5 @@
 import { DifficultyHitObject } from 'osu-classes';
+import { StandardModCombination } from '../../Mods';
 import { Spinner, StandardHitObject } from '../../Objects';
 import { StandardDifficultyHitObject } from '../Preprocessing/StandardDifficultyHitObject';
 import { StandardStrainSkill } from './StandardStrainSkill';
@@ -8,12 +9,22 @@ import { StandardStrainSkill } from './StandardStrainSkill';
  * every object in a map with the Flashlight mod enabled.
  */
 export class Flashlight extends StandardStrainSkill {
-  private _skillMultiplier = 0.07;
+  private _skillMultiplier = 0.05;
   private _strainDecayBase = 0.15;
 
   protected _decayWeight = 1;
-
   private _currentStrain = 0;
+
+  private readonly _isHidden: boolean;
+
+  private static readonly MAX_OPACITY_BONUS = 0.4;
+  private static readonly HIDDEN_BONUS = 0.2;
+
+  constructor(mods: StandardModCombination) {
+    super(mods);
+
+    this._isHidden = mods.has('HD');
+  }
 
   /**
    * Look back for 10 notes is added for the sake of flashlight calculations.
@@ -34,6 +45,7 @@ export class Flashlight extends StandardStrainSkill {
 
     let smallDistNerf = 1;
     let cumulativeStrainTime = 0;
+
     let result = 0;
 
     let lastObj = osuCurrent;
@@ -63,13 +75,22 @@ export class Flashlight extends StandardStrainSkill {
          */
         const stackNerf = Math.min(1, (currentObj.lazyJumpDistance / scalingFactor) / 25);
 
-        result += stackNerf * scalingFactor * jumpDistance / cumulativeStrainTime;
+        // Bonus based on how visible the object is.
+        const opacityBonus = 1 + Flashlight.MAX_OPACITY_BONUS
+          * (1 - osuCurrent.opacityAt(currentHitObject.startTime, this._isHidden));
+
+        result += stackNerf * opacityBonus * scalingFactor * jumpDistance / cumulativeStrainTime;
       }
 
       lastObj = currentObj;
     }
 
-    return Math.pow(smallDistNerf * result, 2);
+    result = Math.pow(smallDistNerf * result, 2);
+
+    // Additional bonus for Hidden due to there being no approach circles.
+    if (this._isHidden) result *= 1 + Flashlight.HIDDEN_BONUS;
+
+    return result;
   }
 
   private _strainDecay(ms: number): number {
