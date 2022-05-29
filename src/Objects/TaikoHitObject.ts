@@ -1,5 +1,8 @@
 import { HitObject } from 'osu-classes';
 
 export abstract class TaikoHitObject extends HitObject {
-  static DEFAULT_SIZE: number = Math.fround(0.45);
+  /**
+   * Default size of a drawable taiko hit object.
+   */
+  static DEFAULT_SIZE: number = Math.fround(0.475);
 }
