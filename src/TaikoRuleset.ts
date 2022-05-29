@@ -93,7 +93,7 @@ export class TaikoRuleset extends Ruleset {
    * @param score Score information.
    * @returns A new osu!taiko performance calculator.
    */
-  createPerformanceCalculator(attributes: TaikoDifficultyAttributes, score: ScoreInfo): TaikoPerformanceCalculator {
+  createPerformanceCalculator(attributes?: TaikoDifficultyAttributes, score?: ScoreInfo): TaikoPerformanceCalculator {
     return new TaikoPerformanceCalculator(this, attributes, score);
   }
 }

@@ -13,30 +13,31 @@ import {
 
 import { TaikoModCombination } from '../Mods';
 export class TaikoPerformanceCalculator extends PerformanceCalculator {
-  readonly attributes: TaikoDifficultyAttributes;
+  attributes: TaikoDifficultyAttributes;
 
-  private _mods: TaikoModCombination;
+  private _mods = new TaikoModCombination();
 
-  private _countGreat: number;
-  private _countOk: number;
-  private _countMeh: number;
-  private _countMiss: number;
-  private _accuracy: number;
+  private _countGreat = 0;
+  private _countOk = 0;
+  private _countMeh = 0;
+  private _countMiss = 0;
+  private _accuracy = 1;
 
-  constructor(ruleset: IRuleset, attributes: DifficultyAttributes, score: IScoreInfo) {
+  constructor(ruleset: IRuleset, attributes?: DifficultyAttributes, score?: IScoreInfo) {
     super(ruleset, attributes, score);
 
     this.attributes = attributes as TaikoDifficultyAttributes;
 
-    this._mods = (score?.mods as TaikoModCombination) ?? new TaikoModCombination();
-    this._countGreat = this._score.statistics.great ?? 0;
-    this._countOk = this._score.statistics.ok ?? 0;
-    this._countMeh = this._score.statistics.meh ?? 0;
-    this._countMiss = this._score.statistics.miss ?? 0;
-    this._accuracy = this._score.accuracy ?? 1;
+    this._addParams(attributes, score);
   }
 
-  calculateAttributes(): TaikoPerformanceAttributes {
+  calculateAttributes(attributes?: DifficultyAttributes, score?: IScoreInfo): TaikoPerformanceAttributes {
+    this._addParams(attributes, score);
+
+    if (!this.attributes || !this._score) {
+      return new TaikoPerformanceAttributes(this._mods, 0);
+    }
+
     /**
      * Custom multipliers for NoFail and SpunOut.
      * This is being adjusted to keep the final pp value 
@@ -60,12 +61,12 @@ export class TaikoPerformanceCalculator extends PerformanceCalculator {
       Math.pow(accuracyValue, 1.1), 1.0 / 1.1,
     ) * multiplier;
 
-    const attributes = new TaikoPerformanceAttributes(this._mods, totalValue);
+    const performance = new TaikoPerformanceAttributes(this._mods, totalValue);
 
-    attributes.strainPerformance = strainValue;
-    attributes.accuracyPerformance = accuracyValue;
+    performance.strainPerformance = strainValue;
+    performance.accuracyPerformance = accuracyValue;
 
-    return attributes;
+    return performance;
   }
 
   private _computeStrainValue(): number {
@@ -116,12 +117,27 @@ export class TaikoPerformanceCalculator extends PerformanceCalculator {
      * in a probabilistic manner - assume normal distribution
      */
     const accValue = Math.pow(150.0 / this.attributes.greatHitWindow, 1.1)
-      * Math.pow(this._score.accuracy, 15) * 22.0;
+      * Math.pow(this._accuracy, 15) * 22.0;
 
     /**
      * Bonus for many hitcircles - it's harder to keep good accuracy up for longer
      */
     return accValue * Math.min(1.15, Math.pow(this._totalHits / 1500.0, 0.3));
+  }
+
+  private _addParams(attributes?: DifficultyAttributes, score?: IScoreInfo): void {
+    if (score) {
+      this._mods = score?.mods as TaikoModCombination ?? new TaikoModCombination();
+      this._countGreat = score.statistics.great ?? this._countGreat;
+      this._countOk = score.statistics.ok ?? this._countOk;
+      this._countMeh = score.statistics.meh ?? this._countMeh;
+      this._countMiss = score.statistics.miss ?? this._countMiss;
+      this._accuracy = score.accuracy ?? this._accuracy;
+    }
+
+    if (attributes) {
+      this.attributes = attributes as TaikoDifficultyAttributes;
+    }
   }
 
   private get _totalHits(): number {
