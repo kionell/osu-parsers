@@ -114,9 +114,6 @@ const moddedAttributes1 = difficultyCalculator1.calculateWithMods(mods); // with
 const difficultyCalculator2 = ruleset.createDifficultyCalculator(standardWithMods);
 const difficultyAttributes2 = difficultyCalculator2.calculate(); // with mods!
 const moddedAttributes2 = difficultyCalculator2.calculateWithMods(mods); // the same as previous line.
-
-// Get difficulty attributes for every mod combination of difficulty increase mods.
-const allAttributes = [...difficultyCalculator1.calculateAll()];
 ```
 
 ## Example of performance calculation
@@ -146,18 +143,17 @@ const difficultyCalculator = ruleset.createDifficultyCalculator(standardBeatmap)
 // Calculate difficulty attributes.
 const difficultyAttributes = difficultyCalculator.calculate();
 
-// Create new Score.
-const score = new ScoreInfo();
-
 // Stella-rium (Asterisk MAKINA Remix) [Starlight]
 // sakamata1 + HDDT 1192.44 pp.
-score.mods = mods;
-score.maxCombo = 2078;
-score.rulesetId = 0;
-score.count300 = 1576; // score.statistics.great
-score.count100 = 24; // score.statistics.good
-score.count50 = 0; // score.statistics.meh
-score.countMiss = 0; // score.statistics.miss
+const score = new ScoreInfo({
+  maxCombo: 2078,
+  rulesetId: 0,
+  count300: 1576, // score.statistics.great
+  count100: 24, // score.statistics.good
+  count50: 0, // score.statistics.meh
+  countMiss: 0, // score.statistics.miss
+  mods,
+});
 
 score.accuracy = (score.count300 + (score.count100 / 3) + (score.count50 / 6)) 
   / (score.count300 + score.count100 + score.count50 + score.countMiss);
