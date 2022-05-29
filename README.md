@@ -114,9 +114,6 @@ const moddedAttributes1 = difficultyCalculator1.calculateWithMods(mods); // with
 const difficultyCalculator2 = ruleset.createDifficultyCalculator(taikoWithMods);
 const difficultyAttributes2 = difficultyCalculator2.calculate(); // with mods!
 const moddedAttributes2 = difficultyCalculator2.calculateWithMods(mods); // the same as previous line.
-
-// Get difficulty attributes for every mod combination.
-const allAttributes = [...difficultyCalculator1.calculateAll()];
 ```
 
 ## Example of performance calculation
@@ -146,17 +143,16 @@ const difficultyCalculator = ruleset.createDifficultyCalculator(taikoBeatmap);
 // Calculate difficulty attributes.
 const difficultyAttributes = difficultyCalculator.calculate();
 
-// Create new Score.
-const score = new ScoreInfo();
-
 // DragonForce - Extraction Zone [Tatsujin]
 // syaron105 + HDNC 659.064 pp.
-score.mods = mods;
-score.maxCombo = 2472;
-score.rulesetId = 1;
-score.count300 = 2445; // score.statistics.great
-score.count100 = 27; // score.statistics.ok
-score.countMiss = 0; // score.statistics.miss
+const score = new ScoreInfo({
+  maxCombo: 2472,
+  rulesetId: 1,
+  count300: 2445, // score.statistics.great
+  count100: 27, // score.statistics.ok
+  countMiss: 0, // score.statistics.miss
+  mods,
+});
 
 score.accuracy = (score.count300 + score.count100 / 2)
   / (score.count300 + score.count100 + score.countMiss);
