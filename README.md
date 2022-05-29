@@ -114,9 +114,6 @@ const moddedAttributes1 = difficultyCalculator1.calculateWithMods(mods); // with
 const difficultyCalculator2 = ruleset.createDifficultyCalculator(maniaWithMods);
 const difficultyAttributes2 = difficultyCalculator2.calculate(); // with mods!
 const moddedAttributes2 = difficultyCalculator2.calculateWithMods(mods); // the same as previous line.
-
-// Get difficulty attributes for every mod combination.
-const allAttributes = [...difficultyCalculator1.calculateAll()];
 ```
 
 ## Example of performance calculation
@@ -146,20 +143,19 @@ const difficultyCalculator = ruleset.createDifficultyCalculator(maniaBeatmap);
 const mods = ruleset.createModCombination('NC');
 const difficultyAttributes = difficultyCalculator.calculateWithMods(mods);
 
-// Create new Score.
-const score = new ScoreInfo();
-
 // penoreri - Monochrome and Vivid [[7K] New Palettes]
 // Jakads + NC 1437.29 pp.
-score.mods = mods;
-score.rulesetId = 3;
-score.totalScore = 975283;
-score.countGeki = 4288; // score.statistics.perfect
-score.count300 = 1180; // score.statistics.great
-score.countKatu = 57; // score.statistics.good
-score.count100 = 2; // score.statistics.ok
-score.count50 = 0; // score.statistics.meh
-score.countMiss = 6; // score.statistics.miss
+const score = new ScoreInfo({
+  rulesetId: 3,
+  totalScore: 975283,
+  countGeki: 4288, // score.statistics.perfect
+  count300: 1180, // score.statistics.great
+  countKatu: 57, // score.statistics.good
+  count100: 2, // score.statistics.ok
+  count50: 0, // score.statistics.meh
+  countMiss: 6, // score.statistics.miss
+  mods,
+});
 
 // Create performance calculator for osu!mania ruleset.
 const performanceCalculator = ruleset.createPerformanceCalculator(difficultyAttributes, score);
