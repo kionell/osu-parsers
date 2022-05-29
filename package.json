@@ -1,6 +1,6 @@
 {
   "name": "osu-mania-stable",
-  "version": "2.1.5",
+  "version": "2.1.6",
   "description": "osu!stable version of osu!mania ruleset based on osu!lazer source code.",
   "exports": {
     "import": "./lib/index.mjs",
