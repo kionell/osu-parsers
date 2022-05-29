@@ -12,7 +12,6 @@ import {
 
 import {
   IBeatmapValues,
-  IModdedValues,
   IStarRatings,
   IPerformances,
 } from '../Interfaces';
@@ -36,18 +35,7 @@ export class BeatmapMatcher {
   }
 
   matchBeatmapValues(values: IBeatmapValues): void {
-    expect(this._beatmap.circles).toEqual(values.hittable);
-    expect(this._beatmap.sliders).toEqual(values.slidable);
-    expect(this._beatmap.spinners).toEqual(values.spinnable);
-    expect(this._beatmap.hitObjects.length).toEqual(values.objects);
     expect(this._beatmap.maxCombo).toEqual(values.maxCombo);
-  }
-
-  matchModdedValues(moddedValues: IModdedValues, moddedBeatmap: StandardBeatmap): void {
-    expect(moddedBeatmap.difficulty.circleSize).toBeCloseTo(moddedValues.difficulty.circleSize);
-    expect(moddedBeatmap.difficulty.approachRate).toBeCloseTo(moddedValues.difficulty.approachRate);
-    expect(moddedBeatmap.difficulty.drainRate).toBeCloseTo(moddedValues.difficulty.drainRate);
-    expect(moddedBeatmap.difficulty.overallDifficulty).toBeCloseTo(moddedValues.difficulty.overallDifficulty);
   }
 
   matchStarRatings(stars: IStarRatings): void {

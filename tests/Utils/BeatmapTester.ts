@@ -56,20 +56,6 @@ export class BeatmapTester {
     const { values, starRatings, performances } = loadedFiles;
 
     test('Match beatmap values', () => this.matcher.matchBeatmapValues(values));
-
-    /**
-     * Matching beatmaps with HR & EZ. Also check if beatmap 
-     * was copied properly and didn't mutated from the converts.
-     */
-    values.moddedValues.forEach((moddedValues) => {
-      test(`Applying ${moddedValues.mods}`, () => {
-        const mods = this._ruleset.createModCombination(moddedValues.mods);
-        const moddedBeatmap = this._ruleset.applyToBeatmapWithMods(this.beatmap, mods);
-
-        this.matcher.matchModdedValues(moddedValues, moddedBeatmap);
-      });
-    });
-
     test('Match star ratings', () => this.matcher.matchStarRatings(starRatings));
     test('Match performaces', () => this.matcher.matchPerformances(performances));
   }
