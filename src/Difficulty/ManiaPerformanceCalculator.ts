@@ -14,39 +14,38 @@ import {
 import { ManiaModCombination } from '../Mods';
 
 export class ManiaPerformanceCalculator extends PerformanceCalculator {
-  readonly attributes: ManiaDifficultyAttributes;
+  attributes: ManiaDifficultyAttributes;
 
-  private _mods: ManiaModCombination;
+  private _mods = new ManiaModCombination();
 
-  private _totalScore;
-  private _countPerfect;
-  private _countGreat;
-  private _countGood;
-  private _countOk;
-  private _countMeh;
-  private _countMiss;
+  private _totalScore = 0;
+  private _countPerfect = 0;
+  private _countGreat = 0;
+  private _countGood = 0;
+  private _countOk = 0;
+  private _countMeh = 0;
+  private _countMiss = 0;
 
   /**
    * Score after being scaled by non-difficulty-increasing mods.
    */
   private _scaledScore = 0;
 
-  constructor(ruleset: IRuleset, attributes: DifficultyAttributes, score: IScoreInfo) {
+  constructor(ruleset: IRuleset, attributes?: DifficultyAttributes, score?: IScoreInfo) {
     super(ruleset, attributes, score);
 
     this.attributes = attributes as ManiaDifficultyAttributes;
-    this._mods = (score?.mods as ManiaModCombination) ?? new ManiaModCombination();
 
-    this._totalScore = score.totalScore ?? 0;
-    this._countPerfect = score.statistics.perfect ?? 0;
-    this._countGreat = score.statistics.great ?? 0;
-    this._countGood = score.statistics.good ?? 0;
-    this._countOk = score.statistics.ok ?? 0;
-    this._countMeh = score.statistics.meh ?? 0;
-    this._countMiss = score.statistics.miss ?? 0;
+    this._addParams(attributes, score);
   }
 
-  calculateAttributes(): ManiaPerformanceAttributes {
+  calculateAttributes(attributes?: DifficultyAttributes, score?: IScoreInfo): ManiaPerformanceAttributes {
+    this._addParams(attributes, score);
+
+    if (!this.attributes || !this._score) {
+      return new ManiaPerformanceAttributes(this._mods, 0);
+    }
+
     if (this.attributes.scoreMultiplier > 0) {
       /**
        * Scale score up, so it's comparable to other keymods
@@ -78,13 +77,13 @@ export class ManiaPerformanceCalculator extends PerformanceCalculator {
       Math.pow(accValue, 1.1), 1.0 / 1.1,
     ) * multiplier;
 
-    const attributes = new ManiaPerformanceAttributes(this._mods, totalValue);
+    const performance = new ManiaPerformanceAttributes(this._mods, totalValue);
 
-    attributes.strainPerformance = strainValue;
-    attributes.accuracyPerformance = accValue;
-    attributes.scaledScore = this._scaledScore;
+    performance.strainPerformance = strainValue;
+    performance.accuracyPerformance = accValue;
+    performance.scaledScore = this._scaledScore;
 
-    return attributes;
+    return performance;
   }
 
   private _computeStrainValue(): number {
@@ -142,6 +141,23 @@ export class ManiaPerformanceCalculator extends PerformanceCalculator {
     }
 
     return 0.90 + (scaledScore - 900000) / 100000 * 0.1;
+  }
+
+  private _addParams(attributes?: DifficultyAttributes, score?: IScoreInfo): void {
+    if (score) {
+      this._mods = score?.mods as ManiaModCombination ?? this._mods;
+      this._totalScore = score.totalScore ?? 0;
+      this._countPerfect = score.statistics.perfect ?? 0;
+      this._countGreat = score.statistics.great ?? 0;
+      this._countGood = score.statistics.good ?? 0;
+      this._countOk = score.statistics.ok ?? 0;
+      this._countMeh = score.statistics.meh ?? 0;
+      this._countMiss = score.statistics.miss ?? 0;
+    }
+
+    if (attributes) {
+      this.attributes = attributes as ManiaDifficultyAttributes;
+    }
   }
 
   private get _totalHits(): number {

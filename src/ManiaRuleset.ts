@@ -93,7 +93,7 @@ export class ManiaRuleset extends Ruleset {
    * @param score Score information.
    * @returns A new osu!mania performance calculator.
    */
-  createPerformanceCalculator(attributes: ManiaDifficultyAttributes, score: ScoreInfo): ManiaPerformanceCalculator {
+  createPerformanceCalculator(attributes?: ManiaDifficultyAttributes, score?: ScoreInfo): ManiaPerformanceCalculator {
     return new ManiaPerformanceCalculator(this, attributes, score);
   }
 }
