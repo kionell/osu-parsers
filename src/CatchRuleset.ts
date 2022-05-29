@@ -93,7 +93,7 @@ export class CatchRuleset extends Ruleset {
    * @param score Score information.
    * @returns A new osu!catch performance calculator.
    */
-  createPerformanceCalculator(attributes: CatchDifficultyAttributes, score: ScoreInfo): CatchPerformanceCalculator {
+  createPerformanceCalculator(attributes?: CatchDifficultyAttributes, score?: ScoreInfo): CatchPerformanceCalculator {
     return new CatchPerformanceCalculator(this, attributes, score);
   }
 }

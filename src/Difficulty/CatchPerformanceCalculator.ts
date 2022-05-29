@@ -14,29 +14,31 @@ import {
 import { CatchModCombination } from '../Mods';
 
 export class CatchPerformanceCalculator extends PerformanceCalculator {
-  readonly attributes: CatchDifficultyAttributes;
+  attributes: CatchDifficultyAttributes;
 
-  private _mods: CatchModCombination;
+  private _mods = new CatchModCombination();
 
-  private _fruitsHit: number;
-  private _ticksHit: number;
-  private _tinyTicksHit: number;
-  private _tinyTicksMissed: number;
-  private _misses: number;
+  private _fruitsHit = 0;
+  private _ticksHit = 0;
+  private _tinyTicksHit = 0;
+  private _tinyTicksMissed = 0;
+  private _misses = 0;
 
-  constructor(ruleset: IRuleset, attributes: DifficultyAttributes, score: IScoreInfo) {
+  constructor(ruleset: IRuleset, attributes?: DifficultyAttributes, score?: IScoreInfo) {
     super(ruleset, attributes, score);
 
     this.attributes = attributes as CatchDifficultyAttributes;
-    this._mods = (score?.mods as CatchModCombination) ?? new CatchModCombination();
-    this._fruitsHit = this._score.statistics.great ?? 0;
-    this._ticksHit = this._score.statistics.largeTickHit ?? 0;
-    this._tinyTicksHit = this._score.statistics.smallTickHit ?? 0;
-    this._tinyTicksMissed = this._score.statistics.smallTickMiss ?? 0;
-    this._misses = this._score.statistics.miss ?? 0;
+
+    this._addParams(attributes, score);
   }
 
-  calculateAttributes(): CatchPerformanceAttributes {
+  calculateAttributes(attributes?: DifficultyAttributes, score?: IScoreInfo): CatchPerformanceAttributes {
+    this._addParams(attributes, score);
+
+    if (!this.attributes || !this._score) {
+      return new CatchPerformanceAttributes(this._mods, 0);
+    }
+
     /**
      * We are heavily relying on aim in catch the beat.
      */
@@ -136,6 +138,21 @@ export class CatchPerformanceCalculator extends PerformanceCalculator {
     }
 
     return new CatchPerformanceAttributes(this._mods, totalValue);
+  }
+
+  private _addParams(attributes?: DifficultyAttributes, score?: IScoreInfo): void {
+    if (score) {
+      this._mods = score?.mods as CatchModCombination ?? this._mods;
+      this._fruitsHit = score.statistics.great ?? this._fruitsHit;
+      this._ticksHit = score.statistics.largeTickHit ?? this._ticksHit;
+      this._tinyTicksHit = score.statistics.smallTickHit ?? this._tinyTicksHit;
+      this._tinyTicksMissed = score.statistics.smallTickMiss ?? this._tinyTicksMissed;
+      this._misses = score.statistics.miss ?? this._misses;
+    }
+
+    if (attributes) {
+      this.attributes = attributes as CatchDifficultyAttributes;
+    }
   }
 
   private get _accuracy(): number {
