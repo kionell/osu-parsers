@@ -213,7 +213,14 @@ export class TaikoDifficultyCalculator extends DifficultyCalculator {
 
       const values = [colourPeak, rhythmPeak, staminaPeak];
 
-      peaks.push(TaikoDifficultyCalculator._norm(2, values));
+      const peak = TaikoDifficultyCalculator._norm(2, values);
+
+      /**
+       * Sections with 0 strain are excluded to avoid worst-case 
+       * time complexity of the following sort (e.g. /b/2351871).
+       * These sections will not contribute to the difficulty.
+       */
+      if (peak > 0) peaks.push(peak);
     }
 
     let difficulty = 0;
