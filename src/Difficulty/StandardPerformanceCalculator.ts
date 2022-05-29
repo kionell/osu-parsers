@@ -388,14 +388,14 @@ export class StandardPerformanceCalculator extends PerformanceCalculator {
   }
 
   private _addParams(attributes?: DifficultyAttributes, score?: IScoreInfo): void {
-    if (this._score) {
+    if (score) {
       this._mods = score?.mods as StandardModCombination ?? new StandardModCombination();
-      this._scoreMaxCombo = this._score.maxCombo ?? this._scoreMaxCombo;
-      this._countGreat = this._score.statistics.great ?? this._countGreat;
-      this._countOk = this._score.statistics.ok ?? this._countOk;
-      this._countMeh = this._score.statistics.meh ?? this._countMeh;
-      this._countMiss = this._score.statistics.miss ?? this._countMiss;
-      this._accuracy = this._score.accuracy ?? this._accuracy;
+      this._scoreMaxCombo = score.maxCombo ?? this._scoreMaxCombo;
+      this._countGreat = score.statistics.great ?? this._countGreat;
+      this._countOk = score.statistics.ok ?? this._countOk;
+      this._countMeh = score.statistics.meh ?? this._countMeh;
+      this._countMiss = score.statistics.miss ?? this._countMiss;
+      this._accuracy = score.accuracy ?? this._accuracy;
     }
 
     if (attributes) {
