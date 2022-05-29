@@ -115,9 +115,6 @@ const moddedAttributes1 = difficultyCalculator1.calculateWithMods(mods); // with
 const difficultyCalculator2 = ruleset.createDifficultyCalculator(catchWithMods);
 const difficultyAttributes2 = difficultyCalculator2.calculate(); // with mods!
 const moddedAttributes2 = difficultyCalculator2.calculateWithMods(mods); // the same as previous line.
-
-// Get difficulty attributes for every mod combination of difficulty increase mods.
-const allAttributes = [...difficultyCalculator1.calculateAll()];
 ```
 
 ## Example of performance calculation
@@ -147,19 +144,18 @@ const difficultyCalculator = ruleset.createDifficultyCalculator(catchBeatmap);
 const mods = ruleset.createModCombination('HDHR');
 const difficultyAttributes = difficultyCalculator.calculateWithMods(mods);
 
-// Create new Score.
-const score = new ScoreInfo();
-
 // Kaneko Chiharu - iLLness LiLin [CRYSTAL'S DYSTOPIA]
 // YesMyDarknesss + HDHR 1380.09 pp.
-score.mods = mods;
-score.rulesetId = 2;
-score.maxCombo = 1420;
-score.count300 = 1358; // score.statistics.great
-score.count100 = 62; // score.statistics.largeTickHit
-score.count50 = 83; // score.statistics.smallTickHit
-score.countKatu = 2; // score.statistics.smallTickMiss
-score.countMiss = 0; // score.statistics.misses
+const score = new ScoreInfo({
+  rulesetId: 2,
+  maxCombo: 1420,
+  count300: 1358, // score.statistics.great
+  count100: 62, // score.statistics.largeTickHit
+  count50: 83, // score.statistics.smallTickHit
+  countKatu: 2, // score.statistics.smallTickMiss
+  countMiss: 0, // score.statistics.misses
+  mods,
+});
 
 // Create performance calculator for osu!catch ruleset.
 const performanceCalculator = ruleset.createPerformanceCalculator(difficultyAttributes, score);
