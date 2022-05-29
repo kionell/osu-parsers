@@ -91,7 +91,7 @@ export class ManiaDifficultyCalculator extends DifficultyCalculator {
     const attributes = new ManiaDifficultyAttributes(mods, starRating);
 
     attributes.mods = mods;
-    attributes.greatHitWindow = Math.ceil(this._getHitWindow300(mods) / clockRate);
+    attributes.greatHitWindow = Math.ceil(Math.trunc(this._getHitWindow300(mods) * clockRate) / clockRate);
     attributes.scoreMultiplier = this._getScoreMultiplier(mods);
     attributes.maxCombo = (beatmap as ManiaBeatmap).maxCombo;
 
@@ -151,20 +151,14 @@ export class ManiaDifficultyCalculator extends DifficultyCalculator {
   private _getHitWindow300(mods: ModCombination): number {
     const applyModAdjustments = (value: number) => {
       if (mods.has(ModBitwise.HardRock)) {
-        value /= 1.4;
-      }
-      else if (mods.has(ModBitwise.Easy)) {
-        value *= 1.4;
+        return value / 1.4;
       }
 
-      if (mods.has(ModBitwise.DoubleTime)) {
-        value *= 1.5;
-      }
-      else if (mods.has(ModBitwise.HalfTime)) {
-        value *= 0.75;
+      if (mods.has(ModBitwise.Easy)) {
+        return value * 1.4;
       }
 
-      return Math.trunc(value);
+      return value;
     };
 
     if (this._isForCurrentRuleset) {
@@ -183,9 +177,9 @@ export class ManiaDifficultyCalculator extends DifficultyCalculator {
   private _getScoreMultiplier(mods: ModCombination): number {
     let scoreMultiplier = 1;
 
-    if (mods.has('NF') || mods.has('EZ') || mods.has('HT')) {
-      scoreMultiplier *= 0.5;
-    }
+    if (mods.has(ModBitwise.NoFail)) scoreMultiplier *= 0.5;
+    if (mods.has(ModBitwise.Easy)) scoreMultiplier *= 0.5;
+    if (mods.has(ModBitwise.HalfTime)) scoreMultiplier *= 0.5;
 
     const maniaBeatmap = this._beatmap as ManiaBeatmap;
 
@@ -194,12 +188,8 @@ export class ManiaDifficultyCalculator extends DifficultyCalculator {
 
     const diff = totalColumns - originalTotalColumns;
 
-    if (diff > 0) {
-      scoreMultiplier *= 0.9;
-    }
-    else if (diff < 0) {
-      scoreMultiplier *= 0.9 + 0.04 * diff;
-    }
+    if (diff > 0) return scoreMultiplier * 0.9;
+    if (diff < 0) return scoreMultiplier * 0.9 + 0.04 * diff;
 
     return scoreMultiplier;
   }
