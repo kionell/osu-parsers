@@ -29,10 +29,10 @@ export class SpecificBeatmapPatternGenerator extends PatternGenerator {
       hold.startTime = this.hitObject.startTime;
       hold.endTime = (this.hitObject as IHoldableObject).endTime ?? hold.startTime;
       hold.originalColumn = column;
-      hold.samples = this.hitObject.samples.map((s) => s.clone());
+      hold.samples = this.hitObject.samples;
       hold.hitType = HitType.Hold | (this.hitObject.hitType & HitType.NewCombo);
       hold.nodeSamples = hold.nodeSamples || defaultNodeSamples;
-      hold.startPosition = posData?.startPosition?.clone() ?? new Vector2(256, 192);
+      hold.startPosition = posData?.startPosition ?? new Vector2(256, 192);
 
       pattern.addHitObject(hold);
     }
@@ -43,8 +43,8 @@ export class SpecificBeatmapPatternGenerator extends PatternGenerator {
       note.startTime = this.hitObject.startTime;
       note.originalColumn = column;
       note.hitType = HitType.Normal | (this.hitObject.hitType & HitType.NewCombo);
-      note.samples = this.hitObject.samples.map((s) => s.clone());
-      note.startPosition = posData?.startPosition?.clone() ?? new Vector2(256, 192);
+      note.samples = this.hitObject.samples;
+      note.startPosition = posData?.startPosition ?? new Vector2(256, 192);
 
       pattern.addHitObject(note);
     }

@@ -666,7 +666,7 @@ export class DistanceObjectPatternGenerator extends PatternGenerator {
       note.originalColumn = column;
       note.hitType = HitType.Normal | (this.hitObject.hitType & HitType.NewCombo);
       note.samples = this.hitSamplesAt(startTime);
-      note.startPosition = posData?.startPosition?.clone() ?? new Vector2(256, 192);
+      note.startPosition = posData?.startPosition ?? new Vector2(256, 192);
 
       pattern.addHitObject(note);
     }
@@ -680,7 +680,7 @@ export class DistanceObjectPatternGenerator extends PatternGenerator {
       hold.hitType = HitType.Hold | (this.hitObject.hitType & HitType.NewCombo);
       hold.samples = this.hitSamplesAt(startTime);
       hold.nodeSamples = this.nodeSamplesAt(startTime);
-      hold.startPosition = posData?.startPosition?.clone() ?? new Vector2(256, 192);
+      hold.startPosition = posData?.startPosition ?? new Vector2(256, 192);
 
       pattern.addHitObject(hold);
     }

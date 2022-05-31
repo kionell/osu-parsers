@@ -85,13 +85,13 @@ export class ManiaBeatmapConverter extends BeatmapConverter {
 
     this._converted = this.createBeatmap();
 
-    this._converted.general = original.general.clone();
-    this._converted.editor = original.editor.clone();
+    this._converted.general = original.general;
+    this._converted.editor = original.editor;
     this._converted.difficulty = original.difficulty.clone();
-    this._converted.metadata = original.metadata.clone();
-    this._converted.colours = original.colours.clone();
-    this._converted.events = original.events.clone();
-    this._converted.controlPoints = original.controlPoints.clone();
+    this._converted.metadata = original.metadata;
+    this._converted.colours = original.colours;
+    this._converted.events = original.events;
+    this._converted.controlPoints = original.controlPoints;
     this._converted.fileFormat = original.fileFormat;
     this._converted.originalMode = original.originalMode;
 
@@ -122,7 +122,7 @@ export class ManiaBeatmapConverter extends BeatmapConverter {
 
     for (const hitObject of hitObjects) {
       if (hitObject instanceof ManiaHitObject) {
-        yield hitObject.clone() as ManiaHitObject;
+        yield hitObject;
         continue;
       }
 
@@ -147,9 +147,8 @@ export class ManiaBeatmapConverter extends BeatmapConverter {
     const random = this._rng as FastRandom;
     const converted = this._converted as ManiaBeatmap;
     const pattern = this._lastPattern;
-    const cloned = hitObject.clone();
 
-    const generator = new SpecificBeatmapPatternGenerator(cloned, converted, beatmap, pattern, random);
+    const generator = new SpecificBeatmapPatternGenerator(hitObject, converted, beatmap, pattern, random);
 
     for (const generated of generator.generate()) {
       this._lastPattern = generated;
@@ -171,23 +170,22 @@ export class ManiaBeatmapConverter extends BeatmapConverter {
     const random = this._rng as FastRandom;
     const converted = this._converted as ManiaBeatmap;
     const pattern = this._lastPattern;
-    const cloned = hitObject.clone();
 
     let conversion: PatternGenerator | null = null;
 
-    if ((cloned as unknown as IHasPath).path) {
+    if ((hitObject as IHitObject & IHasPath).path) {
       const generator = new DistanceObjectPatternGenerator(
-        cloned,
+        hitObject,
         converted,
         beatmap,
         pattern,
         random,
       );
 
-      const position = (cloned as unknown as IHasPosition).startPosition;
+      const position = (hitObject as IHitObject & IHasPosition).startPosition;
 
       for (let i = 0; i <= generator.spanCount; ++i) {
-        const time = cloned.startTime + generator.segmentDuration * i;
+        const time = hitObject.startTime + generator.segmentDuration * i;
 
         this._recordNote(time, position || new Vector2(0, 0));
         this._computeDensity(time);
@@ -195,24 +193,24 @@ export class ManiaBeatmapConverter extends BeatmapConverter {
 
       conversion = generator;
     }
-    else if ((cloned as unknown as IHasDuration).endTime) {
+    else if ((hitObject as IHitObject & IHasDuration).endTime) {
       const generator = new EndTimeObjectPatternGenerator(
-        cloned,
+        hitObject,
         converted,
         beatmap,
         pattern,
         random,
       );
 
-      const spinner = cloned as ISpinnableObject;
+      const spinner = hitObject as ISpinnableObject;
 
       this._recordNote(spinner.endTime, new Vector2(256, 192));
       this._computeDensity(spinner.endTime);
 
       conversion = generator;
     }
-    else if ((cloned as unknown as IHasPosition).startPosition) {
-      this._computeDensity(cloned.startTime);
+    else if ((hitObject as IHitObject & IHasPosition).startPosition) {
+      this._computeDensity(hitObject.startTime);
 
       const lastTime = this._lastTime as number;
       const lastPosition = this._lastPosition;
@@ -220,7 +218,7 @@ export class ManiaBeatmapConverter extends BeatmapConverter {
       const lastStair = this._lastStair;
 
       const generator = new HitObjectPatternGenerator(
-        cloned,
+        hitObject,
         converted,
         beatmap,
         pattern,
@@ -231,9 +229,9 @@ export class ManiaBeatmapConverter extends BeatmapConverter {
         lastStair,
       );
 
-      const position = (cloned as unknown as IHasPosition).startPosition;
+      const position = (hitObject as IHitObject & IHasPosition).startPosition;
 
-      this._recordNote(cloned.startTime, position);
+      this._recordNote(hitObject.startTime, position);
 
       conversion = generator;
     }

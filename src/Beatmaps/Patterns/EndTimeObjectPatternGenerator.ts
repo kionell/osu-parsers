@@ -90,11 +90,7 @@ export class EndTimeObjectPatternGenerator extends PatternGenerator {
    * @param column The column to add the note to.
    * @param holdNote Whether to add a hold note.
    */
-  protected addToPattern(
-    pattern: Pattern,
-    column: number,
-    isHoldNote: boolean,
-  ): void {
+  protected addToPattern(pattern: Pattern, column: number, isHoldNote: boolean): void {
     if (isHoldNote) {
       const hold = new Hold();
       const posData = this.hitObject as unknown as IHasPosition;
@@ -103,9 +99,9 @@ export class EndTimeObjectPatternGenerator extends PatternGenerator {
       hold.endTime = this.endTime;
       hold.originalColumn = column;
       hold.hitType = HitType.Hold | (this.hitObject.hitType & HitType.NewCombo);
-      hold.samples = this.hitObject.samples.map((s) => s.clone());
+      hold.samples = this.hitObject.samples;
       hold.nodeSamples = (this.hitObject as IHoldableObject).nodeSamples ?? [];
-      hold.startPosition = posData?.startPosition?.clone() ?? new Vector2(256, 192);
+      hold.startPosition = posData?.startPosition ?? new Vector2(256, 192);
 
       pattern.addHitObject(hold);
     }
@@ -116,8 +112,8 @@ export class EndTimeObjectPatternGenerator extends PatternGenerator {
       note.startTime = this.hitObject.startTime;
       note.originalColumn = column;
       note.hitType = HitType.Normal | (this.hitObject.hitType & HitType.NewCombo);
-      note.samples = this.hitObject.samples.map((s) => s.clone());
-      note.startPosition = posData?.startPosition?.clone() ?? new Vector2(256, 192);
+      note.samples = this.hitObject.samples;
+      note.startPosition = posData?.startPosition ?? new Vector2(256, 192);
 
       pattern.addHitObject(note);
     }
