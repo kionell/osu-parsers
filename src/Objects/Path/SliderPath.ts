@@ -92,6 +92,39 @@ export class SliderPath {
   }
 
   /**
+   * Gets an array of points approximating the path after
+   * lengthening/shortening it to account for expected distance.
+   */
+  get path(): Vector2[] {
+    this._ensureValid();
+
+    const path: Vector2[] = [];
+
+    for (let i = 0; i < this._calculatedPath.length; i++) {
+      if (this._cumulativeLength[i] >= this.expectedDistance) {
+        break;
+      }
+      else {
+        path.push(this._calculatedPath[i]);
+      }
+    }
+
+    path.push(this.positionAt(1));
+
+    return path;
+  }
+
+  /**
+   * Gets an array of points approximating the path prior to
+   * lengthening/shortening it to account for expected distance.
+   */
+  get calculatedPath(): Vector2[] {
+    this._ensureValid();
+
+    return this._calculatedPath;
+  }
+
+  /**
    * Invalidates path calculations.
    */
   invalidate(): void {
