@@ -14,13 +14,13 @@ export abstract class BeatmapConverter {
   convertBeatmap(beatmap: IBeatmap): RulesetBeatmap {
     const converted = this.createBeatmap();
 
-    converted.general = beatmap.general.clone();
-    converted.editor = beatmap.editor.clone();
+    converted.general = beatmap.general;
+    converted.editor = beatmap.editor;
     converted.difficulty = beatmap.difficulty.clone();
-    converted.metadata = beatmap.metadata.clone();
-    converted.colours = beatmap.colours.clone();
-    converted.events = beatmap.events.clone();
-    converted.controlPoints = beatmap.controlPoints.clone();
+    converted.metadata = beatmap.metadata;
+    converted.colours = beatmap.colours;
+    converted.events = beatmap.events;
+    converted.controlPoints = beatmap.controlPoints;
     converted.fileFormat = beatmap.fileFormat;
     converted.originalMode = beatmap.originalMode;
 
