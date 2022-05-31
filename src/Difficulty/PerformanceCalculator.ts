@@ -15,11 +15,6 @@ export abstract class PerformanceCalculator {
   constructor(ruleset: IRuleset, attributes?: DifficultyAttributes, score?: IScoreInfo) {
     this._ruleset = ruleset;
     this._score = score;
-
-    if (!attributes) {
-      throw new Error('Wrong difficulty attributes!');
-    }
-
     this.attributes = attributes;
   }
 
