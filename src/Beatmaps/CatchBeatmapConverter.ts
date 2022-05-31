@@ -30,7 +30,7 @@ export class CatchBeatmapConverter extends BeatmapConverter {
 
     for (const hitObject of hitObjects) {
       if (hitObject instanceof CatchHitObject) {
-        yield hitObject.clone() as CatchHitObject;
+        yield hitObject;
         continue;
       }
 
@@ -60,8 +60,8 @@ export class CatchBeatmapConverter extends BeatmapConverter {
 
     converted.hitType = HitType.Slider | (slidable.hitType & HitType.NewCombo);
     converted.repeats = slidable.repeats;
-    converted.nodeSamples = slidable.nodeSamples.map((n) => n.map((s) => s.clone()));
-    converted.path = slidable.path.clone();
+    converted.nodeSamples = slidable.nodeSamples;
+    converted.path = slidable.path;
     converted.legacyLastTickOffset = slidable?.legacyLastTickOffset ?? 0;
 
     return converted;
@@ -95,7 +95,7 @@ export class CatchBeatmapConverter extends BeatmapConverter {
     converted.startY = posObj?.startY ?? 192;
     converted.startTime = hitObject.startTime;
     converted.hitSound = hitObject.hitSound;
-    converted.samples = hitObject.samples.map((s) => s.clone());
+    converted.samples = hitObject.samples;
   }
 
   createBeatmap(): CatchBeatmap {
