@@ -27,7 +27,7 @@ export class StandardBeatmapConverter extends BeatmapConverter {
 
     for (const hitObject of hitObjects) {
       if (hitObject instanceof StandardHitObject) {
-        yield hitObject.clone() as StandardHitObject;
+        yield hitObject.clone();
         continue;
       }
 
@@ -54,11 +54,11 @@ export class StandardBeatmapConverter extends BeatmapConverter {
     const converted = new Circle();
     const posObj = obj as unknown as IHasPosition;
 
-    converted.startPosition = posObj?.startPosition?.clone() ?? new Vector2(0, 0);
+    converted.startPosition = posObj?.startPosition ?? new Vector2(0, 0);
     converted.startTime = obj.startTime;
     converted.hitType = HitType.Normal | (obj.hitType & HitType.NewCombo);
     converted.hitSound = obj.hitSound;
-    converted.samples = obj.samples.map((s) => s.clone());
+    converted.samples = obj.samples;
 
     return converted;
   }
@@ -67,14 +67,14 @@ export class StandardBeatmapConverter extends BeatmapConverter {
     const converted = new Slider();
     const posObj = obj as unknown as IHasPosition;
 
-    converted.startPosition = posObj?.startPosition?.clone() ?? new Vector2(0, 0);
+    converted.startPosition = posObj?.startPosition ?? new Vector2(0, 0);
     converted.startTime = obj.startTime;
     converted.hitType = HitType.Slider | (obj.hitType & HitType.NewCombo);
     converted.hitSound = obj.hitSound;
     converted.repeats = obj.repeats;
-    converted.samples = obj.samples.map((s) => s.clone());
-    converted.nodeSamples = obj.nodeSamples.map((n) => n.map((s) => s.clone()));
-    converted.path = obj.path.clone();
+    converted.samples = obj.samples;
+    converted.nodeSamples = obj.nodeSamples;
+    converted.path = obj.path;
     converted.legacyLastTickOffset = obj?.legacyLastTickOffset ?? 0;
 
     /**
@@ -98,12 +98,12 @@ export class StandardBeatmapConverter extends BeatmapConverter {
     const converted = new Spinner();
     const posObj = obj as unknown as IHasPosition;
 
-    converted.startPosition = posObj?.startPosition?.clone() ?? new Vector2(256, 192);
+    converted.startPosition = posObj?.startPosition ?? new Vector2(256, 192);
     converted.startTime = obj.startTime;
     converted.endTime = obj.endTime;
     converted.hitType = HitType.Spinner | (obj.hitType & HitType.NewCombo);
     converted.hitSound = obj.hitSound;
-    converted.samples = obj.samples.map((s) => s.clone());
+    converted.samples = obj.samples;
 
     return converted;
   }
