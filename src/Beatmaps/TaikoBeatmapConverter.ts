@@ -100,7 +100,7 @@ export class TaikoBeatmapConverter extends BeatmapConverter {
 
     for (const hitObject of hitObjects) {
       if (hitObject instanceof TaikoHitObject) {
-        yield hitObject.clone();
+        yield hitObject;
         continue;
       }
 
@@ -131,7 +131,7 @@ export class TaikoBeatmapConverter extends BeatmapConverter {
     converted.startTime = hittable.startTime;
     converted.hitType = HitType.Normal | (hittable.hitType & HitType.NewCombo);
     converted.hitSound = hittable.hitSound;
-    converted.samples = hittable.samples.map((s) => s.clone());
+    converted.samples = hittable.samples;
 
     yield converted;
   }
@@ -174,7 +174,7 @@ export class TaikoBeatmapConverter extends BeatmapConverter {
       drumRoll.startTime = slidable.startTime;
       drumRoll.hitType = HitType.Slider | (slidable.hitType & HitType.NewCombo);
       drumRoll.hitSound = slidable.hitSound;
-      drumRoll.samples = slidable.samples.map((s) => s.clone());
+      drumRoll.samples = slidable.samples;
 
       yield drumRoll;
     }
@@ -191,7 +191,7 @@ export class TaikoBeatmapConverter extends BeatmapConverter {
     swell.startTime = spinnable.startTime;
     swell.hitType = HitType.Spinner | (spinnable.hitType & HitType.NewCombo);
     swell.hitSound = spinnable.hitSound;
-    swell.samples = spinnable.samples.map((s) => s.clone());
+    swell.samples = spinnable.samples;
     swell.requiredHits = Math.trunc(Math.max(1, (swell.duration / 1000) * hitMultiplier));
 
     yield swell;

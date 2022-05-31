@@ -27,7 +27,7 @@ export class TaikoEventGenerator extends EventGenerator {
 
       tick.hitType = drumRoll.hitType;
       tick.hitSound = drumRoll.hitSound;
-      tick.samples = drumRoll.samples.map((s) => s.clone());
+      tick.samples = drumRoll.samples;
 
       firstTick = false;
 
@@ -46,7 +46,7 @@ export class TaikoEventGenerator extends EventGenerator {
       tick.startTime = swell.startTime;
       tick.hitType = swell.hitType;
       tick.hitSound = swell.hitSound;
-      tick.samples = swell.samples.map((s) => s.clone());
+      tick.samples = swell.samples;
 
       yield tick;
     }
