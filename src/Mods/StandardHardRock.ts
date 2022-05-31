@@ -15,6 +15,12 @@ export class StandardHardRock extends HardRock implements IApplicableToHitObject
   static BASE_SIZE: Vector2 = new Vector2(512, 384);
 
   applyToHitObjects(hitObjects: StandardHitObject[]): void {
+    /**
+     * osu!lazer doesn't flip stacked objects when applies HR.
+     * So flipped maps aren't actually symmetrical.
+     * If we skip this process we may get a slightly 
+     * different star rating & performance. 
+     */
     hitObjects.forEach((hitObject) => {
       StandardHardRock._reflectVertically(hitObject);
     });
