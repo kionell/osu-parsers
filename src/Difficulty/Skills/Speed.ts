@@ -67,6 +67,8 @@ export class Speed extends StandardStrainSkill {
       const historyTime = this._HISTORY_TIME_MAX - (current.startTime - currObj.startTime);
       let currHistoricalDecay = Math.max(0, historyTime) / this._HISTORY_TIME_MAX;
 
+      if (currHistoricalDecay === 0) continue;
+
       /**
        * Either we're limited by time or limited by object count.
        */
