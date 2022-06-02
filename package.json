@@ -1,6 +1,6 @@
 {
   "name": "osu-standard-stable",
-  "version": "2.2.8",
+  "version": "2.2.9",
   "description": "osu!stable version of osu!standard ruleset based on osu!lazer source code.",
   "exports": {
     "import": "./lib/index.mjs",
