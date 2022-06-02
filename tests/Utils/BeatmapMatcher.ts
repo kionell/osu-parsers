@@ -58,7 +58,7 @@ export class BeatmapMatcher {
       const performanceCalculator = this._ruleset.createPerformanceCalculator(atts, score);
       const totalPerformace = performanceCalculator.calculate();
 
-      expect(totalPerformace).toBeCloseTo(performances[atts.mods.toString()], 1);
+      expect(totalPerformace).toBeCloseTo(performances[atts.mods.toString()], 0);
     });
   }
 
