@@ -163,8 +163,8 @@ export class Aim extends StandardStrainSkill {
        * We want to use the average velocity over the whole object 
        * when awarding differences, not the individual jump and slider path velocities.
        */
-      prevVelocity = (osuLastObj.jumpDistance + osuLastLastObj.travelDistance) / osuLastObj.strainTime;
-      currVelocity = (osuCurrObj.jumpDistance + osuLastObj.travelDistance) / osuCurrObj.strainTime;
+      prevVelocity = (osuLastObj.jumpDistance + osuLastObj.travelDistance) / osuLastObj.strainTime;
+      currVelocity = (osuCurrObj.jumpDistance + osuCurrObj.travelDistance) / osuCurrObj.strainTime;
 
       /**
        * Scale with ratio of difference compared to 0.5 * max dist.
