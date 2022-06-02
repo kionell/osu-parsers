@@ -1,5 +1,4 @@
 import { DifficultyHitObject } from 'osu-classes';
-import { StandardModCombination } from '../../Mods';
 import { Spinner, StandardHitObject } from '../../Objects';
 import { StandardDifficultyHitObject } from '../Preprocessing/StandardDifficultyHitObject';
 import { StandardStrainSkill } from './StandardStrainSkill';
@@ -9,22 +8,11 @@ import { StandardStrainSkill } from './StandardStrainSkill';
  * every object in a map with the Flashlight mod enabled.
  */
 export class Flashlight extends StandardStrainSkill {
-  private _skillMultiplier = 0.05;
+  private _skillMultiplier = 0.15;
   private _strainDecayBase = 0.15;
 
   protected _decayWeight = 1;
   private _currentStrain = 0;
-
-  private readonly _isHidden: boolean;
-
-  private static readonly MAX_OPACITY_BONUS = 0.4;
-  private static readonly HIDDEN_BONUS = 0.2;
-
-  constructor(mods: StandardModCombination) {
-    super(mods);
-
-    this._isHidden = mods.has('HD');
-  }
 
   /**
    * Look back for 10 notes is added for the sake of flashlight calculations.
@@ -48,18 +36,16 @@ export class Flashlight extends StandardStrainSkill {
 
     let result = 0;
 
-    let lastObj = osuCurrent;
-
     for (let i = 0; i < this._previous.count; ++i) {
-      const currentObj = this._previous.get(i) as StandardDifficultyHitObject;
-      const currentHitObject = currentObj.baseObject as StandardHitObject;
+      const osuPrevious = this._previous.get(i) as StandardDifficultyHitObject;
+      const osuPreviousHitObject = osuPrevious.baseObject as StandardHitObject;
 
-      if (!(currentObj.baseObject instanceof Spinner)) {
+      if (!(osuPrevious.baseObject instanceof Spinner)) {
         const jumpDistance = osuHitObject.stackedStartPosition
-          .fsubtract(currentHitObject.endPosition)
+          .fsubtract(osuPreviousHitObject.endPosition)
           .flength();
 
-        cumulativeStrainTime += lastObj.strainTime;
+        cumulativeStrainTime += osuPrevious.strainTime;
 
         /**
          * We want to nerf objects that can be easily seen 
@@ -73,24 +59,13 @@ export class Flashlight extends StandardStrainSkill {
          * We also want to nerf stacks so that only 
          * the first object of the stack is accounted for.
          */
-        const stackNerf = Math.min(1, (currentObj.lazyJumpDistance / scalingFactor) / 25);
+        const stackNerf = Math.min(1, (osuPrevious.jumpDistance / scalingFactor) / 25);
 
-        // Bonus based on how visible the object is.
-        const opacityBonus = 1 + Flashlight.MAX_OPACITY_BONUS
-          * (1 - osuCurrent.opacityAt(currentHitObject.startTime, this._isHidden));
-
-        result += stackNerf * opacityBonus * scalingFactor * jumpDistance / cumulativeStrainTime;
+        result += Math.pow(0.8, i) * stackNerf * scalingFactor * jumpDistance / cumulativeStrainTime;
       }
-
-      lastObj = currentObj;
     }
 
-    result = Math.pow(smallDistNerf * result, 2);
-
-    // Additional bonus for Hidden due to there being no approach circles.
-    if (this._isHidden) result *= 1 + Flashlight.HIDDEN_BONUS;
-
-    return result;
+    return Math.pow(smallDistNerf * result, 2);
   }
 
   private _strainDecay(ms: number): number {

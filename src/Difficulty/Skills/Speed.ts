@@ -56,14 +56,7 @@ export class Speed extends StandardStrainSkill {
 
     let firstDeltaSwitch = false;
 
-    let rhythmStart = 0;
-
-    while (rhythmStart < this._previous.count - 2
-      && current.startTime - this._previous.get(rhythmStart).startTime < this._HISTORY_TIME_MAX) {
-      ++rhythmStart;
-    }
-
-    for (let i = rhythmStart; i > 0; --i) {
+    for (let i = this._previous.count - 2; i > 0; --i) {
       const currObj = this._previous.get(i - 1) as StandardDifficultyHitObject;
       const prevObj = this._previous.get(i) as StandardDifficultyHitObject;
       const lastObj = this._previous.get(i + 1) as StandardDifficultyHitObject;
@@ -72,7 +65,7 @@ export class Speed extends StandardStrainSkill {
        * Scales note 0 to 1 from history to now.
        */
       const historyTime = this._HISTORY_TIME_MAX - (current.startTime - currObj.startTime);
-      let currHistoricalDecay = historyTime / this._HISTORY_TIME_MAX;
+      let currHistoricalDecay = Math.max(0, historyTime) / this._HISTORY_TIME_MAX;
 
       /**
        * Either we're limited by time or limited by object count.
@@ -89,7 +82,7 @@ export class Speed extends StandardStrainSkill {
        * Fancy function to calculate rhythmbonuses.
        */
       const x = Math.PI / (Math.min(prevDelta, currDelta) / Math.max(prevDelta, currDelta));
-      const currRatio = 1.0 + 6.0 * Math.min(0.5, Math.pow(Math.sin(x), 2));
+      const currRatio = 1 + 6 * Math.min(0.5, Math.pow(Math.sin(x), 2));
 
       const max = Math.max(0, Math.abs(prevDelta - currDelta) - this._greatWindow * 0.6);
       const windowPenalty = Math.min(1, Math.min(1, max / (this._greatWindow * 0.6)));
@@ -234,8 +227,7 @@ export class Speed extends StandardStrainSkill {
       speedBonus = 1 + 0.75 * Math.pow(bonus, 2);
     }
 
-    const travelDistance = (osuPrevObj?.travelDistance ?? 0) + osuCurrObj.minimumJumpDistance;
-    const distance = Math.min(this._SINGLE_SPACING_THRESHOLD, travelDistance);
+    const distance = Math.min(this._SINGLE_SPACING_THRESHOLD, osuCurrObj.travelDistance + osuCurrObj.jumpDistance);
 
     const pow = Math.pow(distance / this._SINGLE_SPACING_THRESHOLD, 3.5);
 

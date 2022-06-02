@@ -1,6 +1,5 @@
 import { DifficultyHitObject, IHitObject, Vector2 } from 'osu-classes';
 import { Slider, SliderRepeat, Spinner, StandardHitObject } from '../../Objects';
-import { StandardHidden } from '../../Mods';
 
 export class StandardDifficultyHitObject extends DifficultyHitObject {
   /**
@@ -18,43 +17,36 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
   angle: number | null = null;
 
   /**
-   * Normalised distance from the "lazy" end position of the previous 
+   * Normalized distance from the end position of the previous 
    * difficulty hit object to the start position of this difficulty hit object.
-   * 
-   * The "lazy" end position is the position at which the cursor ends up 
-   * if the previous hitobject is followed with as minimal movement as possible 
-   * (i.e. on the edge of slider follow circles).
    */
-  lazyJumpDistance = 0;
+  jumpDistance = 0;
 
   /**
-   * Normalised shortest distance to consider for a jump between 
-   * the previous and this difficulty hit objects.
-   * This is bounded from above by lazy jump distance, and is smaller than the former 
-   * if a more natural path is able to be taken through the previous difficulty hit object.
+   * Minimum distance from the end position of the previous 
+   * difficulty hit object to the start position of this difficulty hit object.
    */
-  minimumJumpDistance = 0;
+  movementDistance = 0;
 
   /**
-   * The time taken to travel through minimum jump distance, 
-   * with a minimum value of 25ms.
+   * Milliseconds elapsed since the end time of the previous 
+   * difficulty hit object with a minimum of 25ms.
    */
-  minimumJumpTime = 0;
+  movementTime = 0;
 
   /**
-   * Normalised distance between the start and end position 
-   * of this difficulty hit object.
+   * Normalized distance between the start and end position of the previous difficulty hit object.
    */
   travelDistance = 0;
 
   /**
-   * The time taken to travel through travel distance, 
-   * with a minimum value of 25ms for a non-zero distance.
+   * Milliseconds elapsed since the start time of the previous difficulty hit object 
+   * to the end time of the same previous difficulty hit object, with a minimum of 25ms.
    */
   travelTime = 0;
 
   /**
-   * Milliseconds elapsed since the start time of the previous 
+   * Milliseconds elapsed since the start time of the previous  
    * difficulty hit object, with a minimum of 25ms.
    */
   readonly strainTime: number;
@@ -78,48 +70,9 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
     this._setDistances(clockRate);
   }
 
-  opacityAt(time: number, isHidden: boolean): number {
-    if (time > this.baseObject.startTime) {
-      /**
-       * Consider a hitobject as being invisible when its start time is passed.
-       * In reality the hitobject will be visible beyond 
-       * its start time up until its hittable window has passed,
-       * but this is an approximation and such a case 
-       * is unlikely to be hit where this function is used.
-       */
-      return 0;
-    }
-
-    const fadeInStartTime = this.baseObject.startTime - this.baseObject.timePreempt;
-    const fadeInDuration = this.baseObject.timeFadeIn;
-
-    if (isHidden) {
-      // This is taken from osu!standard Hidden mod.
-      const fadeOutStartTime = this.baseObject.startTime
-        - this.baseObject.timePreempt + this.baseObject.timeFadeIn;
-
-      const fadeOutDuration = this.baseObject.timePreempt
-        * StandardHidden.FADE_OUT_DURATION_MULTIPLIER;
-
-      const clamp1 = Math.max(0, Math.min((time - fadeInStartTime) / fadeInDuration, 1));
-      const clamp2 = Math.max(0, Math.min((time - fadeOutStartTime) / fadeOutDuration, 1));
-
-      return Math.min(clamp1, 1 - clamp2);
-    }
-
-    return Math.max(0, Math.min((time - fadeInStartTime) / fadeInDuration, 1));
-  }
-
   private _setDistances(clockRate: number): void {
     const baseObj = this.baseObject as StandardHitObject;
     const lastObj = this.lastObject as StandardHitObject;
-
-    if (baseObj instanceof Slider) {
-      this._computeSliderCursorPosition(baseObj);
-
-      this.travelDistance = baseObj.lazyTravelDistance;
-      this.travelTime = Math.max(baseObj.lazyTravelTime / clockRate, this._MIN_DELTA_TIME);
-    }
 
     /**
      * We don't need to calculate either angle or distance 
@@ -146,48 +99,30 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
     const scaledStackPos = baseObj.stackedStartPosition.scale(scalingFactor);
     const scaledCursorPos = lastCursorPosition.scale(scalingFactor);
 
-    this.lazyJumpDistance = scaledStackPos.subtract(scaledCursorPos).flength();
-    this.minimumJumpDistance = this.lazyJumpDistance;
-    this.minimumJumpTime = this.strainTime;
+    this.jumpDistance = scaledStackPos.subtract(scaledCursorPos).flength();
 
     if (lastObj instanceof Slider) {
-      const lastTravelTime = Math.max(lastObj.lazyTravelTime / clockRate, this._MIN_DELTA_TIME);
+      this._computeSliderCursorPosition(lastObj);
 
-      this.minimumJumpTime = Math.max(this.strainTime - lastTravelTime, this._MIN_DELTA_TIME);
-
-      /**
-       * There are two types of slider-to-object patterns to consider in order to better approximate the real movement a player will take to jump between the hitobjects.
-       * 
-       * 1. The anti-flow pattern, where players cut the slider short in order to move to the next hitobject.
-       * 
-       *      <======o==>  ← slider
-       *             |     ← most natural jump path
-       *             o     ← a follow-up hitcircle
-       * 
-       * In this case the most natural jump path is approximated by LazyJumpDistance.
-       * 
-       * 2. The flow pattern, where players follow through the slider to its visual extent into the next hitobject.
-       * 
-       *      <======o==>---o
-       *                  ↑
-       *        most natural jump path
-       * 
-       * In this case the most natural jump path is better approximated by a new distance called "tailJumpDistance" - the distance between the slider's tail and the next hitobject.
-       * 
-       * Thus, the player is assumed to jump the minimum of these two distances in all cases.
-       */
+      this.travelDistance = lastObj.lazyTravelDistance;
+      this.travelTime = Math.max(lastObj.lazyTravelTime / clockRate, this._MIN_DELTA_TIME);
+      this.movementTime = Math.max(this.strainTime - this.travelTime, this._MIN_DELTA_TIME);
 
       const tailStackPos = lastObj.tail?.stackedStartPosition ?? lastObj.stackedStartPosition;
       const baseStackPos = baseObj.stackedStartPosition;
 
       const tailJumpDistance = tailStackPos.subtract(baseStackPos).flength() * scalingFactor;
 
-      const minimumJumpDistance = Math.min(
-        this.lazyJumpDistance - (this._MAXIMUM_SLIDER_RADIUS - this._ASSUMED_SLIDER_RADIUS),
+      const movementDistance = Math.min(
+        this.jumpDistance - (this._MAXIMUM_SLIDER_RADIUS - this._ASSUMED_SLIDER_RADIUS),
         tailJumpDistance - this._MAXIMUM_SLIDER_RADIUS,
       );
 
-      this.minimumJumpDistance = Math.max(0, minimumJumpDistance);
+      this.movementDistance = Math.max(0, movementDistance);
+    }
+    else {
+      this.movementDistance = this.jumpDistance;
+      this.movementTime = this.strainTime;
     }
 
     if (this._lastLastObject !== null && !(this._lastLastObject instanceof Spinner)) {
