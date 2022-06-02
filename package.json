@@ -47,6 +47,6 @@
     "typescript": "^4.1.5"
   },
   "dependencies": {
-    "osu-classes": "^0.7.1"
+    "osu-classes": "^0.7.2"
   }
 }
