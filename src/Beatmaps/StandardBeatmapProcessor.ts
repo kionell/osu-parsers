@@ -1,9 +1,10 @@
+import { BeatmapProcessor } from 'osu-classes';
 import { StandardBeatmap } from './StandardBeatmap';
-import { Slider } from '../Objects/Slider';
-
-import { BeatmapProcessor, HitType } from 'osu-classes';
+import { Circle, Slider, Spinner } from '../Objects';
 
 export class StandardBeatmapProcessor extends BeatmapProcessor {
+  private static readonly STACK_DISTANCE = 3;
+
   postProcess(beatmap: StandardBeatmap): StandardBeatmap {
     super.postProcess(beatmap);
 
@@ -17,6 +18,7 @@ export class StandardBeatmapProcessor extends BeatmapProcessor {
   private _applyStackingNew(beatmap: StandardBeatmap): void {
     const hitObjects = beatmap.hitObjects;
     const stackLeniency = beatmap.general.stackLeniency;
+    const stackDistance = StandardBeatmapProcessor.STACK_DISTANCE;
 
     const startIndex = 0;
     const endIndex = hitObjects.length - 1;
@@ -31,18 +33,13 @@ export class StandardBeatmapProcessor extends BeatmapProcessor {
         for (let n = stackBaseIndex + 1; n < hitObjects.length; ++n) {
           const stackBaseObject = hitObjects[stackBaseIndex];
 
-          if (stackBaseObject.hitType & HitType.Spinner) {
-            break;
-          }
+          if (stackBaseObject instanceof Spinner) break;
 
           const objectN = hitObjects[n];
 
-          if (objectN.hitType & HitType.Spinner) {
-            continue;
-          }
+          if (objectN instanceof Spinner) continue;
 
-          const endTime =
-            (stackBaseObject as Slider).endTime || stackBaseObject.startTime;
+          const endTime = (stackBaseObject as Slider).endTime || stackBaseObject.startTime;
 
           const stackThreshold = objectN.timePreempt * stackLeniency;
 
@@ -51,10 +48,11 @@ export class StandardBeatmapProcessor extends BeatmapProcessor {
             break;
           }
 
-          if (
-            stackBaseObject.startPosition.distance(objectN.startPosition) < 3 ||
-            stackBaseObject.endPosition.distance(objectN.startPosition) < 3
-          ) {
+          const distance1 = stackBaseObject.startPosition.distance(objectN.startPosition) < stackDistance;
+          const distance2 = (stackBaseObject instanceof Slider)
+            && stackBaseObject.endPosition.distance(objectN.startPosition) < stackDistance;
+
+          if (distance1 || distance2) {
             stackBaseIndex = n;
 
             // HitObjects after the specified update range haven't been reset yet
@@ -91,7 +89,7 @@ export class StandardBeatmapProcessor extends BeatmapProcessor {
 
       let objectI = hitObjects[i];
 
-      if (objectI.stackHeight !== 0 || objectI.hitType & HitType.Spinner) {
+      if (objectI.stackHeight !== 0 || (objectI instanceof Spinner)) {
         continue;
       }
 
@@ -102,13 +100,11 @@ export class StandardBeatmapProcessor extends BeatmapProcessor {
        * It either ends with a stack of circles only, or a stack of circles that are underneath a slider.
        * Any other case is handled by the "instanceof Slider" code below this.
        */
-      if (objectI.hitType & HitType.Normal) {
+      if (objectI instanceof Circle) {
         while (--n >= 0) {
           const objectN = hitObjects[n];
 
-          if (objectN.hitType & HitType.Spinner) {
-            continue;
-          }
+          if (objectN instanceof Spinner) continue;
 
           const endTime = (objectN as Slider).endTime || objectN.startTime;
 
@@ -124,34 +120,39 @@ export class StandardBeatmapProcessor extends BeatmapProcessor {
           }
 
           /**
-           * This is a special case where hticircles are moved DOWN and RIGHT (negative stacking) if they are under the *last* slider in a stacked pattern.
+           * This is a special case where hticircles are moved DOWN and RIGHT (negative stacking) 
+           * if they are under the *last* slider in a stacked pattern.
            *      o==o <- slider is at original location
            *       o <- hitCircle has stack of -1
            *        o <- hitCircle has stack of -2
            */
-          const distance = objectN.endPosition.distance(objectI.startPosition);
+          const distanceNI = objectN.endPosition.distance(objectI.startPosition);
 
-          if (objectN.hitType & HitType.Slider && distance < 3) {
+          if ((objectN instanceof Slider) && distanceNI < stackDistance) {
             const offset = objectI.stackHeight - objectN.stackHeight + 1;
 
             for (let j = n + 1; j <= i; ++j) {
-              // For each object which was declared under this slider, we will offset it to appear *below* the slider end (rather than above).
+              /**
+               * For each object which was declared under this slider, 
+               * we will offset it to appear *below* the slider end (rather than above).
+               */
               const objectJ = hitObjects[j];
+              const distanceNJ = objectN.endPosition.distance(objectJ.startPosition);
 
-              if (distance < 3) {
+              if (distanceNJ < stackDistance) {
                 objectJ.stackHeight -= offset;
               }
             }
 
-            /*
+            /**
              * We have hit a slider.  We should restart calculation using this as the new base.
              * Breaking here will mean that the slider still has StackCount of 0, so will be handled in the i-outer-loop.
              */
             break;
           }
 
-          if (objectN.startPosition.distance(objectI.startPosition) < 3) {
-            /*
+          if (objectN.startPosition.distance(objectI.startPosition) < stackDistance) {
+            /**
              * Keep processing as if there are no sliders.  If we come across a slider, this gets cancelled out.
              * NOTE: Sliders with start startPositions stacking are a special case that is also handled here.
              */
@@ -161,7 +162,7 @@ export class StandardBeatmapProcessor extends BeatmapProcessor {
           }
         }
       }
-      else if (objectI.hitType & HitType.Slider) {
+      else if (objectI instanceof Slider) {
         /**
          * We have hit the first slider in a possible stack.
          * } from this point on, we ALWAYS stack positive regardless.
@@ -169,9 +170,7 @@ export class StandardBeatmapProcessor extends BeatmapProcessor {
         while (--n >= startIndex) {
           const objectN = hitObjects[n];
 
-          if (objectN.hitType & HitType.Spinner) {
-            continue;
-          }
+          if (objectN instanceof Spinner) continue;
 
           if (objectI.startTime - objectN.startTime > stackThreshold) {
             // We are no longer within stacking range of the previous object.
@@ -180,7 +179,7 @@ export class StandardBeatmapProcessor extends BeatmapProcessor {
 
           const distance = objectN.endPosition.distance(objectI.startPosition);
 
-          if (distance < 3) {
+          if (distance < stackDistance) {
             objectN.stackHeight = objectI.stackHeight + 1;
             objectI = objectN;
           }
@@ -192,19 +191,16 @@ export class StandardBeatmapProcessor extends BeatmapProcessor {
   private _applyStackingOld(beatmap: StandardBeatmap): void {
     const hitObjects = beatmap.hitObjects;
     const stackLeniency = beatmap.general.stackLeniency;
+    const stackDistance = StandardBeatmapProcessor.STACK_DISTANCE;
 
     for (let i = 0, len = hitObjects.length; i < len; ++i) {
       const currHitObject = hitObjects[i];
 
-      if (
-        currHitObject.stackHeight !== 0 &&
-        !(currHitObject.hitType & HitType.Slider)
-      ) {
+      if (currHitObject.stackHeight !== 0 && !(currHitObject instanceof Slider)) {
         continue;
       }
 
-      let startTime =
-        (currHitObject as Slider).endTime || currHitObject.startTime;
+      let startTime = (currHitObject as Slider).endTime || currHitObject.startTime;
       let sliderStack = 0;
 
       for (let j = i + 1; j < len; ++j) {
@@ -216,20 +212,16 @@ export class StandardBeatmapProcessor extends BeatmapProcessor {
 
         const pos2 = currHitObject.endPosition;
 
-        if (
-          hitObjects[j].startPosition.distance(currHitObject.startPosition) < 3
-        ) {
+        if (hitObjects[j].startPosition.distance(currHitObject.startPosition) < stackDistance) {
           ++currHitObject.stackHeight;
 
-          startTime =
-            (hitObjects[j] as Slider).endTime || hitObjects[j].startTime;
+          startTime = (hitObjects[j] as Slider).endTime || hitObjects[j].startTime;
         }
-        else if (hitObjects[j].startPosition.distance(pos2) < 3) {
+        else if (hitObjects[j].startPosition.distance(pos2) < stackDistance) {
           // Case for sliders - bump notes down and right, rather than up and left.
           hitObjects[j].stackHeight -= ++sliderStack;
 
-          startTime = (hitObjects[j] as Slider).endTime
-            || hitObjects[j].startTime;
+          startTime = (hitObjects[j] as Slider).endTime || hitObjects[j].startTime;
         }
       }
     }
