@@ -1,7 +1,7 @@
 import {
-  IBeatmap,
   Ruleset,
-  ScoreInfo,
+  IBeatmap,
+  IScoreInfo,
 } from 'osu-classes';
 
 import {
@@ -84,7 +84,7 @@ export class TaikoRuleset extends Ruleset {
    * @param beatmap The beatmap for which the calculation will be done.
    * @returns A new osu!taiko difficulty calculator.
    */
-  createDifficultyCalculator(beatmap: TaikoBeatmap): TaikoDifficultyCalculator {
+  createDifficultyCalculator(beatmap: IBeatmap): TaikoDifficultyCalculator {
     return new TaikoDifficultyCalculator(beatmap, this);
   }
 
@@ -93,7 +93,7 @@ export class TaikoRuleset extends Ruleset {
    * @param score Score information.
    * @returns A new osu!taiko performance calculator.
    */
-  createPerformanceCalculator(attributes?: TaikoDifficultyAttributes, score?: ScoreInfo): TaikoPerformanceCalculator {
+  createPerformanceCalculator(attributes?: TaikoDifficultyAttributes, score?: IScoreInfo): TaikoPerformanceCalculator {
     return new TaikoPerformanceCalculator(this, attributes, score);
   }
 }
