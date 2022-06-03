@@ -38,7 +38,7 @@ const parsed = decoder.decodeFromPath(decodePath, shouldParseSb);
 // Create a new osu!standard ruleset.
 const ruleset = new StandardRuleset();
 
-// This will create a new copy of a beatmap with applied osu!standard ruleset.
+// This will create a new shallow copy of a beatmap with applied osu!standard ruleset.
 // This method implicitly applies mod combination of 0.
 const standardWithNoMod = ruleset.applyToBeatmap(parsed);
 
