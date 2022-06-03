@@ -84,7 +84,7 @@ export class StandardRuleset extends Ruleset {
    * @param beatmap The beatmap for which the calculation will be done.
    * @returns A new osu!std difficulty calculator.
    */
-  createDifficultyCalculator(beatmap: StandardBeatmap): StandardDifficultyCalculator {
+  createDifficultyCalculator(beatmap: IBeatmap): StandardDifficultyCalculator {
     return new StandardDifficultyCalculator(beatmap, this);
   }
 
