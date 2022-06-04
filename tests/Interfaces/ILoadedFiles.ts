@@ -4,6 +4,6 @@ import { IStarRatings } from './IStarRatings';
 
 export interface ILoadedFiles {
   values: IBeatmapValues,
-  starRatings: IStarRatings,
+  stars: IStarRatings,
   performances: IPerformances,
 }
