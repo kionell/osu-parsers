@@ -1,7 +1,7 @@
 import {
-  IBeatmap,
   Ruleset,
-  ScoreInfo,
+  IBeatmap,
+  IScoreInfo,
 } from 'osu-classes';
 
 import {
@@ -84,7 +84,7 @@ export class CatchRuleset extends Ruleset {
    * @param beatmap The beatmap for which the calculation will be done.
    * @returns A new osu!catch difficulty calculator.
    */
-  createDifficultyCalculator(beatmap: CatchBeatmap): CatchDifficultyCalculator {
+  createDifficultyCalculator(beatmap: IBeatmap): CatchDifficultyCalculator {
     return new CatchDifficultyCalculator(beatmap, this);
   }
 
@@ -93,7 +93,7 @@ export class CatchRuleset extends Ruleset {
    * @param score Score information.
    * @returns A new osu!catch performance calculator.
    */
-  createPerformanceCalculator(attributes?: CatchDifficultyAttributes, score?: ScoreInfo): CatchPerformanceCalculator {
+  createPerformanceCalculator(attributes?: CatchDifficultyAttributes, score?: IScoreInfo): CatchPerformanceCalculator {
     return new CatchPerformanceCalculator(this, attributes, score);
   }
 }
