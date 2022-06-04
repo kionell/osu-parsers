@@ -44,7 +44,7 @@ function testBeatmap(beatmap: TaikoBeatmap, data: ILoadedFiles): void {
   const difficultyCalculator = ruleset.createDifficultyCalculator(beatmap);
   const difficulty = difficultyCalculator.calculate();
 
-  const score = simulateScore(beatmap, difficulty);
+  const score = simulateScore(difficulty);
   const performanceCalculator = ruleset.createPerformanceCalculator(difficulty, score);
   const performance = performanceCalculator.calculate();
 
@@ -79,13 +79,13 @@ function loadTestFiles(rulesetPath: string, beatmapId: string): ILoadedFiles {
   };
 }
 
-function simulateScore(beatmap: TaikoBeatmap, attributes: TaikoDifficultyAttributes): IScoreInfo {
+function simulateScore(attributes: TaikoDifficultyAttributes): IScoreInfo {
   return new ScoreInfo({
     maxCombo: attributes.maxCombo,
     mods: attributes.mods,
     accuracy: 1,
     statistics: {
-      great: beatmap.hitObjects.length,
+      great: attributes.maxCombo,
     },
   });
 }
