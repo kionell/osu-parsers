@@ -1,16 +1,24 @@
 import fs from 'fs';
 import path from 'path';
-import { IScoreInfo, ScoreInfo } from 'osu-classes';
+import { IHitStatistics, IScoreInfo, ScoreInfo } from 'osu-classes';
 import { BeatmapDecoder } from 'osu-parsers';
-import { TaikoRuleset, TaikoDifficultyAttributes, TaikoBeatmap } from '../src';
+
+import {
+  CatchRuleset,
+  CatchDifficultyAttributes,
+  CatchBeatmap,
+  JuiceFruit,
+  JuiceTinyDroplet,
+  JuiceDroplet,
+} from '../src';
+
 import { ILoadedFiles } from './Interfaces';
 
-const ruleset = new TaikoRuleset();
+const ruleset = new CatchRuleset();
 const decoder = new BeatmapDecoder();
 
 describe('Standard converted beatmaps', () => testRuleset('Standard'));
-describe('Taiko specific beatmaps', () => testRuleset('Taiko'));
-describe('Catch converted beatmaps', () => testRuleset('Catch'));
+describe('Catch specific beatmaps', () => testRuleset('Catch'));
 describe('Mania converted beatmaps', () => testRuleset('Mania'));
 
 function testRuleset(rulesetName: string): void {
@@ -38,7 +46,7 @@ function testBeatmaps(rulesetPath: string): void {
   }
 }
 
-function testBeatmap(beatmap: TaikoBeatmap, data: ILoadedFiles): void {
+function testBeatmap(beatmap: CatchBeatmap, data: ILoadedFiles): void {
   const acronyms = beatmap.mods.toString();
 
   const difficultyCalculator = ruleset.createDifficultyCalculator(beatmap);
@@ -79,13 +87,37 @@ function loadTestFiles(rulesetPath: string, beatmapId: string): ILoadedFiles {
   };
 }
 
-function simulateScore(beatmap: TaikoBeatmap, attributes: TaikoDifficultyAttributes): IScoreInfo {
+function simulateScore(beatmap: CatchBeatmap, attributes: CatchDifficultyAttributes): IScoreInfo {
   return new ScoreInfo({
     maxCombo: attributes.maxCombo,
     mods: attributes.mods,
+    statistics: getStatistics(beatmap),
     accuracy: 1,
-    statistics: {
-      great: beatmap.hitObjects.length,
-    },
   });
+}
+
+function getStatistics(beatmap: CatchBeatmap): Partial<IHitStatistics> {
+  const nestedFruits = beatmap.hitObjects.reduce((f, h) => {
+    const nested = h.nestedHitObjects;
+
+    return f + nested.reduce((f, h) => f + (h instanceof JuiceFruit ? 1 : 0), 0);
+  }, 0);
+
+  const smallTickHit = beatmap.hitObjects.reduce((t, h) => {
+    return t + h.nestedHitObjects.reduce((t, h) => {
+      return t + (h instanceof JuiceTinyDroplet ? 1 : 0);
+    }, 0);
+  }, 0);
+
+  const tickHit = beatmap.hitObjects.reduce((t, h) => {
+    return t + h.nestedHitObjects.reduce((t, h) => {
+      return t + (h instanceof JuiceDroplet ? 1 : 0);
+    }, 0);
+  }, 0);
+
+  return {
+    great: beatmap.fruits + nestedFruits,
+    largeTickHit: tickHit - smallTickHit,
+    smallTickHit,
+  };
 }
