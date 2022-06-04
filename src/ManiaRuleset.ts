@@ -1,7 +1,7 @@
 import {
-  IBeatmap,
   Ruleset,
-  ScoreInfo,
+  IBeatmap,
+  IScoreInfo,
 } from 'osu-classes';
 
 import {
@@ -84,7 +84,7 @@ export class ManiaRuleset extends Ruleset {
    * @param beatmap The beatmap for which the calculation will be done.
    * @returns A new osu!mania difficulty calculator.
    */
-  createDifficultyCalculator(beatmap: ManiaBeatmap): ManiaDifficultyCalculator {
+  createDifficultyCalculator(beatmap: IBeatmap): ManiaDifficultyCalculator {
     return new ManiaDifficultyCalculator(beatmap, this);
   }
 
@@ -93,7 +93,7 @@ export class ManiaRuleset extends Ruleset {
    * @param score Score information.
    * @returns A new osu!mania performance calculator.
    */
-  createPerformanceCalculator(attributes?: ManiaDifficultyAttributes, score?: ScoreInfo): ManiaPerformanceCalculator {
+  createPerformanceCalculator(attributes?: ManiaDifficultyAttributes, score?: IScoreInfo): ManiaPerformanceCalculator {
     return new ManiaPerformanceCalculator(this, attributes, score);
   }
 }
