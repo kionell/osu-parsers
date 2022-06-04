@@ -38,7 +38,7 @@ const parsed = decoder.decodeFromPath(decodePath, shouldParseSb);
 // Create a new osu!mania ruleset.
 const ruleset = new ManiaRuleset();
 
-// This will create a new copy of a beatmap with applied osu!mania ruleset.
+// This will create a new shallow copy of a beatmap with applied osu!mania ruleset.
 // This method implicitly applies mod combination of 0.
 const maniaWithNoMod = ruleset.applyToBeatmap(parsed);
 
