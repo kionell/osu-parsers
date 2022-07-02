@@ -16,7 +16,7 @@ export abstract class BeatmapProcessor {
     const objects = beatmap.hitObjects.filter((hitObject) => {
       const comboObject = hitObject as ComboObject;
 
-      if (comboObject.isNewCombo) return comboObject;
+      if (typeof comboObject.comboIndex === 'number') return comboObject;
     });
 
     const objectsWithCombo = objects as ComboObject[];
