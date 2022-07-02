@@ -1,3 +1,4 @@
+import { HitType, IHitObject, IHasComboInformation } from '../Objects';
 import { IBeatmap } from './IBeatmap';
 
 /**
@@ -10,6 +11,43 @@ export abstract class BeatmapProcessor {
    * @returns The link to the same beatmap.
    */
   preProcess(beatmap: IBeatmap): IBeatmap {
+    type ComboObject = IHitObject & IHasComboInformation;
+
+    const objects = beatmap.hitObjects.filter((hitObject) => {
+      const comboObject = hitObject as ComboObject;
+
+      if (comboObject.isNewCombo) return comboObject;
+    });
+
+    const objectsWithCombo = objects as ComboObject[];
+
+    let lastObj: ComboObject | null = null;
+
+    for (let i = 0; i < objectsWithCombo.length; i++) {
+      const obj = objectsWithCombo[i];
+
+      if (i === 0) {
+        /**
+         * First hitobject should always be marked as a new combo for sanity.
+         */
+        objectsWithCombo[i].hitType |= HitType.NewCombo;
+      }
+
+      obj.comboIndex = lastObj?.comboIndex ?? 0;
+      obj.comboIndexWithOffsets = lastObj?.comboIndexWithOffsets ?? 0;
+      obj.currentComboIndex = (lastObj?.currentComboIndex ?? -1) + 1;
+
+      if (obj.isNewCombo) {
+        obj.currentComboIndex = 0;
+        obj.comboIndex++;
+        obj.comboIndexWithOffsets += obj.comboOffset + 1;
+
+        if (lastObj !== null) lastObj.lastInCombo = true;
+      }
+
+      lastObj = obj;
+    }
+
     return beatmap;
   }
 
