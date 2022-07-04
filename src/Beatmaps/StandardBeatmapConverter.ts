@@ -8,6 +8,7 @@ import {
   BeatmapConverter,
   HitType,
   IBeatmap,
+  IHasCombo,
   IHasPosition,
   IHitObject,
   ISlidableObject,
@@ -52,20 +53,23 @@ export class StandardBeatmapConverter extends BeatmapConverter {
 
   private _convertCircle(obj: IHitObject): Circle {
     const converted = new Circle();
-    const posObj = obj as unknown as IHasPosition;
+    const posObj = obj as IHitObject & IHasPosition;
+    const comboObj = obj as IHitObject & IHasCombo;
 
     converted.startPosition = posObj?.startPosition ?? new Vector2(0, 0);
     converted.startTime = obj.startTime;
     converted.hitType = HitType.Normal | (obj.hitType & HitType.NewCombo);
     converted.hitSound = obj.hitSound;
     converted.samples = obj.samples;
+    converted.comboOffset = comboObj.comboOffset;
 
     return converted;
   }
 
   private _convertSlider(obj: ISlidableObject, beatmap: IBeatmap): Slider {
     const converted = new Slider();
-    const posObj = obj as unknown as IHasPosition;
+    const posObj = obj as ISlidableObject & IHasPosition;
+    const comboObj = obj as ISlidableObject & IHasCombo;
 
     converted.startPosition = posObj?.startPosition ?? new Vector2(0, 0);
     converted.startTime = obj.startTime;
@@ -76,6 +80,7 @@ export class StandardBeatmapConverter extends BeatmapConverter {
     converted.nodeSamples = obj.nodeSamples;
     converted.path = obj.path;
     converted.legacyLastTickOffset = obj?.legacyLastTickOffset ?? 0;
+    converted.comboOffset = comboObj.comboOffset;
 
     /**
      * Prior to v8, speed multipliers don't adjust for how many
@@ -96,7 +101,8 @@ export class StandardBeatmapConverter extends BeatmapConverter {
 
   private _convertSpinner(obj: ISpinnableObject): Spinner {
     const converted = new Spinner();
-    const posObj = obj as unknown as IHasPosition;
+    const posObj = obj as ISpinnableObject & IHasPosition;
+    const comboObj = obj as ISpinnableObject & IHasCombo;
 
     converted.startPosition = posObj?.startPosition ?? new Vector2(256, 192);
     converted.startTime = obj.startTime;
@@ -104,6 +110,7 @@ export class StandardBeatmapConverter extends BeatmapConverter {
     converted.hitType = HitType.Spinner | (obj.hitType & HitType.NewCombo);
     converted.hitSound = obj.hitSound;
     converted.samples = obj.samples;
+    converted.comboOffset = comboObj.comboOffset;
 
     return converted;
   }
