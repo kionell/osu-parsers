@@ -61,7 +61,7 @@ export class StandardBeatmapConverter extends BeatmapConverter {
     converted.hitType = HitType.Normal | (obj.hitType & HitType.NewCombo);
     converted.hitSound = obj.hitSound;
     converted.samples = obj.samples;
-    converted.comboOffset = comboObj.comboOffset;
+    converted.comboOffset = comboObj?.comboOffset ?? 0;
 
     return converted;
   }
@@ -80,7 +80,7 @@ export class StandardBeatmapConverter extends BeatmapConverter {
     converted.nodeSamples = obj.nodeSamples;
     converted.path = obj.path;
     converted.legacyLastTickOffset = obj?.legacyLastTickOffset ?? 0;
-    converted.comboOffset = comboObj.comboOffset;
+    converted.comboOffset = comboObj?.comboOffset ?? 0;
 
     /**
      * Prior to v8, speed multipliers don't adjust for how many
@@ -110,7 +110,7 @@ export class StandardBeatmapConverter extends BeatmapConverter {
     converted.hitType = HitType.Spinner | (obj.hitType & HitType.NewCombo);
     converted.hitSound = obj.hitSound;
     converted.samples = obj.samples;
-    converted.comboOffset = comboObj.comboOffset;
+    converted.comboOffset = comboObj?.comboOffset ?? 0;
 
     return converted;
   }
