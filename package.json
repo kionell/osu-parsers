@@ -1,6 +1,6 @@
 {
   "name": "osu-catch-stable",
-  "version": "2.1.8",
+  "version": "2.2.0",
   "description": "osu!stable version of osu!catch ruleset based on osu!lazer source code.",
   "exports": {
     "import": "./lib/index.mjs",
