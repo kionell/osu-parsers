@@ -1,4 +1,14 @@
-import { CatchBeatmap } from './CatchBeatmap';
+import {
+  BeatmapConverter,
+  HitType,
+  IBeatmap,
+  IHasCombo,
+  IHasPosition,
+  IHasX,
+  IHitObject,
+  ISlidableObject,
+  ISpinnableObject,
+} from 'osu-classes';
 
 import {
   CatchHitObject,
@@ -7,16 +17,7 @@ import {
   BananaShower,
 } from '../Objects';
 
-import {
-  BeatmapConverter,
-  HitType,
-  IBeatmap,
-  IHasPosition,
-  IHasX,
-  IHitObject,
-  ISlidableObject,
-  ISpinnableObject,
-} from 'osu-classes';
+import { CatchBeatmap } from './CatchBeatmap';
 
 export class CatchBeatmapConverter extends BeatmapConverter {
   canConvert(beatmap: IBeatmap): boolean {
@@ -89,13 +90,15 @@ export class CatchBeatmapConverter extends BeatmapConverter {
   }
 
   private _copyBaseProperties(hitObject: IHitObject, converted: CatchHitObject): void {
-    const posObj = hitObject as unknown as IHasPosition;
+    const posObj = hitObject as IHitObject & IHasPosition;
+    const comboObj = hitObject as IHitObject & IHasCombo;
 
     converted.startX = posObj?.startX ?? 0;
     converted.startY = posObj?.startY ?? 192;
     converted.startTime = hitObject.startTime;
     converted.hitSound = hitObject.hitSound;
     converted.samples = hitObject.samples;
+    converted.comboOffset = comboObj.comboOffset;
   }
 
   createBeatmap(): CatchBeatmap {

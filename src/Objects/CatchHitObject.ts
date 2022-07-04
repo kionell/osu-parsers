@@ -2,7 +2,7 @@ import {
   ControlPointInfo,
   BeatmapDifficultySection,
   HitObject,
-  IHasCombo,
+  IHasComboInformation,
   IHasX,
   HitType,
 } from 'osu-classes';
@@ -10,11 +10,17 @@ import {
 /**
  * An osu!catch hit object.
  */
-export abstract class CatchHitObject extends HitObject implements IHasCombo, IHasX {
+export abstract class CatchHitObject extends HitObject implements IHasComboInformation, IHasX {
   /**
    * The radius of hit objects.
    */
   static OBJECT_RADIUS = 64;
+
+  currentComboIndex = 0;
+  comboIndex = 0;
+  comboIndexWithOffsets = 0;
+  comboOffset = 0;
+  lastInCombo = false;
 
   timePreempt = 1000;
 
@@ -81,6 +87,11 @@ export abstract class CatchHitObject extends HitObject implements IHasCombo, IHa
     cloned.timePreempt = this.timePreempt;
     cloned.scale = this.scale;
     cloned.offsetX = this.offsetX;
+    cloned.currentComboIndex = this.currentComboIndex;
+    cloned.comboIndex = this.comboIndex;
+    cloned.comboIndexWithOffsets = this.comboIndexWithOffsets;
+    cloned.comboOffset = this.comboOffset;
+    cloned.lastInCombo = this.lastInCombo;
 
     return cloned;
   }
