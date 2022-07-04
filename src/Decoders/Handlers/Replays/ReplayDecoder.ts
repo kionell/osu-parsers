@@ -1,6 +1,5 @@
 import { LZMA } from 'lzma-native';
-import { LifeBarFrame } from 'osu-classes';
-import { ParsedReplayFrame } from '../../../Replays';
+import { ReplayFrame, LifeBarFrame } from 'osu-classes';
 import { Parsing } from '../../../Utils';
 
 export abstract class ReplayDecoder {
@@ -49,12 +48,12 @@ export abstract class ReplayDecoder {
     return lifeBarFrame;
   }
 
-  static decodeReplayFrames(data: string): ParsedReplayFrame[] {
+  static decodeReplayFrames(data: string): ReplayFrame[] {
     if (!data) return [];
 
     let lastTime = 0;
 
-    const replayFrames: ParsedReplayFrame[] = [];
+    const replayFrames: ReplayFrame[] = [];
     const frames = data.split(',');
 
     for (let i = 0; i < frames.length; ++i) {
@@ -97,8 +96,8 @@ export abstract class ReplayDecoder {
     return replayFrames;
   }
 
-  static handleReplayFrame(frameData: string[]): ParsedReplayFrame {
-    const replayFrame = new ParsedReplayFrame();
+  static handleReplayFrame(frameData: string[]): ReplayFrame {
+    const replayFrame = new ReplayFrame();
 
     replayFrame.interval = Parsing.parseFloat(frameData[0]);
     replayFrame.mouseX = Parsing.parseFloat(frameData[1], Parsing.MAX_COORDINATE_VALUE);

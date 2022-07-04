@@ -1,6 +1,5 @@
 import { LZMA } from 'lzma-native';
 import { IReplayFrame } from 'osu-classes';
-import { ParsedReplayFrame } from '../../../Replays';
 
 export abstract class ReplayEncoder {
   static async compressReplayFrames(data: string): Promise<Buffer> {
@@ -28,7 +27,7 @@ export abstract class ReplayEncoder {
          */
         const time = Math.round(frame.startTime);
 
-        const parsedFrame = frame as ParsedReplayFrame;
+        const parsedFrame = frame as IReplayFrame;
 
         const encodedData = [
           time - lastTime,
