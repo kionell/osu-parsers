@@ -4,11 +4,11 @@ import {
   Vector2,
   HitObject,
   IHasPosition,
-  IHasCombo,
   HitType,
+  IHasComboInformation,
 } from 'osu-classes';
 
-export abstract class StandardHitObject extends HitObject implements IHasPosition, IHasCombo {
+export abstract class StandardHitObject extends HitObject implements IHasPosition, IHasComboInformation {
   /**
    * The radius of hit objects (ie. the radius of a Circle).
    */
@@ -34,6 +34,12 @@ export abstract class StandardHitObject extends HitObject implements IHasPositio
   private _scale = 0.5;
 
   private _stackOffset = new Vector2(0, 0);
+
+  currentComboIndex = 0;
+  comboIndex = 0;
+  comboIndexWithOffsets = 0;
+  comboOffset = 0;
+  lastInCombo = false;
 
   get endPosition(): Vector2 {
     return this.startPosition;
