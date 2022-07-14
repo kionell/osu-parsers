@@ -19,7 +19,6 @@ export class TaikoPerformanceCalculator extends PerformanceCalculator {
 
   private _countGreat = 0;
   private _countOk = 0;
-  private _countMeh = 0;
   private _countMiss = 0;
   private _accuracy = 1;
 
@@ -130,7 +129,6 @@ export class TaikoPerformanceCalculator extends PerformanceCalculator {
       this._mods = score?.mods as TaikoModCombination ?? new TaikoModCombination();
       this._countGreat = score.statistics.great ?? this._countGreat;
       this._countOk = score.statistics.ok ?? this._countOk;
-      this._countMeh = score.statistics.meh ?? this._countMeh;
       this._countMiss = score.statistics.miss ?? this._countMiss;
       this._accuracy = score.accuracy ?? this._accuracy;
     }
@@ -141,6 +139,6 @@ export class TaikoPerformanceCalculator extends PerformanceCalculator {
   }
 
   private get _totalHits(): number {
-    return this._countGreat + this._countOk + this._countMeh + this._countMiss;
+    return this._countGreat + this._countOk + this._countMiss;
   }
 }
