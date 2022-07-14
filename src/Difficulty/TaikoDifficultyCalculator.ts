@@ -151,7 +151,7 @@ export class TaikoDifficultyCalculator extends DifficultyCalculator {
     attributes.rhythmStrain = rhythmRating;
     attributes.colourStrain = colourRating;
     attributes.greatHitWindow = hitWindows.windowFor(HitResult.Great) / clockRate;
-    attributes.maxCombo = (beatmap as TaikoBeatmap).maxCombo;
+    attributes.maxCombo = (beatmap as TaikoBeatmap)?.maxCombo ?? 0;
 
     return attributes;
   }
