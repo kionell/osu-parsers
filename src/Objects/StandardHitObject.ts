@@ -4,7 +4,6 @@ import {
   Vector2,
   HitObject,
   IHasPosition,
-  HitType,
   IHasComboInformation,
 } from 'osu-classes';
 
@@ -40,6 +39,7 @@ export abstract class StandardHitObject extends HitObject implements IHasPositio
   comboIndexWithOffsets = 0;
   comboOffset = 0;
   lastInCombo = false;
+  isNewCombo = false;
 
   get endPosition(): Vector2 {
     return this.startPosition;
@@ -105,10 +105,6 @@ export abstract class StandardHitObject extends HitObject implements IHasPositio
 
   get stackedEndPosition(): Vector2 {
     return this.endPosition.add(this.stackedOffset);
-  }
-
-  get isNewCombo(): boolean {
-    return (this.hitType & HitType.NewCombo) > 0;
   }
 
   applyDefaultsToSelf(controlPoints: ControlPointInfo, difficulty: BeatmapDifficultySection): void {
