@@ -4,7 +4,6 @@ import {
   HitObject,
   IHasComboInformation,
   IHasX,
-  HitType,
 } from 'osu-classes';
 
 /**
@@ -21,6 +20,7 @@ export abstract class CatchHitObject extends HitObject implements IHasComboInfor
   comboIndexWithOffsets = 0;
   comboOffset = 0;
   lastInCombo = false;
+  isNewCombo = false;
 
   timePreempt = 1000;
 
@@ -75,10 +75,6 @@ export abstract class CatchHitObject extends HitObject implements IHasComboInfor
 
     this.timePreempt = BeatmapDifficultySection.range(difficulty.approachRate, 1800, 1200, 450);
     this.scale = Math.fround((1 - Math.fround(0.7) * (difficulty.circleSize - 5) / 5) / 2);
-  }
-
-  get isNewCombo(): boolean {
-    return (this.hitType & HitType.NewCombo) > 0;
   }
 
   clone(): this {
