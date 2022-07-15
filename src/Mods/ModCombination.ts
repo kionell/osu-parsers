@@ -4,6 +4,7 @@ import { IApplicableToBeatmap } from './Types/IApplicableToBeatmap';
 import { IApplicableToHitObjects } from './Types/IApplicableToHitObjects';
 import { IApplicableToDifficulty } from './Types/IApplicableToDifficulty';
 import { IApplicableToConverter } from './Types/IApplicableToConverter';
+import { ModBitwise } from './Enums/ModBitwise';
 
 /**
  * A mod combination.
@@ -105,7 +106,19 @@ export abstract class ModCombination {
    * Bitwise value of the mod combination.
    */
   get bitwise(): number {
-    return this.all.reduce((b, m) => b | m.bitwise, 0);
+    return this.all.reduce((bitwise, mod) => {
+      bitwise |= mod.bitwise;
+
+      if (mod.bitwise === ModBitwise.Nightcore) {
+        bitwise |= ModBitwise.DoubleTime;
+      }
+
+      if (mod.bitwise === ModBitwise.Perfect) {
+        bitwise |= ModBitwise.SuddenDeath;
+      }
+
+      return bitwise;
+    }, 0);
   }
 
   /**
