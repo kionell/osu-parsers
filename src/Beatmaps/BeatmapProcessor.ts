@@ -31,6 +31,7 @@ export abstract class BeatmapProcessor {
          * First hitobject should always be marked as a new combo for sanity.
          */
         objectsWithCombo[i].hitType |= HitType.NewCombo;
+        objectsWithCombo[i].isNewCombo = true;
       }
 
       obj.comboIndex = lastObj?.comboIndex ?? 0;
