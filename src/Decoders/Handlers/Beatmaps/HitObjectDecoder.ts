@@ -9,6 +9,7 @@ import {
   HitSound,
   SampleSet,
   Beatmap,
+  IHasCombo,
 } from 'osu-classes';
 
 import {
@@ -25,6 +26,9 @@ import { Parsing } from '../../../Utils';
  * A decoder for beatmap hit objects.
  */
 export abstract class HitObjectDecoder {
+  private static _forceNewCombo = false;
+  private static _extraComboOffset = 0;
+
   /**
    * Decodes a hit object line to get a parsed hit object.
    * @param line A hit object line.
@@ -38,7 +42,7 @@ export abstract class HitObjectDecoder {
 
     const hitType = Parsing.parseInt(data[3]);
 
-    const hitObject = HitObjectDecoder.createHitObject(hitType);
+    const hitObject = this.createHitObject(hitType);
 
     hitObject.startX = Parsing.parseInt(data[0], Parsing.MAX_COORDINATE_VALUE);
     hitObject.startY = Parsing.parseInt(data[1], Parsing.MAX_COORDINATE_VALUE);
@@ -48,13 +52,50 @@ export abstract class HitObjectDecoder {
 
     const bankInfo = new SampleBank();
 
-    HitObjectDecoder.addExtras(data.slice(5), hitObject, bankInfo, offset, beatmap.fileFormat);
+    this.addExtras(data.slice(5), hitObject, bankInfo, offset, beatmap.fileFormat);
+    this.addComboOffset(hitObject, beatmap);
 
     if (hitObject.samples.length === 0) {
       hitObject.samples = this.convertSoundType(hitObject.hitSound, bankInfo);
     }
 
     beatmap.hitObjects.push(hitObject);
+  }
+
+  /**
+   * Adds extra combo offset to the hit object.
+   * @param hitObject Current hit object.
+   * @param beatmap Current beatmap.
+   */
+  static addComboOffset(hitObject: HitObject, beatmap: Beatmap): void {
+    const isStandard = beatmap.originalMode === 0;
+    const isCatch = beatmap.originalMode === 2;
+
+    /**
+     * Combo offsets are only applied to the osu!standard and osu!catch beatmaps. 
+     */
+    if (!isStandard && !isCatch) return;
+
+    const comboObject = hitObject as HitObject & IHasCombo;
+    const comboOffset = Math.trunc((hitObject.hitType & HitType.ComboOffset) >> 4);
+
+    if ((hitObject.hitType & HitType.Normal) || (hitObject.hitType & HitType.Slider)) {
+      comboObject.isNewCombo = this._forceNewCombo;
+      comboObject.comboOffset += this._extraComboOffset;
+
+      this._forceNewCombo = false;
+      this._extraComboOffset = 0;
+    }
+
+    if (hitObject.hitType & HitType.Spinner) {
+      /**
+       * Convert spinners don't create the new combo themselves, 
+       * but force the next non-spinner hitobject to create a new combo.
+       * Their combo offset is still added to that next hitobject's combo index.
+       */
+      this._forceNewCombo = beatmap.fileFormat <= 8 || comboObject?.isNewCombo || false;
+      this._extraComboOffset += comboOffset;
+    }
   }
 
   /**
@@ -71,15 +112,15 @@ export abstract class HitObjectDecoder {
     }
 
     if (hitObject.hitType & HitType.Slider) {
-      return HitObjectDecoder.addSliderExtras(data, hitObject as SlidableObject, bankInfo, fileFormat);
+      return this.addSliderExtras(data, hitObject as SlidableObject, bankInfo, fileFormat);
     }
 
     if (hitObject.hitType & HitType.Spinner) {
-      return HitObjectDecoder.addSpinnerExtras(data, hitObject as SpinnableObject, bankInfo, offset);
+      return this.addSpinnerExtras(data, hitObject as SpinnableObject, bankInfo, offset);
     }
 
     if (hitObject.hitType & HitType.Hold) {
-      return HitObjectDecoder.addHoldExtras(data, hitObject as HoldableObject, bankInfo, offset);
+      return this.addHoldExtras(data, hitObject as HoldableObject, bankInfo, offset);
     }
   }
 
@@ -108,8 +149,7 @@ export abstract class HitObjectDecoder {
      */
     slider.repeats = Math.max(0, repeats - 1);
 
-    slider.path.controlPoints = HitObjectDecoder
-      .convertPathString(pathString, offset, fileFormat);
+    slider.path.controlPoints = this.convertPathString(pathString, offset, fileFormat);
 
     slider.path.curveType = slider.path.controlPoints[0].type as PathType;
 
@@ -269,8 +309,7 @@ export abstract class HitObjectDecoder {
        * The start of the next segment is the index after the type descriptor.
        */
       const endPoint = endIndex < pathSplit.length - 1 ? pathSplit[endIndex + 1] : null;
-      const convertedPoints = HitObjectDecoder
-        .convertPoints(points, endPoint, isFirst, offset, fileFormat);
+      const convertedPoints = this.convertPoints(points, endPoint, isFirst, offset, fileFormat);
 
       for (const point of convertedPoints) {
         controlPoints.push(...point);
@@ -282,8 +321,7 @@ export abstract class HitObjectDecoder {
 
     if (endIndex > startIndex) {
       const points = pathSplit.slice(startIndex, endIndex);
-      const convertedPoints = HitObjectDecoder
-        .convertPoints(points, null, isFirst, offset, fileFormat);
+      const convertedPoints = this.convertPoints(points, null, isFirst, offset, fileFormat);
 
       for (const point of convertedPoints) {
         controlPoints.push(...point);
@@ -334,7 +372,7 @@ export abstract class HitObjectDecoder {
       vertices[vertices.length - 1] = readPoint(endPoint, offset);
     }
 
-    let type: PathType = HitObjectDecoder.convertPathType(points[0]);
+    let type = this.convertPathType(points[0]);
 
     // Edge-case rules (to match stable).
     if (type === PathType.PerfectCurve) {
