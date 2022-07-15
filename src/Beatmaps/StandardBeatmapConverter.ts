@@ -6,7 +6,6 @@ import { Spinner } from '../Objects/Spinner';
 
 import {
   BeatmapConverter,
-  HitType,
   IBeatmap,
   IHasCombo,
   IHasPosition,
@@ -53,34 +52,21 @@ export class StandardBeatmapConverter extends BeatmapConverter {
 
   private _convertCircle(obj: IHitObject): Circle {
     const converted = new Circle();
-    const posObj = obj as IHitObject & IHasPosition;
-    const comboObj = obj as IHitObject & IHasCombo;
 
-    converted.startPosition = posObj?.startPosition ?? new Vector2(0, 0);
-    converted.startTime = obj.startTime;
-    converted.hitType = HitType.Normal | (obj.hitType & HitType.NewCombo);
-    converted.hitSound = obj.hitSound;
-    converted.samples = obj.samples;
-    converted.comboOffset = comboObj?.comboOffset ?? 0;
+    this._copyProperties(converted, obj);
 
     return converted;
   }
 
   private _convertSlider(obj: ISlidableObject, beatmap: IBeatmap): Slider {
     const converted = new Slider();
-    const posObj = obj as ISlidableObject & IHasPosition;
-    const comboObj = obj as ISlidableObject & IHasCombo;
 
-    converted.startPosition = posObj?.startPosition ?? new Vector2(0, 0);
-    converted.startTime = obj.startTime;
-    converted.hitType = HitType.Slider | (obj.hitType & HitType.NewCombo);
-    converted.hitSound = obj.hitSound;
+    this._copyProperties(converted, obj);
+
     converted.repeats = obj.repeats;
-    converted.samples = obj.samples;
     converted.nodeSamples = obj.nodeSamples;
     converted.path = obj.path;
     converted.legacyLastTickOffset = obj?.legacyLastTickOffset ?? 0;
-    converted.comboOffset = comboObj?.comboOffset ?? 0;
 
     /**
      * Prior to v8, speed multipliers don't adjust for how many
@@ -101,18 +87,25 @@ export class StandardBeatmapConverter extends BeatmapConverter {
 
   private _convertSpinner(obj: ISpinnableObject): Spinner {
     const converted = new Spinner();
+
+    this._copyProperties(converted, obj);
+
+    converted.endTime = obj.endTime;
+
+    return converted;
+  }
+
+  private _copyProperties(converted: StandardHitObject, obj: IHitObject): void {
     const posObj = obj as ISpinnableObject & IHasPosition;
     const comboObj = obj as ISpinnableObject & IHasCombo;
 
-    converted.startPosition = posObj?.startPosition ?? new Vector2(256, 192);
+    converted.startPosition = posObj?.startPosition ?? new Vector2(0, 0);
     converted.startTime = obj.startTime;
-    converted.endTime = obj.endTime;
-    converted.hitType = HitType.Spinner | (obj.hitType & HitType.NewCombo);
+    converted.hitType = obj.hitType;
     converted.hitSound = obj.hitSound;
     converted.samples = obj.samples;
     converted.comboOffset = comboObj?.comboOffset ?? 0;
-
-    return converted;
+    converted.isNewCombo = comboObj?.isNewCombo ?? false;
   }
 
   createBeatmap(): StandardBeatmap {
