@@ -78,10 +78,11 @@ export abstract class HitObjectDecoder {
 
     const comboObject = hitObject as HitObject & IHasCombo;
     const comboOffset = Math.trunc((hitObject.hitType & HitType.ComboOffset) >> 4);
+    const newCombo = !!(hitObject.hitType & HitType.NewCombo);
 
     if ((hitObject.hitType & HitType.Normal) || (hitObject.hitType & HitType.Slider)) {
-      comboObject.isNewCombo = this._forceNewCombo;
-      comboObject.comboOffset += this._extraComboOffset;
+      comboObject.isNewCombo = newCombo || this._forceNewCombo;
+      comboObject.comboOffset = comboOffset + this._extraComboOffset;
 
       this._forceNewCombo = false;
       this._extraComboOffset = 0;
@@ -93,7 +94,7 @@ export abstract class HitObjectDecoder {
        * but force the next non-spinner hitobject to create a new combo.
        * Their combo offset is still added to that next hitobject's combo index.
        */
-      this._forceNewCombo = beatmap.fileFormat <= 8 || comboObject?.isNewCombo || false;
+      this._forceNewCombo = beatmap.fileFormat <= 8 || newCombo || false;
       this._extraComboOffset += comboOffset;
     }
   }
