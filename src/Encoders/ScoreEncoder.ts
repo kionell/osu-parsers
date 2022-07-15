@@ -65,9 +65,10 @@ export class ScoreEncoder {
 
     if (score.replay) {
       const replayData = ReplayEncoder.encodeReplayFrames(score.replay.frames);
+      const encodedData = await ReplayEncoder.compressReplayFrames(replayData);
 
-      writer.writeByte(replayData.length);
-      writer.writeBytes(await ReplayEncoder.compressReplayFrames(replayData));
+      writer.writeInteger(encodedData.length);
+      writer.writeBytes(encodedData);
     }
 
     writer.writeLong(BigInt(score.info.id));
