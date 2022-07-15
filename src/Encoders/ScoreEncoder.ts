@@ -27,13 +27,11 @@ export class ScoreEncoder {
    * @returns A buffer with encoded score & replay data.
    */
   async encodeToBuffer(score: IScore): Promise<Buffer> {
-    const encoded: Buffer = Buffer.from([]);
-
     if (typeof score?.info?.id !== 'number') {
-      return encoded;
+      return Buffer.from([]);
     }
 
-    const writer = new SerializationWriter(encoded);
+    const writer = new SerializationWriter();
 
     writer.writeByte(score.info.rulesetId);
 
@@ -77,6 +75,6 @@ export class ScoreEncoder {
 
     writer.writeLong(BigInt(score.info.id));
 
-    return encoded;
+    return writer.finish();
   }
 }
