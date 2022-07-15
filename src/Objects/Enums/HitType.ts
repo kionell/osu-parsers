@@ -9,5 +9,6 @@ export enum HitType {
   ComboSkip1 = 1 << 4,
   ComboSkip2 = 1 << 5,
   ComboSkip3 = 1 << 6,
+  ComboOffset = ComboSkip1 | ComboSkip2 | ComboSkip3,
   Hold = 1 << 7,
 }
