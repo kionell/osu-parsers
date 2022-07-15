@@ -3,6 +3,7 @@ import {
   ControlPointInfo,
   HitObject,
   HitSample,
+  IHasCombo,
   ISlidableObject,
   SliderPath,
 } from 'osu-classes';
@@ -10,7 +11,7 @@ import {
 /**
  * A parsed slidable object.
  */
-export class SlidableObject extends HitObject implements ISlidableObject {
+export class SlidableObject extends HitObject implements ISlidableObject, IHasCombo {
   /**
    * Scoring distance with a speed-adjusted beat length of 1 second
    * (ie. the speed slider balls move through their track).
@@ -90,6 +91,9 @@ export class SlidableObject extends HitObject implements ISlidableObject {
    * n: The last node.
    */
   nodeSamples: HitSample[][] = [];
+
+  isNewCombo = false;
+  comboOffset = 0;
 
   applyDefaultsToSelf(controlPoints: ControlPointInfo, difficulty: BeatmapDifficultySection): void {
     super.applyDefaultsToSelf(controlPoints, difficulty);
