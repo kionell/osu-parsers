@@ -15,14 +15,22 @@ export abstract class LegacyScoreExtensions {
   abstract statistics: Partial<IHitStatistics>;
 
   /**
+   * This is only stored for legacy scores. 
+   * Currently osu!stable uses Geki & Katu in osu!standard.
+   * New osu!lazer score format just ignores that data.
+   */
+  private _legacyCountGeki = 0;
+  private _legacyCountKatu = 0;
+
+  /**
    * Number of Gekis in standard, Max 300s in mania.
    */
   get countGeki(): number {
     if (this.rulesetId === 3) {
-      return this.statistics?.perfect ?? 0;
+      return this.statistics?.perfect ?? this._legacyCountGeki;
     }
 
-    return 0;
+    return this._legacyCountGeki;
   }
 
   set countGeki(value: number) {
@@ -31,6 +39,8 @@ export abstract class LegacyScoreExtensions {
     if (this.rulesetId === 3) {
       this.statistics.perfect = value;
     }
+
+    this._legacyCountGeki = value;
   }
 
   /**
@@ -51,14 +61,14 @@ export abstract class LegacyScoreExtensions {
    */
   get countKatu(): number {
     if (this.rulesetId === 2) {
-      return this.statistics?.smallTickMiss ?? 0;
+      return this.statistics?.smallTickMiss ?? this._legacyCountKatu;
     }
 
     if (this.rulesetId === 3) {
-      return this.statistics?.good ?? 0;
+      return this.statistics?.good ?? this._legacyCountKatu;
     }
 
-    return 0;
+    return this._legacyCountKatu;
   }
 
   set countKatu(value: number) {
