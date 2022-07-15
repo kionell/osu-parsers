@@ -88,9 +88,9 @@ export class SerializationReader {
   }
 
   /**
-   * Read ULE128.
+   * Read ULEB128.
    */
-  readULE128(): number {
+  readULEB128(): number {
     let val = 0;
     let shift = 0;
     let byte = 0;
@@ -112,7 +112,7 @@ export class SerializationReader {
     // Length and string itself aren't present.
     if (this.readByte() !== 0x0b) return '';
 
-    const length = this.readULE128();
+    const length = this.readULEB128();
 
     return length > 0 ? this.readBytes(length).toString() : '';
   }
