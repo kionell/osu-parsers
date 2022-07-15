@@ -59,10 +59,7 @@ export class ScoreEncoder {
     writer.writeByte(Number(score.info.perfect));
     writer.writeInteger(score.info.mods?.bitwise ?? 0);
 
-    /**
-     * Life frames (HP graph). Not implemented.
-     */
-    writer.writeString('');
+    writer.writeString(ReplayEncoder.encodeLifeBar(score.replay?.lifeBar ?? []));
 
     writer.writeDate(score.info.date);
 
