@@ -57,7 +57,7 @@ export class CatchBeatmapConverter extends BeatmapConverter {
   private _convertSlidableObject(slidable: ISlidableObject) {
     const converted = new JuiceStream();
 
-    this._copyBaseProperties(slidable, converted);
+    this._copyBaseProperties(converted, slidable);
 
     converted.hitType = HitType.Slider | (slidable.hitType & HitType.NewCombo);
     converted.repeats = slidable.repeats;
@@ -71,7 +71,7 @@ export class CatchBeatmapConverter extends BeatmapConverter {
   private _convertSpinnableObject(spinnable: ISpinnableObject) {
     const converted = new BananaShower();
 
-    this._copyBaseProperties(spinnable, converted);
+    this._copyBaseProperties(converted, spinnable);
 
     converted.hitType = HitType.Spinner | (spinnable.hitType & HitType.NewCombo);
     converted.endTime = spinnable.endTime;
@@ -82,23 +82,24 @@ export class CatchBeatmapConverter extends BeatmapConverter {
   private _convertHittableObject(hittable: IHitObject) {
     const converted = new Fruit();
 
-    this._copyBaseProperties(hittable, converted);
+    this._copyBaseProperties(converted, hittable);
 
     converted.hitType |= hittable.hitType & HitType.NewCombo;
 
     return converted;
   }
 
-  private _copyBaseProperties(hitObject: IHitObject, converted: CatchHitObject): void {
-    const posObj = hitObject as IHitObject & IHasPosition;
-    const comboObj = hitObject as IHitObject & IHasCombo;
+  private _copyBaseProperties(converted: CatchHitObject, obj: IHitObject): void {
+    const posObj = obj as IHitObject & IHasPosition;
+    const comboObj = obj as IHitObject & IHasCombo;
 
     converted.startX = posObj?.startX ?? 0;
     converted.startY = posObj?.startY ?? 192;
-    converted.startTime = hitObject.startTime;
-    converted.hitSound = hitObject.hitSound;
-    converted.samples = hitObject.samples;
-    converted.comboOffset = comboObj.comboOffset;
+    converted.startTime = obj.startTime;
+    converted.hitSound = obj.hitSound;
+    converted.samples = obj.samples;
+    converted.comboOffset = comboObj?.comboOffset ?? 0;
+    converted.isNewCombo = comboObj?.isNewCombo ?? false;
   }
 
   createBeatmap(): CatchBeatmap {
