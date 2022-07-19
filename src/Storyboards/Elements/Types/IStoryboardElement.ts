@@ -1,4 +1,4 @@
-import { LayerType } from '../../Enums/LayerType';
+import { LayerType } from '../../Enums';
 
 /**
  * A storyboard element.

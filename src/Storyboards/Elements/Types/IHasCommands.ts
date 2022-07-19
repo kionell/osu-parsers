@@ -1,12 +1,10 @@
-import { Command } from '../../Commands/Command';
-import { CommandLoop } from '../../Compounds/CommandLoop';
-import { CommandTrigger } from '../../Compounds/CommandTrigger';
-import { IStoryboardElement } from './IStoryboardElement';
+import { Command } from '../../Commands';
+import { CommandLoop, CommandTrigger } from '../../Compounds';
 
 /**
  * A storyboard element that has commands.
  */
-export interface IHasCommands extends IStoryboardElement {
+export interface IHasCommands {
   /**
    * The list of commands of the storyboard element.
    */
