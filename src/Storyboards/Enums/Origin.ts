@@ -1,7 +1,7 @@
 /**
  * Origins of the storyboard sprite.
  */
-export enum Origins {
+export const enum Origin {
   TopLeft,
   Centre,
   CentreLeft,
