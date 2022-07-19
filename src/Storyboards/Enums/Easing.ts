@@ -1,7 +1,7 @@
 /**
  * Types of easing.
  */
-export enum Easing {
+export const enum Easing {
   None,
   Out,
   In,

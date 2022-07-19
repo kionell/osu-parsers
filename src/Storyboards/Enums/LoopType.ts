@@ -1,7 +1,7 @@
 /**
  * Types of animation loops.
  */
-export enum LoopType {
+export const enum LoopType {
   LoopForever,
   LoopOnce,
 }

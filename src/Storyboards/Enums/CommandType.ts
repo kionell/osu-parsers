@@ -1,7 +1,7 @@
 /**
  * Types of storyboard commands.
  */
-export enum CommandType {
+export const enum CommandType {
   None = '',
   Movement = 'M',
   MovementX = 'MX',

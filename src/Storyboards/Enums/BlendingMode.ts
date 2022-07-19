@@ -1,7 +1,7 @@
 /**
  * Types of blending.
  */
-export enum BlendingMode {
+export const enum BlendingMode {
   AdditiveBlending,
   AlphaBlending,
 }

@@ -1,7 +1,7 @@
 /**
  * Parameter types of the parameter command.
  */
-export enum ParameterType {
+export const enum ParameterType {
   None = '',
   HorizontalFlip = 'H',
   VerticalFlip = 'V',

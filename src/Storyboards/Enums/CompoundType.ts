@@ -1,7 +1,7 @@
 /**
  * Types of storyboard compounds.
  */
-export enum CompoundType {
+export const enum CompoundType {
   None = '',
   Loop = 'L',
   Trigger = 'T',

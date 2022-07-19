@@ -1,7 +1,7 @@
 /**
  * Types of storyboard events.
  */
-export enum EventType {
+export const enum EventType {
   Background,
   Video,
   Break,
