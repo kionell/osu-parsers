@@ -2,10 +2,11 @@
  * Types of storyboard layers.
  */
 export enum LayerType {
-  Background,
-  Fail,
+  Overlay = -2147483648, // Min Int32 value.
+  Foreground = 0,
   Pass,
-  Foreground,
-  Overlay,
+  Fail,
+  Background,
+  Video,
   Samples,
 }
