@@ -61,35 +61,35 @@ export abstract class GeneralDecoder {
         break;
 
       case 'LetterboxInBreaks':
-        beatmap.general.letterboxInBreaks = !!value;
+        beatmap.general.letterboxInBreaks = value === '1';
         break;
 
       case 'StoryFireInFront':
-        beatmap.general.storyFireInFront = !!value;
+        beatmap.general.storyFireInFront = value === '1';
         break;
 
       case 'UseSkinSprites':
-        beatmap.general.useSkinSprites = !!value;
+        beatmap.general.useSkinSprites = value === '1';
         break;
 
       case 'AlwaysShowPlayfield':
-        beatmap.general.alwaysShowPlayfield = !!value;
+        beatmap.general.alwaysShowPlayfield = value === '1';
         break;
 
       case 'EpilepsyWarning':
-        beatmap.general.epilepsyWarning = !!value;
+        beatmap.general.epilepsyWarning = value === '1';
         break;
 
       case 'SpecialStyle':
-        beatmap.general.specialStyle = !!value;
+        beatmap.general.specialStyle = value === '1';
         break;
 
       case 'WidescreenStoryboard':
-        beatmap.general.widescreenStoryboard = !!value;
+        beatmap.general.widescreenStoryboard = value === '1';
         break;
 
       case 'SamplesMatchPlaybackRate':
-        beatmap.general.samplesMatchPlaybackRate = !!value;
+        beatmap.general.samplesMatchPlaybackRate = value === '1';
     }
   }
 }
