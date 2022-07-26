@@ -33,7 +33,7 @@ export class Color4 {
     this.red = red || 0;
     this.green = green || 0;
     this.blue = blue || 0;
-    this.alpha = alpha || 0;
+    this.alpha = alpha || 255;
   }
 
   /**
