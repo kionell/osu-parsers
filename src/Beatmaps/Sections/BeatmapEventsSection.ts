@@ -8,27 +8,27 @@ export class BeatmapEventsSection {
   /**
    * A beatmap background file path.
    */
-  background?: string;
+  background: string | null = null;
 
   /**
    * A beatmap video file path.
    */
-  video?: string;
+  video: string | null = null;
 
   /**
    * Video offset in milliseconds.
    */
-  videoOffset?: number;
+  videoOffset = 0;
 
   /**
    * List of beatmap break events.
    */
-  breaks?: BeatmapBreakEvent[];
+  breaks: BeatmapBreakEvent[] = [];
 
   /**
    * A beatmap storyboard.
    */
-  storyboard?: Storyboard;
+  storyboard: Storyboard | null = null;
 
   /**
    * Creates a copy of this beatmap events section.
@@ -38,25 +38,11 @@ export class BeatmapEventsSection {
   clone(): BeatmapEventsSection {
     const cloned = new BeatmapEventsSection();
 
-    if (this.background) {
-      cloned.background = this.background;
-    }
-
-    if (this.video) {
-      cloned.video = this.video;
-    }
-
-    if (this.videoOffset) {
-      cloned.videoOffset = this.videoOffset;
-    }
-
-    if (this.breaks) {
-      cloned.breaks = this.breaks;
-    }
-
-    if (this.storyboard) {
-      cloned.storyboard = this.storyboard;
-    }
+    cloned.background = this.background;
+    cloned.video = this.video;
+    cloned.videoOffset = this.videoOffset;
+    cloned.breaks = this.breaks;
+    cloned.storyboard = this.storyboard;
 
     return cloned;
   }
