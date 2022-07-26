@@ -11,16 +11,6 @@ export class BeatmapEventSection {
   background: string | null = null;
 
   /**
-   * A beatmap video file path.
-   */
-  video: string | null = null;
-
-  /**
-   * Video offset in milliseconds.
-   */
-  videoOffset = 0;
-
-  /**
    * List of beatmap break events.
    */
   breaks: BeatmapBreakEvent[] = [];
@@ -39,8 +29,6 @@ export class BeatmapEventSection {
     const cloned = new BeatmapEventSection();
 
     cloned.background = this.background;
-    cloned.video = this.video;
-    cloned.videoOffset = this.videoOffset;
     cloned.breaks = this.breaks;
     cloned.storyboard = this.storyboard;
 
