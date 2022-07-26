@@ -1,15 +1,10 @@
-import { CommandType } from '../Enums/CommandType';
-import { Easing } from '../Enums/Easing';
+import { Easing } from '../Enums';
+import { ICommand } from './ICommand';
 
 /**
  * A storyboard command.
  */
-export abstract class Command {
-  /**
-   * The type of the storyboard command.
-   */
-  type: CommandType = CommandType.None;
-
+export class Command<T> implements ICommand {
   /**
    * The easing of the storyboard command.
    */
@@ -20,24 +15,27 @@ export abstract class Command {
    */
   startTime = 0;
 
-  private _endTime = 0;
-
   /**
    * The time at which the command ends.
    */
-  get endTime(): number {
-    return this._endTime || this.startTime;
-  }
-
-  set endTime(value: number) {
-    this._endTime = value;
-  }
+  endTime = 0;
 
   /**
-   * The acronym of the storyboard command.
+   * Starting value of this command.
    */
-  get acronym(): string {
-    return this.type;
+  declare startValue: T;
+
+  /**
+   * Ending value of this command.
+   */
+  declare endValue: T;
+
+  constructor(easing: Easing, startTime: number, endTime: number, startValue: T, endValue: T) {
+    this.easing = easing;
+    this.startTime = startTime;
+    this.endTime = endTime;
+    this.startValue = startValue;
+    this.endValue = endValue;
   }
 
   /**
@@ -45,5 +43,13 @@ export abstract class Command {
    */
   get duration(): number {
     return this.endTime - this.startTime;
+  }
+
+  /**
+   * @param other Other storyboard command.
+   * @returns If two storyboard commands are equal.
+   */
+  equals(other: ICommand): boolean {
+    return this.startTime === other.startTime && this.endTime === other.endTime;
   }
 }
