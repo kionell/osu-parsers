@@ -24,4 +24,14 @@ export class StoryboardSample implements IStoryboardElement {
    * The file path of the sound of this sample.
    */
   filePath = '';
+
+  get isDrawable(): boolean {
+    return true;
+  }
+
+  constructor(path: string, time: number, volume: number) {
+    this.filePath = path;
+    this.startTime = time;
+    this.volume = volume;
+  }
 }
