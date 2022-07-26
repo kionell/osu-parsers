@@ -6,24 +6,11 @@ import {
   Command,
   CommandLoop,
   CommandTrigger,
-  FadeCommand,
-  MoveCommand,
-  MoveXCommand,
-  MoveYCommand,
-  ScaleCommand,
-  VectorScaleCommand,
-  RotateCommand,
-  ColorCommand,
-  ParameterCommand,
-  HorizontalFlipCommand,
-  VerticalFlipCommand,
-  BlendingCommand,
   EventType,
   LayerType,
   CommandType,
-  ParameterType,
-  Origins,
   LoopType,
+  Storyboard,
 } from 'osu-classes';
 
 import { Parsing } from '../../../Utils';
@@ -31,13 +18,72 @@ import { Parsing } from '../../../Utils';
 /**
  * A decoder for storyboard elements, compounds and commands.
  */
-export abstract class StoryboardDataDecoder {
+export abstract class StoryboardEventDecoder {
+  /**
+   * Decodes a storyboard line to get storyboard event data.
+   * @param line Storyboard line.
+   * @param storyboard A parsed storyboard object.
+   */
+  static handleLine(line: string, storyboard: Storyboard): void {
+    const depth = this._getDepth(line);
+
+    line = line.substring(depth);
+
+    switch (depth) {
+      // Storyboard element
+      case 0: return this._handleDepth0(line, storyboard);
+
+      // Storyboard element command or compound
+      case 1: return this._handleDepth1(line, storyboard);
+
+      // Storyboard element compounded command
+      case 2: return this._handleDepth2(line, storyboard);
+    }
+  }
+
+  private static _handleDepth0(line: string, storyboard: Storyboard): void {
+    this._element = this._parseElement(line);
+
+    // Force push Samples to their own layer.
+    if (this._element instanceof StoryboardSample) {
+      storyboard.getLayer(LayerType.Samples).push(this._element);
+
+      return;
+    }
+
+    storyboard.getLayer(this._element.layer).push(this._element);
+  }
+
+  private static _handleDepth1(line: string, storyboard: Storyboard): void {
+    // Compound command or default command
+    switch (line[0]) {
+      case CompoundType.Loop:
+        this._compound = StoryboardDataDecoder.handleLoop(line);
+        (this._element as IHasCommands).loops.push(this._compound);
+        break;
+
+      case CompoundType.Trigger:
+        this._compound = StoryboardDataDecoder.handleTrigger(line);
+        (this._element as IHasCommands).triggers.push(this._compound);
+        break;
+
+      default:
+        this._command = StoryboardDataDecoder.handleCommand(line);
+        (this._element as IHasCommands).commands.push(this._command);
+    }
+  }
+
+  private static _handleDepth2(line: string, storyboard: Storyboard): void {
+    this._command = StoryboardDataDecoder.handleCommand(line);
+    (this._compound as Compound).commands.push(this._command);
+  }
+
   /**
    * Decodes a storyboard line to get an element.
    * @param line Storyboard line.
    * @returns A new storyboard element.
    */
-  static handleElement(line: string): IStoryboardElement {
+  private static _parseElement(line: string): IStoryboardElement {
     const data = line.split(',');
 
     let eventType: EventType = parseInt(data[0]);
@@ -113,7 +159,7 @@ export abstract class StoryboardDataDecoder {
    * @param line Storyboard line.
    * @returns A new command loop.
    */
-  static handleLoop(line: string): CommandLoop {
+  private static _parseLoop(line: string): CommandLoop {
     const data = line.split(',');
 
     const loop = new CommandLoop();
@@ -129,7 +175,7 @@ export abstract class StoryboardDataDecoder {
    * @param line Storyboard line.
    * @returns A new command trigger.
    */
-  static handleTrigger(line: string): CommandTrigger {
+  private static _parseTrigger(line: string): CommandTrigger {
     const data = line.split(',');
 
     const trigger = new CommandTrigger();
@@ -147,7 +193,7 @@ export abstract class StoryboardDataDecoder {
    * @param line Storyboard line.
    * @returns A new command.
    */
-  static handleCommand(line: string): Command {
+  private static _parseCommand(line: string): Command {
     const data = line.split(',');
 
     const commandType: CommandType = data[0] as CommandType;
@@ -259,7 +305,7 @@ export abstract class StoryboardDataDecoder {
    * @param line Command data.
    * @returns A new parameter command.
    */
-  static handleParameterCommand(data: string[]): ParameterCommand {
+  private static _handleParameterCommand(data: string[]): ParameterCommand {
     const parameterType = data[4];
 
     let command: ParameterCommand;
@@ -282,5 +328,17 @@ export abstract class StoryboardDataDecoder {
     command.endTime = Parsing.parseInt(data[3]);
 
     return command;
+  }
+
+  private static _getDepth(line: string): number {
+    let depth = 0;
+
+    for (const char of line) {
+      if (char !== ' ' && char !== '_') break;
+
+      ++depth;
+    }
+
+    return depth;
   }
 }

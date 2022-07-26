@@ -17,7 +17,7 @@ import { Parsing } from '../../../Utils';
 /**
  * A decoder for beatmap control points.
  */
-export abstract class TimingPointDecoder {
+export abstract class BeatmapTimingPointDecoder {
   /**
    * The time for the next flush of control points.
    */
@@ -47,7 +47,7 @@ export abstract class TimingPointDecoder {
   static handleLine(line: string, beatmap: Beatmap, offset: number): void {
     // Time,beatLength,meter,sampleSet,sampleIndex,volume,uninherited,effects
 
-    TimingPointDecoder.controlPoints = beatmap.controlPoints;
+    this.controlPoints = beatmap.controlPoints;
 
     const data = line.split(',');
 
@@ -92,7 +92,7 @@ export abstract class TimingPointDecoder {
       timingPoint.beatLength = beatLength;
       timingPoint.timeSignature = timeSignature;
 
-      TimingPointDecoder.addControlPoint(timingPoint, startTime, true);
+      this.addControlPoint(timingPoint, startTime, true);
     }
 
     const difficultyPoint = new DifficultyPoint();
@@ -100,7 +100,7 @@ export abstract class TimingPointDecoder {
     difficultyPoint.bpmMultiplier = bpmMultiplier;
     difficultyPoint.speedMultiplier = speedMultiplier;
 
-    TimingPointDecoder.addControlPoint(difficultyPoint, startTime, timingChange);
+    this.addControlPoint(difficultyPoint, startTime, timingChange);
 
     const effectPoint = new EffectPoint();
 
@@ -111,7 +111,7 @@ export abstract class TimingPointDecoder {
       effectPoint.scrollSpeed = speedMultiplier;
     }
 
-    TimingPointDecoder.addControlPoint(effectPoint, startTime, timingChange);
+    this.addControlPoint(effectPoint, startTime, timingChange);
 
     const samplePoint = new SamplePoint();
 
@@ -119,7 +119,7 @@ export abstract class TimingPointDecoder {
     samplePoint.customIndex = customIndex;
     samplePoint.volume = volume;
 
-    TimingPointDecoder.addControlPoint(samplePoint, startTime, timingChange);
+    this.addControlPoint(samplePoint, startTime, timingChange);
   }
 
   /**
@@ -130,25 +130,25 @@ export abstract class TimingPointDecoder {
    * @param timingChange 
    */
   static addControlPoint(point: ControlPoint, time: number, timingChange: boolean): void {
-    if (time !== TimingPointDecoder.pendingTime) {
-      TimingPointDecoder.flushPendingPoints();
+    if (time !== this.pendingTime) {
+      this.flushPendingPoints();
     }
 
     timingChange
-      ? TimingPointDecoder.pendingPoints.unshift(point)
-      : TimingPointDecoder.pendingPoints.push(point);
+      ? this.pendingPoints.unshift(point)
+      : this.pendingPoints.push(point);
 
-    TimingPointDecoder.pendingTime = time;
+    this.pendingTime = time;
   }
 
   /**
    * Adds control points to their own group.
    */
   static flushPendingPoints(): void {
-    const pendingTime = TimingPointDecoder.pendingTime;
-    const pendingPoints = TimingPointDecoder.pendingPoints;
-    const controlPoints = TimingPointDecoder.controlPoints;
-    const pendingTypes = TimingPointDecoder.pendingTypes;
+    const pendingTime = this.pendingTime;
+    const pendingPoints = this.pendingPoints;
+    const controlPoints = this.controlPoints;
+    const pendingTypes = this.pendingTypes;
 
     let i = pendingPoints.length;
 
@@ -165,7 +165,7 @@ export abstract class TimingPointDecoder {
       controlPoints.add(pendingPoints[i], pendingTime);
     }
 
-    TimingPointDecoder.pendingPoints = [];
-    TimingPointDecoder.pendingTypes = [];
+    this.pendingPoints = [];
+    this.pendingTypes = [];
   }
 }

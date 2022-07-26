@@ -25,7 +25,7 @@ import { Parsing } from '../../../Utils';
 /**
  * A decoder for beatmap hit objects.
  */
-export abstract class HitObjectDecoder {
+export abstract class BeatmapHitObjectDecoder {
   private static _forceNewCombo = false;
   private static _extraComboOffset = 0;
 

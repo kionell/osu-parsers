@@ -4,7 +4,7 @@ import { Parsing } from '../../../Utils';
 /**
  * A decoder for beatmap editor settings.
  */
-export abstract class EditorDecoder {
+export abstract class BeatmapEditorDecoder {
   /**
    * Decodes beatmap editor line and adds editor settings data to a beatmap.
    * @param line Editor section line.

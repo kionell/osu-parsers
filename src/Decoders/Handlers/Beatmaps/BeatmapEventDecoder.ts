@@ -4,7 +4,7 @@ import { Parsing } from '../../../Utils';
 /**
  * A decoder for beatmap events.
  */
-export abstract class EventDecoder {
+export abstract class BeatmapEventDecoder {
   /**
    * Decodes event line.
    * If line contains any beatmap events, then it is added to the beatmap.
@@ -26,11 +26,6 @@ export abstract class EventDecoder {
         beatmap.events.background = data[2].replace(/"/g, '');
         break;
 
-      case EventType.Video:
-        beatmap.events.videoOffset = Parsing.parseInt(data[1]);
-        beatmap.events.video = data[2].replace(/"/g, '');
-        break;
-
       case EventType.Break: {
         const start = Parsing.parseFloat(data[1]) + offset;
         const end = Math.max(start, Parsing.parseFloat(data[2]) + offset);
@@ -45,10 +40,15 @@ export abstract class EventDecoder {
         break;
       }
 
+      case EventType.Video:
       case EventType.Sample:
       case EventType.Sprite:
       case EventType.Animation:
       case EventType.StoryboardCommand:
+        /**
+         * Storyboard syntax is quite complex and needs to be processed separately. 
+         * We should collect storyboard lines to parse them later.
+         */
         if (sbLines) sbLines.push(line);
     }
   }
@@ -58,13 +58,11 @@ export abstract class EventDecoder {
       return EventType.StoryboardCommand;
     }
 
-    input = input.trim();
+    const eventType = input.trim() as keyof typeof EventType;
+    const rawEventType = parseInt(eventType);
 
-    let eventType = parseInt(input);
-
-    eventType = isFinite(eventType) ? eventType : (EventType as any)[input];
-
-    if (EventType[eventType]) return eventType;
+    if (rawEventType in EventType) return rawEventType;
+    if (eventType in EventType) return EventType[eventType];
 
     throw new Error(`Unknown event type: ${input}!`);
   }

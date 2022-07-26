@@ -5,7 +5,7 @@ import { Parsing } from '../../../Utils';
 /**
  * A decoder for beatmap colors.
  */
-export abstract class ColorDecoder {
+export abstract class BeatmapColorDecoder {
   /**
    * Decodes a color line and adds a new color to the beatmap.
    * @param line A color line.
