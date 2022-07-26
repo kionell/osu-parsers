@@ -4,7 +4,7 @@ import { BeatmapBreakEvent } from '../Events/BeatmapBreakEvent';
 /**
  * A beatmap events section.
  */
-export class BeatmapEventsSection {
+export class BeatmapEventSection {
   /**
    * A beatmap background file path.
    */
@@ -35,8 +35,8 @@ export class BeatmapEventsSection {
    * Non-primitive properties will be copied via their own clone() method.
    * @returns A copied information about control points.
    */
-  clone(): BeatmapEventsSection {
-    const cloned = new BeatmapEventsSection();
+  clone(): BeatmapEventSection {
+    const cloned = new BeatmapEventSection();
 
     cloned.background = this.background;
     cloned.video = this.video;

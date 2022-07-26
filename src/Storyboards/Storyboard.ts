@@ -1,4 +1,4 @@
-import { BeatmapColorsSection } from '../Beatmaps';
+import { BeatmapColorSection } from '../Beatmaps';
 import { LayerType } from './Enums/LayerType';
 import { StoryboardLayer } from './StoryboardLayer';
 
@@ -14,7 +14,7 @@ export class Storyboard {
   /**
    * Custom beatmap colors.
    */
-  colors: BeatmapColorsSection = new BeatmapColorsSection();
+  colors: BeatmapColorSection = new BeatmapColorSection();
 
   /**
    * Whether the storyboard can fall back to skin sprites 

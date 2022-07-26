@@ -3,8 +3,8 @@ import {
   BeatmapEditorSection,
   BeatmapDifficultySection,
   BeatmapMetadataSection,
-  BeatmapColorsSection,
-  BeatmapEventsSection,
+  BeatmapColorSection,
+  BeatmapEventSection,
 } from './Sections';
 
 import { ControlPointInfo } from './ControlPoints';
@@ -73,22 +73,22 @@ export class ProgressiveCalculationBeatmap implements IBeatmap {
   /**
    * Beatmap skin configuration.
    */
-  get colors(): BeatmapColorsSection {
+  get colors(): BeatmapColorSection {
     return this._baseBeatmap.colors;
   }
 
-  set colors(value: BeatmapColorsSection) {
+  set colors(value: BeatmapColorSection) {
     this._baseBeatmap.colors = value;
   }
 
   /**
    * Beatmap events & Storyboard.
    */
-  get events(): BeatmapEventsSection {
+  get events(): BeatmapEventSection {
     return this._baseBeatmap.events;
   }
 
-  set events(value: BeatmapEventsSection) {
+  set events(value: BeatmapEventSection) {
     this._baseBeatmap.events = value;
   }
 

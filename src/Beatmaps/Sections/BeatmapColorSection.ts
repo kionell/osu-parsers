@@ -3,7 +3,7 @@ import { Color4 } from '../../Utils';
 /**
  * A beatmap colors section.
  */
-export class BeatmapColorsSection {
+export class BeatmapColorSection {
   /**
    * Additive combo colors.
    */
@@ -24,8 +24,8 @@ export class BeatmapColorsSection {
    * Non-primitive properties will be copied via their own clone() method.
    * @returns A copied information about control points.
    */
-  clone(): BeatmapColorsSection {
-    const cloned = new BeatmapColorsSection();
+  clone(): BeatmapColorSection {
+    const cloned = new BeatmapColorSection();
 
     cloned.comboColors = this.comboColors.map((c) => c.clone());
 

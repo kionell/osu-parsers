@@ -3,8 +3,8 @@ import {
   BeatmapEditorSection,
   BeatmapDifficultySection,
   BeatmapMetadataSection,
-  BeatmapColorsSection,
-  BeatmapEventsSection,
+  BeatmapColorSection,
+  BeatmapEventSection,
 } from './Sections';
 
 import { ControlPointInfo } from './ControlPoints';
@@ -43,12 +43,12 @@ export interface IBeatmap {
   /**
    * Beatmap skin configuration.
    */
-  colors: BeatmapColorsSection;
+  colors: BeatmapColorSection;
 
   /**
    * Beatmap events & storyboard.
    */
-  events: BeatmapEventsSection;
+  events: BeatmapEventSection;
 
   /**
    * Beatmap control points.

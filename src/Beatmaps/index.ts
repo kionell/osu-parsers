@@ -21,8 +21,8 @@ export { BeatmapGeneralSection } from './Sections/BeatmapGeneralSection';
 export { BeatmapEditorSection } from './Sections/BeatmapEditorSection';
 export { BeatmapDifficultySection } from './Sections/BeatmapDifficultySection';
 export { BeatmapMetadataSection } from './Sections/BeatmapMetadataSection';
-export { BeatmapColorsSection } from './Sections/BeatmapColorsSection';
-export { BeatmapEventsSection } from './Sections/BeatmapEventsSection';
+export { BeatmapColorSection } from './Sections/BeatmapColorSection';
+export { BeatmapEventSection } from './Sections/BeatmapEventSection';
 
 /* Beatmaps */
 export { BeatmapProcessor } from './BeatmapProcessor';
