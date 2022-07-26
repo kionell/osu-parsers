@@ -13,7 +13,7 @@ import {
   ScaleCommand,
   VectorScaleCommand,
   RotateCommand,
-  ColourCommand,
+  ColorCommand,
   ParameterCommand,
   HorizontalFlipCommand,
   VerticalFlipCommand,
@@ -229,16 +229,16 @@ export abstract class StoryboardDataDecoder {
 
         break;
 
-      case CommandType.Colour:
-        command = new ColourCommand();
-        (command as ColourCommand).startRed = Parsing.parseInt(data[4]);
-        (command as ColourCommand).startGreen = Parsing.parseInt(data[5]);
-        (command as ColourCommand).startBlue = Parsing.parseInt(data[6]);
+      case CommandType.Color:
+        command = new ColorCommand();
+        (command as ColorCommand).startRed = Parsing.parseInt(data[4]);
+        (command as ColorCommand).startGreen = Parsing.parseInt(data[5]);
+        (command as ColorCommand).startBlue = Parsing.parseInt(data[6]);
 
         if (data.length > 7) {
-          (command as ColourCommand).endRed = Parsing.parseInt(data[7]);
-          (command as ColourCommand).endGreen = Parsing.parseInt(data[8]);
-          (command as ColourCommand).endBlue = Parsing.parseInt(data[9]);
+          (command as ColorCommand).endRed = Parsing.parseInt(data[7]);
+          (command as ColorCommand).endGreen = Parsing.parseInt(data[8]);
+          (command as ColorCommand).endBlue = Parsing.parseInt(data[9]);
         }
 
         break;

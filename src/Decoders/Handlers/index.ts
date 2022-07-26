@@ -1,4 +1,4 @@
-export * from './Beatmaps/ColourDecoder';
+export * from './Beatmaps/ColorDecoder';
 export * from './Beatmaps/DifficultyDecoder';
 export * from './Beatmaps/EditorDecoder';
 export * from './Beatmaps/GeneralDecoder';

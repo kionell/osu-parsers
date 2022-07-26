@@ -12,7 +12,7 @@ import {
   MoveCommand,
   FadeCommand,
   RotateCommand,
-  ColourCommand,
+  ColorCommand,
   ParameterCommand,
   IHasCommands,
   IStoryboardElement,
@@ -346,12 +346,12 @@ export abstract class EventsEncoder {
           : `${rotation.startRotate}`;
       }
 
-      case CommandType.Colour: {
-        const colour = command as ColourCommand;
+      case CommandType.Color: {
+        const color = command as ColorCommand;
 
-        return !colour.startColour.equals(colour.endColour)
-          ? `${colour.startColour},${colour.endColour}`
-          : `${colour.startColour}`;
+        return !color.startColor.equals(color.endColor)
+          ? `${color.startColor},${color.endColor}`
+          : `${color.startColor}`;
       }
 
       case CommandType.Parameter: {

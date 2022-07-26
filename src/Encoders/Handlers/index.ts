@@ -1,4 +1,4 @@
-export * from './Beatmaps/ColourEncoder';
+export * from './Beatmaps/ColorEncoder';
 export * from './Beatmaps/DifficultyEncoder';
 export * from './Beatmaps/EditorEncoder';
 export * from './Beatmaps/GeneralEncoder';

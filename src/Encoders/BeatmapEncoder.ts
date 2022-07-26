@@ -9,7 +9,7 @@ import {
   DifficultyEncoder,
   EventsEncoder,
   TimingPointEncoder,
-  ColourEncoder,
+  ColorEncoder,
   HitObjectEncoder,
 } from './Handlers';
 
@@ -54,7 +54,7 @@ export class BeatmapEncoder {
     encoded.push(DifficultyEncoder.encodeDifficultySection(beatmap));
     encoded.push(EventsEncoder.encodeEventsSection(beatmap));
     encoded.push(TimingPointEncoder.encodeControlPoints(beatmap));
-    encoded.push(ColourEncoder.encodeColours(beatmap));
+    encoded.push(ColorEncoder.encodeColors(beatmap));
     encoded.push(HitObjectEncoder.encodeHitObjects(beatmap));
 
     return encoded.filter((x) => x).join('\n\n');

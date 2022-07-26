@@ -2,12 +2,12 @@ import { Beatmap, Color4 } from 'osu-classes';
 import { Parsing } from '../../../Utils';
 
 /**
- * A decoder for beatmap colours.
+ * A decoder for beatmap colors.
  */
-export abstract class ColourDecoder {
+export abstract class ColorDecoder {
   /**
-   * Decodes a colour line and adds a new colour to the beatmap.
-   * @param line A colour line.
+   * Decodes a color line and adds a new color to the beatmap.
+   * @param line A color line.
    * @param beatmap A parsed beatmap.
    */
   static handleLine(line: string, beatmap: Beatmap): void {
@@ -26,15 +26,15 @@ export abstract class ColourDecoder {
 
     switch (key) {
       case 'SliderTrackOverride':
-        beatmap.colours.sliderTrackColor = color;
+        beatmap.colors.sliderTrackColor = color;
         break;
 
       case 'SliderBorder':
-        beatmap.colours.sliderBorderColor = color;
+        beatmap.colors.sliderBorderColor = color;
     }
 
     if (key.startsWith('Combo')) {
-      beatmap.colours.comboColours.push(color);
+      beatmap.colors.comboColors.push(color);
     }
   }
 }
