@@ -1,7 +1,7 @@
 /**
  * Origins of the storyboard sprite.
  */
-export const enum Anchor {
+export enum Anchor {
   /**
    * The vertical counterpart is at "Top" position.
    */
