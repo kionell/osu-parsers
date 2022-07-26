@@ -1,3 +1,4 @@
+import { BeatmapColorsSection } from '../Beatmaps';
 import { LayerType } from './Enums/LayerType';
 import { StoryboardLayer } from './StoryboardLayer';
 
@@ -11,9 +12,9 @@ export class Storyboard {
   variables: Record<string, string> = {};
 
   /**
-   * Storyboard layers.
+   * Custom beatmap colors.
    */
-  private _layers: Map<string, StoryboardLayer> = new Map();
+  colors: BeatmapColorsSection = new BeatmapColorsSection();
 
   /**
    * Whether the storyboard can fall back to skin sprites 
@@ -25,6 +26,11 @@ export class Storyboard {
    * Depth of the currently front-most storyboard layer, excluding the overlay layer.
    */
   minimumLayerDepth = 0;
+
+  /**
+   * Storyboard layers.
+   */
+  private _layers: Map<string, StoryboardLayer> = new Map();
 
   constructor() {
     this.addLayer(new StoryboardLayer({ name: 'Foreground', depth: LayerType.Foreground }));
