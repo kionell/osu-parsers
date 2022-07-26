@@ -1,4 +1,3 @@
-import { IStoryboardElement } from './Elements/Types/IStoryboardElement';
 import { LayerType } from './Enums/LayerType';
 import { StoryboardLayer } from './StoryboardLayer';
 
@@ -6,42 +5,6 @@ import { StoryboardLayer } from './StoryboardLayer';
  * A beatmap storyboard.
  */
 export class Storyboard {
-  /**
-   * The foreground layer of the storyboard.
-   * @deprecated
-   */
-  foreground: IStoryboardElement[];
-
-  /**
-   * The pass layer of the storyboard. 
-   * @deprecated
-   */
-  pass: IStoryboardElement[];
-
-  /**
-   * The fail layer of the storyboard.
-   * @deprecated
-   */
-  fail: IStoryboardElement[];
-
-  /**
-   * The background layer of the storyboard.
-   * @deprecated 
-   */
-  background: IStoryboardElement[];
-
-  /**
-   * The overlay layer of the storyboard.
-   * @deprecated
-   */
-  overlay: IStoryboardElement[];
-
-  /**
-   * Samples of the storyboard.
-   * @deprecated
-   */
-  samples: IStoryboardElement[];
-
   /**
    * Variables of the storyboard.
    */
@@ -64,57 +27,20 @@ export class Storyboard {
   minimumLayerDepth = 0;
 
   constructor() {
-    const foregroundLayer = new StoryboardLayer('Foreground', LayerType.Foreground);
-    const passLayer = new StoryboardLayer('Pass', LayerType.Pass);
-    const failLayer = new StoryboardLayer('Fail', LayerType.Fail);
-    const backgroundLayer = new StoryboardLayer('Background', LayerType.Background);
-    const videoLayer = new StoryboardLayer('Video', LayerType.Video, false);
-    const overlayLayer = new StoryboardLayer('Overlay', LayerType.Overlay);
-
-    failLayer.visibleWhenPassing = false;
-    passLayer.visibleWhenFailing = false;
-
-    this._layers.set(foregroundLayer.name, foregroundLayer);
-    this._layers.set(passLayer.name, passLayer);
-    this._layers.set(failLayer.name, failLayer);
-    this._layers.set(backgroundLayer.name, backgroundLayer);
-    this._layers.set(videoLayer.name, videoLayer);
-    this._layers.set(overlayLayer.name, overlayLayer);
-
-    // TODO: Remove this in next versions.
-    this.foreground = foregroundLayer.elements;
-    this.pass = passLayer.elements;
-    this.fail = failLayer.elements;
-    this.background = backgroundLayer.elements;
-    this.overlay = overlayLayer.elements;
-    this.samples = [];
+    this.addLayer(new StoryboardLayer({ name: 'Foreground', depth: LayerType.Foreground }));
+    this.addLayer(new StoryboardLayer({ name: 'Pass', depth: LayerType.Pass, visibleWhenFailing: false }));
+    this.addLayer(new StoryboardLayer({ name: 'Fail', depth: LayerType.Fail, visibleWhenPassing: false }));
+    this.addLayer(new StoryboardLayer({ name: 'Background', depth: LayerType.Background }));
+    this.addLayer(new StoryboardLayer({ name: 'Video', depth: LayerType.Video, masking: false }));
+    this.addLayer(new StoryboardLayer({ name: 'Overlay', depth: LayerType.Overlay }));
   }
 
   /**
-   * Finds a storyboard layer by its type. Otherwise returns background layer.
-   * @param type The type of the storyboard layer.
-   * @returns The storyboard layer.
-   * @deprecated
+   * Adds a new storyboard layer.
+   * @param layer A storyboard layer.
    */
-  getLayer(type: LayerType): IStoryboardElement[] {
-    switch (type) {
-      case LayerType.Fail:
-        return this.fail;
-
-      case LayerType.Pass:
-        return this.pass;
-
-      case LayerType.Foreground:
-        return this.foreground;
-
-      case LayerType.Overlay:
-        return this.overlay;
-
-      case LayerType.Samples:
-        return this.samples;
-    }
-
-    return this.background;
+  addLayer(layer: StoryboardLayer): void {
+    this._layers.set(layer.name, layer);
   }
 
   /**
@@ -133,7 +59,7 @@ export class Storyboard {
    */
   getLayerByName(name: string): StoryboardLayer {
     const layer = this._layers.get(name)
-      ?? new StoryboardLayer(name, --this.minimumLayerDepth);
+      ?? new StoryboardLayer({ name, depth: --this.minimumLayerDepth });
 
     if (!this._layers.has(name)) this._layers.set(name, layer);
 

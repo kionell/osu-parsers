@@ -31,9 +31,9 @@ export class StoryboardLayer {
    */
   elements: IStoryboardElement[] = [];
 
-  constructor(name: string, depth: number, masking = true) {
-    this.name = name;
-    this.depth = depth;
-    this.masking = masking;
+  constructor(params: Required<Pick<StoryboardLayer, 'name' | 'depth'>> & Partial<StoryboardLayer>) {
+    this.name = params.name;
+    this.depth = params.depth;
+    this.masking = params.masking ?? true;
   }
 }
