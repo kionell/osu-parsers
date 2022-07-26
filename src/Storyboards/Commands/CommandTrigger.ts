@@ -2,6 +2,9 @@ import { CommandTimelineGroup } from './CommandTimelineGroup';
 import { CompoundType } from '../Enums/CompoundType';
 
 export class CommandTrigger extends CommandTimelineGroup {
+  /**
+   * Compound type.
+   */
   type: CompoundType = CompoundType.Trigger;
 
   /**

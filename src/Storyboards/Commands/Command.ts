@@ -1,10 +1,15 @@
-import { Easing } from '../Enums';
+import { CommandType, Easing } from '../Enums';
 import { ICommand } from './ICommand';
 
 /**
  * A storyboard command.
  */
 export class Command<T> implements ICommand {
+  /**
+   * Command type.
+   */
+  type: CommandType = CommandType.None;
+
   /**
    * The easing of the storyboard command.
    */
@@ -30,7 +35,8 @@ export class Command<T> implements ICommand {
    */
   declare endValue: T;
 
-  constructor(easing: Easing, startTime: number, endTime: number, startValue: T, endValue: T) {
+  constructor(type: CommandType, easing: Easing, startTime: number, endTime: number, startValue: T, endValue: T) {
+    this.type = type;
     this.easing = easing;
     this.startTime = startTime;
     this.endTime = endTime;

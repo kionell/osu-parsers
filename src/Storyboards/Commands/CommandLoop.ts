@@ -1,9 +1,15 @@
+import { CompoundType } from '../Enums';
 import { CommandTimelineGroup } from './CommandTimelineGroup';
 
 /**
  * A storyboard command loop.
  */
 export class CommandLoop extends CommandTimelineGroup {
+  /**
+   * Compound type.
+   */
+  type: CompoundType = CompoundType.Loop;
+
   /**
    * The start time of the loop.
    */

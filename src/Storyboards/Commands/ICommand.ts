@@ -1,9 +1,14 @@
-import { Easing } from '../Enums';
+import { CommandType, Easing } from '../Enums';
 
 /**
  * A storyboard command.
  */
 export interface ICommand {
+  /**
+   * Command type.
+   */
+  type: CommandType;
+
   /**
    * The easing of the storyboard command.
    */

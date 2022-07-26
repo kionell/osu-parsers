@@ -1,4 +1,4 @@
-import { Easing } from '../Enums';
+import { CommandType, Easing } from '../Enums';
 import { Command } from './Command';
 import { ICommandTimeline } from './ICommandTimeline';
 
@@ -26,10 +26,10 @@ export class CommandTimeline<T> implements ICommandTimeline, Iterable<Command<T>
     };
   }
 
-  add(easing: Easing, startTime: number, endTime: number, startValue: T, endValue: T): void {
+  add(type: CommandType, easing: Easing, startTime: number, endTime: number, startValue: T, endValue: T): void {
     if (endTime < startTime) return;
 
-    this.commands.push(new Command<T>(easing, startTime, endTime, startValue, endValue));
+    this.commands.push(new Command<T>(type, easing, startTime, endTime, startValue, endValue));
 
     if (startTime < this.startTime) {
       this.startValue = startValue;
