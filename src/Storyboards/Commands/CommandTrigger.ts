@@ -1,7 +1,7 @@
-import { Compound } from './Compound';
+import { CommandTimelineGroup } from './CommandTimelineGroup';
 import { CompoundType } from '../Enums/CompoundType';
 
-export class CommandTrigger extends Compound {
+export class CommandTrigger extends CommandTimelineGroup {
   type: CompoundType = CompoundType.Trigger;
 
   /**
@@ -12,12 +12,12 @@ export class CommandTrigger extends Compound {
   /**
    * The start time of the command trigger.
    */
-  startTime: number;
+  triggerStartTime: number;
 
   /**
    * The end time of the command trigger.
    */
-  endTime: number;
+  triggerEndTime: number;
 
   /**
    * The group of the command trigger.
@@ -40,8 +40,8 @@ export class CommandTrigger extends Compound {
     super();
 
     this.triggerName = triggerName || '';
-    this.startTime = startTime || 0;
-    this.endTime = endTime || 0;
+    this.triggerStartTime = startTime || 0;
+    this.triggerEndTime = endTime || 0;
     this.groupNumber = groupNumber || 0;
   }
 }

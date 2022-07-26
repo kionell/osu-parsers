@@ -1,32 +1,29 @@
-import { Compound } from './Compound';
-import { CompoundType } from '../Enums/CompoundType';
+import { CommandTimelineGroup } from './CommandTimelineGroup';
 
 /**
  * A storyboard command loop.
  */
-export class CommandLoop extends Compound {
-  type: CompoundType = CompoundType.Loop;
-
+export class CommandLoop extends CommandTimelineGroup {
   /**
    * The start time of the loop.
    */
   loopStartTime: number;
 
   /**
-   * The number of loops.
+   * The total number of times this loop is played back. Always greater than zero.
    */
   loopCount: number;
 
   /**
    * Creates a new instance of the storyboard command loop.
    * @param loopStartTime The start time of the loop.
-   * @param loopCount The number of loops.
+   * @param repeatCount The number of repeats of this loop.
    */
-  constructor(loopStartTime?: number, loopCount?: number) {
+  constructor(loopStartTime?: number, repeatCount?: number) {
     super();
 
     this.loopStartTime = loopStartTime || 0;
-    this.loopCount = loopCount || 0;
+    this.loopCount = repeatCount ? repeatCount + 1 : 1;
   }
 
   /**
