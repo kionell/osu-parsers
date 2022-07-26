@@ -37,4 +37,5 @@ export const enum Easing {
   InBounce,
   OutBounce,
   InOutBounce,
+  OutPow10
 }
