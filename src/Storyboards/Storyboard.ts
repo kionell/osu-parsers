@@ -48,6 +48,10 @@ export class Storyboard {
     this.addLayer(new StoryboardLayer({ name: 'Overlay', depth: -2147483648 }));
   }
 
+  get layers(): Map<string, StoryboardLayer> {
+    return this._layers;
+  }
+
   /**
    * Adds a new storyboard layer.
    * @param layer A storyboard layer.
