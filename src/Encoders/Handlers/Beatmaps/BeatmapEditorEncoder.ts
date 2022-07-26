@@ -3,7 +3,7 @@ import { IBeatmap } from 'osu-classes';
 /**
  * An encoder for beatmap editor settings.
  */
-export abstract class EditorEncoder {
+export abstract class BeatmapEditorEncoder {
   /**
    * Encodes beatmap editor section.
    * @param beatmap A beatmap.

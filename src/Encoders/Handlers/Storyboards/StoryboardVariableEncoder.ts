@@ -3,7 +3,7 @@ import { Storyboard } from 'osu-classes';
 /**
  * An encoder for storyboard variables
  */
-export abstract class VariablesEncoder {
+export abstract class StoryboardVariableEncoder {
   /**
    * Encodes all storyboard variables.
    * @param storyboard A storyboard.

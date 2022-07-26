@@ -3,7 +3,7 @@ import { IBeatmap } from 'osu-classes';
 /**
  * An encoder for beatmap metadata section.
  */
-export abstract class MetadataEncoder {
+export abstract class BeatmapMetadataEncoder {
   /**
    * Encodes beatmap metadata section.
    * @param beatmap A beatmap.

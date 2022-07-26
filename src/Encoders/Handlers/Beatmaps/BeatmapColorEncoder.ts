@@ -3,7 +3,7 @@ import { IBeatmap } from 'osu-classes';
 /**
  * An encoder for beatmap colors.
  */
-export abstract class ColorEncoder {
+export abstract class BeatmapColorEncoder {
   /**
    * Encodes all beatmap colors.
    * @param beatmap A beatmap.

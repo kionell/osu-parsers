@@ -39,7 +39,7 @@ interface IActualPoints {
 /**
  * An encoder for beatmap control points.
  */
-export abstract class TimingPointEncoder {
+export abstract class BeatmapTimingPointEncoder {
   /**
    * The last saved difficulty point.
    */
@@ -70,10 +70,10 @@ export abstract class TimingPointEncoder {
       const timing = (points as TimingPoint[]).find((c) => c.beatLength);
 
       if (timing) {
-        encoded.push(TimingPointEncoder.encodeGroup(group, true));
+        encoded.push(this.encodeGroup(group, true));
       }
 
-      encoded.push(TimingPointEncoder.encodeGroup(group));
+      encoded.push(this.encodeGroup(group));
     });
 
     return encoded.join('\n');
@@ -91,7 +91,7 @@ export abstract class TimingPointEncoder {
       effectPoint,
       samplePoint,
       timingPoint,
-    } = TimingPointEncoder.updateActualPoints(group);
+    } = this.updateActualPoints(group);
 
     const startTime: number = group.startTime;
     let beatLength = -100;
@@ -155,18 +155,18 @@ export abstract class TimingPointEncoder {
 
     group.controlPoints.forEach((point) => {
       if (point.pointType === ControlPointType.DifficultyPoint
-        && !point.isRedundant(TimingPointEncoder.lastDifficultyPoint)) {
-        TimingPointEncoder.lastDifficultyPoint = point as DifficultyPoint;
+        && !point.isRedundant(this.lastDifficultyPoint)) {
+        this.lastDifficultyPoint = point as DifficultyPoint;
       }
 
       if (point.pointType === ControlPointType.EffectPoint
-        && !point.isRedundant(TimingPointEncoder.lastEffectPoint)) {
-        TimingPointEncoder.lastEffectPoint = point as EffectPoint;
+        && !point.isRedundant(this.lastEffectPoint)) {
+        this.lastEffectPoint = point as EffectPoint;
       }
 
       if (point.pointType === ControlPointType.SamplePoint
-        && !point.isRedundant(TimingPointEncoder.lastSamplePoint)) {
-        TimingPointEncoder.lastSamplePoint = point as SamplePoint;
+        && !point.isRedundant(this.lastSamplePoint)) {
+        this.lastSamplePoint = point as SamplePoint;
       }
 
       if (point.pointType === ControlPointType.TimingPoint) {
@@ -176,9 +176,9 @@ export abstract class TimingPointEncoder {
 
     return {
       timingPoint,
-      difficultyPoint: TimingPointEncoder.lastDifficultyPoint,
-      effectPoint: TimingPointEncoder.lastEffectPoint,
-      samplePoint: TimingPointEncoder.lastSamplePoint,
+      difficultyPoint: this.lastDifficultyPoint,
+      effectPoint: this.lastEffectPoint,
+      samplePoint: this.lastSamplePoint,
     };
   }
 }

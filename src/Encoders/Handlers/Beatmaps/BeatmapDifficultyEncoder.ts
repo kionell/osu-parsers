@@ -3,7 +3,7 @@ import { IBeatmap } from 'osu-classes';
 /**
  * An encoder for beatmap difficulty.
  */
-export abstract class DifficultyEncoder {
+export abstract class BeatmapDifficultyEncoder {
   /**
    * Encodes the beatmap difficulty.
    * @param beatmap A beatmap.

@@ -16,7 +16,7 @@ import {
 /**
  * An encoder for beatmap hit objects.
  */
-export abstract class HitObjectEncoder {
+export abstract class BeatmapHitObjectEncoder {
   /**
    * Encodes all beatmap hit objects.
    * @param beatmap A beatmap.
@@ -61,17 +61,17 @@ export abstract class HitObjectEncoder {
       if (hitObject.hitType & HitType.Slider) {
         const slider = hitObject as ISlidableObject;
 
-        extras.push(HitObjectEncoder.encodePathData(slider, startPosition));
+        extras.push(this.encodePathData(slider, startPosition));
       }
       else if (hitObject.hitType & HitType.Spinner) {
         const spinner = hitObject as ISpinnableObject;
 
-        extras.push(HitObjectEncoder.encodeEndTimeData(spinner));
+        extras.push(this.encodeEndTimeData(spinner));
       }
       else if (hitObject.hitType & HitType.Hold) {
         const hold = hitObject as IHoldableObject;
 
-        extras.push(HitObjectEncoder.encodeEndTimeData(hold));
+        extras.push(this.encodeEndTimeData(hold));
       }
 
       // normalSet:additionSet:index:volume:filename
