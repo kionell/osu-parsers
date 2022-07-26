@@ -1,14 +1,17 @@
-import { Command } from '../../Commands';
-import { CommandLoop, CommandTrigger } from '../../Compounds';
+import {
+  CommandTimelineGroup,
+  CommandLoop,
+  CommandTrigger,
+} from '../../Commands';
 
 /**
  * A storyboard element that has commands.
  */
 export interface IHasCommands {
   /**
-   * The list of commands of the storyboard element.
+   * The command timeline group of this storyboard element.
    */
-  commands: Command[];
+  timelineGroup: CommandTimelineGroup;
 
   /**
    * The list of command loops of the storyboard element.

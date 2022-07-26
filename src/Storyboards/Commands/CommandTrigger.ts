@@ -31,12 +31,7 @@ export class CommandTrigger extends CommandTimelineGroup {
    * @param endTime The end time of the command trigger.
    * @param groupNumber The group of the command trigger.
    */
-  constructor(
-    triggerName?: string,
-    startTime?: number,
-    endTime?: number,
-    groupNumber?: number,
-  ) {
+  constructor(triggerName?: string, startTime?: number, endTime?: number, groupNumber?: number) {
     super();
 
     this.triggerName = triggerName || '';

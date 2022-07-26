@@ -1,16 +1,12 @@
+import { IHasCommands, IStoryboardElementWithDuration } from './Types';
+import { CommandTimelineGroup, CommandLoop, CommandTrigger } from '../Commands';
+import { Anchor, LayerType } from '../Enums';
 import { Vector2 } from '../../Utils';
-
-import { Command } from '../Commands/Command';
-import { CommandLoop } from '../Compounds/CommandLoop';
-import { CommandTrigger } from '../Compounds/CommandTrigger';
-import { IHasCommands } from './Types/IHasCommands';
-import { Origins } from '../Enums/Origins';
-import { LayerType } from '../Enums/LayerType';
 
 /**
  * A storyboard sprite.
  */
-export class StoryboardSprite implements IHasCommands {
+export class StoryboardSprite implements IStoryboardElementWithDuration, IHasCommands {
   /**
    * The layer of the storyboard sprite.
    */
@@ -19,7 +15,7 @@ export class StoryboardSprite implements IHasCommands {
   /**
    * The origin of the image on the screen.
    */
-  origin: Origins = Origins.Custom;
+  origin: Anchor = Anchor.Custom;
 
   /**
    * The relative start position of the storyboard sprite.
@@ -34,7 +30,7 @@ export class StoryboardSprite implements IHasCommands {
   /**
    * The list of commands of the storyboard sprite.
    */
-  commands: Command[] = [];
+  timelineGroup: CommandTimelineGroup = new CommandTimelineGroup();
 
   /**
    * The list of command loops of the storyboard sprite.
@@ -45,6 +41,18 @@ export class StoryboardSprite implements IHasCommands {
    * The list of command triggers of the storyboard sprite.
    */
   triggers: CommandTrigger[] = [];
+
+  /**
+   * @param path The file path of the content of this storyboard sprite.
+   * @param origin The origin of the image on the screen.
+   * @param position The relative start position of the storyboard sprite.
+   * @constructor
+   */
+  constructor(path: string, origin: Anchor, position: Vector2) {
+    this.filePath = path;
+    this.origin = origin;
+    this.startPosition = position;
+  }
 
   /**
    * The start X-position of the storyboard sprite.
@@ -72,43 +80,80 @@ export class StoryboardSprite implements IHasCommands {
    * The start time of the storyboard sprite.
    */
   get startTime(): number {
-    const commands = this.commands.slice();
-    const loops = this.loops.filter((l) => l.commands.length);
+    // Check for presence affecting commands as an initial pass.
+    let earliestStartTime = this.timelineGroup.earliestDisplayedTime ?? Infinity;
 
-    const commandsStart = commands.reduce((minStart, command) => {
-      return minStart > command.startTime ? command.startTime : minStart;
-    }, Infinity);
+    for (const loop of this.loops) {
+      if (loop.earliestDisplayedTime === null) continue;
 
-    const loopsStart = loops.reduce((minStart, loop) => {
-      const minLoopStart = loop.commands.reduce((min, command) => {
-        return min > command.startTime ? command.startTime : min;
-      }, Infinity);
+      earliestStartTime = Math.min(
+        earliestStartTime,
+        loop.loopStartTime + loop.earliestDisplayedTime,
+      );
+    }
 
-      return minStart > minLoopStart ? minLoopStart : minStart;
-    }, Infinity);
+    if (earliestStartTime < Infinity) return earliestStartTime;
 
-    return Math.min(commandsStart, loopsStart);
+    // If an alpha-affecting command was not found, use the earliest of any command.
+    earliestStartTime = this.timelineGroup.startTime;
+
+    for (const loop of this.loops) {
+      earliestStartTime = Math.min(earliestStartTime, loop.startTime);
+    }
+
+    return earliestStartTime;
   }
 
   /**
    * The end time of the storyboard sprite.
    */
   get endTime(): number {
-    const commands = this.commands.slice();
-    const loops = this.loops.filter((l) => l.commands.length);
+    let latestEndTime = this.timelineGroup.endTime;
 
-    const commandsStart = commands.reduce((maxStart, command) => {
-      return maxStart < command.startTime ? command.startTime : maxStart;
-    }, -Infinity);
+    for (const loop of this.loops) {
+      latestEndTime = Math.max(latestEndTime, loop.endTime);
+    }
 
-    const loopsStart = loops.reduce((maxStart, loop) => {
-      const maxLoopStart = loop.commands.reduce((max, command) => {
-        return max < command.startTime ? command.startTime : max;
-      }, -Infinity);
+    return latestEndTime;
+  }
 
-      return maxStart < maxLoopStart ? maxLoopStart : maxStart;
-    }, -Infinity);
+  get duration(): number {
+    return this.endTime - this.startTime;
+  }
 
-    return Math.max(commandsStart, loopsStart);
+  get hasCommands(): boolean {
+    return this.timelineGroup.hasCommands || !!this.loops.find((l) => l.hasCommands);
+  }
+
+  get isDrawable(): boolean {
+    return this.hasCommands;
+  }
+
+  /**
+   * Creates a new instance of the storyboard command loop.
+   * @param startTime The start time of the loop.
+   * @param repeatCount The number of repeats of this loop.
+   */
+  public addLoop(startTime: number, repeatCount: number): CommandLoop {
+    const loop = new CommandLoop(startTime, repeatCount);
+
+    this.loops.push(loop);
+
+    return loop;
+  }
+
+  /**
+   * Creates a new instance of command trigger.
+   * @param triggerName The name of the trigger.
+   * @param startTime The start time of the command trigger.
+   * @param endTime The end time of the command trigger.
+   * @param groupNumber The group of the command trigger.
+   */
+  public addTrigger(triggerName: string, startTime: number, endTime: number, groupNumber: number): CommandTrigger {
+    const trigger = new CommandTrigger(triggerName, startTime, endTime, groupNumber);
+
+    this.triggers.push(trigger);
+
+    return trigger;
   }
 }
