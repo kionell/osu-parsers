@@ -6,3 +6,4 @@ export * from './EventType';
 export * from './LayerType';
 export * from './LegacyOrigin';
 export * from './LoopType';
+export * from './ParameterType';
