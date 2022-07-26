@@ -33,12 +33,14 @@ export class Storyboard {
   private _layers: Map<string, StoryboardLayer> = new Map();
 
   constructor() {
-    this.addLayer(new StoryboardLayer({ name: 'Foreground', depth: LayerType.Foreground }));
-    this.addLayer(new StoryboardLayer({ name: 'Pass', depth: LayerType.Pass, visibleWhenFailing: false }));
-    this.addLayer(new StoryboardLayer({ name: 'Fail', depth: LayerType.Fail, visibleWhenPassing: false }));
-    this.addLayer(new StoryboardLayer({ name: 'Background', depth: LayerType.Background }));
-    this.addLayer(new StoryboardLayer({ name: 'Video', depth: LayerType.Video, masking: false }));
-    this.addLayer(new StoryboardLayer({ name: 'Overlay', depth: LayerType.Overlay }));
+    this.addLayer(new StoryboardLayer({ name: 'Video', depth: 4, masking: false }));
+    this.addLayer(new StoryboardLayer({ name: 'Background', depth: 3 }));
+    this.addLayer(new StoryboardLayer({ name: 'Fail', depth: 2, visibleWhenPassing: false }));
+    this.addLayer(new StoryboardLayer({ name: 'Pass', depth: 1, visibleWhenFailing: false }));
+    this.addLayer(new StoryboardLayer({ name: 'Foreground', depth: 0 }));
+
+    // Overlay layer should always be at the front.
+    this.addLayer(new StoryboardLayer({ name: 'Overlay', depth: -2147483648 }));
   }
 
   /**
