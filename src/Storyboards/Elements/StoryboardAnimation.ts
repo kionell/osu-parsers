@@ -8,7 +8,7 @@ export class StoryboardAnimation extends StoryboardSprite {
   /**
    * The number of frames in this animation.
    */
-  frames = 0;
+  frameCount = 0;
 
   /**
    * The delay (in milliseconds) between each frame of the animation.
