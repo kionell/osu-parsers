@@ -1,5 +1,5 @@
 export * from './BinarySearch';
-export * from './Colour';
+export * from './Color4';
 export * from './FastRandom';
 export * from './Interpolation';
 export * from './RoundHelper';
