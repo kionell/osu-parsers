@@ -1,4 +1,4 @@
-import { Colour } from '../../Utils';
+import { Color4 } from '../../Utils';
 
 /**
  * A beatmap colours section.
@@ -7,17 +7,17 @@ export class BeatmapColoursSection {
   /**
    * Additive combo colours.
    */
-  comboColours: Colour[] = [];
+  comboColours: Color4[] = [];
 
   /**
    * Additive slider track colour.
    */
-  sliderTrackColor?: Colour;
+  sliderTrackColor?: Color4;
 
   /**
    * Slider border colour.
    */
-  sliderBorderColor?: Colour;
+  sliderBorderColor?: Color4;
 
   /**
    * Creates a copy of this beatmap colours section.
