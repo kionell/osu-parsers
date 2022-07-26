@@ -7,8 +7,8 @@ export abstract class VariableDecoder {
    * @param lines Storyboard lines.
    * @returns Storyboard variables. 
    */
-  static getVariables(lines: string[]): { [key: string]: string } {
-    const variables: { [key: string]: string } = {};
+  static getVariables(lines: string[]): Record<string, string> {
+    const variables: Record<string, string> = {};
 
     const startIndex = lines.findIndex((l) => l.includes('[Variables]'));
 
@@ -43,8 +43,7 @@ export abstract class VariableDecoder {
    * @param variables Storyboard variables.
    * @returns 
    */
-  static preProcess(line: string,
-    variables: { [key: string]: string }): string {
+  static preProcess(line: string, variables: Record<string, string>): string {
     const keys = Object.keys(variables);
 
     if (!line.includes('$') || !keys.length) {
