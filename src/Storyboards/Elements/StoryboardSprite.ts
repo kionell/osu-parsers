@@ -1,17 +1,12 @@
 import { IHasCommands, IStoryboardElementWithDuration } from './Types';
 import { CommandTimelineGroup, CommandLoop, CommandTrigger } from '../Commands';
-import { Anchor, LayerType } from '../Enums';
+import { Anchor } from '../Enums';
 import { Vector2 } from '../../Utils';
 
 /**
  * A storyboard sprite.
  */
 export class StoryboardSprite implements IStoryboardElementWithDuration, IHasCommands {
-  /**
-   * The layer of the storyboard sprite.
-   */
-  layer: LayerType = LayerType.Background;
-
   /**
    * The origin of the image on the screen.
    */

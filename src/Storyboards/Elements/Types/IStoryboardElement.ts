@@ -1,14 +1,7 @@
-import { LayerType } from '../../Enums';
-
 /**
  * A storyboard element.
  */
 export interface IStoryboardElement {
-  /**
-   * The layer of the storyboard element.
-   */
-  layer: LayerType;
-
   /**
    * The start time of the storyboard element.
    */
