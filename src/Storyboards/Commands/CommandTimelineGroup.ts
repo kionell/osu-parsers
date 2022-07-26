@@ -1,5 +1,6 @@
 import { CommandTimeline } from './CommandTimeline';
 import { ICommandTimeline } from './ICommandTimeline';
+import { BlendingParameters } from '../Blending';
 import { Color4, Vector2 } from '../../Utils';
 
 /**
