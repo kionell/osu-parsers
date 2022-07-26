@@ -5,5 +5,5 @@ export * from './Easing';
 export * from './EventType';
 export * from './LayerType';
 export * from './LoopType';
-export * from './Origin';
+export * from './Anchor';
 export * from './ParameterType';
