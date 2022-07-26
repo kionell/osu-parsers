@@ -28,6 +28,11 @@ export class Storyboard {
   minimumLayerDepth = 0;
 
   /**
+   * Beatmap file version for which this storyboard was created.
+   */
+  fileFormat = 14;
+
+  /**
    * Storyboard layers.
    */
   private _layers: Map<string, StoryboardLayer> = new Map();
