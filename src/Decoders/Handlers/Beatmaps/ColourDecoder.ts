@@ -1,4 +1,4 @@
-import { Beatmap, Colour } from 'osu-classes';
+import { Beatmap, Color4 } from 'osu-classes';
 import { Parsing } from '../../../Utils';
 
 /**
@@ -12,24 +12,29 @@ export abstract class ColourDecoder {
    */
   static handleLine(line: string, beatmap: Beatmap): void {
     const [key, ...values] = line.split(':').map((v) => v.trim());
-    const value = values
+
+    const split = values
       .join(' ')
       .split(',')
-      .map((c) => Parsing.parseInt(c));
+      .map((c) => Parsing.parseByte(c));
 
-    const colour = new Colour(value[0], value[1], value[2]);
+    if (split.length !== 3 && split.length !== 4) {
+      throw new Error(`Color specified in incorrect format (should be R,G,B or R,G,B,A): ${split.join(',')}`);
+    }
+
+    const color = new Color4(split[0], split[1], split[2], split[3]);
 
     switch (key) {
       case 'SliderTrackOverride':
-        beatmap.colours.sliderTrackColor = colour;
+        beatmap.colours.sliderTrackColor = color;
         break;
 
       case 'SliderBorder':
-        beatmap.colours.sliderBorderColor = colour;
-        break;
+        beatmap.colours.sliderBorderColor = color;
+    }
 
-      default:
-        beatmap.colours.comboColours.push(colour);
+    if (key.startsWith('Combo')) {
+      beatmap.colours.comboColours.push(color);
     }
   }
 }
