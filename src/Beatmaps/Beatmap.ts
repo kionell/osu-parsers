@@ -3,7 +3,7 @@ import {
   BeatmapEditorSection,
   BeatmapDifficultySection,
   BeatmapMetadataSection,
-  BeatmapColoursSection,
+  BeatmapColorsSection,
   BeatmapEventsSection,
 } from './Sections';
 
@@ -46,7 +46,7 @@ export class Beatmap implements IBeatmap {
   /**
    * Beatmap skin configuration.
    */
-  colours: BeatmapColoursSection = new BeatmapColoursSection();
+  colors: BeatmapColorsSection = new BeatmapColorsSection();
 
   /**
    * Beatmap events & Storyboard.
@@ -219,7 +219,7 @@ export class Beatmap implements IBeatmap {
     cloned.editor = this.editor.clone();
     cloned.difficulty = this.difficulty.clone();
     cloned.metadata = this.metadata.clone();
-    cloned.colours = this.colours.clone();
+    cloned.colors = this.colors.clone();
     cloned.events = this.events.clone();
     cloned.controlPoints = this.controlPoints.clone();
     cloned.hitObjects = this.hitObjects.map((h) => h.clone());

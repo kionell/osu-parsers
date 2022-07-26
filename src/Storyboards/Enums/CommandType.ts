@@ -10,6 +10,6 @@ export const enum CommandType {
   Scale = 'S',
   VectorScale = 'V',
   Rotation = 'R',
-  Colour = 'C',
+  Color = 'C',
   Parameter = 'P',
 }

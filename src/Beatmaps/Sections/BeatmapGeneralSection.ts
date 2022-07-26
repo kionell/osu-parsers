@@ -84,7 +84,7 @@ export class BeatmapGeneralSection {
   alwaysShowPlayfield?: boolean;
 
   /**
-   * Whether or not a warning about flashing colours 
+   * Whether or not a warning about flashing colors 
    * should be shown at the beginning of the map.
    */
   epilepsyWarning = false;

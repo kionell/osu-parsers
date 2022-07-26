@@ -3,7 +3,7 @@ import {
   BeatmapEditorSection,
   BeatmapDifficultySection,
   BeatmapMetadataSection,
-  BeatmapColoursSection,
+  BeatmapColorsSection,
   BeatmapEventsSection,
 } from './Sections';
 
@@ -43,7 +43,7 @@ export interface IBeatmap {
   /**
    * Beatmap skin configuration.
    */
-  colours: BeatmapColoursSection;
+  colors: BeatmapColorsSection;
 
   /**
    * Beatmap events & storyboard.

@@ -1,33 +1,33 @@
 import { Color4 } from '../../Utils';
 
 /**
- * A beatmap colours section.
+ * A beatmap colors section.
  */
-export class BeatmapColoursSection {
+export class BeatmapColorsSection {
   /**
-   * Additive combo colours.
+   * Additive combo colors.
    */
-  comboColours: Color4[] = [];
+  comboColors: Color4[] = [];
 
   /**
-   * Additive slider track colour.
+   * Additive slider track color.
    */
   sliderTrackColor?: Color4;
 
   /**
-   * Slider border colour.
+   * Slider border color.
    */
   sliderBorderColor?: Color4;
 
   /**
-   * Creates a copy of this beatmap colours section.
+   * Creates a copy of this beatmap colors section.
    * Non-primitive properties will be copied via their own clone() method.
    * @returns A copied information about control points.
    */
-  clone(): BeatmapColoursSection {
-    const cloned = new BeatmapColoursSection();
+  clone(): BeatmapColorsSection {
+    const cloned = new BeatmapColorsSection();
 
-    cloned.comboColours = this.comboColours.map((c) => c.clone());
+    cloned.comboColors = this.comboColors.map((c) => c.clone());
 
     if (this.sliderTrackColor) {
       cloned.sliderTrackColor = this.sliderTrackColor;

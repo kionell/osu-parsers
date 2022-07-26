@@ -18,7 +18,7 @@ export interface IHasComboInformation extends IHasCombo {
   /**
    * The index of this combo in relation to the beatmap, with applied combo offset.
    * This should be used instead of original combo index 
-   * only when retrieving combo colours from the beatmap's skin.
+   * only when retrieving combo colors from the beatmap's skin.
    */
   comboIndexWithOffsets: number;
 

@@ -3,7 +3,7 @@ import {
   BeatmapEditorSection,
   BeatmapDifficultySection,
   BeatmapMetadataSection,
-  BeatmapColoursSection,
+  BeatmapColorsSection,
   BeatmapEventsSection,
 } from './Sections';
 
@@ -73,12 +73,12 @@ export class ProgressiveCalculationBeatmap implements IBeatmap {
   /**
    * Beatmap skin configuration.
    */
-  get colours(): BeatmapColoursSection {
-    return this._baseBeatmap.colours;
+  get colors(): BeatmapColorsSection {
+    return this._baseBeatmap.colors;
   }
 
-  set colours(value: BeatmapColoursSection) {
-    this._baseBeatmap.colours = value;
+  set colors(value: BeatmapColorsSection) {
+    this._baseBeatmap.colors = value;
   }
 
   /**

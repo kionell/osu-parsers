@@ -12,7 +12,7 @@ export class CommandTimelineGroup {
   scale = new CommandTimeline<number>();
   vectorScale = new CommandTimeline<Vector2>();
   rotation = new CommandTimeline<number>();
-  colour = new CommandTimeline<Color4>();
+  color = new CommandTimeline<Color4>();
   alpha = new CommandTimeline<number>();
   blendingParameters = new CommandTimeline<BlendingParameters>();
   flipH = new CommandTimeline<boolean>();
@@ -27,7 +27,7 @@ export class CommandTimelineGroup {
       this.scale,
       this.vectorScale,
       this.rotation,
-      this.colour,
+      this.color,
       this.alpha,
       this.blendingParameters,
       this.flipH,

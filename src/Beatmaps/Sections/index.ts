@@ -1,4 +1,4 @@
-export * from './BeatmapColoursSection';
+export * from './BeatmapColorsSection';
 export * from './BeatmapDifficultySection';
 export * from './BeatmapEditorSection';
 export * from './BeatmapEventsSection';

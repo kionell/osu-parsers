@@ -5,7 +5,7 @@ export const enum EventType {
   Background,
   Video,
   Break,
-  Colour,
+  Color,
   Sprite,
   Sample,
   Animation,

@@ -18,7 +18,7 @@ export abstract class BeatmapConverter {
     converted.editor = beatmap.editor;
     converted.difficulty = beatmap.difficulty.clone();
     converted.metadata = beatmap.metadata;
-    converted.colours = beatmap.colours;
+    converted.colors = beatmap.colors;
     converted.events = beatmap.events;
     converted.controlPoints = beatmap.controlPoints;
     converted.fileFormat = beatmap.fileFormat;
