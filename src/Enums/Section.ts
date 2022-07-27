@@ -5,7 +5,7 @@ export enum Section {
   Difficulty,
   Events,
   TimingPoints,
-  Colors,
+  Colours,
   HitObjects,
   Variables,
   Fonts,
