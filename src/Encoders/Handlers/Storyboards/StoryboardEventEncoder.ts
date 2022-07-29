@@ -45,39 +45,45 @@ export abstract class StoryboardEventEncoder {
 
     encoded.push('//Storyboard Layer 0 (Background)');
 
-    if (storyboard.background.length > 0) {
-      encoded.push(EventsEncoder.encodeStoryboardLayer(storyboard.background));
+    const background = storyboard.getLayerByType(LayerType.Background);
+
+    if (background.elements.length > 0) {
+      encoded.push(this.encodeStoryboardLayer(background));
     }
 
     encoded.push('//Storyboard Layer 1 (Fail)');
 
-    if (storyboard.fail.length > 0) {
-      encoded.push(EventsEncoder.encodeStoryboardLayer(storyboard.fail));
+    const fail = storyboard.getLayerByType(LayerType.Fail);
+
+    if (fail.elements.length > 0) {
+      encoded.push(this.encodeStoryboardLayer(fail));
     }
 
     encoded.push('//Storyboard Layer 2 (Pass)');
 
-    if (storyboard.pass.length > 0) {
-      encoded.push(EventsEncoder.encodeStoryboardLayer(storyboard.pass));
+    const pass = storyboard.getLayerByType(LayerType.Pass);
+
+    if (pass.elements.length > 0) {
+      encoded.push(this.encodeStoryboardLayer(pass));
     }
 
     encoded.push('//Storyboard Layer 3 (Foreground)');
 
-    if (storyboard.foreground.length > 0) {
-      encoded.push(EventsEncoder.encodeStoryboardLayer(storyboard.foreground));
+    const foreground = storyboard.getLayerByType(LayerType.Foreground);
+
+    if (foreground.elements.length > 0) {
+      encoded.push(this.encodeStoryboardLayer(foreground));
     }
 
     encoded.push('//Storyboard Layer 4 (Overlay)');
 
-    if (storyboard.overlay.length > 0) {
-      encoded.push(EventsEncoder.encodeStoryboardLayer(storyboard.overlay));
+    const overlay = storyboard.getLayerByType(LayerType.Overlay);
+
+    if (overlay.elements.length > 0) {
+      encoded.push(this.encodeStoryboardLayer(overlay));
     }
 
     encoded.push('//Storyboard Sound Samples');
-
-    if (storyboard.samples.length > 0) {
-      encoded.push(EventsEncoder.encodeStoryboardLayer(storyboard.samples));
-    }
 
     const variables = Object.entries(storyboard.variables);
 
