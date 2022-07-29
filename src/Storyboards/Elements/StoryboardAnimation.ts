@@ -1,6 +1,6 @@
 import { StoryboardSprite } from './StoryboardSprite';
 import { LoopType } from '../Enums/LoopType';
-import { Anchor } from '../Enums';
+import { Anchor, Origins } from '../Enums';
 import { Vector2 } from '../../Utils';
 
 /**
@@ -10,32 +10,57 @@ export class StoryboardAnimation extends StoryboardSprite {
   /**
    * The number of frames in this animation.
    */
-  frameCount = 0;
+  frameCount: number;
+
+  /**
+   * The number of frames in this animation.
+   * Use {@link frameCount} property instead.
+   * @deprecated Since 0.10.0
+   */
+  frames: number;
 
   /**
    * The delay (in milliseconds) between each frame of the animation.
    */
-  frameDelay = 0;
+  frameDelay: number;
 
   /**
    * Indicates if the animation should loop or not.
    */
-  loopType: LoopType = LoopType.LoopForever;
+  loopType: LoopType;
+
+  /**
+   * Indicates if the animation should loop or not.
+   * Use {@link loopType} property instead.
+   * @deprecated Since 0.10.0
+   */
+  loop: LoopType;
 
   /**
    * @param path The file path of the content of this storyboard sprite.
    * @param origin The origin of the image on the screen.
+   * @param anchor The anchor of the image on the screen.
    * @param position The relative start position of the storyboard sprite.
    * @param frameCount The number of frames in this animation.
    * @param frameDelay The delay (in milliseconds) between each frame of the animation.
    * @param loopType Indicates if the animation should loop or not.
    * @constructor
    */
-  constructor(path: string, origin: Anchor, position: Vector2, frameCount: number, frameDelay: number, loopType: LoopType) {
-    super(path, origin, position);
+  constructor(
+    path: string,
+    origin: Origins,
+    anchor: Anchor,
+    position: Vector2,
+    frameCount: number,
+    frameDelay: number,
+    loopType: LoopType,
+  ) {
+    super(path, origin, anchor, position);
 
-    this.frameCount = frameCount;
-    this.frameDelay = frameDelay;
-    this.loopType = loopType;
+    this.frameCount = frameCount ?? 0;
+    this.frames = frameCount ?? 0;
+    this.frameDelay = frameDelay ?? 0;
+    this.loopType = loopType ?? LoopType.LoopForever;
+    this.loop = loopType ?? LoopType.LoopForever;
   }
 }

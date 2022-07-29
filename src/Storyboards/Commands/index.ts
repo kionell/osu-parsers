@@ -3,5 +3,3 @@ export * from './CommandLoop';
 export * from './CommandTimeline';
 export * from './CommandTimelineGroup';
 export * from './CommandTrigger';
-export * from './ICommand';
-export * from './ICommandTimeline';

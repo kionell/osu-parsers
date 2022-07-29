@@ -1,6 +1,6 @@
 import { IHasCommands, IStoryboardElementWithDuration } from './Types';
-import { CommandTimelineGroup, CommandLoop, CommandTrigger } from '../Commands';
-import { Anchor } from '../Enums';
+import { CommandTimelineGroup, CommandLoop, CommandTrigger, Command } from '../Commands';
+import { Anchor, Origins } from '../Enums';
 import { Vector2 } from '../../Utils';
 
 /**
@@ -10,17 +10,22 @@ export class StoryboardSprite implements IStoryboardElementWithDuration, IHasCom
   /**
    * The origin of the image on the screen.
    */
-  origin: Anchor = Anchor.Custom;
+  origin: Origins;
+
+  /**
+   * The anchor of the image on the screen.
+   */
+  anchor: Anchor;
 
   /**
    * The relative start position of the storyboard sprite.
    */
-  startPosition: Vector2 = new Vector2(0, 0);
+  startPosition: Vector2;
 
   /**
    * The file path of the content of this storyboard sprite.
    */
-  filePath = '';
+  filePath: string;
 
   /**
    * The list of commands of the storyboard sprite.
@@ -40,13 +45,24 @@ export class StoryboardSprite implements IStoryboardElementWithDuration, IHasCom
   /**
    * @param path The file path of the content of this storyboard sprite.
    * @param origin The origin of the image on the screen.
+   * @param anchor The anchor of the image on the screen.
    * @param position The relative start position of the storyboard sprite.
    * @constructor
    */
-  constructor(path: string, origin: Anchor, position: Vector2) {
-    this.filePath = path;
-    this.origin = origin;
-    this.startPosition = position;
+  constructor(path: string, origin: Origins, anchor: Anchor, position: Vector2) {
+    this.filePath = path ?? '';
+    this.origin = origin ?? Origins.TopLeft;
+    this.anchor = anchor ?? Anchor.TopLeft;
+    this.startPosition = position ?? new Vector2(0, 0);
+  }
+
+  /**
+   * The list of commands of the storyboard element.
+   * Use {@link timelineGroup} property instead.
+   * @deprecated Since 0.10.0
+   */
+  get commands(): Command[] {
+    return this.timelineGroup.commands;
   }
 
   /**

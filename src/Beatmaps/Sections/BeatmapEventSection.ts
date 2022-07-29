@@ -1,14 +1,16 @@
+import { LayerType } from '../../Storyboards';
 import { Storyboard } from '../../Storyboards/Storyboard';
-import { BeatmapBreakEvent } from '../Events/BeatmapBreakEvent';
+import { BeatmapBreakEvent } from '../Events';
+import { BeatmapEventsSection } from './BeatmapEventsSection';
 
 /**
  * A beatmap events section.
  */
-export class BeatmapEventSection {
+export class BeatmapEventSection extends BeatmapEventsSection {
   /**
    * A beatmap background file path.
    */
-  background: string | null = null;
+  backgroundPath: string | null = null;
 
   /**
    * List of beatmap break events.

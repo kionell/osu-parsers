@@ -7,5 +7,11 @@ export enum LayerType {
   Pass,
   Foreground,
   Overlay,
-  Video,
+
+  /**
+   * This layer is not supported anymore.
+   * @deprecated Since 0.10.0
+   */
+  Samples = 5,
+  Video = 5,
 }

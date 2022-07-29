@@ -1,5 +1,5 @@
 /**
- * A color.
+ * A color that supports RGBA format.
  */
 export class Color4 {
   /**

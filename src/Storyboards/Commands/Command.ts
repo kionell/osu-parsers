@@ -1,10 +1,9 @@
 import { CommandType, Easing } from '../Enums';
-import { ICommand } from './ICommand';
 
 /**
  * A storyboard command.
  */
-export class Command<T> implements ICommand {
+export class Command<T = any> {
   /**
    * Command type.
    */
@@ -52,10 +51,19 @@ export class Command<T> implements ICommand {
   }
 
   /**
+   * The acronym of the storyboard command.
+   * Use {@link type} property directly.
+   * @deprecated Since 0.10.0
+   */
+  get acronym(): string {
+    return this.type;
+  }
+
+  /**
    * @param other Other storyboard command.
    * @returns If two storyboard commands are equal.
    */
-  equals(other: ICommand): boolean {
+  equals(other: Command<T>): boolean {
     return this.startTime === other.startTime && this.endTime === other.endTime;
   }
 }

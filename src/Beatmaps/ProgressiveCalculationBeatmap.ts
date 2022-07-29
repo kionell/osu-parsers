@@ -4,6 +4,7 @@ import {
   BeatmapDifficultySection,
   BeatmapMetadataSection,
   BeatmapColorSection,
+  BeatmapColoursSection,
   BeatmapEventSection,
 } from './Sections';
 
@@ -79,6 +80,19 @@ export class ProgressiveCalculationBeatmap implements IBeatmap {
 
   set colors(value: BeatmapColorSection) {
     this._baseBeatmap.colors = value;
+  }
+
+  /**
+   * Beatmap skin configuration.
+   * Use the {@link colors} getter instead.
+   * @deprecated Since 0.10.0
+   */
+  get colours(): BeatmapColoursSection {
+    return this._baseBeatmap.colours;
+  }
+
+  set colours(value: BeatmapColoursSection) {
+    this._baseBeatmap.colours = value;
   }
 
   /**

@@ -1,36 +1,13 @@
-/* Control Points */
-export { ControlPoint } from './ControlPoints/ControlPoint';
-export { ControlPointGroup } from './ControlPoints/ControlPointGroup';
-export { ControlPointInfo } from './ControlPoints/ControlPointInfo';
-
-export { DifficultyPoint } from './ControlPoints/DifficultyPoint';
-export { EffectPoint } from './ControlPoints/EffectPoint';
-export { SamplePoint } from './ControlPoints/SamplePoint';
-export { TimingPoint } from './ControlPoints/TimingPoint';
-
-/* Enums */
-export { ControlPointType } from './Enums/ControlPointType';
-export { EffectType } from './Enums/EffectType';
-export { TimeSignature } from './Enums/TimeSignature';
-
-/* Events */
-export { BeatmapBreakEvent } from './Events/BeatmapBreakEvent';
-
-/* Sections */
-export { BeatmapGeneralSection } from './Sections/BeatmapGeneralSection';
-export { BeatmapEditorSection } from './Sections/BeatmapEditorSection';
-export { BeatmapDifficultySection } from './Sections/BeatmapDifficultySection';
-export { BeatmapMetadataSection } from './Sections/BeatmapMetadataSection';
-export { BeatmapColorSection } from './Sections/BeatmapColorSection';
-export { BeatmapEventSection } from './Sections/BeatmapEventSection';
-
-/* Beatmaps */
-export { BeatmapProcessor } from './BeatmapProcessor';
-export { BeatmapConverter } from './BeatmapConverter';
-export { ProgressiveCalculationBeatmap } from './ProgressiveCalculationBeatmap';
-export { RulesetBeatmap } from './RulesetBeatmap';
-export { Beatmap } from './Beatmap';
-export { IBeatmap } from './IBeatmap';
-export { BeatmapInfo } from './BeatmapInfo';
-export { IBeatmapInfo } from './IBeatmapInfo';
-export { IJsonableBeatmapInfo } from './IJsonableBeatmapInfo';
+export * from './Beatmap';
+export * from './BeatmapConverter';
+export * from './BeatmapInfo';
+export * from './BeatmapProcessor';
+export * from './ControlPoints';
+export * from './Enums';
+export * from './Events';
+export * from './IBeatmap';
+export * from './IBeatmapInfo';
+export * from './IJsonableBeatmapInfo';
+export * from './ProgressiveCalculationBeatmap';
+export * from './RulesetBeatmap';
+export * from './Sections';

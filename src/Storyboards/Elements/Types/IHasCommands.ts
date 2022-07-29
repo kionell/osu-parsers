@@ -2,12 +2,20 @@ import {
   CommandTimelineGroup,
   CommandLoop,
   CommandTrigger,
+  Command,
 } from '../../Commands';
+
+import { IStoryboardElement } from './IStoryboardElement';
 
 /**
  * A storyboard element that has commands.
  */
-export interface IHasCommands {
+export interface IHasCommands extends IStoryboardElement {
+  /**
+   * The list of commands of the storyboard element.
+   */
+  commands: Command[];
+
   /**
    * The command timeline group of this storyboard element.
    */

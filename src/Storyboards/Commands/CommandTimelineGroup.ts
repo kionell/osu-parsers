@@ -1,5 +1,5 @@
 import { CommandTimeline } from './CommandTimeline';
-import { ICommandTimeline } from './ICommandTimeline';
+import { Command } from './Command';
 import { BlendingParameters } from '../Blending';
 import { Color4, Vector2 } from '../../Utils';
 
@@ -18,7 +18,7 @@ export class CommandTimelineGroup {
   flipH = new CommandTimeline<boolean>();
   flipV = new CommandTimeline<boolean>();
 
-  private readonly _timelines: ICommandTimeline[];
+  private readonly _timelines: CommandTimeline[];
 
   constructor() {
     this._timelines = [
@@ -33,6 +33,12 @@ export class CommandTimelineGroup {
       this.flipH,
       this.flipV,
     ];
+  }
+
+  get commands(): Command[] {
+    return this._timelines
+      .flatMap((t) => t.commands)
+      .sort((a, b) => a.startTime - b.startTime);
   }
 
   /**

@@ -1,4 +1,7 @@
-export enum LegacyOrigin {
+/**
+ * This is used by osu!lazer to convert legacy origins to the new format.
+ */
+export enum Origins {
   TopLeft,
   Centre,
   CentreLeft,

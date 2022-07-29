@@ -16,20 +16,27 @@ export class CommandLoop extends CommandTimelineGroup {
   loopStartTime: number;
 
   /**
-   * The total number of times this loop is played back. Always greater than zero.
+   * The total number of repeats.
    */
   loopCount: number;
 
   /**
    * Creates a new instance of the storyboard command loop.
    * @param loopStartTime The start time of the loop.
-   * @param repeatCount The number of repeats of this loop.
+   * @param loopCount The number of repeats of this loop.
    */
-  constructor(loopStartTime?: number, repeatCount?: number) {
+  constructor(loopStartTime?: number, loopCount?: number) {
     super();
 
     this.loopStartTime = loopStartTime || 0;
-    this.loopCount = repeatCount ? repeatCount + 1 : 1;
+    this.loopCount = loopCount || 0;
+  }
+
+  /**
+   * The total number of times this loop is played back. Always greater than zero.
+   */
+  get totalIterations(): number {
+    return this.loopCount + 1;
   }
 
   /**
