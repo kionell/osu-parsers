@@ -26,7 +26,7 @@ interface ITimelineAddFunction<T> {
   ): void;
 
   /**
-   * @deprecated Since 1.0.0
+   * @deprecated Since 0.10.0
    */
   (
     type: CommandType,
