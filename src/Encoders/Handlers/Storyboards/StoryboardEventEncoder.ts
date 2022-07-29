@@ -1,25 +1,19 @@
 import {
-  IBeatmap,
   Storyboard,
+  StoryboardVideo,
   StoryboardSprite,
   StoryboardAnimation,
   StoryboardSample,
-  Compound,
+  StoryboardLayer,
+  IStoryboardElement,
+  IHasCommands,
+  CommandTimelineGroup,
   CommandLoop,
   CommandTrigger,
-  Command,
-  VectorScaleCommand,
-  MoveCommand,
-  FadeCommand,
-  RotateCommand,
-  ColorCommand,
-  ParameterCommand,
-  IHasCommands,
-  IStoryboardElement,
-  CommandType,
-  ParameterType,
-  LayerType,
   Origins,
+  Command,
+  CommandType,
+  LayerType,
 } from 'osu-classes';
 
 /**
@@ -31,11 +25,24 @@ export abstract class StoryboardEventEncoder {
    * @param storyboard A storyboard.
    * @returns Encoded storyboard events.
    */
-  static encodeStoryboardEvents(storyboard: Storyboard): string {
+  static encodeEventSection(storyboard: Storyboard): string {
     const encoded: string[] = [];
 
     encoded.push('[Events]');
     encoded.push('//Background and Video events');
+    encoded.push(this.encodeStoryboard(storyboard));
+
+    return encoded.join('\n');
+  }
+
+  /**
+   * Encodes a storyboard.
+   * @param storyboard The storyboard.
+   * @returns Encoded storyboard.
+   */
+  static encodeStoryboard(storyboard: Storyboard): string {
+    const encoded: string[] = [];
+
     encoded.push('//Storyboard Layer 0 (Background)');
 
     if (storyboard.background.length > 0) {
