@@ -24,8 +24,8 @@ export class StoryboardDecoder extends Decoder<Storyboard> {
    * @returns Decoded storyboard.
    */
   decodeFromPath(path: string): Storyboard {
-    if (!path.endsWith('.osb')) {
-      throw new Error('Wrong file format! Only .osb files are supported!');
+    if (!path.endsWith('.osb') && !path.endsWith('.osu')) {
+      throw new Error('Wrong file format! Only .osb and .osu files are supported!');
     }
 
     if (!existsSync(path)) {
@@ -107,7 +107,7 @@ export class StoryboardDecoder extends Decoder<Storyboard> {
   protected _reset(): void {
     super._reset();
 
-    // Use 'Events' section by default.  
+    // Use 'Events' section by default.
     this._section = 'Events';
   }
 }
