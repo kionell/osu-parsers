@@ -3,14 +3,14 @@ import { dirname } from 'path';
 import { IBeatmap } from 'osu-classes';
 
 import {
-  GeneralEncoder,
-  EditorEncoder,
-  MetadataEncoder,
-  DifficultyEncoder,
-  EventsEncoder,
-  TimingPointEncoder,
-  ColorEncoder,
-  HitObjectEncoder,
+  BeatmapGeneralEncoder,
+  BeatmapEditorEncoder,
+  BeatmapMetadataEncoder,
+  BeatmapDifficultyEncoder,
+  BeatmapEventEncoder,
+  BeatmapTimingPointEncoder,
+  BeatmapColorEncoder,
+  BeatmapHitObjectEncoder,
 } from './Handlers';
 
 /**
@@ -49,14 +49,14 @@ export class BeatmapEncoder {
 
     encoded.push(`osu file format v${fileFormat}`);
 
-    encoded.push(GeneralEncoder.encodeGeneralSection(beatmap));
-    encoded.push(EditorEncoder.encodeEditorSection(beatmap));
-    encoded.push(MetadataEncoder.encodeMetadataSection(beatmap));
-    encoded.push(DifficultyEncoder.encodeDifficultySection(beatmap));
-    encoded.push(EventsEncoder.encodeEventsSection(beatmap));
-    encoded.push(TimingPointEncoder.encodeControlPoints(beatmap));
-    encoded.push(ColorEncoder.encodeColors(beatmap));
-    encoded.push(HitObjectEncoder.encodeHitObjects(beatmap));
+    encoded.push(BeatmapGeneralEncoder.encodeGeneralSection(beatmap));
+    encoded.push(BeatmapEditorEncoder.encodeEditorSection(beatmap));
+    encoded.push(BeatmapMetadataEncoder.encodeMetadataSection(beatmap));
+    encoded.push(BeatmapDifficultyEncoder.encodeDifficultySection(beatmap));
+    encoded.push(BeatmapEventEncoder.encodeEventSection(beatmap));
+    encoded.push(BeatmapTimingPointEncoder.encodeControlPoints(beatmap));
+    encoded.push(BeatmapColorEncoder.encodeColors(beatmap));
+    encoded.push(BeatmapHitObjectEncoder.encodeHitObjects(beatmap));
 
     return encoded.filter((x) => x).join('\n\n');
   }

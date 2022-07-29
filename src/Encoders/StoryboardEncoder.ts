@@ -3,8 +3,8 @@ import { dirname } from 'path';
 import { Storyboard } from 'osu-classes';
 
 import {
-  VariablesEncoder,
-  EventsEncoder,
+  StoryboardVariableEncoder,
+  StoryboardEventEncoder,
 } from './Handlers';
 
 /**
@@ -35,8 +35,8 @@ export class StoryboardEncoder {
 
     const encoded: string[] = [];
 
-    encoded.push(VariablesEncoder.encodeVariables(storyboard));
-    encoded.push(EventsEncoder.encodeStoryboard(storyboard));
+    encoded.push(StoryboardVariableEncoder.encodeVariables(storyboard));
+    encoded.push(StoryboardEventEncoder.encodeStoryboard(storyboard));
 
     return encoded.filter((x) => x).join('\n\n');
   }
