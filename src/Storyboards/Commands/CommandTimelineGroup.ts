@@ -18,7 +18,7 @@ export class CommandTimelineGroup {
   flipH = new CommandTimeline<boolean>();
   flipV = new CommandTimeline<boolean>();
 
-  private readonly _timelines: CommandTimeline[];
+  readonly _timelines: CommandTimeline[];
 
   constructor() {
     this._timelines = [
@@ -33,6 +33,10 @@ export class CommandTimelineGroup {
       this.flipH,
       this.flipV,
     ];
+  }
+
+  get timelines(): CommandTimeline[] {
+    return this._timelines;
   }
 
   get commands(): Command[] {
