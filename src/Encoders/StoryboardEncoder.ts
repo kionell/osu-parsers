@@ -35,8 +35,11 @@ export class StoryboardEncoder {
 
     const encoded: string[] = [];
 
-    encoded.push(StoryboardVariableEncoder.encodeVariables(storyboard));
-    encoded.push(StoryboardEventEncoder.encodeStoryboard(storyboard));
+    if (storyboard.hasVariables) {
+      encoded.push(StoryboardVariableEncoder.encodeVariables(storyboard));
+    }
+
+    encoded.push(StoryboardEventEncoder.encodeEventSection(storyboard));
 
     return encoded.filter((x) => x).join('\n\n');
   }
