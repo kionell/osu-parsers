@@ -111,6 +111,14 @@ export class BeatmapDecoder extends Decoder<Beatmap> {
       const storyboardDecoder = new StoryboardDecoder();
 
       beatmap.events.storyboard = storyboardDecoder.decodeFromLines(this._sbLines);
+
+      /**
+       * Because we parsed storyboard through beatmap decoder
+       * we need to copy these properties from beatmap directly.
+       */
+      beatmap.events.storyboard.useSkinSprites = beatmap.general.useSkinSprites;
+      beatmap.events.storyboard.colors = beatmap.colors;
+      beatmap.events.storyboard.fileFormat = beatmap.fileFormat;
     }
 
     return beatmap;
