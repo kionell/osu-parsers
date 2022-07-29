@@ -1,4 +1,5 @@
 import { Beatmap, BeatmapBreakEvent, EventType } from 'osu-classes';
+import { StoryboardEventDecoder } from '../Storyboards/StoryboardEventDecoder';
 import { Parsing } from '../../../Utils';
 
 /**
@@ -19,7 +20,7 @@ export abstract class BeatmapEventDecoder {
 
     const data = line.split(',').map((v, i) => i ? v.trim() : v);
 
-    const eventType = this._getEventType(data[0]);
+    const eventType = StoryboardEventDecoder.parseEventType(data[0]);
 
     switch (eventType) {
       case EventType.Background:
@@ -51,19 +52,5 @@ export abstract class BeatmapEventDecoder {
          */
         if (sbLines) sbLines.push(line);
     }
-  }
-
-  private static _getEventType(input: string): EventType {
-    if (input.startsWith(' ') || input.startsWith('_')) {
-      return EventType.StoryboardCommand;
-    }
-
-    const eventType = input.trim() as keyof typeof EventType;
-    const rawEventType = parseInt(eventType);
-
-    if (rawEventType in EventType) return rawEventType;
-    if (eventType in EventType) return EventType[eventType];
-
-    throw new Error(`Unknown event type: ${input}!`);
   }
 }
