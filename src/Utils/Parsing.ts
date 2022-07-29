@@ -17,18 +17,16 @@ export class Parsing {
     return this._getValue(parseFloat(input), parseLimit);
   }
 
-  static parseEnum<T>(enumObj: T, input: string): T[keyof T] {
+  static parseEnum<T extends Record<any, any>>(enumObj: T, input: string): T[keyof T] {
     const value = input.trim();
     const rawValue = parseInt(value);
 
-    const values = Object.values(enumObj);
-
-    if (values.some((v) => v === rawValue)) {
-      return rawValue as unknown as T[keyof T];
+    if (rawValue in enumObj) {
+      return rawValue as T[keyof T];
     }
 
-    if (values.some((v) => v === value)) {
-      return (enumObj as any)[value] as T[keyof T];
+    if (value in enumObj) {
+      return enumObj[value];
     }
 
     throw new Error('Unknown enum value!');
