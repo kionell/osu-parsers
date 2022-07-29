@@ -4,46 +4,28 @@
 export abstract class StoryboardVariableDecoder {
   /**
    * Decodes all variables from storyboard lines.
-   * @param lines Storyboard lines.
+   * @param line A storyboard line.
+   * @param variables Variables dictionary.
    * @returns Storyboard variables. 
    */
-  static getVariables(lines: string[]): Record<string, string> {
-    const variables: Record<string, string> = {};
+  static handleLine(line: string, variables: Record<string, string>): void {
+    if (!line.startsWith('$')) return;
 
-    const startIndex = lines.findIndex((l) => l.includes('[Variables]'));
+    const pair = line.split('=');
 
-    // If file contains variables.
-    if (startIndex !== -1) {
-      let endIndex = startIndex + 1;
-
-      // Parse all lines until a new section is encountered.
-      while (endIndex < lines.length && !lines[endIndex].startsWith('[')) {
-        // All variables start with $ sign.
-        if (lines[endIndex].startsWith('$')) {
-          const pair = lines[endIndex].substring(1).split('=');
-
-          // If this variable is valid.
-          if (pair.length === 2) {
-            variables[pair[0]] = pair[1];
-          }
-        }
-
-        ++endIndex;
-      }
-
-      lines.splice(startIndex, endIndex - startIndex);
+    // If this variable is valid.
+    if (pair.length === 2) {
+      variables[pair[0]] = pair[1].trimEnd();
     }
-
-    return variables;
   }
 
   /**
    * Replaces all variable names in storyboard line with variable values. 
-   * @param line Storyboard line.
+   * @param line A storyboard line.
    * @param variables Storyboard variables.
-   * @returns 
+   * @returns A storyboard line with replaced variables
    */
-  static preProcess(line: string, variables: Record<string, string>): string {
+  static decodeVariables(line: string, variables: Record<string, string>): string {
     const keys = Object.keys(variables);
 
     if (!line.includes('$') || !keys.length) {
@@ -51,7 +33,7 @@ export abstract class StoryboardVariableDecoder {
     }
 
     keys.forEach((key) => {
-      line = line.replace('$' + key, variables[key]);
+      line = line.replace(key, variables[key]);
     });
 
     return line;
