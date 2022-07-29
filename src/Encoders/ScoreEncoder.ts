@@ -1,4 +1,5 @@
-import { writeFileSync } from 'fs';
+import { mkdirSync, writeFileSync } from 'fs';
+import { dirname } from 'path';
 import { IScore } from 'osu-classes';
 import { ReplayEncoder, SerializationWriter } from './Handlers';
 
@@ -18,6 +19,7 @@ export class ScoreEncoder {
 
     const data = await this.encodeToBuffer(score);
 
+    mkdirSync(dirname(path), { recursive: true });
     writeFileSync(path, data);
   }
 

@@ -1,5 +1,5 @@
-import { writeFileSync } from 'fs';
-
+import { mkdirSync, writeFileSync } from 'fs';
+import { dirname } from 'path';
 import { Storyboard } from 'osu-classes';
 
 import {
@@ -21,6 +21,7 @@ export class StoryboardEncoder {
       path += '.osb';
     }
 
+    mkdirSync(dirname(path), { recursive: true });
     writeFileSync(path, this.encodeToString(storyboard));
   }
 
