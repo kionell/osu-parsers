@@ -23,6 +23,21 @@ export class BeatmapEventSection extends BeatmapEventsSection {
   storyboard: Storyboard | null = null;
 
   /**
+   * Whether the storyboard replace the background?
+   */
+  get isBackgroundReplaced(): boolean {
+    if (!this.backgroundPath || !this.storyboard) return false;
+
+    /**
+     * I don't actually know if this reliable or not.
+     */
+    const filePath = this.backgroundPath.trim().toLowerCase();
+    const layer = this.storyboard.getLayerByType(LayerType.Background);
+
+    return !!layer.elements.find((e) => e.filePath.toLowerCase() === filePath);
+  }
+
+  /**
    * Creates a copy of this beatmap events section.
    * Non-primitive properties will be copied via their own clone() method.
    * @returns A copied information about control points.
