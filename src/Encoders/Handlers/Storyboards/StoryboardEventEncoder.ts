@@ -87,9 +87,15 @@ export abstract class StoryboardEventEncoder {
 
     const variables = Object.entries(storyboard.variables);
 
-    for (let i = 0; i < encoded.length; ++i) {
-      variables.forEach((pair) => encoded[i].replace(pair[1], pair[0]));
-    }
+    variables.forEach((pair) => {
+      const regex = new RegExp(pair[1], 'g');
+
+      for (let i = 0; i < encoded.length; ++i) {
+        if (encoded[i].includes(pair[1])) {
+          encoded[i] = encoded[i].replace(regex, pair[0]);
+        }
+      }
+    });
 
     return encoded.join('\n');
   }
