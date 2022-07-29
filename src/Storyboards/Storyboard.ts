@@ -98,6 +98,55 @@ export class Storyboard {
     return this._layers;
   }
 
+  get hasDrawable(): boolean {
+    for (const layer of this.layers.values()) {
+      if (layer.elements.find((e) => e.isDrawable)) return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Across all layers, find the earliest point in time that a storyboard element exists at.
+   * Will return null if there are no elements.
+   * This iterates all elements and as such should be used sparingly or stored locally.
+   */
+  get earliestEventTime(): number | null {
+    let time = Infinity;
+
+    this._layers.forEach((layer) => {
+      const elements = layer.elements;
+      const min = elements.reduce((m, el) => Math.min(m, el.startTime), 0);
+
+      time = Math.min(min, time);
+    });
+
+    return time === Infinity ? null : time;
+  }
+
+  /**
+   * Across all layers, find the latest point in time that a storyboard element ends at.
+   * Will return null if there are no elements.
+   * This iterates all elements and as such should be used sparingly or stored locally.
+   * Videos and samples return start time as their end time.
+   */
+  get latestEventTime(): number | null {
+    let time = -Infinity;
+
+    this._layers.forEach((layer) => {
+      const elements = layer.elements;
+      const max = elements.reduce((max, element) => {
+        const durationElement = element as IStoryboardElementWithDuration;
+
+        return Math.max(max, durationElement?.endTime ?? element.startTime);
+      }, 0);
+
+      time = Math.max(max, time);
+    });
+
+    return time === -Infinity ? null : time;
+  }
+
   /**
    * Adds a new storyboard layer.
    * @param layer A storyboard layer.
