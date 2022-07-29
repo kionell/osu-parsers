@@ -80,11 +80,17 @@ export abstract class StoryboardEventDecoder {
       case EventType.Sprite: {
         const layer = storyboard.getLayerByType(this.parseLayerType(data[1]));
         const origin = this.parseOrigin(data[2]);
+        const anchor = this.convertOrigin(origin);
         const path = data[3].replace(/"/g, '');
         const x = Parsing.parseFloat(data[4], Parsing.MAX_COORDINATE_VALUE);
         const y = Parsing.parseFloat(data[5], Parsing.MAX_COORDINATE_VALUE);
 
-        this._storyboardSprite = new StoryboardSprite(path, origin, new Vector2(x, y));
+        this._storyboardSprite = new StoryboardSprite(
+          path,
+          origin,
+          anchor,
+          new Vector2(x, y),
+        );
 
         layer.elements.push(this._storyboardSprite);
 
@@ -94,6 +100,7 @@ export abstract class StoryboardEventDecoder {
       case EventType.Animation: {
         const layer = storyboard.getLayerByType(this.parseLayerType(data[1]));
         const origin = this.parseOrigin(data[2]);
+        const anchor = this.convertOrigin(origin);
         const path = data[3].replace(/"/g, '');
         const x = Parsing.parseFloat(data[4], Parsing.MAX_COORDINATE_VALUE);
         const y = Parsing.parseFloat(data[5], Parsing.MAX_COORDINATE_VALUE);
@@ -113,6 +120,7 @@ export abstract class StoryboardEventDecoder {
         this._storyboardSprite = new StoryboardAnimation(
           path,
           origin,
+          anchor,
           new Vector2(x, y),
           frameCount,
           frameDelay,
@@ -372,27 +380,29 @@ export abstract class StoryboardEventDecoder {
     }
   }
 
-  static parseOrigin(input: string): Anchor {
+  static parseOrigin(input: string): Origins {
     try {
-      const origin = Parsing.parseEnum(Origins, input);
-
-      switch (origin) {
-        case Origins.TopLeft: return Anchor.TopLeft;
-        case Origins.TopCentre: return Anchor.TopCentre;
-        case Origins.TopRight: return Anchor.TopRight;
-        case Origins.CentreLeft: return Anchor.CentreLeft;
-        case Origins.Centre: return Anchor.Centre;
-        case Origins.CentreRight: return Anchor.CentreRight;
-        case Origins.BottomLeft: return Anchor.BottomLeft;
-        case Origins.BottomCentre: return Anchor.BottomCentre;
-        case Origins.BottomRight: return Anchor.BottomRight;
-      }
-
-      return Anchor.TopLeft;
+      return Parsing.parseEnum(Origins, input);
     }
     catch {
-      return Anchor.TopLeft;
+      return Origins.TopLeft;
     }
+  }
+
+  static convertOrigin(origin: Origins): Anchor {
+    switch (origin) {
+      case Origins.TopLeft: return Anchor.TopLeft;
+      case Origins.TopCentre: return Anchor.TopCentre;
+      case Origins.TopRight: return Anchor.TopRight;
+      case Origins.CentreLeft: return Anchor.CentreLeft;
+      case Origins.Centre: return Anchor.Centre;
+      case Origins.CentreRight: return Anchor.CentreRight;
+      case Origins.BottomLeft: return Anchor.BottomLeft;
+      case Origins.BottomCentre: return Anchor.BottomCentre;
+      case Origins.BottomRight: return Anchor.BottomRight;
+    }
+
+    return Anchor.TopLeft;
   }
 
   static parseLoopType(input: string): LoopType {
