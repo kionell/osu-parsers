@@ -106,6 +106,12 @@ export class Storyboard {
     return false;
   }
 
+  get hasVariables(): boolean {
+    for (const _ in this.variables) return true;
+
+    return false;
+  }
+
   /**
    * Across all layers, find the earliest point in time that a storyboard element exists at.
    * Will return null if there are no elements.
