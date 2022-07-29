@@ -11,32 +11,23 @@ import {
   BeatmapTimingPointDecoder,
 } from './Handlers';
 
+import { Decoder } from './Decoder';
 import { StoryboardDecoder } from './StoryboardDecoder';
 import { Parsing } from '../Utils';
 
 /**
  * Beatmap decoder.
  */
-export class BeatmapDecoder {
-  /**
-   * Current section name.
-   */
-  private _sectionName = '';
-
+export class BeatmapDecoder extends Decoder<Beatmap> {
   /** 
    * Current offset for all time values.
    */
-  private _offset = 0;
-
-  /**
-   * Current beatmap lines.
-   */
-  private _lines: string[] | null = null;
+  protected _offset = 0;
 
   /**
    * Current storyboard lines.
    */
-  private _sbLines: string[] | null = null;
+  protected _sbLines: string[] | null = null;
 
   /**
    * Performs beatmap decoding from the specified .osu file.
@@ -84,8 +75,8 @@ export class BeatmapDecoder {
   decodeFromLines(data: string[], parseSb = true): Beatmap {
     const beatmap = new Beatmap();
 
-    this._lines = null;
-    this._sbLines = null;
+    this._reset();
+    this._lines = this._getLines(data);
 
     // This array isn't needed if we don't parse a storyboard. 
     if (parseSb) this._sbLines = [];
@@ -108,9 +99,6 @@ export class BeatmapDecoder {
     if (!fileFormatLine.startsWith('osu file format v')) {
       throw new Error('Not a valid beatmap!');
     }
-
-    this._offset = 0;
-    this._sectionName = '';
 
     // Parse beatmap lines.
     this._lines.forEach((line) => this._parseLine(line, beatmap));
@@ -136,10 +124,7 @@ export class BeatmapDecoder {
     return beatmap;
   }
 
-  private _parseLine(line: string, beatmap: Beatmap): void {
-    // Skip empty lines and comments.
-    if (!line || line.startsWith('//')) return;
-
+  protected _parseLine(line: string, beatmap: Beatmap): void {
     // .osu file version
     if (line.includes('osu file format v')) {
       beatmap.fileFormat = Parsing.parseInt(line.split('v')[1]);
@@ -153,24 +138,11 @@ export class BeatmapDecoder {
       return;
     }
 
-    // .osu file section
-    if (line.startsWith('[') && line.endsWith(']')) {
-      this._sectionName = line.slice(1, -1);
-
-      return;
-    }
-
-    try {
-      // Section data
-      this._parseSectionData(line, beatmap);
-    }
-    catch {
-      return;
-    }
+    super._parseLine(line, beatmap);
   }
 
-  private _parseSectionData(line: string, beatmap: Beatmap) {
-    switch (this._sectionName) {
+  protected _parseSectionData(line: string, beatmap: Beatmap): void {
+    switch (this._section) {
       case 'General':
         return BeatmapGeneralDecoder.handleLine(line, beatmap, this._offset);
 
@@ -192,5 +164,7 @@ export class BeatmapDecoder {
       case 'HitObjects':
         return BeatmapHitObjectDecoder.handleLine(line, beatmap, this._offset);
     }
+
+    super._parseSectionData(line, beatmap);
   }
 }
