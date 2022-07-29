@@ -2,14 +2,13 @@ import { existsSync, readFileSync, statSync } from 'fs';
 import { Beatmap } from 'osu-classes';
 
 import {
-  GeneralDecoder,
-  EditorDecoder,
-  MetadataDecoder,
-  DifficultyDecoder,
-  ColourDecoder,
-  EventDecoder,
-  HitObjectDecoder,
-  TimingPointDecoder,
+  BeatmapGeneralDecoder,
+  BeatmapEditorDecoder,
+  BeatmapMetadataDecoder,
+  BeatmapDifficultyDecoder,
+  BeatmapEventDecoder,
+  BeatmapHitObjectDecoder,
+  BeatmapTimingPointDecoder,
 } from './Handlers';
 
 import { StoryboardDecoder } from './StoryboardDecoder';
@@ -117,7 +116,7 @@ export class BeatmapDecoder {
     this._lines.forEach((line) => this._parseLine(line, beatmap));
 
     // Flush last control point group.
-    TimingPointDecoder.flushPendingPoints();
+    BeatmapTimingPointDecoder.flushPendingPoints();
 
     // Apply default values to the all hit objects.
     beatmap.hitObjects.forEach((h) => {
@@ -173,35 +172,25 @@ export class BeatmapDecoder {
   private _parseSectionData(line: string, beatmap: Beatmap) {
     switch (this._sectionName) {
       case 'General':
-        GeneralDecoder.handleLine(line, beatmap, this._offset);
-        break;
+        return BeatmapGeneralDecoder.handleLine(line, beatmap, this._offset);
 
       case 'Editor':
-        EditorDecoder.handleLine(line, beatmap);
-        break;
+        return BeatmapEditorDecoder.handleLine(line, beatmap);
 
       case 'Metadata':
-        MetadataDecoder.handleLine(line, beatmap);
-        break;
+        return BeatmapMetadataDecoder.handleLine(line, beatmap);
 
       case 'Difficulty':
-        DifficultyDecoder.handleLine(line, beatmap);
-        break;
-
-      case 'Colours':
-        ColourDecoder.handleLine(line, beatmap);
-        break;
+        return BeatmapDifficultyDecoder.handleLine(line, beatmap);
 
       case 'Events':
-        EventDecoder.handleLine(line, beatmap, this._sbLines, this._offset);
-        break;
+        return BeatmapEventDecoder.handleLine(line, beatmap, this._sbLines, this._offset);
 
       case 'TimingPoints':
-        TimingPointDecoder.handleLine(line, beatmap, this._offset);
-        break;
+        return BeatmapTimingPointDecoder.handleLine(line, beatmap, this._offset);
 
       case 'HitObjects':
-        HitObjectDecoder.handleLine(line, beatmap, this._offset);
+        return BeatmapHitObjectDecoder.handleLine(line, beatmap, this._offset);
     }
   }
 }
