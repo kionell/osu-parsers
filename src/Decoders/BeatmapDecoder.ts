@@ -59,11 +59,9 @@ export class BeatmapDecoder extends Decoder<Beatmap> {
    * @returns Decoded beatmap.
    */
   decodeFromString(str: string, parseSb = true): Beatmap {
-    const data = str.toString()
-      .replace(/\r/g, '')
-      .split('\n');
+    str = typeof str !== 'string' ? String(str) : str;
 
-    return this.decodeFromLines(data, parseSb);
+    return this.decodeFromLines(str.split('\n'), parseSb);
   }
 
   /**
@@ -79,37 +77,31 @@ export class BeatmapDecoder extends Decoder<Beatmap> {
     this._lines = this._getLines(data);
 
     // This array isn't needed if we don't parse a storyboard. 
-    if (parseSb) this._sbLines = [];
-
-    if (data.constructor === Array) {
-      this._lines = data.filter((l) => typeof l === 'string');
-    }
-
-    if (!this._lines || !this._lines.length) {
-      throw new Error('Beatmap data not found!');
-    }
+    this._sbLines = parseSb ? [] : null;
 
     /**
      * There is one known case of .osu file starting with "\uFEFF" symbol
      * We need to use trim function to handle it. 
      * Beatmap: https://osu.ppy.sh/beatmapsets/310499#osu/771496
      */
-    const fileFormatLine = this._lines[0].toString().trim();
+    const fileFormatLine = this._lines[0].trim();
 
     if (!fileFormatLine.startsWith('osu file format v')) {
       throw new Error('Not a valid beatmap!');
     }
 
     // Parse beatmap lines.
-    this._lines.forEach((line) => this._parseLine(line, beatmap));
+    for (let i = 0; i < this._lines.length; ++i) {
+      this._parseLine(this._lines[i], beatmap);
+    }
 
     // Flush last control point group.
     BeatmapTimingPointDecoder.flushPendingPoints();
 
     // Apply default values to the all hit objects.
-    beatmap.hitObjects.forEach((h) => {
-      h.applyDefaults(beatmap.controlPoints, beatmap.difficulty);
-    });
+    for (let i = 0; i < beatmap.hitObjects.length; ++i) {
+      beatmap.hitObjects[i].applyDefaults(beatmap.controlPoints, beatmap.difficulty);
+    }
 
     // Use stable sorting to keep objects in the right order.
     beatmap.hitObjects.sort((a, b) => a.startTime - b.startTime);

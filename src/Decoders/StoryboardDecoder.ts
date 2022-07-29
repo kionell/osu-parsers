@@ -43,11 +43,9 @@ export class StoryboardDecoder extends Decoder<Storyboard> {
    * @returns Decoded storyboard.
    */
   decodeFromString(str: string): Storyboard {
-    const data = str.toString()
-      .replace(/\r/g, '')
-      .split('\n');
+    str = typeof str !== 'string' ? String(str) : str;
 
-    return this.decodeFromLines(data);
+    return this.decodeFromLines(str.split('\n'));
   }
 
   /**
