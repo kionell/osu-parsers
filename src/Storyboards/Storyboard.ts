@@ -43,8 +43,8 @@ export class Storyboard {
   overlay: IStoryboardElement[] = [];
 
   /**
-   * Samples of the storyboard. This layer is not supported anymore.
-   * All storyboard samples can be a part of any storyboard layer.
+   * Samples of the storyboard.
+   * Use the {@link layers} getter or {@link getLayerByType} or {@link getLayerByName}.
    * @deprecated Since 0.10.0
    */
   samples: IStoryboardElement[] = [];
@@ -81,14 +81,12 @@ export class Storyboard {
   private _layers: Map<string, StoryboardLayer> = new Map();
 
   constructor() {
+    this.addLayer(new StoryboardLayer({ name: 'Samples', depth: 5 }));
     this.addLayer(new StoryboardLayer({ name: 'Video', depth: 4, masking: false }));
     this.addLayer(new StoryboardLayer({ name: 'Background', depth: 3 }));
     this.addLayer(new StoryboardLayer({ name: 'Fail', depth: 2, visibleWhenPassing: false }));
     this.addLayer(new StoryboardLayer({ name: 'Pass', depth: 1, visibleWhenFailing: false }));
     this.addLayer(new StoryboardLayer({ name: 'Foreground', depth: 0 }));
-
-    // TODO: This is temporary and needs to be removed later.
-    this.addLayer(new StoryboardLayer({ name: 'Samples', depth: -1 }));
 
     // Overlay layer should always be at the front.
     this.addLayer(new StoryboardLayer({ name: 'Overlay', depth: -2147483648 }));
@@ -158,6 +156,8 @@ export class Storyboard {
    * @param layer A storyboard layer.
    */
   addLayer(layer: StoryboardLayer): void {
+    if (this._layers.has(layer.name)) return;
+
     this._layers.set(layer.name, layer);
 
     // Only for compatibility.
