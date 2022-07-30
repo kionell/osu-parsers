@@ -1,4 +1,4 @@
-import { CommandType, Easing } from '../Enums';
+import { CommandType, Easing, ParameterType } from '../Enums';
 
 /**
  * A storyboard command.
@@ -7,7 +7,12 @@ export class Command<T = any> {
   /**
    * Command type.
    */
-  type: CommandType = CommandType.None;
+  type: CommandType;
+
+  /**
+   * Command type.
+   */
+  parameter: ParameterType;
 
   /**
    * The easing of the storyboard command.
