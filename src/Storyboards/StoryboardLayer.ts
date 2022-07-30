@@ -14,6 +14,9 @@ export class StoryboardLayer {
    */
   readonly depth: number;
 
+  /**
+   * Should this layer be masked or not?
+   */
   readonly masking: boolean;
 
   /**
