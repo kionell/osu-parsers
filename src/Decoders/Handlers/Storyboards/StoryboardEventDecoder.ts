@@ -236,15 +236,14 @@ export abstract class StoryboardEventDecoder {
       case CommandType.Rotation: {
         const startValue = Parsing.parseFloat(data[4]);
         const endValue = data.length > 5 ? Parsing.parseFloat(data[5]) : startValue;
-        const radToDeg = 180 / Math.PI;
 
         this._timelineGroup?.rotation.add(
           type,
           easing,
           startTime,
           endTime,
-          startValue * radToDeg,
-          endValue * radToDeg,
+          startValue,
+          endValue,
         );
 
         return;
