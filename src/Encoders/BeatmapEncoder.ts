@@ -44,19 +44,20 @@ export class BeatmapEncoder {
   encodeToString(beatmap?: IBeatmap): string {
     if (!beatmap?.fileFormat) return '';
 
-    const encoded: string[] = [];
     const fileFormat = beatmap.fileFormat ?? BeatmapEncoder.FIRST_LAZER_VERSION;
 
-    encoded.push(`osu file format v${fileFormat}`);
+    const encoded: string[] = [
+      `osu file format v${fileFormat}`,
 
-    encoded.push(BeatmapGeneralEncoder.encodeGeneralSection(beatmap));
-    encoded.push(BeatmapEditorEncoder.encodeEditorSection(beatmap));
-    encoded.push(BeatmapMetadataEncoder.encodeMetadataSection(beatmap));
-    encoded.push(BeatmapDifficultyEncoder.encodeDifficultySection(beatmap));
-    encoded.push(BeatmapEventEncoder.encodeEventSection(beatmap));
-    encoded.push(BeatmapTimingPointEncoder.encodeControlPoints(beatmap));
-    encoded.push(BeatmapColorEncoder.encodeColors(beatmap));
-    encoded.push(BeatmapHitObjectEncoder.encodeHitObjects(beatmap));
+      BeatmapGeneralEncoder.encodeGeneralSection(beatmap),
+      BeatmapEditorEncoder.encodeEditorSection(beatmap),
+      BeatmapMetadataEncoder.encodeMetadataSection(beatmap),
+      BeatmapDifficultyEncoder.encodeDifficultySection(beatmap),
+      BeatmapEventEncoder.encodeEventSection(beatmap),
+      BeatmapTimingPointEncoder.encodeControlPoints(beatmap),
+      BeatmapColorEncoder.encodeColors(beatmap),
+      BeatmapHitObjectEncoder.encodeHitObjects(beatmap),
+    ];
 
     return encoded.join('\n\n');
   }
