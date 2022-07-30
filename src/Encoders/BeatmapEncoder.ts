@@ -58,6 +58,6 @@ export class BeatmapEncoder {
     encoded.push(BeatmapColorEncoder.encodeColors(beatmap));
     encoded.push(BeatmapHitObjectEncoder.encodeHitObjects(beatmap));
 
-    return encoded.filter((x) => x).join('\n\n');
+    return encoded.join('\n\n');
   }
 }
