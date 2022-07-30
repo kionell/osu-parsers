@@ -33,7 +33,9 @@ export class StoryboardEncoder {
   encodeToString(storyboard?: Storyboard): string {
     if (!(storyboard instanceof Storyboard)) return '';
 
-    const encoded: string[] = [];
+    const encoded: string[] = [
+      `osu file format v${storyboard.fileFormat}`,
+    ];
 
     if (storyboard.hasVariables) {
       encoded.push(StoryboardVariableEncoder.encodeVariables(storyboard));
