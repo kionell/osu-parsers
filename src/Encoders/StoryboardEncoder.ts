@@ -16,7 +16,7 @@ export class StoryboardEncoder {
    * @param path Path for writing the .osb file.
    * @param storyboard Storyboard for encoding.
    */
-  encodeToPath(path: string, storyboard: Storyboard): void {
+  encodeToPath(path: string, storyboard?: Storyboard): void {
     if (!path.endsWith('.osb')) {
       path += '.osb';
     }

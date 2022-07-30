@@ -12,7 +12,7 @@ export class ScoreEncoder {
    * @param path Path for writing the .osr file.
    * @param score Score info for encoding.
    */
-  async encodeToPath(path: string, score: IScore): Promise<void> {
+  async encodeToPath(path: string, score?: IScore): Promise<void> {
     if (!path.endsWith('.osr')) {
       path += '.osr';
     }
@@ -28,7 +28,7 @@ export class ScoreEncoder {
    * @param score Score info for encoding.
    * @returns A buffer with encoded score & replay data.
    */
-  async encodeToBuffer(score: IScore): Promise<Buffer> {
+  async encodeToBuffer(score?: IScore): Promise<Buffer> {
     if (typeof score?.info?.id !== 'number') {
       return Buffer.from([]);
     }

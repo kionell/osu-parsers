@@ -27,7 +27,7 @@ export class BeatmapEncoder {
    * @param path Path for writing the .osu file.
    * @param beatmap Beatmap for encoding.
    */
-  encodeToPath(path: string, beatmap: IBeatmap): void {
+  encodeToPath(path: string, beatmap?: IBeatmap): void {
     if (!path.endsWith('.osu')) {
       path += '.osu';
     }
