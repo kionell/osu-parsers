@@ -81,7 +81,9 @@ export class Storyboard {
   private _layers: Map<string, StoryboardLayer> = new Map();
 
   constructor() {
+    // TODO: I don't really know if i need a layer for samples...
     this.addLayer(new StoryboardLayer({ name: 'Samples', depth: 5 }));
+
     this.addLayer(new StoryboardLayer({ name: 'Video', depth: 4, masking: false }));
     this.addLayer(new StoryboardLayer({ name: 'Background', depth: 3 }));
     this.addLayer(new StoryboardLayer({ name: 'Fail', depth: 2, visibleWhenPassing: false }));
@@ -160,7 +162,7 @@ export class Storyboard {
 
     this._layers.set(layer.name, layer);
 
-    // Only for compatibility.
+    // This is here only for compatibility.
     switch (layer.name as keyof typeof LayerType) {
       case 'Background':
         this.background = layer.elements;
