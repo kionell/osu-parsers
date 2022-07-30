@@ -42,7 +42,7 @@ export class CommandTimelineGroup {
   get commands(): Command[] {
     return this._timelines
       .flatMap((t) => t.commands)
-      .sort((a, b) => a.startTime - b.startTime);
+      .sort((a, b) => a.startTime - b.startTime || a.endTime - b.endTime);
   }
 
   /**

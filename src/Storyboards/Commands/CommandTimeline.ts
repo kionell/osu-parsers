@@ -40,7 +40,9 @@ export class CommandTimeline<T = any> implements Iterable<Command<T>> {
    * A command list.
    */
   get commands(): Command<T>[] {
-    return this._commands.sort((a, b) => a.startTime - b.startTime);
+    return this._commands.sort((a, b) => {
+      return a.startTime - b.startTime || a.endTime - b.endTime;
+    });
   }
 
   add(
