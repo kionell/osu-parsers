@@ -70,6 +70,9 @@ export class Command<T = any> {
    * @returns If two storyboard commands are equal.
    */
   equals(other: Command<T>): boolean {
-    return this.startTime === other.startTime && this.endTime === other.endTime;
+    return this.startTime === other.startTime
+      && this.endTime === other.endTime
+      && this.easing === other.easing
+      && this.parameter === other.parameter;
   }
 }
