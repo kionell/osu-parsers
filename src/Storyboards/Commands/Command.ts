@@ -12,17 +12,17 @@ export class Command<T = any> {
   /**
    * The easing of the storyboard command.
    */
-  easing: Easing = Easing.None;
+  easing: Easing;
 
   /**
    * The time at which the command starts.
    */
-  startTime = 0;
+  startTime: number;
 
   /**
    * The time at which the command ends.
    */
-  endTime = 0;
+  endTime: number;
 
   /**
    * Starting value of this command.
@@ -34,13 +34,14 @@ export class Command<T = any> {
    */
   declare endValue: T;
 
-  constructor(type: CommandType, easing: Easing, startTime: number, endTime: number, startValue: T, endValue: T) {
-    this.type = type;
-    this.easing = easing;
-    this.startTime = startTime;
-    this.endTime = endTime;
-    this.startValue = startValue;
-    this.endValue = endValue;
+  constructor(params?: Partial<Command>) {
+    this.type = params?.type ?? CommandType.None;
+    this.parameter = params?.parameter ?? ParameterType.None;
+    this.easing = params?.easing ?? Easing.None;
+    this.startTime = params?.startTime ?? 0;
+    this.endTime = params?.endTime ?? 0;
+    this.startValue = params?.startValue ?? null;
+    this.endValue = params?.endValue ?? null;
   }
 
   /**
