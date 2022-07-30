@@ -14,6 +14,8 @@ import {
   Command,
   CommandType,
   LayerType,
+  Vector2,
+  Color4,
 } from 'osu-classes';
 
 /**
@@ -26,11 +28,10 @@ export abstract class StoryboardEventEncoder {
    * @returns Encoded storyboard events.
    */
   static encodeEventSection(storyboard: Storyboard): string {
-    const encoded: string[] = [];
-
-    encoded.push('[Events]');
-    encoded.push('//Background and Video events');
-    encoded.push(this.encodeStoryboard(storyboard));
+    const encoded: string[] = [
+      '[Events]',
+      this.encodeStoryboard(storyboard),
+    ];
 
     return encoded.join('\n');
   }
@@ -83,8 +84,6 @@ export abstract class StoryboardEventEncoder {
       encoded.push(this.encodeStoryboardLayer(overlay));
     }
 
-    encoded.push('//Storyboard Sound Samples');
-
     const variables = Object.entries(storyboard.variables);
 
     variables.forEach((pair) => {
@@ -105,36 +104,32 @@ export abstract class StoryboardEventEncoder {
    * @param layer A storyboard layer.
    * @returns Encoded storyboard layer.
    */
-  static encodeStoryboardLayer(layer: IStoryboardElement[]): string {
+  static encodeStoryboardLayer(layer: StoryboardLayer): string {
     const encoded: string[] = [];
 
-    layer.forEach((element) => {
-      encoded.push(EventsEncoder.encodeStoryboardElement(element));
+    layer.elements.forEach((element) => {
+      encoded.push(this.encodeStoryboardElement(element, layer.name));
 
-      const elementWithCommands = element as IHasCommands;
+      const elementWithCommands = element as IStoryboardElement & IHasCommands;
 
-      if (!elementWithCommands.commands) {
-        return;
+      elementWithCommands?.loops?.forEach((loop) => {
+        encoded.push(this.encodeCompound(loop));
+
+        if (loop.commands.length > 0) {
+          encoded.push(this.encodeTimelineGroup(loop, 2));
+        }
+      });
+
+      if (elementWithCommands?.timelineGroup?.commands.length > 0) {
+        encoded.push(this.encodeTimelineGroup(elementWithCommands.timelineGroup));
       }
 
-      elementWithCommands.loops.forEach((loop) => {
-        encoded.push(EventsEncoder.encodeCompound(loop));
+      elementWithCommands?.triggers?.forEach((trigger) => {
+        encoded.push(this.encodeCompound(trigger));
 
-        loop.commands.forEach((command) => {
-          encoded.push(EventsEncoder.encodeCommand(command, true));
-        });
-      });
-
-      elementWithCommands.commands.forEach((command) => {
-        encoded.push(EventsEncoder.encodeCommand(command));
-      });
-
-      elementWithCommands.triggers.forEach((trigger) => {
-        encoded.push(EventsEncoder.encodeCompound(trigger));
-
-        trigger.commands.forEach((command) => {
-          encoded.push(EventsEncoder.encodeCommand(command, true));
-        });
+        if (trigger.commands.length > 0) {
+          encoded.push(this.encodeTimelineGroup(trigger, 2));
+        }
       });
     });
 
@@ -144,180 +139,213 @@ export abstract class StoryboardEventEncoder {
   /**
    * Encodes storyboard element.
    * @param element A storyboard element.
+   * @param layer Layer name.
    * @returns Encoded storyboard element.
    */
-  static encodeStoryboardElement(element: IStoryboardElement): string {
-    const encoded: string[] = [];
+  static encodeStoryboardElement(element: IStoryboardElement, layer: string): string {
+    if (element instanceof StoryboardAnimation) {
+      return [
+        'Animation',
+        layer,
+        Origins[element.origin],
+        `"${element.filePath}"`,
+        element.startPosition,
+        element.frameCount,
+        element.frameDelay,
+        element.loopType,
+      ].join(',');
+    }
 
     if (element instanceof StoryboardSprite) {
-      const sprite = element as StoryboardSprite;
-
-      encoded.push('Sprite');
-      encoded.push(LayerType[sprite.layer]);
-      encoded.push(Origins[sprite.origin]);
-      encoded.push(`"${sprite.filePath}"`);
-      encoded.push(`${sprite.startPosition}`);
+      return [
+        'Sprite',
+        layer,
+        Origins[element.origin],
+        `"${element.filePath}"`,
+        element.startPosition,
+      ].join(',');
     }
-    else if (element instanceof StoryboardAnimation) {
-      const animation = element as StoryboardAnimation;
 
-      encoded.push('Animation');
-      encoded.push(LayerType[animation.layer]);
-      encoded.push(Origins[animation.origin]);
-      encoded.push(`"${animation.filePath}"`);
-      encoded.push(`${animation.startPosition}`);
-      encoded.push(`${animation.frames}`);
-      encoded.push(`${animation.frameDelay}`);
-      encoded.push(`${animation.loop}`);
+    if (element instanceof StoryboardSample) {
+      return [
+        'Sample',
+        element.startTime,
+        layer,
+        `"${element.filePath}"`,
+        element.volume,
+      ].join(',');
     }
-    else if (element instanceof StoryboardSample) {
-      const sample = element as StoryboardSample;
 
-      encoded.push('Sample');
-      encoded.push(`${sample.startTime}`);
-      encoded.push(`${sample.layer}`);
-      encoded.push(`'${sample.filePath}'`);
-      encoded.push(`${sample.volume}`);
+    if (element instanceof StoryboardVideo) {
+      return [
+        'Video',
+        element.startTime,
+        element.filePath,
+        '0,0', // Offset of the video.
+      ].join(',');
+    }
+
+    return '';
+  }
+
+  /**
+   * Encodes storyboard compounded command.
+   * @param compound A storyboard compounded command.
+   * @param depth Indentation level of this timeline group.
+   * @returns Encoded storyboard compounded command.
+   */
+  static encodeCompound(compound: CommandTimelineGroup, depth = 1): string {
+    const indentation = ''.padStart(depth, ' ');
+
+    if (compound instanceof CommandLoop) {
+      return indentation + [
+        compound.type,
+        compound.loopStartTime,
+        compound.totalIterations,
+      ].join(',');
+    }
+
+    if (compound instanceof CommandTrigger) {
+      return indentation + [
+        compound.type,
+        compound.triggerName,
+        compound.triggerStartTime,
+        compound.endTime,
+        compound.groupNumber,
+      ].join(',');
+    }
+
+    return '';
+  }
+
+  /**
+   * Encodes a storyboard timeline group.
+   * @param timelineGroup A storyboard timeline group.
+   * @param depth Indentation level of this timeline group.
+   * @returns Encoded storyboard timeline group.
+   */
+  static encodeTimelineGroup(timelineGroup: CommandTimelineGroup, depth = 1): string {
+    const indentation = ''.padStart(depth, ' ');
+    const encoded: string[] = [];
+
+    const commands = timelineGroup.commands;
+
+    let shouldSkip = false;
+
+    for (let i = 0; i < commands.length; ++i) {
+      if (shouldSkip) {
+        shouldSkip = false;
+        continue;
+      }
+
+      /**
+       * We need at least 2 commands for move command.
+       */
+      if (i < commands.length - 1) {
+        const current = commands[i];
+        const next = commands[i + 1];
+
+        const currentMoveX = current.type === CommandType.MovementX;
+        const nextMoveY = next.type === CommandType.MovementY;
+
+        if (currentMoveX && nextMoveY && current.equals(next)) {
+          encoded.push(indentation + this.encodeMoveCommand(current, next));
+
+          /**
+           * Skip next command because we already encoded it.
+           */
+          shouldSkip = true;
+
+          continue;
+        }
+      }
+
+      /**
+       * This can be either a movement command or a completely different command.
+       */
+      encoded.push(indentation + this.encodeCommand(commands[i]));
+    }
+
+    return encoded.join('\n');
+  }
+
+  /**
+   * Combines two split X & Y commands into one single move command. 
+   * @param moveX Command from 'x' timeline.
+   * @param moveY Command from 'y' timeline.
+   * @returns Encoded move command.
+   */
+  static encodeMoveCommand(moveX: Command<number>, moveY: Command<number>): string {
+    const encoded = [
+      CommandType.Movement,
+      moveX.easing,
+      moveX.startTime,
+      moveX.startTime !== moveX.endTime ? moveX.endTime : '',
+      moveX.startValue,
+      moveY.startValue,
+    ];
+
+    const equalX = moveX.startValue === moveX.endValue;
+    const equalY = moveY.startValue === moveY.endValue;
+
+    if (!equalX || !equalY) {
+      encoded.push(`${moveX.endValue},${moveY.endValue}`);
     }
 
     return encoded.join(',');
   }
 
   /**
-   * Encodes storyboard compound.
-   * @param compound A storyboard compound.
-   * @returns Encoded storyboard compound.
-   */
-  static encodeCompound(compound: Compound): string {
-    const encoded: string[] = [];
-
-    if (compound instanceof CommandLoop) {
-      const loop = compound as CommandLoop;
-
-      encoded.push(`${compound.type}`);
-      encoded.push(`${loop.startTime}`);
-      encoded.push(`${loop.loopCount}`);
-    }
-    else if (compound instanceof CommandTrigger) {
-      const trigger = compound as CommandTrigger;
-
-      encoded.push(`${compound.type}`);
-      encoded.push(`${trigger.triggerName}`);
-
-      if (trigger.endTime !== 0) {
-        encoded.push(`${trigger.startTime}`);
-        encoded.push(`${trigger.endTime}`);
-      }
-
-      const group = trigger.groupNumber !== 0 ? -trigger.groupNumber : '';
-
-      encoded[encoded.length - 1] += group;
-    }
-
-    return ' ' + encoded.join(',');
-  }
-
-  /**
    * Encodes storyboard command.
    * @param command A storyboard command.
-   * @param nested Is it nested command?
    * @returns Encoded storyboard command.
    */
-  static encodeCommand(command: Command, nested = false): string {
-    const encoded: string[] = [];
+  static encodeCommand(command: Command): string {
+    const encoded = [
+      command.type,
+      command.easing,
+      command.startTime,
+      command.startTime !== command.endTime ? command.endTime : '',
+      this._encodeCommandParams(command),
+    ];
 
-    const indentation = nested ? '  ' : ' ';
-
-    encoded.push(command.acronym);
-    encoded.push(`${command.easing}`);
-    encoded.push(`${command.startTime}`);
-
-    const endTime = command.startTime !== command.endTime ? command.endTime : '';
-
-    encoded.push(`${endTime}`);
-    encoded.push(EventsEncoder.encodeCommandArguments(command));
-
-    return indentation + encoded.join(',');
+    return encoded.join(',');
   }
 
-  /**
-   * Encodes all arguments of a command.
-   * @param command A storyboard command.
-   * @returns Encoded command arguments.
-   */
-  static encodeCommandArguments(command: Command): string {
-    switch (command.type) {
-      case CommandType.Scale:
-      case CommandType.VectorScale: {
-        const scale = command as VectorScaleCommand;
-
-        if (scale.startScale.equals(scale.endScale)) {
-          return scale.type === CommandType.Scale
-            ? `${scale.startScale.x}`
-            : `${scale.startScale}`;
-        }
-
-        return scale.type === CommandType.Scale
-          ? `${scale.startScale.x},${scale.endScale.x}`
-          : `${scale.startScale},${scale.endScale}`;
-      }
-
-      case CommandType.Movement:
-      case CommandType.MovementX:
-      case CommandType.MovementY: {
-        const move = command as MoveCommand;
-
-        if (move.type === CommandType.Movement) {
-          return !move.startPosition.equals(move.endPosition)
-            ? `${move.startPosition},${move.endPosition}`
-            : `${move.startPosition}`;
-        }
-
-        return (move.startX !== move.endX || move.startY !== move.endY)
-          ? `${move.startX || move.startY},${move.endX || move.endY}`
-          : `${move.startX || move.startY}`;
-      }
-
-      case CommandType.Fade: {
-        const fade = command as FadeCommand;
-
-        return fade.startOpacity !== fade.endOpacity
-          ? `${fade.startOpacity},${fade.endOpacity}`
-          : `${fade.startOpacity}`;
-      }
-
-      case CommandType.Rotation: {
-        const rotation = command as RotateCommand;
-
-        return rotation.startRotate !== rotation.endRotate
-          ? `${rotation.startRotate},${rotation.endRotate}`
-          : `${rotation.startRotate}`;
-      }
-
-      case CommandType.Color: {
-        const color = command as ColorCommand;
-
-        return !color.startColor.equals(color.endColor)
-          ? `${color.startColor},${color.endColor}`
-          : `${color.startColor}`;
-      }
-
-      case CommandType.Parameter: {
-        const parameter = command as ParameterCommand;
-
-        switch (parameter.parameter) {
-          case ParameterType.HorizontalFlip:
-            return 'H';
-
-          case ParameterType.VerticalFlip:
-            return 'V';
-
-          case ParameterType.BlendingMode:
-            return 'A';
-        }
-      }
+  private static _encodeCommandParams(command: Command): string {
+    if (command.type === CommandType.Parameter) {
+      return command.parameter;
     }
 
-    return '';
+    if (command.type === CommandType.Color) {
+      const toRGB = (c: Color4) => `${c.red},${c.green},${c.blue}`;
+
+      const colorCommand = command as Command<Color4>;
+      const start = colorCommand.startValue;
+      const end = colorCommand.endValue;
+
+      return this._areValuesEqual(command)
+        ? toRGB(start) : toRGB(start) + ',' + toRGB(end);
+    }
+
+    return this._areValuesEqual(command)
+      ? `${command.startValue}`
+      : `${command.startValue},${command.endValue}`;
+  }
+
+  private static _areValuesEqual(command: Command): boolean {
+    if (command.type === CommandType.VectorScale) {
+      const vectorCommand = command as Command<Vector2>;
+
+      return vectorCommand.startValue.equals(vectorCommand.endValue);
+    }
+
+    if (command.type === CommandType.Color) {
+      const colorCommand = command as Command<Color4>;
+
+      return colorCommand.startValue.equals(colorCommand.endValue);
+    }
+
+    return command.startValue === command.endValue;
   }
 }
