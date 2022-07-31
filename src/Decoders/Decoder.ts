@@ -79,7 +79,10 @@ export abstract class Decoder<T> {
   }
 
   protected _shouldSkipLine(line: string): boolean {
-    return typeof line !== 'string' || !line || line.startsWith('//');
+    return typeof line !== 'string'
+      || !line
+      || line === '\r'
+      || line.startsWith('//');
   }
 
   protected _stripComments(line: string): string {
