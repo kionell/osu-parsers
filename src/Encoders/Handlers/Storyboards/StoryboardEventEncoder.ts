@@ -210,7 +210,7 @@ export abstract class StoryboardEventEncoder {
         compound.type,
         compound.triggerName,
         compound.triggerStartTime,
-        compound.endTime,
+        compound.triggerEndTime,
         compound.groupNumber,
       ].join(',');
     }
