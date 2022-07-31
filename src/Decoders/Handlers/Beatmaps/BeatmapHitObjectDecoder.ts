@@ -336,7 +336,7 @@ export abstract class BeatmapHitObjectDecoder {
    * Converts a given point list into a set of path segments.
    * @param points The point list.
    * @param endPoint Any extra endpoint to consider as part of the points.
-   * @param isFisrt Whether this is the first segment in the set. 
+   * @param isFirst Whether this is the first segment in the set. 
    * If true the first of the returned segments will contain a zero point.
    * @param offset The positional offset to apply to the control points.
    * @param fileFormat Beatmap file format.
