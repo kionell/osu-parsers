@@ -59,6 +59,6 @@ export class BeatmapEncoder {
       BeatmapHitObjectEncoder.encodeHitObjects(beatmap),
     ];
 
-    return encoded.join('\n\n');
+    return encoded.join('\n\n') + '\n';
   }
 }

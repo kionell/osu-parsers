@@ -43,6 +43,6 @@ export class StoryboardEncoder {
 
     encoded.push(StoryboardEventEncoder.encodeEventSection(storyboard));
 
-    return encoded.join('\n\n');
+    return encoded.join('\n\n') + '\n';
   }
 }
