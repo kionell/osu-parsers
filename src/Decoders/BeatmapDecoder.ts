@@ -61,7 +61,7 @@ export class BeatmapDecoder extends Decoder<Beatmap> {
   decodeFromString(str: string, parseSb = true): Beatmap {
     str = typeof str !== 'string' ? String(str) : str;
 
-    return this.decodeFromLines(str.split('\n'), parseSb);
+    return this.decodeFromLines(str.split(/\r?\n/), parseSb);
   }
 
   /**
