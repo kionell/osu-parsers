@@ -138,7 +138,12 @@ export abstract class StoryboardEventDecoder {
         const path = data[3].replace(/"/g, '');
         const volume = data.length > 4 ? Parsing.parseInt(data[4]) : 100;
 
-        layer.elements.push(new StoryboardSample(path, time, volume));
+        const sample = new StoryboardSample(path, time, volume);
+
+        layer.elements.push(sample);
+
+        // Add this element to the samples layer for compatibility.
+        storyboard.getLayerByType(LayerType.Samples).elements.push(sample);
       }
     }
   }
