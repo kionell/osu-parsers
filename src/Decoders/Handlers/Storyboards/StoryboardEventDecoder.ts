@@ -44,6 +44,11 @@ export abstract class StoryboardEventDecoder {
 
     if (depth > 0) line = line.substring(depth);
 
+    // Exit from a loop or a trigger and add commands to the element.
+    if (depth < 2 && this._storyboardSprite) {
+      this._timelineGroup = this._storyboardSprite.timelineGroup;
+    }
+
     switch (depth) {
       // Storyboard element
       case 0: return this._handleElement(line, storyboard);
@@ -156,8 +161,6 @@ export abstract class StoryboardEventDecoder {
     const data = line.split(',');
 
     const compoundType = data[0] as CompoundType;
-
-    this._timelineGroup = this._storyboardSprite.timelineGroup;
 
     switch (compoundType) {
       case CompoundType.Trigger: {
