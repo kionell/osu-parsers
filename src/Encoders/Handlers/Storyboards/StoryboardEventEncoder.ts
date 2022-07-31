@@ -113,9 +113,8 @@ export abstract class StoryboardEventEncoder {
       const elementWithCommands = element as IStoryboardElement & IHasCommands;
 
       elementWithCommands?.loops?.forEach((loop) => {
-        encoded.push(this.encodeCompound(loop));
-
         if (loop.commands.length > 0) {
+          encoded.push(this.encodeCompound(loop));
           encoded.push(this.encodeTimelineGroup(loop, 2));
         }
       });
@@ -125,9 +124,8 @@ export abstract class StoryboardEventEncoder {
       }
 
       elementWithCommands?.triggers?.forEach((trigger) => {
-        encoded.push(this.encodeCompound(trigger));
-
         if (trigger.commands.length > 0) {
+          encoded.push(this.encodeCompound(trigger));
           encoded.push(this.encodeTimelineGroup(trigger, 2));
         }
       });
