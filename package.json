@@ -55,6 +55,6 @@
   },
   "dependencies": {
     "lzma-native": "^8.0.6",
-    "osu-classes": "^0.9.1"
+    "osu-classes": "^0.10.0"
   }
 }
