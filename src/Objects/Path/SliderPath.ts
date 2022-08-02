@@ -297,7 +297,7 @@ export class SliderPath {
       this._cumulativeLength.push(this._calculatedLength);
     }
 
-    if (this._calculatedLength !== this.expectedDistance) {
+    if (this.expectedDistance && this._calculatedLength !== this.expectedDistance) {
       /**
        * In osu-stable, if the last two control points 
        * of a slider are equal, extension is not performed.
