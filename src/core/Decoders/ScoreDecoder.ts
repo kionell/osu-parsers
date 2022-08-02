@@ -1,4 +1,4 @@
-import { readFileSync } from 'fs';
+import { readFileSync } from '../Utils/FileSystem';
 
 import {
   Score,

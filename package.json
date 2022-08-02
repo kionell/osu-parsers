@@ -3,8 +3,14 @@
   "version": "2.3.0",
   "description": "A bundle of parsers for osu! file formats based on the osu!lazer source code.",
   "exports": {
-    "import": "./lib/index.mjs",
-    "require": "./lib/index.cjs"
+    "node": {
+      "import": "./lib/node.mjs",
+      "require": "./lib/node.cjs"
+    },
+    "browser": {
+      "import": "./lib/browser.mjs",
+      "require": "./lib/browser.cjs"
+    }
   },
   "types": "./lib/index.d.ts",
   "scripts": {

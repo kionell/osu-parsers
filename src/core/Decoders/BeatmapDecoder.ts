@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, statSync } from 'fs';
+import { existsSync, readFileSync, statSync } from '../Utils/FileSystem';
 import { Beatmap } from 'osu-classes';
 
 import {
