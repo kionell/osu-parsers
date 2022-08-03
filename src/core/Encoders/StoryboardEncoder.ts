@@ -1,5 +1,4 @@
-import { mkdirSync, writeFileSync } from '../Utils/FileSystem';
-import { dirname } from 'path';
+import { mkdirSync, writeFileSync, dirname } from '../Utils/FileSystem';
 import { Storyboard } from 'osu-classes';
 
 import {

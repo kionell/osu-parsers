@@ -1,4 +1,4 @@
-import { LZMA } from 'lzma-native';
+import { LZMA } from '../../../Utils/LZMA';
 import { ReplayFrame, LifeBarFrame } from 'osu-classes';
 import { Parsing } from '../../../Utils';
 
