@@ -81,6 +81,8 @@ export abstract class LegacyScoreExtensions {
     if (this.rulesetId === 3) {
       this.statistics.good = value;
     }
+
+    this._legacyCountKatu = value;
   }
 
   /**
