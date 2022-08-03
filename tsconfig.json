@@ -4,7 +4,7 @@
     "module": "es6",
     "moduleResolution": "node",
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDirs": ["./src/core", "./src/node"],
     "declaration": false,
     "sourceMap": false,
     "strict": true,

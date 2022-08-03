@@ -1,7 +1,7 @@
-import typescript from '@rollup/plugin-typescript';
-import externals from 'rollup-plugin-node-externals';
-import commonjs from '@rollup/plugin-commonjs';
-import dts from 'rollup-plugin-dts';
+import typescript from "@rollup/plugin-typescript";
+import externals from "rollup-plugin-node-externals";
+import commonjs from "@rollup/plugin-commonjs";
+import dts from "rollup-plugin-dts";
 
 export default [
   {
@@ -12,11 +12,11 @@ export default [
       }),
       commonjs(),
     ],
-    input: './src/index.ts',
+    input: "./src/core/index.ts",
     output: [
       {
-        file: './lib/index.cjs',
-        format: 'cjs',
+        file: "./lib/node.cjs",
+        format: "cjs",
       },
     ],
   },
@@ -27,11 +27,46 @@ export default [
         deps: true,
       }),
     ],
-    input: './src/index.ts',
+    input: "./src/core/index.ts",
     output: [
       {
-        file: './lib/index.mjs',
-        format: 'es',
+        file: "./lib/node.mjs",
+        format: "es",
+      },
+    ],
+  },
+  {
+    plugins: [
+      typescript({
+        rootDirs: ["./src/core", "./src/browser"],
+      }),
+      externals({
+        deps: true,
+      }),
+      commonjs(),
+    ],
+    input: "./src/core/index.ts",
+    output: [
+      {
+        file: "./lib/browser.cjs",
+        format: "cjs",
+      },
+    ],
+  },
+  {
+    plugins: [
+      typescript({
+        rootDirs: ["./src/core", "./src/browser"],
+      }),
+      externals({
+        deps: true,
+      }),
+    ],
+    input: "./src/core/index.ts",
+    output: [
+      {
+        file: "./lib/browser.mjs",
+        format: "es",
       },
     ],
   },
@@ -47,10 +82,10 @@ export default [
         deps: true,
       }),
     ],
-    input: './src/index.ts',
+    input: "./src/core/index.ts",
     output: {
-      file: './lib/index.d.ts',
-      format: 'es',
+      file: "./lib/index.d.ts",
+      format: "es",
     },
   },
-]
+];

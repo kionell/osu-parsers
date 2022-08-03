@@ -1,4 +1,4 @@
-import { mkdirSync, writeFileSync } from 'fs';
+import { mkdirSync, writeFileSync } from '../Utils/FileSystem';
 import { dirname } from 'path';
 import { IBeatmap } from 'osu-classes';
 
