@@ -60,7 +60,7 @@
   },
   "dependencies": {
     "buffer": "^6.0.3",
-    "lzma-web": "^3.0.1",
+    "lzma-js-simple": "^1.1.0",
     "osu-classes": "^0.10.0"
   }
 }
