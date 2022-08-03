@@ -1,4 +1,4 @@
-import { Color4 } from 'osu-classes';
+import { Color4, Colour } from 'osu-classes';
 import { IHasBeatmapColors } from '../../../Interfaces';
 import { Parsing } from '../../../Utils';
 
@@ -25,17 +25,50 @@ export abstract class BeatmapColorDecoder {
 
     const color = new Color4(split[0], split[1], split[2], split[3]);
 
-    switch (key) {
-      case 'SliderTrackOverride':
-        output.colors.sliderTrackColor = color;
-        break;
+    this.addColor(color, output, key);
 
-      case 'SliderBorder':
-        output.colors.sliderBorderColor = color;
+    if (output.colours) {
+      const colour = new Colour(split[0], split[1], split[2]);
+
+      this.addLegacyColour(colour, output, key);
+    }
+  }
+
+  static addColor(color: Color4, output: IHasBeatmapColors, key: string): void {
+    if (key === 'SliderTrackOverride') {
+      output.colors.sliderTrackColor = color;
+
+      return;
+    }
+
+    if (key === 'SliderBorder') {
+      output.colors.sliderBorderColor = color;
+
+      return;
     }
 
     if (key.startsWith('Combo')) {
       output.colors.comboColors.push(color);
+    }
+  }
+
+  static addLegacyColour(colour: Colour, output: IHasBeatmapColors, key: string): void {
+    if (!output.colours) return;
+
+    if (key === 'SliderTrackOverride') {
+      output.colours.sliderTrackColor = colour;
+
+      return;
+    }
+
+    if (key === 'SliderBorder') {
+      output.colours.sliderBorderColor = colour;
+
+      return;
+    }
+
+    if (key.startsWith('Combo')) {
+      output.colours.comboColours.push(colour);
     }
   }
 }
