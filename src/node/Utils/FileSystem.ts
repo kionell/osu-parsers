@@ -4,4 +4,6 @@ export {
   statSync,
   mkdirSync,
   writeFileSync,
-} from 'fs';
+} from "fs";
+
+export { dirname } from "path";
