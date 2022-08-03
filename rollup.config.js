@@ -42,6 +42,7 @@ export default [
       }),
       externals({
         deps: true,
+        include: 'buffer/',
       }),
       commonjs(),
     ],
