@@ -7,10 +7,7 @@
       "import": "./lib/node.mjs",
       "require": "./lib/node.cjs"
     },
-    "browser": {
-      "import": "./lib/browser.mjs",
-      "require": "./lib/browser.cjs"
-    }
+    "import": "./lib/browser.mjs"
   },
   "types": "./lib/index.d.ts",
   "scripts": {
