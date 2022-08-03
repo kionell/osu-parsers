@@ -48,23 +48,6 @@ export default [
     input: "./src/core/index.ts",
     output: [
       {
-        file: "./lib/browser.cjs",
-        format: "cjs",
-      },
-    ],
-  },
-  {
-    plugins: [
-      typescript({
-        rootDirs: ["./src/core", "./src/browser"],
-      }),
-      externals({
-        deps: true,
-      }),
-    ],
-    input: "./src/core/index.ts",
-    output: [
-      {
         file: "./lib/browser.mjs",
         format: "es",
       },
