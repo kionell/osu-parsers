@@ -42,56 +42,61 @@ export class ScoreDecoder {
     const reader = new SerializationReader(buffer);
     const scoreInfo = new ScoreInfo();
 
-    scoreInfo.rulesetId = reader.readByte();
-
-    const gameVersion = reader.readInteger();
-
-    scoreInfo.beatmapHashMD5 = reader.readString();
-    scoreInfo.username = reader.readString();
-
-    const replayHashMD5 = reader.readString();
-
-    scoreInfo.count300 = reader.readShort();
-    scoreInfo.count100 = reader.readShort();
-    scoreInfo.count50 = reader.readShort();
-    scoreInfo.countGeki = reader.readShort();
-    scoreInfo.countKatu = reader.readShort();
-    scoreInfo.countMiss = reader.readShort();
-
-    scoreInfo.totalScore = reader.readInteger();
-    scoreInfo.maxCombo = reader.readShort();
-
-    scoreInfo.perfect = !!reader.readByte();
-
-    scoreInfo.rawMods = reader.readInteger();
-
-    /**
-     * Life frames (HP graph).
-     */
-    const lifeData = reader.readString();
-
-    scoreInfo.date = reader.readDate();
-
-    const replayLength = reader.readInteger();
-    const compressedBytes = reader.readBytes(replayLength);
-
     let replay = null;
 
-    if (parseReplay && replayLength > 0) {
-      replay = new Replay();
+    try {
+      scoreInfo.rulesetId = reader.readByte();
 
-      const replayData = await LZMA.decompress(compressedBytes);
+      const gameVersion = reader.readInteger();
 
-      replay.mode = scoreInfo.rulesetId;
-      replay.gameVersion = gameVersion;
-      replay.hashMD5 = replayHashMD5;
-      replay.frames = ReplayDecoder.decodeReplayFrames(replayData);
-      replay.lifeBar = ReplayDecoder.decodeLifeBar(lifeData);
+      scoreInfo.beatmapHashMD5 = reader.readString();
+      scoreInfo.username = reader.readString();
+
+      const replayHashMD5 = reader.readString();
+
+      scoreInfo.count300 = reader.readShort();
+      scoreInfo.count100 = reader.readShort();
+      scoreInfo.count50 = reader.readShort();
+      scoreInfo.countGeki = reader.readShort();
+      scoreInfo.countKatu = reader.readShort();
+      scoreInfo.countMiss = reader.readShort();
+
+      scoreInfo.totalScore = reader.readInteger();
+      scoreInfo.maxCombo = reader.readShort();
+
+      scoreInfo.perfect = !!reader.readByte();
+
+      scoreInfo.rawMods = reader.readInteger();
+
+      /**
+       * Life frames (HP graph).
+       */
+      const lifeData = reader.readString();
+
+      scoreInfo.date = reader.readDate();
+
+      const replayLength = reader.readInteger();
+      const compressedBytes = reader.readBytes(replayLength);
+
+      if (parseReplay && replayLength > 0) {
+        replay = new Replay();
+
+        const replayData = await LZMA.decompress(compressedBytes);
+
+        replay.mode = scoreInfo.rulesetId;
+        replay.gameVersion = gameVersion;
+        replay.hashMD5 = replayHashMD5;
+        replay.frames = ReplayDecoder.decodeReplayFrames(replayData);
+        replay.lifeBar = ReplayDecoder.decodeLifeBar(lifeData);
+      }
+
+      scoreInfo.id = this._parseScoreId(gameVersion, reader);
+
+      return new Score(scoreInfo, replay);
     }
-
-    scoreInfo.id = this._parseScoreId(gameVersion, reader);
-
-    return new Score(scoreInfo, replay);
+    catch {
+      return new Score(scoreInfo, replay);
+    }
   }
 
   private _parseScoreId(version: number, reader: SerializationReader): number {
