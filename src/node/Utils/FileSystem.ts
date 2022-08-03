@@ -6,6 +6,4 @@ export {
   writeFileSync,
 } from 'fs';
 
-export {
-  dirname,
-} from 'path';
+export { dirname } from 'path';
