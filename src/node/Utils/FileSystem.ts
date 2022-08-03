@@ -5,3 +5,7 @@ export {
   mkdirSync,
   writeFileSync,
 } from 'fs';
+
+export {
+  dirname,
+} from 'path';
