@@ -19,7 +19,7 @@ export class SerializationWriter {
 
   writeByte(value: number): number {
     const buffer = Buffer.alloc(1);
-    const bytesWritten = buffer.writeUint8(value);
+    const bytesWritten = buffer.writeUInt8(value, 0);
 
     return this._update(bytesWritten, buffer);
   }
@@ -33,23 +33,27 @@ export class SerializationWriter {
 
   writeShort(value: number): number {
     const buffer = Buffer.alloc(2);
-    const bytesWritten = buffer.writeUInt16LE(value);
+    const bytesWritten = buffer.writeUInt16LE(value, 0);
 
     return this._update(bytesWritten, buffer);
   }
 
   writeInteger(value: number): number {
     const buffer = Buffer.alloc(4);
-    const bytesWritten = buffer.writeInt32LE(value);
+    const bytesWritten = buffer.writeInt32LE(value, 0);
 
     return this._update(bytesWritten, buffer);
   }
 
   writeLong(value: bigint): number {
     const buffer = Buffer.alloc(8);
-    const bytesWritten = buffer.writeBigInt64LE(value);
 
-    return this._update(bytesWritten, buffer);
+    /**
+     * Are the types of first arg and return value swapped or what?
+     */
+    const bytesWritten = buffer.writeBigInt64LE(value as any, 0);
+
+    return this._update(+bytesWritten, buffer);
   }
 
   writeDate(date: Date): number {
