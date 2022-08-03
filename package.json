@@ -46,7 +46,6 @@
     "@rollup/plugin-commonjs": "^21.0.1",
     "@rollup/plugin-typescript": "^8.2.1",
     "@types/jest": "^26.0.22",
-    "@types/lzma-native": "^4.0.1",
     "@types/node": "^14.18.12",
     "@typescript-eslint/eslint-plugin": "^4.20.0",
     "@typescript-eslint/parser": "^4.21.0",
@@ -60,7 +59,8 @@
     "typescript": "^4.1.5"
   },
   "dependencies": {
-    "lzma-native": "^8.0.6",
+    "buffer": "^6.0.3",
+    "lzma-web": "^3.0.1",
     "osu-classes": "^0.10.0"
   }
 }
