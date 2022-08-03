@@ -1,5 +1,3 @@
-import { readFileSync } from '../Utils/FileSystem';
-
 import {
   Score,
   ScoreInfo,
@@ -10,6 +8,9 @@ import {
   ReplayDecoder,
   SerializationReader,
 } from './Handlers';
+
+import { readFileSync } from '../Utils/FileSystem';
+import { LZMA } from '../Utils/LZMA';
 
 /**
  * Score decoder.
@@ -79,7 +80,7 @@ export class ScoreDecoder {
     if (parseReplay && replayLength > 0) {
       replay = new Replay();
 
-      const replayData = await ReplayDecoder.decompressReplayFrames(compressedBytes);
+      const replayData = await LZMA.decompress(compressedBytes);
 
       replay.mode = scoreInfo.rulesetId;
       replay.gameVersion = gameVersion;

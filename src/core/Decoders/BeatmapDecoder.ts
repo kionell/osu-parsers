@@ -1,4 +1,3 @@
-import { existsSync, readFileSync, statSync } from '../Utils/FileSystem';
 import { Beatmap } from 'osu-classes';
 
 import {
@@ -13,7 +12,8 @@ import {
 
 import { Decoder } from './Decoder';
 import { StoryboardDecoder } from './StoryboardDecoder';
-import { Parsing } from '../Utils';
+import { Parsing } from '../Utils/Parsing';
+import { existsSync, readFileSync, statSync } from '../Utils/FileSystem';
 
 /**
  * Beatmap decoder.

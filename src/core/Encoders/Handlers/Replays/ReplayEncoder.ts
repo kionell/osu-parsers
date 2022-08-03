@@ -1,20 +1,6 @@
-import { LZMA } from 'lzma-native';
 import { ILifeBarFrame, IReplayFrame } from 'osu-classes';
 
 export abstract class ReplayEncoder {
-  static async compressReplayFrames(data: string): Promise<Buffer> {
-    const lzma = LZMA();
-
-    return new Promise((res, rej) => {
-      try {
-        lzma.compress(data, 6, (result) => res(result));
-      }
-      catch (err) {
-        rej(err);
-      }
-    });
-  }
-
   static encodeLifeBar(frames: ILifeBarFrame[]): string {
     if (!frames.length) return '';
 
