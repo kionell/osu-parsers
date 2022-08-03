@@ -17,7 +17,7 @@ export abstract class BeatmapColorEncoder {
       return '';
     }
 
-    const encoded: string[] = ['[Colors]'];
+    const encoded: string[] = ['[Colours]'];
 
     colors.comboColors.forEach((color, i) => {
       encoded.push(`Combo${i + 1}:${color}`);
