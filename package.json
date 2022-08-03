@@ -60,6 +60,7 @@
     "typescript": "^4.1.5"
   },
   "dependencies": {
+    "lzma-js-simple": "^1.1.0",
     "lzma-native": "^8.0.6",
     "osu-classes": "^0.10.0"
   }

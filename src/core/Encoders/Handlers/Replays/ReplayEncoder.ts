@@ -1,4 +1,4 @@
-import { LZMA } from 'lzma-native';
+import { LZMA } from '../../../Utils/LZMA';
 import { ILifeBarFrame, IReplayFrame } from 'osu-classes';
 
 export abstract class ReplayEncoder {
