@@ -1,6 +1,5 @@
-import { mkdirSync, writeFileSync } from '../Utils/FileSystem';
-import { dirname } from 'path';
 import { Storyboard } from 'osu-classes';
+import { mkdirSync, writeFileSync, dirname } from '../Utils/FileSystem';
 
 import {
   StoryboardVariableEncoder,

@@ -20,7 +20,7 @@ import {
 } from '../../../Objects';
 
 import { BeatmapEncoder } from '../../../Encoders';
-import { Parsing } from '../../../Utils';
+import { Parsing } from '../../../Utils/Parsing';
 
 /**
  * A decoder for beatmap hit objects.

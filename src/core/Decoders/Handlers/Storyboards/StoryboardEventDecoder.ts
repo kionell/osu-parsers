@@ -18,7 +18,7 @@ import {
   BlendingParameters,
 } from 'osu-classes';
 
-import { Parsing } from '../../../Utils';
+import { Parsing } from '../../../Utils/Parsing';
 
 /**
  * A decoder for storyboard elements, compounds and commands.

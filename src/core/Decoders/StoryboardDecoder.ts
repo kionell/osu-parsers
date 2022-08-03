@@ -1,7 +1,7 @@
-import { existsSync, readFileSync } from '../Utils/FileSystem';
 import { Storyboard } from 'osu-classes';
 import { Decoder } from './Decoder';
-import { Parsing } from '../Utils';
+import { Parsing } from '../Utils/Parsing';
+import { existsSync, readFileSync } from '../Utils/FileSystem';
 
 import {
   StoryboardGeneralDecoder,

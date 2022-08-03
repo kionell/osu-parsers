@@ -1,6 +1,6 @@
 import { Color4, Colour } from 'osu-classes';
 import { IHasBeatmapColors } from '../../../Interfaces';
-import { Parsing } from '../../../Utils';
+import { Parsing } from '../../../Utils/Parsing';
 
 /**
  * A decoder for beatmap colors.

@@ -1,6 +1,6 @@
 import { Beatmap, BeatmapBreakEvent, EventType } from 'osu-classes';
 import { StoryboardEventDecoder } from '../Storyboards/StoryboardEventDecoder';
-import { Parsing } from '../../../Utils';
+import { Parsing } from '../../../Utils/Parsing';
 
 /**
  * A decoder for beatmap events.

@@ -1,7 +1,6 @@
-import { mkdirSync, writeFileSync } from '../Utils/FileSystem';
-import { dirname } from 'path';
 import { IScore } from 'osu-classes';
 import { ReplayEncoder, SerializationWriter } from './Handlers';
+import { mkdirSync, writeFileSync, dirname } from '../Utils/FileSystem';
 
 /**
  * Score encoder.

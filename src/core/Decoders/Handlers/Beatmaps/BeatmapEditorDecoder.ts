@@ -1,5 +1,5 @@
 import { Beatmap } from 'osu-classes';
-import { Parsing } from '../../../Utils';
+import { Parsing } from '../../../Utils/Parsing';
 
 /**
  * A decoder for beatmap editor settings.
