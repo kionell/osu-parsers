@@ -19,45 +19,89 @@ export class StoryboardDecoder extends Decoder<Storyboard> {
   private _variables: Record<string, string> = {};
 
   /**
-   * Performs storyboard decoding from the specified .osb file.
-   * @param path Path to the .osb file.
+   * Performs storyboard decoding from the specified `.osu` or `.osb` file.
+   * If two paths were specified, storyboard decoder will try to combine storyboards.
+   * 
+   * NOTE: Commands from the `.osb` file take precedence over those 
+   * from the `.osu` file within the layers, as if the commands 
+   * from the `.osb` were appended to the end of the `.osu` commands.
+   * @param firstPath Path to the main storyboard (`.osu` or `.osb` file).
+   * @param secondPath Path to the secondary storyboard (`.osb` file).
    * @returns Decoded storyboard.
    */
-  decodeFromPath(path: string): Storyboard {
-    if (!path.endsWith('.osb') && !path.endsWith('.osu')) {
+  decodeFromPath(firstPath: string, secondPath?: string): Storyboard {
+    if (!firstPath.endsWith('.osb') && !firstPath.endsWith('.osu')) {
       throw new Error('Wrong file format! Only .osb and .osu files are supported!');
     }
 
-    if (!existsSync(path)) {
+    if (!existsSync(firstPath)) {
       throw new Error('File doesn\'t exists!');
     }
 
-    const str = readFileSync(path).toString();
+    if (typeof secondPath === 'string') {
+      if (!firstPath.endsWith('.osb')) {
+        throw new Error('Wrong file format! Only .osb files are supported as a second argument!');
+      }
 
-    return this.decodeFromString(str);
+      if (!existsSync(firstPath)) {
+        throw new Error('File doesn\'t exists!');
+      }
+    }
+
+    const firstString = readFileSync(firstPath).toString();
+    const secondString = typeof secondPath === 'string'
+      ? readFileSync(secondPath).toString()
+      : undefined;
+
+    return this.decodeFromString(firstString, secondString);
   }
 
   /**
    * Performs storyboard decoding from a string.
-   * @param str String with storyboard data.
+   * If two strings were specified, storyboard decoder will try to combine storyboards.
+   * 
+   * NOTE: Commands from the `.osb` file take precedence over those 
+   * from the `.osu` file within the layers, as if the commands 
+   * from the `.osb` were appended to the end of the `.osu` commands.
+   * @param firstString A string with the main storyboard data (from `.osu` or `.osb` file).
+   * @param secondString A string with the secondary storyboard data (from `.osb` file).
    * @returns Decoded storyboard.
    */
-  decodeFromString(str: string): Storyboard {
-    str = typeof str !== 'string' ? String(str) : str;
+  decodeFromString(firstString: string, secondString?: string): Storyboard {
+    firstString = typeof firstString !== 'string'
+      ? String(firstString)
+      : firstString;
 
-    return this.decodeFromLines(str.split(/\r?\n/));
+    secondString = typeof secondString !== 'string'
+      ? (typeof secondString === 'undefined' ? undefined : String(secondString))
+      : secondString;
+
+    const firstData = firstString.split(/\r?\n/);
+    const secondData = secondString?.split(/\r?\n/);
+
+    return this.decodeFromLines(firstData, secondData);
   }
 
   /**
    * Performs storyboard decoding from a string array.
-   * @param data Array of split lines.
+   * If two string arrays were specified, storyboard decoder will try to combine storyboards.
+   * 
+   * NOTE: Commands from the `.osb` file take precedence over those 
+   * from the `.osu` file within the layers, as if the commands 
+   * from the `.osb` were appended to the end of the `.osu` commands.
+   * @param firstData A string array with the main storyboard data (from `.osu` or `.osb` file).
+   * @param secondData A string array with the secondary storyboard data (from `.osb` file).
    * @returns Decoded storyboard.
    */
-  decodeFromLines(data: string[]): Storyboard {
+  decodeFromLines(firstData: string[], secondData?: string[]): Storyboard {
     const storyboard = new Storyboard();
 
     this._reset();
-    this._lines = this._getLines(data);
+
+    this._lines = [
+      ...this._getLines(firstData),
+      ...(secondData ? this._getLines(secondData) : []),
+    ];
 
     // Parse storyboard lines.
     for (let i = 0; i < this._lines.length; ++i) {
