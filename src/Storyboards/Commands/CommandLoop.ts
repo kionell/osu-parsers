@@ -50,6 +50,6 @@ export class CommandLoop extends CommandTimelineGroup {
    * The end time of the command loop.
    */
   get endTime(): number {
-    return this.startTime + this.commandsDuration * this.loopCount;
+    return this.startTime + this.commandsDuration * this.totalIterations;
   }
 }
