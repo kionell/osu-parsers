@@ -10,6 +10,7 @@ A bundle of parsers for osu! file formats based on the osu!lazer source code.
 - Based on the osu!lazer source code.
 - Can be used for parsing beatmaps from any osu! game modes.
 - Supports beatmap conversion between different game modes.
+- Supports browsers.
 
 ## Installation
 
@@ -50,10 +51,10 @@ console.log(beatmap) // Beatmap object.
 
 ## Storyboard decoding
 
-Storyboard decoder is used to read .osb files and convert them to the Storyboard objects.
+Storyboard decoder is used to read both .osu and .osb files and convert them to the Storyboard objects.
 This decoder is also fully synchronous with no async support at all.
 
-As in beatmap decoder, there are 3 ways to decode your .osb files:
+As in beatmap decoder, there are 3 ways to decode your .osu and .osb files:
 - via file path
 - via string
 - via array of split lines
@@ -75,7 +76,7 @@ console.log(storyboard); // Storyboard object.
 
 Score decoder is used to decode .osr files and convert them to the Score objects.
 Score object contains score information and replay data.
-This decoder is based on external lzma library and works asynchronously.
+This decoder is based on external LZMA library and works asynchronously.
 
 There are 2 ways to read data through this decoder:
 - via string
