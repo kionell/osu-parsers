@@ -16,7 +16,7 @@
     "fix": "eslint --fix ./src",
     "format": "eslint --fix ./lib/** --no-ignore",
     "prepublishOnly": "npm run build",
-    "docs": "npx typedoc src/index.ts"
+    "docs": "npx typedoc"
   },
   "keywords": [
     "osu",
