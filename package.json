@@ -1,6 +1,6 @@
 {
   "name": "osu-parsers",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "A bundle of parsers for osu! file formats based on the osu!lazer source code.",
   "exports": {
     "node": {
