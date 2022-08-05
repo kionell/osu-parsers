@@ -13,6 +13,8 @@ import { IStoryboardElement } from './IStoryboardElement';
 export interface IHasCommands extends IStoryboardElement {
   /**
    * The list of commands of the storyboard element.
+   * Use {@link timelineGroup} property instead.
+   * @deprecated Since 0.10.4
    */
   commands: Command[];
 
