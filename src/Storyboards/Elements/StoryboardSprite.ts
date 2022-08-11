@@ -91,22 +91,24 @@ export class StoryboardSprite implements IStoryboardElementWithDuration, IHasCom
    * The start time of the storyboard sprite.
    */
   get startTime(): number {
+    // !!! This is wrong and doesn't match stable as it breaks animations.
+
     // Check for presence affecting commands as an initial pass.
-    let earliestStartTime = this.timelineGroup.earliestDisplayedTime ?? Infinity;
+    // let earliestStartTime = this.timelineGroup.earliestDisplayedTime ?? Infinity;
 
-    for (const loop of this.loops) {
-      if (loop.earliestDisplayedTime === null) continue;
+    // for (const loop of this.loops) {
+    //   if (loop.earliestDisplayedTime === null) continue;
 
-      earliestStartTime = Math.min(
-        earliestStartTime,
-        loop.loopStartTime + loop.earliestDisplayedTime,
-      );
-    }
+    //   earliestStartTime = Math.min(
+    //     earliestStartTime,
+    //     loop.loopStartTime + loop.earliestDisplayedTime,
+    //   );
+    // }
 
-    if (earliestStartTime < Infinity) return earliestStartTime;
+    // if (earliestStartTime < Infinity) return earliestStartTime;
 
     // If an alpha-affecting command was not found, use the earliest of any command.
-    earliestStartTime = this.timelineGroup.startTime;
+    let earliestStartTime = this.timelineGroup.startTime;
 
     for (const loop of this.loops) {
       earliestStartTime = Math.min(earliestStartTime, loop.startTime);

@@ -47,7 +47,7 @@ export class CommandTimelineGroup {
 
   /**
    * @returns The earliest visible time. 
-   * Will be null unless this group's first "Alpha" command has a start value of zero.
+   * Will be null unless this group's first "Fade" command has a start value of zero.
    */
   get earliestDisplayedTime(): number | null {
     const first = this.alpha.commands[0];
@@ -57,14 +57,16 @@ export class CommandTimelineGroup {
 
   get commandsStartTime(): number {
     /**
-     * If the first alpha command starts at zero 
+     * If the first "Fade" command starts at zero 
      * it should be given priority over anything else.
      * This is due to it creating a state where the target is not present 
      * before that time, causing any other events to not be visible.
+     * 
+     * !!! This is wrong and doesn't match stable as it breaks animations.
      */
-    const earliestDisplay = this.earliestDisplayedTime;
+    // const earliestDisplay = this.earliestDisplayedTime;
 
-    if (earliestDisplay !== null) return earliestDisplay;
+    // if (earliestDisplay !== null) return earliestDisplay;
 
     let min = Infinity;
 
