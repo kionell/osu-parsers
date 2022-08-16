@@ -1,4 +1,4 @@
-import { Color4 } from '../../Utils';
+import { Color4 } from '../../Types';
 
 /**
  * A beatmap colors section.
