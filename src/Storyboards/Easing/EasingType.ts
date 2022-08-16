@@ -1,7 +1,7 @@
 /**
  * Types of easing.
  */
-export enum Easing {
+export enum EasingType {
   None,
   Out,
   In,
@@ -37,5 +37,5 @@ export enum Easing {
   InBounce,
   OutBounce,
   InOutBounce,
-  OutPow10
+  OutPow10,
 }

@@ -1,4 +1,5 @@
-import { CommandType, Easing, ParameterType } from '../Enums';
+import { CommandType, ParameterType } from '../Enums';
+import { EasingType } from '../Easing';
 
 /**
  * A storyboard command.
@@ -17,7 +18,7 @@ export class Command<T = any> {
   /**
    * The easing of the storyboard command.
    */
-  easing: Easing;
+  easing: EasingType;
 
   /**
    * The time at which the command starts.
@@ -42,7 +43,7 @@ export class Command<T = any> {
   constructor(params?: Partial<Command>) {
     this.type = params?.type ?? CommandType.None;
     this.parameter = params?.parameter ?? ParameterType.None;
-    this.easing = params?.easing ?? Easing.None;
+    this.easing = params?.easing ?? EasingType.None;
     this.startTime = params?.startTime ?? 0;
     this.endTime = params?.endTime ?? 0;
     this.startValue = params?.startValue ?? null;
