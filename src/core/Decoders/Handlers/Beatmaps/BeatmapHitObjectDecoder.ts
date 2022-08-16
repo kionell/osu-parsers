@@ -502,7 +502,11 @@ export abstract class BeatmapHitObjectDecoder {
   }
 
   static convertSoundType(type: HitSound, bankInfo: SampleBank): HitSample[] {
-    // TODO: This should return the normal SampleInfos if the specified sample file isn't found, but that's a pretty edge-case scenario
+    /*
+     * TODO: This should return the normal HitSamples 
+     * if the specified sample file isn't found, 
+     * but that's a pretty edge-case scenario.
+     */
     if (bankInfo.filename) {
       const sample = new HitSample();
 

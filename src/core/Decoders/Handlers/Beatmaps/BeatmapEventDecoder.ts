@@ -24,8 +24,7 @@ export abstract class BeatmapEventDecoder {
 
     switch (eventType) {
       case EventType.Background:
-        beatmap.events.background = data[2].replace(/"/g, '');
-        beatmap.events.backgroundPath = beatmap.events.background;
+        beatmap.events.backgroundPath = data[2].replace(/"/g, '');
         break;
 
       case EventType.Break: {
@@ -43,9 +42,6 @@ export abstract class BeatmapEventDecoder {
       }
 
       case EventType.Video:
-        beatmap.events.videoOffset = Parsing.parseInt(data[1]);
-        beatmap.events.video = data[2].replace(/"/g, '');
-
       case EventType.Sample:
       case EventType.Sprite:
       case EventType.Animation:

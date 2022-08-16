@@ -146,9 +146,6 @@ export abstract class StoryboardEventDecoder {
         const sample = new StoryboardSample(path, time, volume);
 
         layer.elements.push(sample);
-
-        // Add this element to the samples layer for compatibility.
-        storyboard.getLayerByType(LayerType.Samples).elements.push(sample);
       }
     }
   }
