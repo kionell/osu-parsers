@@ -1,9 +1,9 @@
 import { Vector2 } from '../../Types';
 import { BinarySearch } from '../../Utils';
-
 import { PathApproximator } from './PathApproximator';
 import { PathPoint } from './PathPoint';
 import { PathType } from '../Enums/PathType';
+import { MathUtils } from '../../Utils/MathUtils';
 
 export class SliderPath {
   private _expectedDistance: number;
@@ -371,7 +371,7 @@ export class SliderPath {
   }
 
   private _progressToDistance(progress: number): number {
-    return Math.min(Math.max(progress, 0), 1) * this.distance;
+    return MathUtils.clamp01(progress) * this.distance;
   }
 
   private _interpolateVertices(i: number, d: number): Vector2 {

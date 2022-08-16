@@ -1,6 +1,7 @@
 import { ControlPointType } from '../Enums/ControlPointType';
 import { ControlPoint } from './ControlPoint';
 import { TimeSignature } from '../Enums/TimeSignature';
+import { MathUtils } from '../../Utils/MathUtils';
 
 /**
  * A timing point.
@@ -22,7 +23,7 @@ export class TimingPoint extends ControlPoint {
   private _beatLength = 1000;
 
   get beatLength(): number {
-    return Math.max(6, Math.min(this._beatLength, 60000));
+    return MathUtils.clamp(this._beatLength, 6, 60000);
   }
 
   set beatLength(value: number) {

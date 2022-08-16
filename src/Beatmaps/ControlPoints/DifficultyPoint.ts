@@ -1,3 +1,4 @@
+import { MathUtils } from '../../Utils/MathUtils';
 import { ControlPointType } from '../Enums/ControlPointType';
 import { ControlPoint } from './ControlPoint';
 
@@ -22,7 +23,7 @@ export class DifficultyPoint extends ControlPoint {
 
   get speedMultiplier(): number {
     // Imitate bindable value with range [0.1, 10].
-    return Math.max(0.1, Math.min(this._speedMultiplier, 10));
+    return MathUtils.clamp(this._speedMultiplier, 0.1, 10);
   }
 
   set speedMultiplier(value: number) {

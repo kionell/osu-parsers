@@ -1,5 +1,6 @@
 import { ISlidableObject } from './ISlidableObject';
 import { SliderEventType } from './Enums/SliderEventType';
+import { MathUtils } from '../Utils/MathUtils';
 
 /**
  * A tick generator for end time objects.
@@ -20,7 +21,7 @@ export abstract class EventGenerator {
    */
   static *generate(slider: ISlidableObject): Generator<ISliderEventDescriptor> {
     const sliderDistance = Math.min(this.SLIDER_MAX_DISTANCE, slider.path.distance);
-    const tickDistance = Math.max(0, Math.min(slider.tickDistance || 0, sliderDistance));
+    const tickDistance = MathUtils.clamp(slider.tickDistance || 0, 0, sliderDistance);
 
     const minDistanceFromEnd = slider.velocity * 10;
 
