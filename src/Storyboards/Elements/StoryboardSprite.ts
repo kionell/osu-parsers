@@ -203,6 +203,9 @@ export class StoryboardSprite implements IStoryboardElementWithDuration, IHasCom
       earliestStartTime = Math.min(earliestStartTime, loop.startTime);
       latestEndTime = Math.max(latestEndTime, loop.endTime);
     }
+
+    this.startTime = earliestStartTime;
+    this.endTime = latestEndTime;
   }
 
   /**
