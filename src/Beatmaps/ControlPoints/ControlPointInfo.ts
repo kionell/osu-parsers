@@ -1,9 +1,7 @@
-import { BinarySearch } from '../../Utils';
-
+import { findControlPoint, findControlPointIndex } from '../../Utils';
 import { ControlPointType } from '../Enums/ControlPointType';
 import { ControlPointGroup } from './ControlPointGroup';
 import { ControlPoint } from './ControlPoint';
-
 import { DifficultyPoint } from './DifficultyPoint';
 import { EffectPoint } from './EffectPoint';
 import { SamplePoint } from './SamplePoint';
@@ -73,7 +71,7 @@ export class ControlPointInfo {
    * @returns A difficulty point at the specified time.
    */
   difficultyPointAt(time: number): DifficultyPoint {
-    const point = BinarySearch.findControlPoint(this.difficultyPoints, time);
+    const point = findControlPoint(this.difficultyPoints, time);
     const fallback = DifficultyPoint.default;
 
     return (point as DifficultyPoint) || fallback;
@@ -85,7 +83,7 @@ export class ControlPointInfo {
    * @returns A effect point at the specified time.
    */
   effectPointAt(time: number): EffectPoint {
-    const point = BinarySearch.findControlPoint(this.effectPoints, time);
+    const point = findControlPoint(this.effectPoints, time);
     const fallback = EffectPoint.default;
 
     return (point as EffectPoint) || fallback;
@@ -97,7 +95,7 @@ export class ControlPointInfo {
    * @returns A sample point at the specified time.
    */
   samplePointAt(time: number): SamplePoint {
-    const point = BinarySearch.findControlPoint(this.samplePoints, time);
+    const point = findControlPoint(this.samplePoints, time);
     const fallback = SamplePoint.default;
 
     return (point as SamplePoint) || fallback;
@@ -109,7 +107,7 @@ export class ControlPointInfo {
    * @returns A timing point at the specified time.
    */
   timingPointAt(time: number): TimingPoint {
-    const point = BinarySearch.findControlPoint(this.timingPoints, time);
+    const point = findControlPoint(this.timingPoints, time);
     const fallback = this.timingPoints[0] || TimingPoint.default;
 
     return (point as TimingPoint) || fallback;
@@ -127,7 +125,7 @@ export class ControlPointInfo {
     }
 
     const list = this.getCurrentList(point);
-    const index = BinarySearch.findControlPointIndex(list, time);
+    const index = findControlPointIndex(list, time);
 
     /**
      * We need to imitate C# sorted list here.
@@ -165,11 +163,11 @@ export class ControlPointInfo {
         break;
 
       case ControlPointType.SamplePoint:
-        existing = BinarySearch.findControlPoint(this.samplePoints, time);
+        existing = findControlPoint(this.samplePoints, time);
         break;
 
       case ControlPointType.TimingPoint:
-        existing = BinarySearch.findControlPoint(this.timingPoints, time);
+        existing = findControlPoint(this.timingPoints, time);
     }
 
     return newPoint?.isRedundant(existing);

@@ -2,6 +2,7 @@ import { IHasCommands, IStoryboardElementWithDuration } from './Types';
 import { CommandTimelineGroup, CommandLoop, CommandTrigger, Command } from '../Commands';
 import { Anchor, CommandType, Origins, ParameterType } from '../Enums';
 import { Color4, Vector2 } from '../../Types';
+import { BlendingEquation } from '../Blending';
 
 /**
  * A storyboard sprite.
@@ -212,7 +213,7 @@ export class StoryboardSprite implements IStoryboardElementWithDuration, IHasCom
 
     for (const command of this.commands) {
       if (!applied[command.type]) {
-        this.setValueFromCommand(command);
+        this.setValueFromCommand(command, 0);
 
         applied[command.type] = true;
       }
@@ -222,9 +223,10 @@ export class StoryboardSprite implements IStoryboardElementWithDuration, IHasCom
   /**
    * Replaces current sprite values with command values.
    * @param command Target command.
+   * @param progress Current command progress.
    */
-  setValueFromCommand(command: Command): void {
-    const value = command.getValueAtProgress(0);
+  setValueFromCommand(command: Command, progress: number): void {
+    const value = command.getValueAtProgress(progress);
 
     switch (command.type) {
       case CommandType.Movement:
@@ -270,7 +272,7 @@ export class StoryboardSprite implements IStoryboardElementWithDuration, IHasCom
 
     switch (command.parameter) {
       case ParameterType.BlendingMode:
-        this.isAdditive = !!value;
+        this.isAdditive = value.rgbEquation === BlendingEquation.Add;
         break;
 
       case ParameterType.HorizontalFlip:

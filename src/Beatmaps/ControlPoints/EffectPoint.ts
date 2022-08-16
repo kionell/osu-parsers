@@ -1,4 +1,4 @@
-import { MathUtils } from '../../Utils/MathUtils';
+import { clamp } from '../../Utils/MathUtils';
 import { ControlPointType } from '../Enums/ControlPointType';
 import { ControlPoint } from './ControlPoint';
 
@@ -32,7 +32,7 @@ export class EffectPoint extends ControlPoint {
   private _scrollSpeed = 1;
 
   get scrollSpeed(): number {
-    return MathUtils.clamp(this._scrollSpeed, 0.1, 10);
+    return clamp(this._scrollSpeed, 0.1, 10);
   }
 
   set scrollSpeed(value: number) {

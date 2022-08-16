@@ -1,7 +1,7 @@
 import { CommandType, ParameterType } from '../Enums';
-import { Easing, EasingType } from '../Easing';
+import { getEasingFn, EasingType } from '../Easing';
 import { Color4, Vector2 } from '../../Types';
-import { MathUtils } from '../../Utils/MathUtils';
+import { map01 } from '../../Utils/MathUtils';
 
 /**
  * A storyboard command.
@@ -65,9 +65,9 @@ export class Command<T = any> {
    * @returns Progress of this command in range from 0 to 1.
    */
   getProgress(time: number): number {
-    const clamped = MathUtils.map01(time, this.startTime, this.endTime);
+    const clamped = map01(time, this.startTime, this.endTime);
 
-    return Easing.getEasingFn(this.easing)(clamped);
+    return getEasingFn(this.easing)(clamped);
   }
 
   /**
