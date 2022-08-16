@@ -1,4 +1,5 @@
 import { CompoundType } from '../Enums';
+import { Command } from './Command';
 import { CommandTimelineGroup } from './CommandTimelineGroup';
 
 /**
@@ -51,5 +52,32 @@ export class CommandLoop extends CommandTimelineGroup {
    */
   get endTime(): number {
     return this.startTime + this.commandsDuration * this.totalIterations;
+  }
+
+  unrollCommands(): Command[] {
+    const commands = this.commands;
+
+    if (commands.length === 0) return [];
+
+    const { commandsDuration, totalIterations, loopStartTime } = this;
+
+    const unrolledCommands = new Array(totalIterations * commands.length);
+
+    for (let i = 0; i < totalIterations; i++) {
+      const iterationStartTime = loopStartTime + i * commandsDuration;
+
+      for (let j = 0; j < commands.length; j++) {
+        const currentIndex = i * commands.length + j;
+        const command = commands[j];
+
+        unrolledCommands[currentIndex] = new Command({
+          ...command,
+          startTime: command.startTime + iterationStartTime,
+          endTime: command.endTime + iterationStartTime,
+        });
+      }
+    }
+
+    return unrolledCommands;
   }
 }
