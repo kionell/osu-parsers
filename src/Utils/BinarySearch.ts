@@ -1,5 +1,7 @@
 import { ControlPoint } from '../Beatmaps/ControlPoints/ControlPoint';
 
+type Predicate<T> = (value: T, index: number, arr: T[]) => boolean;
+
 /**
  * A binary search utility.
  */
@@ -85,5 +87,25 @@ export class BinarySearch {
     if (index === -1) return null;
 
     return arr[index];
+  }
+
+  /**
+   * Searches for a value by predicate function. 
+   * @param arr The list of any values.
+   * @param predicate Predicate function.
+   * @returns Found index or -1.
+   */
+  static findIndex<T>(arr: T[], predicate: Predicate<T>): number {
+    let l = -1;
+    let r = arr.length - 1;
+
+    while (1 + l < r) {
+      const mid = l + ((r - l) >> 1);
+      const cmp = predicate(arr[mid], mid, arr);
+
+      cmp ? (r = mid) : (l = mid);
+    }
+
+    return r;
   }
 }
