@@ -61,6 +61,36 @@ export class StoryboardSprite implements IStoryboardElementWithDuration, IHasCom
   startPosition: Vector2;
 
   /**
+   * Current scale of this sprite.
+   */
+  scale = new Vector2(1, 1);
+
+  /**
+   * Current color of this sprite.
+   */
+  color = new Color4();
+
+  /**
+   * Current rotation of this sprite.
+   */
+  rotation = 0;
+
+  /**
+   * If this sprite is fliped horizontally.
+   */
+  flipX = false;
+
+  /**
+   * If this sprite is fliped vertically.
+   */
+  flipY = false;
+
+  /**
+   * If this sprite is using additive blending.
+   */
+  isAdditive = false;
+
+  /**
    * @param path The file path of the content of this storyboard sprite.
    * @param origin The origin of the image on the screen.
    * @param anchor The anchor of the image on the screen.
@@ -101,7 +131,9 @@ export class StoryboardSprite implements IStoryboardElementWithDuration, IHasCom
   }
 
   get hasCommands(): boolean {
-    return this.timelineGroup.hasCommands || !!this.loops.find((l) => l.hasCommands);
+    return this.timelineGroup.hasCommands
+      || this.loops.some((l) => l.hasCommands)
+      || this.triggers.some((t) => t.hasCommands);
   }
 
   get isDrawable(): boolean {
@@ -113,7 +145,7 @@ export class StoryboardSprite implements IStoryboardElementWithDuration, IHasCom
    * @param startTime The start time of the loop.
    * @param repeatCount The number of repeats of this loop.
    */
-  public addLoop(startTime: number, repeatCount: number): CommandLoop {
+  addLoop(startTime: number, repeatCount: number): CommandLoop {
     const loop = new CommandLoop(startTime, repeatCount);
 
     this.loops.push(loop);
@@ -128,7 +160,12 @@ export class StoryboardSprite implements IStoryboardElementWithDuration, IHasCom
    * @param endTime The end time of the command trigger.
    * @param groupNumber The group of the command trigger.
    */
-  public addTrigger(triggerName: string, startTime: number, endTime: number, groupNumber: number): CommandTrigger {
+  addTrigger(
+    triggerName: string,
+    startTime: number,
+    endTime: number,
+    groupNumber: number,
+  ): CommandTrigger {
     const trigger = new CommandTrigger(triggerName, startTime, endTime, groupNumber);
 
     this.triggers.push(trigger);
@@ -154,8 +191,8 @@ export class StoryboardSprite implements IStoryboardElementWithDuration, IHasCom
   }
 
   /**
-   * Adjusts start & end time of this sprite to the 
-   * earliest command start time & latest command end time. 
+   * Adjusts start & end time of this sprite to the
+   * earliest command start time & latest command end time.
    */
   adjustTimesToCommands(): void {
     let earliestStartTime = this.timelineGroup.startTime;
@@ -164,6 +201,84 @@ export class StoryboardSprite implements IStoryboardElementWithDuration, IHasCom
     for (const loop of this.loops) {
       earliestStartTime = Math.min(earliestStartTime, loop.startTime);
       latestEndTime = Math.max(latestEndTime, loop.endTime);
+    }
+  }
+
+  /**
+   * Resets all sprite values to first applied command values.
+   */
+  resetValuesToCommands(): void {
+    const applied: Partial<Record<CommandType, boolean>> = {};
+
+    for (const command of this.commands) {
+      if (!applied[command.type]) {
+        this.setValueFromCommand(command);
+
+        applied[command.type] = true;
+      }
+    }
+  }
+
+  /**
+   * Replaces current sprite values with command values.
+   * @param command Target command.
+   */
+  setValueFromCommand(command: Command): void {
+    const value = command.getValueAtProgress(0);
+
+    switch (command.type) {
+      case CommandType.Movement:
+        this.startPosition.x = value.x;
+        this.startPosition.y = value.y;
+        break;
+
+      case CommandType.MovementX:
+        this.startPosition.x = value;
+        break;
+
+      case CommandType.MovementY:
+        this.startPosition.y = value;
+        break;
+
+      case CommandType.Fade:
+        this.color.alpha = value;
+        break;
+
+      case CommandType.Scale:
+        this.scale.x = value;
+        this.scale.y = value;
+        break;
+
+      case CommandType.VectorScale:
+        this.scale.x = value.x;
+        this.scale.y = value.y;
+        break;
+
+      case CommandType.Rotation:
+        this.rotation = value;
+        break;
+
+      case CommandType.Color:
+        this.color.red = value.red;
+        this.color.green = value.green;
+        this.color.blue = value.blue;
+        this.color.alpha = value.alpha;
+        break;
+    }
+
+    if (command.type !== CommandType.Parameter) return;
+
+    switch (command.parameter) {
+      case ParameterType.BlendingMode:
+        this.isAdditive = !!value;
+        break;
+
+      case ParameterType.HorizontalFlip:
+        this.flipX = value;
+        break;
+
+      case ParameterType.VerticalFlip:
+        this.flipY = value;
     }
   }
 }
