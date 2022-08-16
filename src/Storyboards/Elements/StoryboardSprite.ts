@@ -1,7 +1,7 @@
 import { IHasCommands, IStoryboardElementWithDuration } from './Types';
 import { CommandTimelineGroup, CommandLoop, CommandTrigger, Command } from '../Commands';
-import { Anchor, Origins } from '../Enums';
-import { Vector2 } from '../../Utils';
+import { Anchor, CommandType, Origins, ParameterType } from '../Enums';
+import { Color4, Vector2 } from '../../Types';
 
 /**
  * A storyboard sprite.
@@ -18,14 +18,27 @@ export class StoryboardSprite implements IStoryboardElementWithDuration, IHasCom
   anchor: Anchor;
 
   /**
-   * The relative start position of the storyboard sprite.
+   * The start time of the storyboard sprite.
    */
-  startPosition: Vector2;
+  startTime = Infinity;
+
+  /**
+   * The end time of the storyboard sprite.
+   */
+  endTime = -Infinity;
 
   /**
    * The file path of the content of this storyboard sprite.
    */
   filePath: string;
+
+  /**
+   * The list of commands of the storyboard element.
+   * This is not synchronized with {@link timelineGroup}
+   * as constantly updating it can be very expensive.
+   * If you need to update this array, use {@link updateCommands}.
+   */
+  commands: Command[] = [];
 
   /**
    * The list of commands of the storyboard sprite.
@@ -43,6 +56,11 @@ export class StoryboardSprite implements IStoryboardElementWithDuration, IHasCom
   triggers: CommandTrigger[] = [];
 
   /**
+   * The relative start position of the storyboard sprite.
+   */
+  startPosition: Vector2;
+
+  /**
    * @param path The file path of the content of this storyboard sprite.
    * @param origin The origin of the image on the screen.
    * @param anchor The anchor of the image on the screen.
@@ -54,15 +72,6 @@ export class StoryboardSprite implements IStoryboardElementWithDuration, IHasCom
     this.origin = origin ?? Origins.TopLeft;
     this.anchor = anchor ?? Anchor.TopLeft;
     this.startPosition = position ?? new Vector2(0, 0);
-  }
-
-  /**
-   * The list of commands of the storyboard element.
-   * Use {@link timelineGroup} property instead.
-   * @deprecated Since 0.10.0
-   */
-  get commands(): Command[] {
-    return this.timelineGroup.commands;
   }
 
   /**
@@ -85,49 +94,6 @@ export class StoryboardSprite implements IStoryboardElementWithDuration, IHasCom
 
   set startY(value: number) {
     this.startPosition.y = value;
-  }
-
-  /**
-   * The start time of the storyboard sprite.
-   */
-  get startTime(): number {
-    // !!! This is wrong and doesn't match stable as it breaks animations.
-
-    // Check for presence affecting commands as an initial pass.
-    // let earliestStartTime = this.timelineGroup.earliestDisplayedTime ?? Infinity;
-
-    // for (const loop of this.loops) {
-    //   if (loop.earliestDisplayedTime === null) continue;
-
-    //   earliestStartTime = Math.min(
-    //     earliestStartTime,
-    //     loop.loopStartTime + loop.earliestDisplayedTime,
-    //   );
-    // }
-
-    // if (earliestStartTime < Infinity) return earliestStartTime;
-
-    // If an alpha-affecting command was not found, use the earliest of any command.
-    let earliestStartTime = this.timelineGroup.startTime;
-
-    for (const loop of this.loops) {
-      earliestStartTime = Math.min(earliestStartTime, loop.startTime);
-    }
-
-    return earliestStartTime;
-  }
-
-  /**
-   * The end time of the storyboard sprite.
-   */
-  get endTime(): number {
-    let latestEndTime = this.timelineGroup.endTime;
-
-    for (const loop of this.loops) {
-      latestEndTime = Math.max(latestEndTime, loop.endTime);
-    }
-
-    return latestEndTime;
   }
 
   get duration(): number {
@@ -168,5 +134,36 @@ export class StoryboardSprite implements IStoryboardElementWithDuration, IHasCom
     this.triggers.push(trigger);
 
     return trigger;
+  }
+
+  /**
+   * Collects all commands from every timeline and loop.
+   * All loop commands are unwinded, which means there is no need to iterate over loops.
+   * This method also updates {@link commands} array.
+   * @returns General command array of this sprite.
+   */
+  updateCommands(): Command[] {
+    const unwinded = [
+      ...this.timelineGroup.commands,
+      ...this.loops.flatMap((l) => l.unrollCommands()),
+    ];
+
+    this.commands = unwinded.sort((a, b) => a.startTime - b.startTime);
+
+    return this.commands;
+  }
+
+  /**
+   * Adjusts start & end time of this sprite to the 
+   * earliest command start time & latest command end time. 
+   */
+  adjustTimesToCommands(): void {
+    let earliestStartTime = this.timelineGroup.startTime;
+    let latestEndTime = this.timelineGroup.endTime;
+
+    for (const loop of this.loops) {
+      earliestStartTime = Math.min(earliestStartTime, loop.startTime);
+      latestEndTime = Math.max(latestEndTime, loop.endTime);
+    }
   }
 }

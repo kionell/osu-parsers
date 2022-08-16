@@ -33,7 +33,7 @@ export class BeatmapEventSection {
     const filePath = this.backgroundPath.trim().toLowerCase();
     const layer = this.storyboard.getLayerByType(LayerType.Background);
 
-    return !!layer.elements.find((e) => e.filePath.toLowerCase() === filePath);
+    return layer.elements.some((e) => e.filePath.toLowerCase() === filePath);
   }
 
   /**
