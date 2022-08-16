@@ -41,4 +41,9 @@ export interface IHasCommands extends IStoryboardElement {
    * @returns General command array of this sprite.
    */
   updateCommands(): Command[];
+
+  /**
+   * If this storyboard element has commands or not.
+   */
+  hasCommands: boolean;
 }
