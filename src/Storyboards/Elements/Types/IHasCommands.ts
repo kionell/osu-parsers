@@ -13,8 +13,9 @@ import { IStoryboardElement } from './IStoryboardElement';
 export interface IHasCommands extends IStoryboardElement {
   /**
    * The list of commands of the storyboard element.
-   * Use {@link timelineGroup} property instead.
-   * @deprecated Since 0.10.4
+   * This is not synchronized with {@link timelineGroup}
+   * as constantly updating it can be very expensive.
+   * If you need to update this array, use {@link updateCommands}.
    */
   commands: Command[];
 
@@ -32,4 +33,12 @@ export interface IHasCommands extends IStoryboardElement {
    * The list of command triggers of the storyboard element.
    */
   triggers: CommandTrigger[];
+
+  /**
+   * Collects all commands from every timeline and loop.
+   * All loop commands are unwinded, which means there is no need to iterate over loops.
+   * This method also updates {@link commands} array.
+   * @returns General command array of this sprite.
+   */
+  updateCommands(): Command[];
 }
