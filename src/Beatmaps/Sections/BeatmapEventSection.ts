@@ -1,12 +1,11 @@
 import { LayerType } from '../../Storyboards';
 import { Storyboard } from '../../Storyboards/Storyboard';
 import { BeatmapBreakEvent } from '../Events';
-import { BeatmapEventsSection } from './BeatmapEventsSection';
 
 /**
  * A beatmap events section.
  */
-export class BeatmapEventSection extends BeatmapEventsSection {
+export class BeatmapEventSection {
   /**
    * A beatmap background file path.
    */
@@ -45,7 +44,7 @@ export class BeatmapEventSection extends BeatmapEventsSection {
   clone(): BeatmapEventSection {
     const cloned = new BeatmapEventSection();
 
-    cloned.background = this.background;
+    cloned.backgroundPath = this.backgroundPath;
     cloned.breaks = this.breaks;
     cloned.storyboard = this.storyboard;
 

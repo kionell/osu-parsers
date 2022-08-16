@@ -57,15 +57,6 @@ export class Command<T = any> {
   }
 
   /**
-   * The acronym of the storyboard command.
-   * Use {@link type} property directly.
-   * @deprecated Since 0.10.0
-   */
-  get acronym(): string {
-    return this.type;
-  }
-
-  /**
    * @param other Other storyboard command.
    * @returns If two storyboard commands are equal.
    */

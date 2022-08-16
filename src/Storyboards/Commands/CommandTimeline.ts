@@ -1,19 +1,6 @@
-import { CommandType, Easing, ParameterType } from '../Enums';
+import { CommandType, ParameterType } from '../Enums';
+import { EasingType } from '../Easing';
 import { Command } from './Command';
-
-import {
-  BlendingCommand,
-  ColourCommand,
-  FadeCommand,
-  HorizontalFlipCommand,
-  MoveCommand,
-  MoveXCommand,
-  MoveYCommand,
-  RotateCommand,
-  ScaleCommand,
-  VectorScaleCommand,
-  VerticalFlipCommand,
-} from '../Legacy';
 
 /**
  * A storyboard command timeline.
@@ -47,7 +34,7 @@ export class CommandTimeline<T = any> implements Iterable<Command<T>> {
 
   add(
     type: CommandType,
-    easing: Easing,
+    easing: EasingType,
     startTime: number,
     endTime: number,
     startValue: T,
@@ -56,7 +43,7 @@ export class CommandTimeline<T = any> implements Iterable<Command<T>> {
   ): void {
     if (endTime < startTime) return;
 
-    this._commands.push(this._createCommand({
+    this._commands.push(new Command<T>({
       type,
       easing,
       startTime,
@@ -79,31 +66,5 @@ export class CommandTimeline<T = any> implements Iterable<Command<T>> {
 
   get hasCommands(): boolean {
     return this._commands.length > 0;
-  }
-
-  /**
-   * TODO: Remove this later.
-   */
-  private _createCommand(params: Partial<Command<T>>): Command {
-    switch (params.type) {
-      case CommandType.Fade: return new FadeCommand(params);
-      case CommandType.Scale: return new ScaleCommand(params);
-      case CommandType.VectorScale: return new VectorScaleCommand(params);
-      case CommandType.Rotation: return new RotateCommand(params);
-      case CommandType.Movement: return new MoveCommand(params);
-      case CommandType.MovementX: return new MoveXCommand(params);
-      case CommandType.MovementY: return new MoveYCommand(params);
-      case CommandType.Colour: return new ColourCommand(params);
-    }
-
-    if (params.type === CommandType.Parameter) {
-      switch (params.parameter) {
-        case ParameterType.BlendingMode: return new BlendingCommand(params);
-        case ParameterType.HorizontalFlip: return new HorizontalFlipCommand(params);
-        case ParameterType.VerticalFlip: return new VerticalFlipCommand(params);
-      }
-    }
-
-    return new Command<T>(params);
   }
 }

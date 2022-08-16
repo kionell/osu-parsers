@@ -8,10 +8,4 @@ export enum LayerType {
   Foreground,
   Overlay,
   Video,
-
-  /**
-   * This layer type is not supported anymore and will be removed soon.
-   * @deprecated Since 0.10.0
-   */
-  Samples,
 }

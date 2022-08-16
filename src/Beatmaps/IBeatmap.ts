@@ -5,7 +5,6 @@ import {
   BeatmapMetadataSection,
   BeatmapColorSection,
   BeatmapEventSection,
-  BeatmapColoursSection,
 } from './Sections';
 
 import { ControlPointInfo } from './ControlPoints';
@@ -45,13 +44,6 @@ export interface IBeatmap {
    * Beatmap skin configuration.
    */
   colors: BeatmapColorSection;
-
-  /**
-   * Beatmap skin configuration.
-   * Use the {@link colors} property.
-   * @deprecated Since 0.10.0
-   */
-  colours: BeatmapColoursSection;
 
   /**
    * Beatmap events & storyboard.

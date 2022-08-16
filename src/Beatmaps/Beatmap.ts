@@ -4,7 +4,6 @@ import {
   BeatmapDifficultySection,
   BeatmapMetadataSection,
   BeatmapColorSection,
-  BeatmapColoursSection,
   BeatmapEventSection,
 } from './Sections';
 
@@ -43,13 +42,6 @@ export class Beatmap implements IBeatmap {
    * Beatmap metadata.
    */
   metadata: BeatmapMetadataSection = new BeatmapMetadataSection();
-
-  /**
-   * Legacy beatmap skin configuration.
-   * Use the {@link colors} instead.
-   * @deprecated Since 0.10.0
-   */
-  colours: BeatmapColoursSection = new BeatmapColoursSection();
 
   /**
    * Beatmap skin configuration.

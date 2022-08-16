@@ -1,5 +1,5 @@
 import { BeatmapColorSection } from '../Beatmaps/Sections/BeatmapColorSection';
-import { IStoryboardElement, IStoryboardElementWithDuration } from './Elements';
+import { IStoryboardElementWithDuration } from './Elements';
 import { LayerType } from './Enums/LayerType';
 import { StoryboardLayer } from './StoryboardLayer';
 
@@ -7,48 +7,6 @@ import { StoryboardLayer } from './StoryboardLayer';
  * A beatmap storyboard.
  */
 export class Storyboard {
-  /**
-   * The background layer of the storyboard.
-   * Use the {@link layers} getter or {@link getLayerByType} or {@link getLayerByName}.
-   * @deprecated Since 0.10.0
-   */
-  background: IStoryboardElement[] = [];
-
-  /**
-   * The fail layer of the storyboard. 
-   * Use the {@link layers} getter or {@link getLayerByType} or {@link getLayerByName}.
-   * @deprecated Since 0.10.0
-   */
-  fail: IStoryboardElement[] = [];
-
-  /**
-   * The pass layer of the storyboard. 
-   * Use the {@link layers} getter or {@link getLayerByType} or {@link getLayerByName}.
-   * @deprecated Since 0.10.0
-   */
-  pass: IStoryboardElement[] = [];
-
-  /**
-   * The foreground layer of the storyboard. 
-   * Use the {@link layers} getter or {@link getLayerByType} or {@link getLayerByName}.
-   * @deprecated Since 0.10.0
-   */
-  foreground: IStoryboardElement[] = [];
-
-  /**
-   * The overlay layer of the storyboard. 
-   * Use the {@link layers} getter or {@link getLayerByType} or {@link getLayerByName}.
-   * @deprecated Since 0.10.0
-   */
-  overlay: IStoryboardElement[] = [];
-
-  /**
-   * Samples of the storyboard.
-   * Use the {@link layers} getter or {@link getLayerByType} or {@link getLayerByName}.
-   * @deprecated Since 0.10.0
-   */
-  samples: IStoryboardElement[] = [];
-
   /**
    * Variables of the storyboard.
    */
@@ -81,9 +39,6 @@ export class Storyboard {
   private _layers: Map<string, StoryboardLayer> = new Map();
 
   constructor() {
-    // TODO: I don't really know if i need a layer for samples...
-    this.addLayer(new StoryboardLayer({ name: 'Samples', depth: 5 }));
-
     this.addLayer(new StoryboardLayer({ name: 'Video', depth: 4, masking: false }));
     this.addLayer(new StoryboardLayer({ name: 'Background', depth: 3 }));
     this.addLayer(new StoryboardLayer({ name: 'Fail', depth: 2, visibleWhenPassing: false }));
@@ -161,60 +116,6 @@ export class Storyboard {
     if (this._layers.has(layer.name)) return;
 
     this._layers.set(layer.name, layer);
-
-    // This is here only for compatibility.
-    switch (layer.name as keyof typeof LayerType) {
-      case 'Background':
-        this.background = layer.elements;
-        break;
-
-      case 'Fail':
-        this.fail = layer.elements;
-        break;
-
-      case 'Pass':
-        this.pass = layer.elements;
-        break;
-
-      case 'Foreground':
-        this.foreground = layer.elements;
-        break;
-
-      case 'Overlay':
-        this.overlay = layer.elements;
-        break;
-
-      case 'Samples':
-        this.samples = layer.elements;
-    }
-  }
-
-  /**
-   * Finds a storyboard layer by its type.
-   * Use the {@link getLayerByName} or {@link getLayerByType} methods instead.
-   * @param type The type of the storyboard layer.
-   * @deprecated Since 0.10.0
-   * @returns The storyboard layer.
-   */
-  getLayer(type: LayerType): IStoryboardElement[] {
-    switch (type) {
-      case LayerType.Fail:
-        return this.fail;
-
-      case LayerType.Pass:
-        return this.pass;
-
-      case LayerType.Foreground:
-        return this.foreground;
-
-      case LayerType.Overlay:
-        return this.overlay;
-
-      case LayerType.Samples:
-        return this.samples;
-    }
-
-    return this.background;
   }
 
   /**

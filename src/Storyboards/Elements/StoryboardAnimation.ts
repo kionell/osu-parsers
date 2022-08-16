@@ -13,13 +13,6 @@ export class StoryboardAnimation extends StoryboardSprite {
   frameCount: number;
 
   /**
-   * The number of frames in this animation.
-   * Use {@link frameCount} property instead.
-   * @deprecated Since 0.10.0
-   */
-  frames: number;
-
-  /**
    * The delay (in milliseconds) between each frame of the animation.
    */
   frameDelay: number;
@@ -28,13 +21,6 @@ export class StoryboardAnimation extends StoryboardSprite {
    * Indicates if the animation should loop or not.
    */
   loopType: LoopType;
-
-  /**
-   * Indicates if the animation should loop or not.
-   * Use {@link loopType} property instead.
-   * @deprecated Since 0.10.0
-   */
-  loop: LoopType;
 
   /**
    * @param path The file path of the content of this storyboard sprite.
@@ -58,9 +44,7 @@ export class StoryboardAnimation extends StoryboardSprite {
     super(path, origin, anchor, position);
 
     this.frameCount = frameCount ?? 0;
-    this.frames = frameCount ?? 0;
     this.frameDelay = frameDelay ?? 0;
     this.loopType = loopType ?? LoopType.LoopForever;
-    this.loop = loopType ?? LoopType.LoopForever;
   }
 }
