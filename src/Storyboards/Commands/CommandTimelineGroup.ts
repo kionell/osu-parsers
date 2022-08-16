@@ -1,7 +1,7 @@
 import { CommandTimeline } from './CommandTimeline';
 import { Command } from './Command';
 import { BlendingParameters } from '../Blending';
-import { Color4, Vector2 } from '../../Utils';
+import { Color4, Vector2 } from '../../Types';
 
 /**
  * A command timeline group.
@@ -45,29 +45,7 @@ export class CommandTimelineGroup {
       .sort((a, b) => a.startTime - b.startTime || a.endTime - b.endTime);
   }
 
-  /**
-   * @returns The earliest visible time. 
-   * Will be null unless this group's first "Fade" command has a start value of zero.
-   */
-  get earliestDisplayedTime(): number | null {
-    const first = this.alpha.commands[0];
-
-    return first?.startValue === 0 ? first.startTime : null;
-  }
-
   get commandsStartTime(): number {
-    /**
-     * If the first "Fade" command starts at zero 
-     * it should be given priority over anything else.
-     * This is due to it creating a state where the target is not present 
-     * before that time, causing any other events to not be visible.
-     * 
-     * !!! This is wrong and doesn't match stable as it breaks animations.
-     */
-    // const earliestDisplay = this.earliestDisplayedTime;
-
-    // if (earliestDisplay !== null) return earliestDisplay;
-
     let min = Infinity;
 
     for (let i = 0; i < this._timelines.length; ++i) {
