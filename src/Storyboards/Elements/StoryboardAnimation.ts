@@ -1,7 +1,7 @@
 import { StoryboardSprite } from './StoryboardSprite';
 import { LoopType } from '../Enums/LoopType';
 import { Anchor, Origins } from '../Enums';
-import { Vector2 } from '../../Utils';
+import { Vector2 } from '../../Types';
 
 /**
  * A storyboard animation.

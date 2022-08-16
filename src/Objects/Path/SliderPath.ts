@@ -1,4 +1,5 @@
-import { Vector2, BinarySearch } from '../../Utils';
+import { Vector2 } from '../../Types';
+import { BinarySearch } from '../../Utils';
 
 import { PathApproximator } from './PathApproximator';
 import { PathPoint } from './PathPoint';

@@ -1,5 +1,4 @@
-import { Vector2 } from '../../Utils';
-
+import { Vector2 } from '../../Types';
 import { IHasX } from './IHasX';
 import { IHasY } from './IHasY';
 

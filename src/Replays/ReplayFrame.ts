@@ -1,4 +1,4 @@
-import { Vector2 } from '../Utils';
+import { Vector2 } from '../Types';
 import { ReplayButtonState } from './Enums';
 import { IReplayFrame } from './IReplayFrame';
 

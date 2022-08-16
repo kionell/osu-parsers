@@ -1,5 +1,4 @@
-import { Vector2 } from '../../Utils';
-
+import { Vector2 } from '../../Types';
 import { PathType } from '../Enums/PathType';
 
 /**

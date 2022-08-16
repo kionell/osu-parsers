@@ -1,4 +1,5 @@
-import { Vector2, Interpolation } from '../../Utils';
+import { Vector2 } from '../../Types';
+import { Interpolation } from '../../Utils';
 
 /**
  * Helper methods to approximate a path by interpolating a sequence of control points.

@@ -1,6 +1,6 @@
 import { ControlPointInfo } from '../Beatmaps/ControlPoints';
 import { BeatmapDifficultySection } from '../Beatmaps/Sections';
-import { Vector2 } from '../Utils/Vector2';
+import { Vector2 } from '../Types';
 import { HitSound } from './Enums/HitSound';
 import { HitType } from './Enums/HitType';
 import { IHitObject } from './IHitObject';
