@@ -1,6 +1,6 @@
 {
   "name": "osu-classes",
-  "version": "0.10.4",
+  "version": "1.0.0",
   "description": "Basic classes, interfaces and utils for creating new osu! rulesets",
   "exports": {
     "import": "./lib/index.mjs",
