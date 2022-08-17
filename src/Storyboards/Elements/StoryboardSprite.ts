@@ -138,7 +138,7 @@ export class StoryboardSprite implements IStoryboardElementWithDuration, IHasCom
   }
 
   get isDrawable(): boolean {
-    return this.hasCommands;
+    return this.color.alpha >= 0.01 && this.hasCommands;
   }
 
   /**
@@ -267,7 +267,6 @@ export class StoryboardSprite implements IStoryboardElementWithDuration, IHasCom
         this.color.red = value.red;
         this.color.green = value.green;
         this.color.blue = value.blue;
-        this.color.alpha = value.alpha;
         break;
     }
 
