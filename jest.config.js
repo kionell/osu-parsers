@@ -8,4 +8,7 @@ module.exports = {
   transformIgnorePatterns: [
     'node_modules/(?!(osu-classes|osu-parsers)/.*)',
   ],
+  testMatch: [
+    '**/?(*.)+(spec|test).[jt]s',
+  ],
 }
