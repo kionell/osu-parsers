@@ -1,6 +1,175 @@
+import { clamp01 } from '../../Utils/MathUtils';
 import { EasingType } from './EasingType';
 
-export type EasingFn = (time: number) => number;
+// Formulas from https://github.com/ppy/osu-framework/blob/master/osu.Framework/Graphics/Transforms/DefaultEasingFunction.cs
+const ELASTIC_CONST = 2 * Math.PI / 0.3;
+const ELASTIC_CONST2 = 0.3 / 4;
+
+const BACK_CONST = 1.70158;
+const BACK_CONST2 = BACK_CONST * 1.525;
+
+const BOUNCE_CONST = 1 / 2.75;
+
+// Constants used to fix expo and elastic curves to start/end at 0/1
+const EXPO_OFFSET = Math.pow(2, -10);
+const ELASTIC_OFFSET_FULL = Math.pow(2, -11);
+const ELASTIC_OFFSET_HALF = Math.pow(2, -10) * Math.sin((0.5 - ELASTIC_CONST2) * ELASTIC_CONST);
+const ELASTIC_OFFSET_QUARTER = Math.pow(2, -10) * Math.sin((0.25 - ELASTIC_CONST2) * ELASTIC_CONST);
+const IN_OUT_ELASTIC_OFFSET = Math.pow(2, -10) * Math.sin(((1 - ELASTIC_CONST2 * 1.5) * ELASTIC_CONST) / 1.5);
+
+export type EasingFn = (p: number) => number;
+
+const clampEase = (fn: EasingFn): EasingFn => (p: number) => fn(clamp01(p));
+
+export const linear = clampEase((p: number): number => p);
+
+export const inQuad = clampEase((p: number): number => p * p);
+
+export const outQuad = clampEase((p: number): number => p * (2 - p));
+
+export const inOutQuad = clampEase((p: number): number => {
+  if (p < 0.5) return p * p * 2;
+
+  return --p * p * -2 + 1;
+});
+
+export const inCubic = clampEase((p: number): number => p * p * p);
+
+export const outCubic = clampEase((p: number): number => --p * p * p + 1);
+
+export const inOutCubic = clampEase((p: number): number => {
+  if (p < 0.5) return p * p * p * 4;
+
+  return --p * p * p * 4 + 1;
+});
+
+export const inQuart = clampEase((p: number): number => p * p * p * p);
+
+export const outQuart = clampEase((p: number): number => 1 - --p * p * p * p);
+
+export const inOutQuart = clampEase((p: number): number => {
+  if (p < 0.5) return p * p * p * p * 8;
+
+  return --p * p * p * p * -8 + 1;
+});
+
+export const inQuint = clampEase((p: number): number => {
+  return p * p * p * p * p;
+});
+
+export const outQuint = clampEase((p: number): number => {
+  return --p * p * p * p * p + 1;
+});
+
+export const inOutQuint = clampEase((p: number): number => {
+  if (p < 0.5) return p * p * p * p * p * 16;
+
+  return --p * p * p * p * p * 16 + 1;
+});
+
+export const inSine = clampEase((p: number): number => {
+  return 1 - Math.cos(p * Math.PI * 0.5);
+});
+
+export const outSine = clampEase((p: number): number => {
+  return Math.sin(p * Math.PI * 0.5);
+});
+
+export const inOutSine = clampEase((p: number): number => {
+  return 0.5 - 0.5 * Math.cos(Math.PI * p);
+});
+
+export const inExpo = clampEase((p: number): number => {
+  return Math.pow(2, 10 * (p - 1)) + EXPO_OFFSET * (p - 1);
+});
+
+export const outExpo = clampEase((p: number): number => {
+  return -Math.pow(2, -10 * p) + 1 + EXPO_OFFSET * p;
+});
+
+export const inOutExpo = clampEase((p: number): number => {
+  if (p < 0.5) return 0.5 * (Math.pow(2, 20 * p - 10) + EXPO_OFFSET * (2 * p - 1));
+
+  return 1 - 0.5 * (Math.pow(2, -20 * p + 10) + EXPO_OFFSET * (-2 * p + 1));
+});
+
+export const inCirc = clampEase((p: number): number => {
+  return 1 - Math.sqrt(1 - p * p);
+});
+
+export const outCirc = clampEase((p: number): number => {
+  return Math.sqrt(1 - --p * p);
+});
+
+export const inOutCirc = clampEase((p: number): number => {
+  if ((p *= 2) < 1) return 0.5 - 0.5 * Math.sqrt(1 - p * p);
+
+  return 0.5 * Math.sqrt(1 - (p -= 2) * p) + 0.5;
+});
+
+export const inElastic = clampEase((p: number): number => {
+  return -Math.pow(2, -10 + 10 * p) * Math.sin((1 - ELASTIC_CONST2 - p) * ELASTIC_CONST) + ELASTIC_OFFSET_FULL * (1 - p);
+});
+
+export const outElastic = clampEase((p: number): number => {
+  return Math.pow(2, -10 * p) * Math.sin((p - ELASTIC_CONST2) * ELASTIC_CONST) + 1 - ELASTIC_OFFSET_FULL * p;
+});
+
+export const outElasticHalf = clampEase((p: number): number => {
+  return Math.pow(2, -10 * p) * Math.sin((0.5 * p - ELASTIC_CONST2) * ELASTIC_CONST) + 1 - ELASTIC_OFFSET_HALF * p;
+});
+
+export const outElasticQuarter = clampEase((p: number): number => {
+  return Math.pow(2, -10 * p) * Math.sin((0.25 * p - ELASTIC_CONST2) * ELASTIC_CONST) + 1 - ELASTIC_OFFSET_QUARTER * p;
+});
+
+export const inOutElastic = clampEase((p: number): number => {
+  if ((p *= 2) < 1) return -0.5 * (Math.pow(2, -10 + 10 * p) * Math.sin(((1 - ELASTIC_CONST2 * 1.5 - p) * ELASTIC_CONST) / 1.5) - IN_OUT_ELASTIC_OFFSET * (1 - p));
+
+  return 0.5 * (Math.pow(2, -10 * --p) * Math.sin(((p - ELASTIC_CONST2 * 1.5) * ELASTIC_CONST) / 1.5) - IN_OUT_ELASTIC_OFFSET * p) + 1;
+});
+
+export const inBack = clampEase((p: number): number => {
+  return p * p * ((BACK_CONST + 1) * p - BACK_CONST);
+});
+
+export const outBack = clampEase((p: number): number => {
+  return --p * p * ((BACK_CONST + 1) * p + BACK_CONST) + 1;
+});
+
+export const inOutBack = clampEase((p: number): number => {
+  if ((p *= 2) < 1) return 0.5 * p * p * ((BACK_CONST2 + 1) * p - BACK_CONST2);
+
+  return 0.5 * ((p -= 2) * p * ((BACK_CONST2 + 1) * p + BACK_CONST2) + 2);
+});
+
+export const inBounce = clampEase((p: number): number => {
+  p = 1 - p;
+
+  if (p < BOUNCE_CONST) return 1 - 7.5625 * p * p;
+  if (p < 2 * BOUNCE_CONST) return 1 - (7.5625 * (p -= 1.5 * BOUNCE_CONST) * p + 0.75);
+  if (p < 2.5 * BOUNCE_CONST) return 1 - (7.5625 * (p -= 2.25 * BOUNCE_CONST) * p + 0.9375);
+
+  return 1 - (7.5625 * (p -= 2.625 * BOUNCE_CONST) * p + 0.984375);
+});
+
+export const outBounce = clampEase((p: number): number => {
+  if (p < BOUNCE_CONST) return 7.5625 * p * p;
+  if (p < 2 * BOUNCE_CONST) return 7.5625 * (p -= 1.5 * BOUNCE_CONST) * p + 0.75;
+  if (p < 2.5 * BOUNCE_CONST) return 7.5625 * (p -= 2.25 * BOUNCE_CONST) * p + 0.9375;
+
+  return 7.5625 * (p -= 2.625 * BOUNCE_CONST) * p + 0.984375;
+});
+
+export const inOutBounce = clampEase((p: number): number => {
+  if (p < 0.5) return 0.5 - 0.5 * outBounce(1 - p * 2);
+
+  return outBounce((p - 0.5) * 2) * 0.5 + 0.5;
+});
+
+export const outPow10 = clampEase((p: number): number => {
+  return --p * Math.pow(p, 10) + 1;
+});
 
 export function getEasingFn(easing: EasingType): EasingFn {
   switch (easing) {
@@ -29,8 +198,8 @@ export function getEasingFn(easing: EasingType): EasingFn {
     case EasingType.InOutCirc: return inOutCirc;
     case EasingType.InElastic: return inElastic;
     case EasingType.OutElastic: return outElastic;
-    case EasingType.OutElasticHalf: return outHalfElastic;
-    case EasingType.OutElasticQuarter: return outQuartElastic;
+    case EasingType.OutElasticHalf: return outElasticHalf;
+    case EasingType.OutElasticQuarter: return outElasticQuarter;
     case EasingType.InOutElastic: return inOutElastic;
     case EasingType.InBack: return inBack;
     case EasingType.OutBack: return outBack;
@@ -38,277 +207,8 @@ export function getEasingFn(easing: EasingType): EasingFn {
     case EasingType.InBounce: return inBounce;
     case EasingType.OutBounce: return outBounce;
     case EasingType.InOutBounce: return inOutBounce;
+    case EasingType.OutPow10: return outPow10;
   }
 
   return linear;
-}
-
-export function linear(time: number): number {
-  return time;
-}
-
-export function inQuad(time: number): number {
-  return time * time;
-}
-
-export function outQuad(time: number): number {
-  return -time * (time - 2);
-}
-
-export function inOutQuad(time: number): number {
-  if (time < 0.5) {
-    return 2 * time * time;
-  }
-
-  time = 2 * time - 1;
-
-  return -0.5 * (time * (time - 2) - 1);
-}
-
-export function inCubic(time: number): number {
-  return time * time * time;
-}
-
-export function outCubic(time: number): number {
-  time -= 1;
-
-  return time * time * time + 1;
-}
-
-export function inOutCubic(time: number): number {
-  time *= 2;
-
-  if (time < 1) {
-    return 0.5 * time * time * time;
-  }
-
-  time -= 2;
-
-  return 0.5 * (time * time * time + 2);
-}
-
-export function inQuart(time: number): number {
-  return time * time * time * time;
-}
-
-export function outQuart(time: number): number {
-  time -= 1;
-
-  return -(time * time * time * time - 1);
-}
-
-export function inOutQuart(time: number): number {
-  time *= 2;
-
-  if (time < 1) {
-    return 0.5 * time * time * time * time;
-  }
-
-  time -= 2;
-
-  return -0.5 * (time * time * time * time - 2);
-}
-
-export function inQuint(time: number): number {
-  return time * time * time * time * time;
-}
-
-export function outQuint(time: number): number {
-  time -= 1;
-
-  return time * time * time * time * time + 1;
-}
-
-export function inOutQuint(time: number): number {
-  time *= 2;
-
-  if (time < 1) {
-    return 0.5 * time * time * time * time * time;
-  }
-
-  time -= 2;
-
-  return 0.5 * (time * time * time * time * time + 2);
-}
-
-export function inSine(time: number): number {
-  return -1 * Math.cos(time * Math.PI / 2) + 1;
-}
-
-export function outSine(time: number): number {
-  return Math.sin(time * Math.PI / 2);
-}
-
-export function inOutSine(time: number): number {
-  return -0.5 * (Math.cos(Math.PI * time) - 1);
-}
-
-export function inExpo(time: number): number {
-  return time === 0 ? 0 : Math.pow(2, 10 * (time - 1));
-}
-
-export function outExpo(time: number): number {
-  return time === 1 ? 1 : 1 - Math.pow(2, -10 * time);
-}
-
-export function inOutExpo(time: number): number {
-  if (time === 0) return 0;
-  if (time === 1) return 1;
-
-  return time < 0.5
-    ? 0.5 * Math.pow(2, (20 * time) - 10)
-    : 1 - 0.5 * Math.pow(2, (-20 * time) + 10);
-}
-
-export function inCirc(time: number): number {
-  return -1 * (Math.sqrt(1 - time * time) - 1);
-}
-
-export function outCirc(time: number): number {
-  time -= 1;
-
-  return Math.sqrt(1 - (time * time));
-}
-
-export function inOutCirc(time: number): number {
-  time *= 2;
-
-  if (time < 1) {
-    return -0.5 * (Math.sqrt(1 - time * time) - 1);
-  }
-
-  time -= 2;
-
-  return 0.5 * (Math.sqrt(1 - time * time) + 1);
-}
-
-export function inElastic(time: number): number {
-  return _inElasticFunction(0.5)(time);
-}
-
-export function outElastic(time: number): number {
-  return _outElasticFunction(0.5, 1)(time);
-}
-
-export function outHalfElastic(time: number): number {
-  return _outElasticFunction(0.5, 0.5)(time);
-}
-
-export function outQuartElastic(time: number): number {
-  return _outElasticFunction(0.5, 0.25)(time);
-}
-
-export function inOutElastic(time: number): number {
-  return _inOutElasticFunction(0.5)(time);
-}
-
-function _inElasticFunction(period: number): EasingFn {
-  return (time: number): number => {
-    time -= 1;
-
-    const pow = Math.pow(2, 10 * time);
-    const sin = Math.sin((time - period / 4) * (2 * Math.PI) / period);
-
-    return -1 * (pow * sin);
-  };
-}
-
-function _outElasticFunction(period: number, mod: number): EasingFn {
-  return (time: number): number => {
-    const pow = Math.pow(2, -10 * time);
-    const sin = Math.sin((mod * time - period / 4) * (2 * Math.PI / period));
-
-    return pow * sin + 1;
-  };
-}
-
-function _inOutElasticFunction(period: number): EasingFn {
-  return (time: number): number => {
-    time *= 2;
-
-    if (time < 1) {
-      time -= 1;
-
-      const pow = Math.pow(2, 10 * time);
-      const sin = Math.sin((time - period / 4) * 2 * Math.PI / period);
-
-      return -0.5 * pow * sin;
-    }
-
-    time -= 1;
-
-    const pow = Math.pow(2, -10 * time);
-    const sin = Math.sin((time - period / 4) * 2 * Math.PI / period);
-
-    return pow * sin * 0.5 + 1;
-  };
-}
-
-export function inBack(time: number): number {
-  const s = 1.70158;
-
-  return time * time * ((s + 1) * time - s);
-}
-
-export function outBack(time: number): number {
-  const s = 1.70158;
-
-  time -= 1;
-
-  return time * time * ((s + 1) * time + s) + 1;
-}
-
-export function inOutBack(time: number): number {
-  let s = 1.70158;
-
-  time *= 2;
-
-  if (time < 1) {
-    s *= 1.525;
-
-    return 0.5 * (time * time * ((s + 1) * time - s));
-  }
-
-  time -= 2;
-  s *= 1.525;
-
-  return 0.5 * (time * time * ((s + 1) * time + s) + 2);
-}
-
-export function inBounce(time: number): number {
-  return 1 - outBounce(1 - time);
-}
-
-export function outBounce(time: number): number {
-  if (time < 4 / 11) {
-    return (121 * time * time) / 16.0;
-  }
-
-  if (time < 8 / 11) {
-    return (363 / 40 * time * time) - (99 / 10 * time) + 17 / 5;
-  }
-
-  if (time < 9 / 10) {
-    return (4356 / 361 * time * time) - (35442 / 1805 * time) + 16061 / 1805;
-  }
-
-  return (54 / 5 * time * time) - (513 / 25 * time) + 268 / 25;
-}
-
-export function inOutBounce(time: number): number {
-  return time < 0.5
-    ? inBounce(2 * time) * 0.5
-    : outBounce(2 * time - 1) * 0.5 + 0.5;
-}
-
-export function inSquare(time: number): number {
-  return time < 1 ? 0 : 1;
-}
-
-export function outSquare(time: number): number {
-  return time > 0 ? 1 : 0;
-}
-
-export function inOutSquare(time: number): number {
-  return time < 0.5 ? 0 : 1;
 }
