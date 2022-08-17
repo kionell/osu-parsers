@@ -1,2 +1,2 @@
-export * from './Easing';
+export * as Easing from './Easing';
 export * from './EasingType';

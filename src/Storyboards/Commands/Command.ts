@@ -1,5 +1,5 @@
 import { CommandType, ParameterType } from '../Enums';
-import { getEasingFn, EasingType } from '../Easing';
+import { Easing, EasingType } from '../Easing';
 import { Color4, Vector2 } from '../../Types';
 import { BlendingParameters } from '../Blending';
 import { map01 } from '../../Utils/MathUtils';
@@ -68,7 +68,7 @@ export class Command<T = any> {
   getProgress(time: number): number {
     const clamped = map01(time, this.startTime, this.endTime);
 
-    return getEasingFn(this.easing)(clamped);
+    return Easing.getEasingFn(this.easing)(clamped);
   }
 
   /**
