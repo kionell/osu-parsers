@@ -89,7 +89,6 @@ export class ManiaBeatmapConverter extends BeatmapConverter {
     this._converted.editor = original.editor;
     this._converted.difficulty = original.difficulty.clone();
     this._converted.metadata = original.metadata;
-    this._converted.colours = original.colours;
     this._converted.events = original.events;
     this._converted.controlPoints = original.controlPoints;
     this._converted.fileFormat = original.fileFormat;
