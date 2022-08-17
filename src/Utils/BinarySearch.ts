@@ -1,6 +1,6 @@
 import { ControlPoint } from '../Beatmaps/ControlPoints/ControlPoint';
 
-type Predicate<T> = (value: T, index: number, arr: T[]) => boolean;
+export type BinarySearchPredicate<T> = (value: T, index: number, arr: T[]) => boolean;
 
 /**
  * Searches an entire one-dimensional sorted array for a specific value.
@@ -91,7 +91,7 @@ export function findControlPoint(arr: ControlPoint[], time: number): ControlPoin
  * @param predicate Predicate function.
  * @returns Found index or -1.
  */
-export function findIndex<T>(arr: T[], predicate: Predicate<T>): number {
+export function findIndex<T>(arr: T[], predicate: BinarySearchPredicate<T>): number {
   let l = -1;
   let r = arr.length - 1;
 
