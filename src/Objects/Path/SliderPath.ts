@@ -1,5 +1,5 @@
 import { Vector2 } from '../../Types';
-import { findNumber, clamp01 } from '../../Utils';
+import { BinarySearch, MathUtils } from '../../Utils';
 import { PathApproximator } from './PathApproximator';
 import { PathPoint } from './PathPoint';
 import { PathType } from '../Enums/PathType';
@@ -362,7 +362,7 @@ export class SliderPath {
   }
 
   private _indexOfDistance(d: number): number {
-    let i = findNumber(this._cumulativeLength, d);
+    let i = BinarySearch.findNumber(this._cumulativeLength, d);
 
     if (i < 0) i = ~i;
 
@@ -370,7 +370,7 @@ export class SliderPath {
   }
 
   private _progressToDistance(progress: number): number {
-    return clamp01(progress) * this.distance;
+    return MathUtils.clamp01(progress) * this.distance;
   }
 
   private _interpolateVertices(i: number, d: number): Vector2 {

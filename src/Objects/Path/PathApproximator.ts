@@ -1,5 +1,5 @@
 import { Vector2 } from '../../Types';
-import { barycentricLagrange, barycentricWeights } from '../../Utils';
+import { Interpolation } from '../../Utils';
 
 /**
  * Helper methods to approximate a path by interpolating a sequence of control points.
@@ -297,7 +297,7 @@ export class PathApproximator {
 
     const output = [];
 
-    const weights = barycentricWeights(controlPoints);
+    const weights = Interpolation.barycentricWeights(controlPoints);
 
     let minX = controlPoints[0].floatX;
     let maxX = controlPoints[0].floatX;
@@ -311,7 +311,7 @@ export class PathApproximator {
 
     for (let i = 0; i < NUM_STEPS; i++) {
       const x = minX + (dx / (NUM_STEPS - 1)) * i;
-      const y = Math.fround(barycentricLagrange(controlPoints, weights, x));
+      const y = Math.fround(Interpolation.barycentricLagrange(controlPoints, weights, x));
 
       output.push(new Vector2(x, y));
     }

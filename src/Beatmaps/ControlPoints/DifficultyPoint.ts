@@ -1,4 +1,4 @@
-import { clamp } from '../../Utils';
+import { clamp } from '../../Utils/MathUtils';
 import { ControlPointType } from '../Enums/ControlPointType';
 import { ControlPoint } from './ControlPoint';
 
