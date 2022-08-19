@@ -59,11 +59,11 @@ export class CommandLoop extends CommandTimelineGroup {
 
     if (commands.length === 0) return [];
 
-    const { commandsDuration, loopCount, loopStartTime } = this;
+    const { commandsDuration, totalIterations, loopStartTime } = this;
 
-    const unrolledCommands = new Array(loopCount * commands.length);
+    const unrolledCommands = new Array(totalIterations * commands.length);
 
-    for (let i = 0; i < loopCount; i++) {
+    for (let i = 0; i < totalIterations; i++) {
       const iterationStartTime = loopStartTime + i * commandsDuration;
 
       for (let j = 0; j < commands.length; j++) {
