@@ -58,6 +58,6 @@
   "dependencies": {
     "buffer": "^6.0.3",
     "lzma-js-simple": "^1.1.0",
-    "osu-classes": "^1.0.1"
+    "osu-classes": "^1.0.2"
   }
 }
