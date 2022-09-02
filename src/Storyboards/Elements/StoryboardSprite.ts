@@ -92,11 +92,6 @@ export class StoryboardSprite implements IStoryboardElementWithDuration, IHasCom
   isAdditive = false;
 
   /**
-   * The list of trigger names that are currently activated on this sprite.
-   */
-  private _activatedTriggers = new Set<string>();
-
-  /**
    * @param path The file path of the content of this storyboard sprite.
    * @param origin The origin of the image on the screen.
    * @param anchor The anchor of the image on the screen.
@@ -180,42 +175,15 @@ export class StoryboardSprite implements IStoryboardElementWithDuration, IHasCom
   }
 
   /**
-   * Activates all triggers of the specified type to this sprite.
-   * @param triggerName The trigger type (Passing, Failing, HitSound...)
-   */
-  activateTriggers(triggerName: string): void {
-    this._activatedTriggers.add(triggerName);
-  }
-
-  /**
-     * Deactivates all triggers of the specified type from this sprite.
-     * @param triggerName The trigger type (Passing, Failing, HitSound...)
-     */
-  deactivateTriggers(triggerName: string): void {
-    this._activatedTriggers.delete(triggerName);
-  }
-
-  /**
    * Collects all commands from every timeline and loop.
    * All loop commands are unwinded, which means there is no need to iterate over loops.
    * This method also updates {@link commands} array.
    * @returns General command array of this sprite.
    */
   updateCommands(): Command[] {
-    let triggerCommands: Command[] = [];
-
-    if (this._activatedTriggers.size > 0) {
-      triggerCommands = this.triggers.flatMap((t) => {
-        return this._activatedTriggers.has(t.triggerName)
-          ? t.unrollCommands()
-          : [];
-      });
-    }
-
     const unwinded = [
       ...this.timelineGroup.commands,
       ...this.loops.flatMap((l) => l.unrollCommands()),
-      ...triggerCommands,
     ];
 
     this.commands = unwinded.sort((a, b) => a.startTime - b.startTime);
