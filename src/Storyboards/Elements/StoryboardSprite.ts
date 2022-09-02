@@ -180,6 +180,22 @@ export class StoryboardSprite implements IStoryboardElementWithDuration, IHasCom
   }
 
   /**
+   * Activates all triggers of the specified type to this sprite.
+   * @param triggerName The trigger type (Passing, Failing, HitSound...)
+   */
+  activateTriggers(triggerName: string): void {
+    this._activatedTriggers.add(triggerName);
+  }
+
+  /**
+     * Deactivates all triggers of the specified type from this sprite.
+     * @param triggerName The trigger type (Passing, Failing, HitSound...)
+     */
+  deactivateTriggers(triggerName: string): void {
+    this._activatedTriggers.delete(triggerName);
+  }
+
+  /**
    * Collects all commands from every timeline and loop.
    * All loop commands are unwinded, which means there is no need to iterate over loops.
    * This method also updates {@link commands} array.
@@ -229,22 +245,6 @@ export class StoryboardSprite implements IStoryboardElementWithDuration, IHasCom
 
     this.startTime = earliestStartTime;
     this.endTime = latestEndTime;
-  }
-
-  /**
-   * Activates all triggers of the specified type to this sprite.
-   * @param triggerName The trigger type (Passing, Failing, HitSound...)
-   */
-  activateTriggers(triggerName: string): void {
-    this._activatedTriggers.add(triggerName);
-  }
-
-  /**
-   * Deactivates all triggers of the specified type from this sprite.
-   * @param triggerName The trigger type (Passing, Failing, HitSound...)
-   */
-  deactivateTriggers(triggerName: string): void {
-    this._activatedTriggers.delete(triggerName);
   }
 
   /**
