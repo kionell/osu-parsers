@@ -72,12 +72,10 @@ export abstract class StoryboardEventDecoder {
     const eventType = this.parseEventType(data[0]);
 
     // Update sprite values before parsing next element.
-    if (eventType === EventType.Sprite || eventType === EventType.Animation) {
-      if (this._storyboardSprite?.hasCommands) {
-        this._storyboardSprite.updateCommands();
-        this._storyboardSprite.adjustTimesToCommands();
-        this._storyboardSprite.resetValuesToCommands();
-      }
+    if (this._storyboardSprite?.hasCommands) {
+      this._storyboardSprite.updateCommands();
+      this._storyboardSprite.adjustTimesToCommands();
+      this._storyboardSprite.resetValuesToCommands();
     }
 
     switch (eventType) {
