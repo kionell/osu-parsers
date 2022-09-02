@@ -206,7 +206,9 @@ export class StoryboardSprite implements IStoryboardElementWithDuration, IHasCom
 
     if (this._activatedTriggers.size > 0) {
       triggerCommands = this.triggers.flatMap((t) => {
-        return this._activatedTriggers.has(t.triggerName) ? t.unrollCommands() : [];
+        return this._activatedTriggers.has(t.triggerName)
+          ? t.unrollCommands()
+          : [];
       });
     }
 
@@ -226,21 +228,12 @@ export class StoryboardSprite implements IStoryboardElementWithDuration, IHasCom
    * earliest command start time & latest command end time.
    */
   adjustTimesToCommands(): void {
-    let earliestStartTime = this.timelineGroup.startTime;
-    let latestEndTime = this.timelineGroup.endTime;
+    let earliestStartTime = this.startTime;
+    let latestEndTime = this.endTime;
 
-    for (const loop of this.loops) {
-      earliestStartTime = Math.min(earliestStartTime, loop.startTime);
-      latestEndTime = Math.max(latestEndTime, loop.endTime);
-    }
-
-    if (this._activatedTriggers.size > 0) {
-      for (const trigger of this.triggers) {
-        if (!this._activatedTriggers.has(trigger.triggerName)) continue;
-
-        earliestStartTime = Math.min(earliestStartTime, trigger.startTime);
-        latestEndTime = Math.max(latestEndTime, trigger.endTime);
-      }
+    for (const command of this.commands) {
+      earliestStartTime = Math.min(earliestStartTime, command.startTime);
+      latestEndTime = Math.max(latestEndTime, command.endTime);
     }
 
     this.startTime = earliestStartTime;
