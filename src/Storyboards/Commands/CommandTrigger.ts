@@ -1,5 +1,6 @@
 import { CommandTimelineGroup } from './CommandTimelineGroup';
 import { CompoundType } from '../Enums/CompoundType';
+import { Command } from './Command';
 
 export class CommandTrigger extends CommandTimelineGroup {
   /**
@@ -41,5 +42,23 @@ export class CommandTrigger extends CommandTimelineGroup {
     this.triggerStartTime = startTime || 0;
     this.triggerEndTime = endTime || 0;
     this.groupNumber = groupNumber || 0;
+  }
+
+  unrollCommands(): Command[] {
+    const commands = this.commands;
+
+    if (commands.length === 0) return [];
+
+    const unrolledCommands = new Array(commands.length);
+
+    for (let i = 0; i < commands.length; i++) {
+      unrolledCommands[i] = new Command({
+        ...commands[i],
+        startTime: commands[i].startTime + this.triggerStartTime,
+        endTime: commands[i].endTime + this.triggerStartTime,
+      });
+    }
+
+    return unrolledCommands;
   }
 }
