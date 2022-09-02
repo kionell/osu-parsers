@@ -47,6 +47,6 @@
     "typescript": "^4.1.5"
   },
   "peerDependencies": {
-    "osu-classes": "^1.0.1"
+    "osu-classes": "^1.0.2"
   }
 }
