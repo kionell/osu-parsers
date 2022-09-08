@@ -34,7 +34,7 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
   /**
    * Whether the map was passed or not.
    */
-  passed = true;
+  passed = false;
 
   /**
    * Perfect combo or not?
