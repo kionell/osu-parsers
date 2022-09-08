@@ -73,10 +73,53 @@ export abstract class DifficultyCalculator {
   }
 
   /**
+   * Calculates the difficulty of the beatmap at a specific object count.
+   * @param objectCount How many objects to use for calculation?
+   * @returns Difficulty attributes at the specific object count.
+   */
+  calculateAt(objectCount?: number): DifficultyAttributes {
+    const mods = this._ruleset.createModCombination();
+
+    return this.calculateWithModsAt(mods, objectCount);
+  }
+
+  /**
+   * Calculates the difficulty of the beatmap with applied mods at a sepcific object count.
+   * @param mods The mods that should be applied to the beatmap.
+   * @param objectCount How many objects to use for calculation?
+   * @returns Difficulty attributes at the specific object count.
+   */
+  calculateWithModsAt(mods: ModCombination, objectCount?: number): DifficultyAttributes {
+    if (!objectCount) return this.calculateWithMods(mods);
+
+    const beatmap = this._getWorkingBeatmap(mods);
+    const skills = this._createSkills(beatmap, mods);
+
+    if (!beatmap.hitObjects.length || objectCount <= 0) {
+      return this._createDifficultyAttributes(beatmap, mods, skills);
+    }
+
+    const progressiveBeatmap = new ProgressiveCalculationBeatmap(beatmap);
+
+    for (const hitObject of this._getDifficultyHitObjects(beatmap)) {
+      progressiveBeatmap.hitObjects.push(hitObject.baseObject);
+
+      for (const skill of skills) {
+        skill.processInternal(hitObject);
+      }
+
+      // Progressive beatmap has enough objects to calculate difficulty.
+      if (progressiveBeatmap.hitObjects.length >= objectCount) break;
+    }
+
+    return this._createDifficultyAttributes(progressiveBeatmap, mods, skills);
+  }
+
+  /**
    * Calculates the difficulty of the beatmap with no mods applied 
    * and returns a set of timed difficulty attributes 
    * representing the difficulty at every relevant time value in the beatmap.
-   * @returns The set of TimedDifficultyAttributes.
+   * @returns The set of timed difficulty attributes.
    */
   calculateTimed(): TimedDifficultyAttributes[] {
     return this.calculateTimedWithMods(this._ruleset.createModCombination());
@@ -149,7 +192,7 @@ export abstract class DifficultyCalculator {
   }
 
   /**
-   * Sorts a given set of DifficultyHitObjects.
+   * Sorts a given set of difficulty hit objects.
    * @param input The difficulty hit objects to sort.
    * @returns The sorted difficulty hit objects.
    */
