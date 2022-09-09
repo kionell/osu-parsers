@@ -78,9 +78,10 @@ export abstract class DifficultyCalculator {
    * @returns Difficulty attributes at the specific object count.
    */
   calculateAt(objectCount?: number): DifficultyAttributes {
-    const mods = this._ruleset.createModCombination();
+    const mods = (this._beatmap as RulesetBeatmap)?.mods;
+    const combination = mods ?? this._ruleset.createModCombination();
 
-    return this.calculateWithModsAt(mods, objectCount);
+    return this.calculateWithModsAt(combination, objectCount);
   }
 
   /**
