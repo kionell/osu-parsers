@@ -23,38 +23,16 @@ import { StandardDifficultyHitObject } from './Preprocessing';
 import { StandardHitWindows } from '../Scoring';
 import { Circle, Slider, Spinner } from '../Objects';
 
-export class StandardDifficultyCalculator extends DifficultyCalculator {
+export class StandardDifficultyCalculator extends DifficultyCalculator<StandardDifficultyAttributes> {
   private _DIFFICULTY_MULTIPLIER = 0.0675;
   private _hitWindowGreat = 0;
 
-  /**
-   * Calculates the difficulty of the beatmap with no mods applied.
-   * @returns A structure describing the difficulty of the beatmap.
-   */
-  calculate(): StandardDifficultyAttributes {
-    return super.calculate() as StandardDifficultyAttributes;
-  }
-
-  /**
-   * Calculates the difficulty of the beatmap using
-   * all mod combinations applicable to the beatmap.
-   * @returns A collection of structures describing
-   * the difficulty of the beatmap for each mod combination.
-   */
-  calculateAll(): Generator<StandardDifficultyAttributes> {
-    return super.calculateAll() as Generator<StandardDifficultyAttributes>;
-  }
-
-  /**
-   * Calculates the difficulty of the beatmap using a specific mod combination.
-   * @param mods The mods that should be applied to the beatmap.
-   * @returns A structure describing the difficulty of the beatmap.
-   */
-  calculateWithMods(mods: StandardModCombination): StandardDifficultyAttributes {
-    return super.calculateWithMods(mods) as StandardDifficultyAttributes;
-  }
-
-  protected _createDifficultyAttributes(beatmap: IBeatmap, mods: StandardModCombination, skills: Skill[]): StandardDifficultyAttributes {
+  protected _createDifficultyAttributes(
+    beatmap: IBeatmap,
+    mods: StandardModCombination,
+    skills: Skill[],
+    clockRate: number,
+  ): StandardDifficultyAttributes {
     if (beatmap.hitObjects.length === 0) {
       return new StandardDifficultyAttributes(mods, 0);
     }
@@ -91,7 +69,6 @@ export class StandardDifficultyCalculator extends DifficultyCalculator {
     }
 
     const approachRate = beatmap.difficulty.approachRate;
-    const clockRate = beatmap.difficulty.clockRate;
 
     const preempt = DifficultyRange.map(approachRate, 1800, 1200, 450) / clockRate;
 
@@ -122,7 +99,7 @@ export class StandardDifficultyCalculator extends DifficultyCalculator {
     return attributes;
   }
 
-  protected *_createDifficultyHitObjects(beatmap: IBeatmap): Generator<StandardDifficultyHitObject> {
+  protected *_createDifficultyHitObjects(beatmap: IBeatmap, clockRate: number): Generator<StandardDifficultyHitObject> {
     /**
      * The first jump is formed by the first two hitobjects of the map.
      * If the map has less than two hit objects, the enumerator will not return anything.
@@ -131,14 +108,12 @@ export class StandardDifficultyCalculator extends DifficultyCalculator {
       const lastLast = i > 1 ? beatmap.hitObjects[i - 2] : null;
       const last = beatmap.hitObjects[i - 1];
       const current = beatmap.hitObjects[i];
-      const clockRate = beatmap.difficulty.clockRate;
 
       yield new StandardDifficultyHitObject(current, lastLast, last, clockRate);
     }
   }
 
-  protected _createSkills(beatmap: IBeatmap, mods: StandardModCombination): Skill[] {
-    const clockRate = beatmap.difficulty.clockRate;
+  protected _createSkills(beatmap: IBeatmap, mods: StandardModCombination, clockRate: number): Skill[] {
     const hitWindows = new StandardHitWindows();
 
     hitWindows.setDifficulty(beatmap.difficulty.overallDifficulty);
