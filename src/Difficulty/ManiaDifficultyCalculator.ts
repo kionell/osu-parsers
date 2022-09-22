@@ -4,7 +4,6 @@ import {
   IMod,
   IRuleset,
   ModBitwise,
-  ModCombination,
   RoundHelper,
   Skill,
   SortHelper,
@@ -35,7 +34,7 @@ import { ManiaDifficultyAttributes } from './Attributes';
 import { ManiaDifficultyHitObject } from './Preprocessing';
 import { Strain } from './Skills';
 
-export class ManiaDifficultyCalculator extends DifficultyCalculator {
+export class ManiaDifficultyCalculator extends DifficultyCalculator<ManiaDifficultyAttributes> {
   private static _STAR_SCALING_FACTOR = 0.018;
 
   private readonly _isForCurrentRuleset: boolean;
@@ -48,39 +47,15 @@ export class ManiaDifficultyCalculator extends DifficultyCalculator {
     this._originalOverallDifficulty = (beatmap.base ?? beatmap).difficulty.overallDifficulty;
   }
 
-  /**
-   * Calculates the difficulty of the beatmap with no mods applied.
-   * @returns A structure describing the difficulty of the beatmap.
-   */
-  calculate(): ManiaDifficultyAttributes {
-    return super.calculate() as ManiaDifficultyAttributes;
-  }
-
-  /**
-   * Calculates the difficulty of the beatmap using
-   * all mod combinations applicable to the beatmap.
-   * @returns A collection of structures describing
-   * the difficulty of the beatmap for each mod combination.
-   */
-  calculateAll(): Generator<ManiaDifficultyAttributes> {
-    return super.calculateAll() as Generator<ManiaDifficultyAttributes>;
-  }
-
-  /**
-   * Calculates the difficulty of the beatmap using a specific mod combination.
-   * @param mods The mods that should be applied to the beatmap.
-   * @returns A structure describing the difficulty of the beatmap.
-   */
-  calculateWithMods(mods: ManiaModCombination): ManiaDifficultyAttributes {
-    return super.calculateWithMods(mods) as ManiaDifficultyAttributes;
-  }
-
-  protected _createDifficultyAttributes(beatmap: IBeatmap, mods: ModCombination, skills: Skill[]): ManiaDifficultyAttributes {
+  protected _createDifficultyAttributes(
+    beatmap: IBeatmap,
+    mods: ManiaModCombination,
+    skills: Skill[],
+    clockRate: number,
+  ): ManiaDifficultyAttributes {
     if (beatmap.hitObjects.length === 0) {
       return new ManiaDifficultyAttributes(mods, 0);
     }
-
-    const clockRate = beatmap.difficulty.clockRate;
 
     const hitWindows = new ManiaHitWindows();
 
@@ -98,8 +73,7 @@ export class ManiaDifficultyCalculator extends DifficultyCalculator {
     return attributes;
   }
 
-  protected *_createDifficultyHitObjects(beatmap: IBeatmap): Generator<ManiaDifficultyHitObject> {
-    const clockRate = beatmap.difficulty.clockRate;
+  protected *_createDifficultyHitObjects(beatmap: IBeatmap, clockRate: number): Generator<ManiaDifficultyHitObject> {
     const hitObjects = beatmap.hitObjects.slice() as ManiaHitObject[];
 
     const comparerFn = (a: ManiaHitObject, b: ManiaHitObject) => {
@@ -113,7 +87,7 @@ export class ManiaDifficultyCalculator extends DifficultyCalculator {
     }
   }
 
-  protected _createSkills(beatmap: IBeatmap, mods: ModCombination): Skill[] {
+  protected _createSkills(beatmap: IBeatmap, mods: ManiaModCombination): Skill[] {
     return [
       new Strain(mods, (beatmap as ManiaBeatmap).totalColumns),
     ];
@@ -148,7 +122,7 @@ export class ManiaDifficultyCalculator extends DifficultyCalculator {
     ];
   }
 
-  private _getHitWindow300(mods: ModCombination): number {
+  private _getHitWindow300(mods: ManiaModCombination): number {
     const applyModAdjustments = (value: number) => {
       if (mods.has(ModBitwise.HardRock)) {
         return value / 1.4;
@@ -174,7 +148,7 @@ export class ManiaDifficultyCalculator extends DifficultyCalculator {
     return applyModAdjustments(47);
   }
 
-  private _getScoreMultiplier(mods: ModCombination): number {
+  private _getScoreMultiplier(mods: ManiaModCombination): number {
     let scoreMultiplier = 1;
 
     if (mods.has(ModBitwise.NoFail)) scoreMultiplier *= 0.5;
