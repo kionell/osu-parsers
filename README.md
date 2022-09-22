@@ -80,7 +80,7 @@ const parsed = decoder.decodeFromPath(decodePath);
 const ruleset = new TaikoRuleset();
 
 // Create mod combination.
-const mods = ruleset.createModCombination('HDDT');
+const mods = ruleset.createModCombination('HDHRNCFL');
 
 // Create difficulty calculator for IBeatmap object.
 const difficultyCalculator = ruleset.createDifficultyCalculator(parsed);
