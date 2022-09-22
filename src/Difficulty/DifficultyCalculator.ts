@@ -21,88 +21,97 @@ export abstract class DifficultyCalculator {
    */
   protected _beatmap: IBeatmap;
   protected _ruleset: IRuleset;
-  private _clockRate = 1;
+  protected _mods: ModCombination;
 
   constructor(beatmap: IBeatmap, ruleset: IRuleset) {
     this._beatmap = beatmap;
     this._ruleset = ruleset;
+
+    this._mods = (beatmap as RulesetBeatmap)?.mods
+      ?? this._ruleset.createModCombination();
   }
 
   /**
    * Calculates the difficulty of the beatmap with no mods applied.
+   * @param clockRate Custom clock rate for the difficulty calculation.
    * @returns A structure describing the difficulty of the beatmap.
    */
-  calculate(): DifficultyAttributes {
-    const mods = (this._beatmap as RulesetBeatmap)?.mods;
-
-    return this.calculateWithMods(mods ?? this._ruleset.createModCombination());
+  calculate(clockRate?: number): DifficultyAttributes {
+    return this.calculateWithMods(this._mods, clockRate);
   }
 
   /**
    * Calculates the difficulty of the beatmap using 
    * all mod combinations applicable to the beatmap.
+   * @param clockRate Custom clock rate for the difficulty calculation.
    * @returns A collection of structures describing 
    * the difficulty of the beatmap for each mod combination.
    */
-  *calculateAll(): Generator<DifficultyAttributes> {
+  *calculateAll(clockRate?: number): Generator<DifficultyAttributes> {
     for (const combination of this._createDifficultyModCombinations()) {
-      yield this.calculateWithMods(combination);
+      yield this.calculateWithMods(combination, clockRate);
     }
   }
 
   /**
    * Calculates the difficulty of the beatmap using a specific mod combination.
    * @param mods The mods that should be applied to the beatmap.
+   * @param clockRate Custom clock rate for the difficulty calculation.
    * @returns A structure describing the difficulty of the beatmap.
    */
-  calculateWithMods(mods: ModCombination): DifficultyAttributes {
+  calculateWithMods(mods: ModCombination, clockRate?: number): DifficultyAttributes {
     const beatmap = this._getWorkingBeatmap(mods);
-    const skills = this._createSkills(beatmap, mods);
+
+    clockRate ??= beatmap.difficulty.clockRate;
+
+    const skills = this._createSkills(beatmap, mods, clockRate);
 
     if (!beatmap.hitObjects.length) {
-      return this._createDifficultyAttributes(beatmap, mods, skills);
+      return this._createDifficultyAttributes(beatmap, mods, skills, clockRate);
     }
 
-    for (const hitObject of this._getDifficultyHitObjects(beatmap)) {
+    for (const hitObject of this._getDifficultyHitObjects(beatmap, clockRate)) {
       for (const skill of skills) {
         skill.processInternal(hitObject);
       }
     }
 
-    return this._createDifficultyAttributes(beatmap, mods, skills);
+    return this._createDifficultyAttributes(beatmap, mods, skills, clockRate);
   }
 
   /**
    * Calculates the difficulty of the beatmap at a specific object count.
    * @param objectCount How many objects to use for calculation?
+   * @param clockRate Custom clock rate for the difficulty calculation.
    * @returns Difficulty attributes at the specific object count.
    */
-  calculateAt(objectCount?: number): DifficultyAttributes {
-    const mods = (this._beatmap as RulesetBeatmap)?.mods;
-    const combination = mods ?? this._ruleset.createModCombination();
-
-    return this.calculateWithModsAt(combination, objectCount);
+  calculateAt(objectCount?: number, clockRate?: number): DifficultyAttributes {
+    return this.calculateWithModsAt(this._mods, objectCount, clockRate);
   }
 
   /**
    * Calculates the difficulty of the beatmap with applied mods at a sepcific object count.
    * @param mods The mods that should be applied to the beatmap.
    * @param objectCount How many objects to use for calculation?
+   * @param clockRate Custom clock rate for the difficulty calculation.
    * @returns Difficulty attributes at the specific object count.
    */
-  calculateWithModsAt(mods: ModCombination, objectCount?: number): DifficultyAttributes {
+  calculateWithModsAt(mods: ModCombination, objectCount?: number, clockRate?: number): DifficultyAttributes {
     if (!objectCount) return this.calculateWithMods(mods);
 
     const beatmap = this._getWorkingBeatmap(mods);
-    const skills = this._createSkills(beatmap, mods);
+
+    clockRate ??= beatmap.difficulty.clockRate;
+
+    const skills = this._createSkills(beatmap, mods, clockRate);
 
     if (!beatmap.hitObjects.length || objectCount <= 0) {
-      return this._createDifficultyAttributes(beatmap, mods, skills);
+      return this._createDifficultyAttributes(beatmap, mods, skills, clockRate);
     }
 
     const progressiveBeatmap = new ProgressiveCalculationBeatmap(beatmap);
 
-    for (const hitObject of this._getDifficultyHitObjects(beatmap)) {
+    for (const hitObject of this._getDifficultyHitObjects(beatmap, clockRate)) {
       progressiveBeatmap.hitObjects.push(hitObject.baseObject);
 
       for (const skill of skills) {
@@ -113,17 +122,18 @@ export abstract class DifficultyCalculator {
       if (progressiveBeatmap.hitObjects.length >= objectCount) break;
     }
 
-    return this._createDifficultyAttributes(progressiveBeatmap, mods, skills);
+    return this._createDifficultyAttributes(progressiveBeatmap, mods, skills, clockRate);
   }
 
   /**
    * Calculates the difficulty of the beatmap with no mods applied 
    * and returns a set of timed difficulty attributes 
    * representing the difficulty at every relevant time value in the beatmap.
+   * @param clockRate Custom clock rate for the difficulty calculation.
    * @returns The set of timed difficulty attributes.
    */
-  calculateTimed(): TimedDifficultyAttributes[] {
-    return this.calculateTimedWithMods(this._ruleset.createModCombination());
+  calculateTimed(clockRate?: number): TimedDifficultyAttributes[] {
+    return this.calculateTimedWithMods(this._mods, clockRate);
   }
 
   /**
@@ -131,26 +141,29 @@ export abstract class DifficultyCalculator {
    * and returns a set of timed difficulty attributes representing 
    * the difficulty at every relevant time value in the beatmap.
    * @param mods The mods that should be applied to the beatmap.
+   * @param clockRate Custom clock rate for the difficulty calculation.
    * @returns The set of timed difficulty attributes.
    */
-  calculateTimedWithMods(mods: ModCombination): TimedDifficultyAttributes[] {
+  calculateTimedWithMods(mods: ModCombination, clockRate?: number): TimedDifficultyAttributes[] {
     const beatmap = this._getWorkingBeatmap(mods);
     const attributes: TimedDifficultyAttributes[] = [];
 
     if (!beatmap.hitObjects.length) return attributes;
 
-    const skills = this._createSkills(beatmap, mods);
+    clockRate ??= beatmap.difficulty.clockRate;
+
+    const skills = this._createSkills(beatmap, mods, clockRate);
     const progressiveBeatmap = new ProgressiveCalculationBeatmap(beatmap);
 
-    for (const hitObject of this._getDifficultyHitObjects(beatmap)) {
+    for (const hitObject of this._getDifficultyHitObjects(beatmap, clockRate)) {
       progressiveBeatmap.hitObjects.push(hitObject.baseObject);
 
       for (const skill of skills) {
         skill.processInternal(hitObject);
       }
 
-      const time = hitObject.endTime * this._clockRate;
-      const atts = this._createDifficultyAttributes(progressiveBeatmap, mods, skills);
+      const time = hitObject.endTime * clockRate;
+      const atts = this._createDifficultyAttributes(progressiveBeatmap, mods, skills, clockRate);
 
       attributes.push(new TimedDifficultyAttributes(time, atts));
     }
@@ -186,10 +199,11 @@ export abstract class DifficultyCalculator {
 
   /**
    * @param beatmap The beatmap for creating difficulty hit objects.
+   * @param clockRate Custom clock rate for the difficulty calculation.
    * @returns The difficulty hit objects to calculate against.
    */
-  private _getDifficultyHitObjects(beatmap: IBeatmap): Iterable<DifficultyHitObject> {
-    return this._sortObjects(this._createDifficultyHitObjects(beatmap));
+  private _getDifficultyHitObjects(beatmap: IBeatmap, clockRate: number): Iterable<DifficultyHitObject> {
+    return this._sortObjects(this._createDifficultyHitObjects(beatmap, clockRate));
   }
 
   /**
@@ -260,22 +274,30 @@ export abstract class DifficultyCalculator {
    * This may differ from Beatmap in the case of timed calculation.
    * @param mods The mods that difficulty was calculated with.
    * @param skills The skills which processed the beatmap.
+   * @param clockRate Custom clock rate for the difficulty calculation.
    */
-  protected abstract _createDifficultyAttributes(beatmap: IBeatmap, mods: ModCombination, skills: Skill[]): DifficultyAttributes;
+  protected abstract _createDifficultyAttributes(
+    beatmap: IBeatmap,
+    mods: ModCombination,
+    skills: Skill[],
+    clockRate: number,
+  ): DifficultyAttributes;
 
   /**
    * Enumerates difficulty hit objects to be processed from hit objects in the IBeatmap.
    * @param beatmap The IBeatmap providing the hit objects to enumerate.
+   * @param clockRate Custom clock rate for the difficulty calculation.
    * @returns The enumerated difficulty hit objects.
    */
-  protected abstract _createDifficultyHitObjects(beatmap: IBeatmap): Generator<DifficultyHitObject>;
+  protected abstract _createDifficultyHitObjects(beatmap: IBeatmap, clockRate: number): Generator<DifficultyHitObject>;
 
   /**
    * Creates the Skills to calculate the difficulty of an IBeatmap.
    * @param beatmap The IBeatmap whose difficulty will be calculated.
    * This may differ from Beatmap in the case of timed calculation.
    * @param mods The mods to calculate difficulty with.
+   * @param clockRate Custom clock rate for the difficulty calculation.
    * @returns The skills.
    */
-  protected abstract _createSkills(beatmap: IBeatmap, mods: ModCombination): Skill[];
+  protected abstract _createSkills(beatmap: IBeatmap, mods: ModCombination, clockRate: number): Skill[];
 }
