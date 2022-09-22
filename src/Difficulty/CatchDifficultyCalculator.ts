@@ -27,44 +27,21 @@ import { CatchDifficultyAttributes } from './Attributes';
 import { CatchDifficultyHitObject } from './Preprocessing';
 import { Movement } from './Skills';
 
-export class CatchDifficultyCalculator extends DifficultyCalculator {
+export class CatchDifficultyCalculator extends DifficultyCalculator<CatchDifficultyAttributes> {
   private static _STAR_SCALING_FACTOR = 0.153;
 
   private _halfCatcherWidth = 0;
 
-  /**
-   * Calculates the difficulty of the beatmap with no mods applied.
-   * @returns A structure describing the difficulty of the beatmap.
-   */
-  calculate(): CatchDifficultyAttributes {
-    return super.calculate() as CatchDifficultyAttributes;
-  }
-
-  /**
-   * Calculates the difficulty of the beatmap using
-   * all mod combinations applicable to the beatmap.
-   * @returns A collection of structures describing
-   * the difficulty of the beatmap for each mod combination.
-   */
-  calculateAll(): Generator<CatchDifficultyAttributes> {
-    return super.calculateAll() as Generator<CatchDifficultyAttributes>;
-  }
-
-  /**
-   * Calculates the difficulty of the beatmap using a specific mod combination.
-   * @param mods The mods that should be applied to the beatmap.
-   * @returns A structure describing the difficulty of the beatmap.
-   */
-  calculateWithMods(mods: CatchModCombination): CatchDifficultyAttributes {
-    return super.calculateWithMods(mods) as CatchDifficultyAttributes;
-  }
-
-  protected _createDifficultyAttributes(beatmap: IBeatmap, mods: ModCombination, skills: Skill[]): CatchDifficultyAttributes {
+  protected _createDifficultyAttributes(
+    beatmap: IBeatmap,
+    mods: CatchModCombination,
+    skills: Skill[],
+    clockRate: number,
+  ): CatchDifficultyAttributes {
     if (beatmap.hitObjects.length === 0) {
       return new CatchDifficultyAttributes(mods, 0);
     }
 
-    const clockRate = beatmap.difficulty.clockRate;
     const approachRate = beatmap.difficulty.approachRate;
     const starMultiplier = CatchDifficultyCalculator._STAR_SCALING_FACTOR;
 
@@ -85,10 +62,9 @@ export class CatchDifficultyCalculator extends DifficultyCalculator {
     return attributes;
   }
 
-  protected *_createDifficultyHitObjects(beatmap: IBeatmap): Generator<CatchDifficultyHitObject> {
+  protected *_createDifficultyHitObjects(beatmap: IBeatmap, clockRate: number): Generator<CatchDifficultyHitObject> {
     let lastObject: CatchHitObject | null = null;
 
-    const clockRate = beatmap.difficulty.clockRate;
     const halfCatcherWidth = this._halfCatcherWidth;
 
     /**
@@ -114,7 +90,7 @@ export class CatchDifficultyCalculator extends DifficultyCalculator {
     }
   }
 
-  protected _createSkills(beatmap: IBeatmap, mods: ModCombination): Skill[] {
+  protected _createSkills(beatmap: IBeatmap, mods: ModCombination, clockRate: number): Skill[] {
     /**
      * The size of the catcher at 1x scale.
      */
@@ -139,7 +115,7 @@ export class CatchDifficultyCalculator extends DifficultyCalculator {
     this._halfCatcherWidth *= 1 - (Math.fround(Math.max(0, circleSize - 5.5) * 0.0625));
 
     return [
-      new Movement(mods, this._halfCatcherWidth, beatmap.difficulty.clockRate),
+      new Movement(mods, this._halfCatcherWidth, clockRate),
     ];
   }
 
