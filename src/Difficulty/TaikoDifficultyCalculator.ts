@@ -3,7 +3,6 @@ import {
   HitResult,
   IBeatmap,
   IMod,
-  ModCombination,
   Skill,
 } from 'osu-classes';
 
@@ -33,39 +32,12 @@ import { TaikoHitWindows } from '../Scoring';
 /**
  * A taiko difficulty calculator.
  */
-export class TaikoDifficultyCalculator extends DifficultyCalculator {
+export class TaikoDifficultyCalculator extends DifficultyCalculator<TaikoDifficultyAttributes> {
   private static _COLOUR_SKILL_MULTIPLIER = 0.01;
   private static _RHYTHM_SKILL_MULTIPLIER = 0.014;
   private static _STAMINA_SKILL_MULTIPLIER = 0.02;
 
-  /**
-   * Calculates the difficulty of the beatmap with no mods applied.
-   * @returns A structure describing the difficulty of the beatmap.
-   */
-  calculate(): TaikoDifficultyAttributes {
-    return super.calculate() as TaikoDifficultyAttributes;
-  }
-
-  /**
-   * Calculates the difficulty of the beatmap using
-   * all mod combinations applicable to the beatmap.
-   * @returns A collection of structures describing
-   * the difficulty of the beatmap for each mod combination.
-   */
-  calculateAll(): Generator<TaikoDifficultyAttributes> {
-    return super.calculateAll() as Generator<TaikoDifficultyAttributes>;
-  }
-
-  /**
-   * Calculates the difficulty of the beatmap using a specific mod combination.
-   * @param mods The mods that should be applied to the beatmap.
-   * @returns A structure describing the difficulty of the beatmap.
-   */
-  calculateWithMods(mods: TaikoModCombination): TaikoDifficultyAttributes {
-    return super.calculateWithMods(mods) as TaikoDifficultyAttributes;
-  }
-
-  protected _createSkills(beatmap: IBeatmap, mods: ModCombination): Skill[] {
+  protected _createSkills(_: IBeatmap, mods: TaikoModCombination): Skill[] {
     return [
       new Colour(mods),
       new Rhythm(mods),
@@ -83,9 +55,8 @@ export class TaikoDifficultyCalculator extends DifficultyCalculator {
     ];
   }
 
-  protected *_createDifficultyHitObjects(beatmap: IBeatmap): Generator<TaikoDifficultyHitObject> {
+  protected *_createDifficultyHitObjects(beatmap: IBeatmap, clockRate: number): Generator<TaikoDifficultyHitObject> {
     const difficultyObjects: TaikoDifficultyHitObject[] = [];
-    const clockRate = beatmap.difficulty.clockRate;
 
     for (let i = 2; i < beatmap.hitObjects.length; ++i) {
       const hitObject = beatmap.hitObjects[i];
@@ -110,12 +81,15 @@ export class TaikoDifficultyCalculator extends DifficultyCalculator {
     }
   }
 
-  protected _createDifficultyAttributes(beatmap: IBeatmap, mods: ModCombination, skills: Skill[]): TaikoDifficultyAttributes {
+  protected _createDifficultyAttributes(
+    beatmap: IBeatmap,
+    mods: TaikoModCombination,
+    skills: Skill[],
+    clockRate: number,
+  ): TaikoDifficultyAttributes {
     if (beatmap.hitObjects.length === 0) {
       return new TaikoDifficultyAttributes(mods, 0);
     }
-
-    const clockRate = beatmap.difficulty.clockRate;
 
     const colour = skills[0] as Colour;
     const rhythm = skills[1] as Rhythm;
