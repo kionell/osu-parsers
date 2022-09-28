@@ -7,7 +7,7 @@ import * as internal from 'stream';
  */
 export class DifficultyHitObject {
   
-  private readonly difficultyHitObjects: ReadonlyArray<DifficultyHitObject>;
+  private readonly _difficultyHitObjects: ReadonlyArray<DifficultyHitObject>;
   
   /**
    * The index of this {@link DifficultyHitObject} in the list of all {@link DifficultyHitObject}s.
@@ -47,7 +47,7 @@ export class DifficultyHitObject {
    * @param index The index of this {@link DifficultyHitObject} in {@link objects} list.
    */
   constructor(hitObject: IHitObject, lastObject: IHitObject, clockRate: number, objects: Array<DifficultyHitObject>,  index: number) {
-    this.difficultyHitObjects = objects;
+    this._difficultyHitObjects = objects;
     this.index = index;
     this.baseObject = hitObject;
     this.lastObject = lastObject;
@@ -60,10 +60,10 @@ export class DifficultyHitObject {
   }
 
   // TODO
-  previous(backwardsIndex: number) {
-    return this.difficultyHitObjects[(this.index - (backwardsIndex + 1))] ?? null;
+  _previous(backwardsIndex: number) {
+    return this._difficultyHitObjects[(this.index - (backwardsIndex + 1))] ?? null;
   };
-  next(forwardsIndex: number) {
-    return this.difficultyHitObjects[(this.index + (forwardsIndex + 1))] ?? null;
+  _next(forwardsIndex: number) {
+    return this._difficultyHitObjects[(this.index + (forwardsIndex + 1))] ?? null;
   };
 }
