@@ -12,7 +12,7 @@ export class DifficultyHitObject {
   /**
    * The index of this {@link DifficultyHitObject} in the list of all {@link DifficultyHitObject}s.
    */
-  readonly Index: number;
+  readonly index: number;
   /**
    * The {@link hitObject} this {@link DifficultyHitObject} wraps.
    */
@@ -48,7 +48,7 @@ export class DifficultyHitObject {
    */
   constructor(hitObject: IHitObject, lastObject: IHitObject, clockRate: number, objects: Array<DifficultyHitObject>,  index: number) {
     this.difficultyHitObjects = objects;
-    this.Index = index;
+    this.index = index;
     this.baseObject = hitObject;
     this.lastObject = lastObject;
     this.deltaTime = (hitObject.startTime - lastObject.startTime) / clockRate;
@@ -59,10 +59,11 @@ export class DifficultyHitObject {
     this.endTime = (durationObj?.endTime ?? hitObject.startTime) / clockRate;
   }
 
-  Previous(backwardsIndex: number) {
-    return this.difficultyHitObjects[(this.Index - (backwardsIndex + 1))];
+  // TODO
+  previous(backwardsIndex: number) {
+    return this.difficultyHitObjects[(this.index - (backwardsIndex + 1))] ?? null;
   };
-  Next(forwardsIndex: number) {
-    return this.difficultyHitObjects[(this.Index + (forwardsIndex + 1))];
+  next(forwardsIndex: number) {
+    return this.difficultyHitObjects[(this.index + (forwardsIndex + 1))] ?? null;
   };
 }
