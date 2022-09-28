@@ -1,42 +1,54 @@
 import { IHasDuration } from '../../Objects/Types/IHasDuration';
 import { IHitObject } from '../../Objects/IHitObject';
+import * as internal from 'stream';
 
 /**
  * Wraps a hit object and provides additional information to be used for difficulty calculation.
  */
 export class DifficultyHitObject {
+  
+  private readonly difficultyHitObjects: ReadonlyArray<DifficultyHitObject>;
+  
   /**
-   * The hit object this DifficultyHitObject wraps.
+   * The index of this {@link DifficultyHitObject} in the list of all {@link DifficultyHitObject}s.
+   */
+  readonly Index: number;
+  /**
+   * The {@link hitObject} this {@link DifficultyHitObject} wraps.
    */
   readonly baseObject: IHitObject;
 
   /**
-   * The last hit object which occurs before base object.
+   * The last hit object which occurs before {@link hitObject}.
    */
   readonly lastObject: IHitObject;
 
   /**
-   * Amount of time elapsed between base object and last object, adjusted by clockrate.
+   * Amount of time elapsed between {@link baseObject} and {@link lastObject}, adjusted by clockrate.
    */
   readonly deltaTime: number;
 
   /**
-   * Clockrate adjusted start time of base object.
+   * Clockrate adjusted start time of {@link baseObject}.
    */
   readonly startTime: number;
 
   /**
-   * Clockrate adjusted end time of base object.
+   * Clockrate adjusted end time of {@link baseObject}.
    */
   readonly endTime: number;
 
   /**
-   * Creates a new DifficultyHitObject.
-   * @param hitObject The hit object which this DifficultyHitObject wraps.
+   * Creates a new {@link DifficultyHitObject}.
+   * @param hitObject The hit object which this {@link DifficultyHitObject} wraps.
    * @param lastObject The last hit object which occurs before hit object in the beatmap.
    * @param clockRate The rate at which the gameplay clock is run at.
+   * @param objects The list of {@link DifficultyHitObject}s in the current map
+   * @param index The index of this {@link DifficultyHitObject} in {@link objects} list.
    */
-  constructor(hitObject: IHitObject, lastObject: IHitObject, clockRate: number) {
+  constructor(hitObject: IHitObject, lastObject: IHitObject, clockRate: number, objects: Array<DifficultyHitObject>,  index: number) {
+    this.difficultyHitObjects = objects;
+    this.Index = index;
     this.baseObject = hitObject;
     this.lastObject = lastObject;
     this.deltaTime = (hitObject.startTime - lastObject.startTime) / clockRate;
@@ -46,4 +58,11 @@ export class DifficultyHitObject {
 
     this.endTime = (durationObj?.endTime ?? hitObject.startTime) / clockRate;
   }
+
+  Previous(backwardsIndex: number) {
+    return this.difficultyHitObjects[(this.Index - (backwardsIndex + 1))];
+  };
+  Next(forwardsIndex: number) {
+    return this.difficultyHitObjects[(this.Index + (forwardsIndex + 1))];
+  };
 }
