@@ -79,7 +79,7 @@ Score object contains score information and replay data.
 This decoder is based on external LZMA library and works asynchronously.
 
 There are 2 ways to read data through this decoder:
-- via string
+- via file path
 - via buffer
 
 By default, score decoder will decode both score information and replay. If you want to decode score information without replay, you can pass false as the second parameter to any of the methods.
