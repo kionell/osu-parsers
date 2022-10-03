@@ -1,25 +1,22 @@
 import { IHasDuration } from '../../Objects/Types/IHasDuration';
 import { IHitObject } from '../../Objects/IHitObject';
-import * as internal from 'stream';
 
 /**
  * Wraps a hit object and provides additional information to be used for difficulty calculation.
  */
 export class DifficultyHitObject {
-  
-  private readonly _difficultyHitObjects: ReadonlyArray<DifficultyHitObject>;
-  
   /**
    * The index of this {@link DifficultyHitObject} in the list of all {@link DifficultyHitObject}s.
    */
-  readonly index: number;
+  index: number;
+
   /**
-   * The {@link hitObject} this {@link DifficultyHitObject} wraps.
+   * The {@link IHitObject} this {@link DifficultyHitObject} wraps.
    */
   readonly baseObject: IHitObject;
 
   /**
-   * The last hit object which occurs before {@link hitObject}.
+   * The last hit object which occurs before {@link IHitObject}.
    */
   readonly lastObject: IHitObject;
 
@@ -38,6 +35,8 @@ export class DifficultyHitObject {
    */
   readonly endTime: number;
 
+  private readonly _difficultyHitObjects: ReadonlyArray<DifficultyHitObject>;
+
   /**
    * Creates a new {@link DifficultyHitObject}.
    * @param hitObject The hit object which this {@link DifficultyHitObject} wraps.
@@ -46,7 +45,7 @@ export class DifficultyHitObject {
    * @param objects The list of {@link DifficultyHitObject}s in the current map
    * @param index The index of this {@link DifficultyHitObject} in {@link objects} list.
    */
-  constructor(hitObject: IHitObject, lastObject: IHitObject, clockRate: number, objects: Array<DifficultyHitObject>,  index: number) {
+  constructor(hitObject: IHitObject, lastObject: IHitObject, clockRate: number, objects: Array<DifficultyHitObject>, index: number) {
     this._difficultyHitObjects = objects;
     this.index = index;
     this.baseObject = hitObject;
@@ -59,11 +58,15 @@ export class DifficultyHitObject {
     this.endTime = (durationObj?.endTime ?? hitObject.startTime) / clockRate;
   }
 
-  // TODO
-  _previous(backwardsIndex: number) {
-    return this._difficultyHitObjects[(this.index - (backwardsIndex + 1))] ?? null;
-  };
-  _next(forwardsIndex: number) {
-    return this._difficultyHitObjects[(this.index + (forwardsIndex + 1))] ?? null;
-  };
+  previous(backwardsIndex: number): DifficultyHitObject {
+    const index = this.index - (backwardsIndex + 1);
+
+    return this._difficultyHitObjects[index] ?? null;
+  }
+
+  next(forwardsIndex: number): DifficultyHitObject {
+    const index = this.index + (forwardsIndex + 1);
+
+    return this._difficultyHitObjects[index] ?? null;
+  }
 }

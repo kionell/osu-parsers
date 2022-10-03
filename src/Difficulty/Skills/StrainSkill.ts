@@ -2,7 +2,7 @@ import { DifficultyHitObject } from '../Preprocessing/DifficultyHitObject';
 import { Skill } from './Skill';
 
 /**
- * Used to processes strain values of difficulty hit objects, 
+ * Used to processes strain values of {@link DifficultyHitObject}s, 
  * keep track of strain levels caused by the processed objects
  * and to calculate a final difficulty value representing 
  * the difficulty of hitting all the processed objects.
@@ -40,14 +40,14 @@ export abstract class StrainSkill extends Skill {
      * The first object doesn't generate a strain, 
      * so we begin with an incremented section end.
      */
-    if (this._previous.count === 0) {
+    if (current.index === 0) {
       this._currentSectionEnd = Math.ceil(current.startTime / this._sectionLength);
       this._currentSectionEnd *= this._sectionLength;
     }
 
     while (current.startTime > this._currentSectionEnd) {
       this._saveCurrentPeak();
-      this._startNewSectionFrom(this._currentSectionEnd);
+      this._startNewSectionFrom(this._currentSectionEnd, current);
       this._currentSectionEnd += this._sectionLength;
     }
 
@@ -65,22 +65,24 @@ export abstract class StrainSkill extends Skill {
   /**
    * Sets the initial strain level for a new section.
    * @param time The beginning of the new section in milliseconds.
+   * @param current The current hit object.
    */
-  private _startNewSectionFrom(time: number): void {
+  private _startNewSectionFrom(time: number, current: DifficultyHitObject): void {
     /**
      * The maximum strain of the new section is not zero by default
      * This means we need to capture the strain level at the beginning of the new section, 
      * and use that as the initial peak level.
      */
-    this._currentSectionPeak = this._calculateInitialStrain(time);
+    this._currentSectionPeak = this._calculateInitialStrain(time, current);
   }
 
   /**
    * Retrieves the peak strain at a point in time.
    * @param time The time to retrieve the peak strain at.
+   * @param current The current hit object.
    * @returns The peak strain.
    */
-  protected abstract _calculateInitialStrain(time: number): number;
+  protected abstract _calculateInitialStrain(time: number, current: DifficultyHitObject): number;
 
   /**
    * Returns a live enumerable of the peak strains 
