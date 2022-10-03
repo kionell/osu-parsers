@@ -40,7 +40,7 @@ export abstract class StrainDecaySkill extends StrainSkill {
   }
 
   /**
-   * Calculates the strain value of a difficulty hit object. 
+   * Calculates the strain value of a {@link DifficultyHitObject}. 
    * This value is affected by previously processed objects.
    */
   protected abstract _strainValueOf(current: DifficultyHitObject): number;
