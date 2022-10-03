@@ -158,7 +158,7 @@ export class Slider extends StandardHitObject implements ISlidableObject {
     const difficultyPoint = controlPoints.difficultyPointAt(this.startTime);
 
     const scoringDistance = StandardHitObject.BASE_SCORING_DISTANCE
-      * difficulty.sliderMultiplier * difficultyPoint.speedMultiplier;
+      * difficulty.sliderMultiplier * difficultyPoint.sliderVelocity;
 
     this.velocity = scoringDistance / timingPoint.beatLength;
     this.tickDistance = (scoringDistance / difficulty.sliderTickRate) * this.tickRate;

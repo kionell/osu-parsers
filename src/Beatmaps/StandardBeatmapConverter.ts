@@ -79,7 +79,7 @@ export class StandardBeatmapConverter extends BeatmapConverter {
     if (beatmap.fileFormat < 8) {
       const diffPoint = beatmap.controlPoints.difficultyPointAt(obj.startTime);
 
-      converted.tickRate = Math.fround(1 / diffPoint.speedMultiplier);
+      converted.tickRate = Math.fround(1 / diffPoint.sliderVelocity);
     }
 
     return converted;
