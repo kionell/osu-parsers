@@ -8,6 +8,7 @@
   },
   "types": "./lib/index.d.ts",
   "scripts": {
+    "dev": "rollup -c -w",
     "build": "rollup -c && npm run format",
     "test": "jest --verbose",
     "fix": "eslint --fix ./src",
