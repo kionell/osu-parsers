@@ -19,7 +19,7 @@ export abstract class EventGenerator {
    * @param slider A slidable object.
    * @generator
    */
-  static *generate(slider: ISlidableObject): Generator<ISliderEventDescriptor> {
+  static *generate(slider: ISlidableObject, shouldGenerateTicks: boolean): Generator<ISliderEventDescriptor> {
     const sliderDistance = Math.min(this.SLIDER_MAX_DISTANCE, slider.path.distance);
     const tickDistance = clamp(slider.tickDistance || 0, 0, sliderDistance);
 
@@ -38,38 +38,41 @@ export abstract class EventGenerator {
     if (slider.tickDistance !== 0) {
       for (let spanIndex = 0; spanIndex < slider.spans; ++spanIndex) {
         const reversed = !!(spanIndex & 1);
-        const events: ISliderEventDescriptor[] = [];
 
-        let distance = tickDistance;
+        if (shouldGenerateTicks) {
+          const events: ISliderEventDescriptor[] = [];
 
-        while (distance < sliderDistance - minDistanceFromEnd) {
+          let distance = tickDistance;
+
+          while (distance < sliderDistance - minDistanceFromEnd) {
+            /**
+             * Always generate events from the start of the path rather than the span
+             * to ensure that events in repeat spans are positioned
+             * identically to those in non-repeat spans
+             */
+            const progress = distance / sliderDistance;
+            const timeProgress = reversed ? 1 - progress : progress;
+
+            events.push({
+              eventType: SliderEventType.Tick,
+              startTime: spanStartTime + timeProgress * slider.spanDuration,
+              spanStartTime,
+              spanIndex,
+              progress,
+            });
+
+            distance += tickDistance;
+          }
+
           /**
-           * Always generate events from the start of the path rather than the span
-           * to ensure that events in repeat spans are positioned
-           * identically to those in non-repeat spans
+           * For repeat spans, events are returned in reverse order,
+           * which is undesirable for some rulesets
            */
-          const progress = distance / sliderDistance;
-          const timeProgress = reversed ? 1 - progress : progress;
+          if (reversed) events.reverse();
 
-          events.push({
-            eventType: SliderEventType.Tick,
-            startTime: spanStartTime + timeProgress * slider.spanDuration,
-            spanStartTime,
-            spanIndex,
-            progress,
-          });
-
-          distance += tickDistance;
-        }
-
-        /**
-         * For repeat spans, events are returned in reverse order,
-         * which is undesirable for some rulesets
-         */
-        if (reversed) events.reverse();
-
-        for (const event of events) {
-          yield event;
+          for (const event of events) {
+            yield event;
+          }
         }
 
         if (spanIndex < slider.repeats) {

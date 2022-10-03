@@ -17,6 +17,13 @@ export class DifficultyPoint extends ControlPoint {
   pointType: ControlPointType = ControlPointType.DifficultyPoint;
 
   /**
+   * Whether or not slider ticks should be generated at this control point.
+   * This exists for backwards compatibility with maps that abuse 
+   * NaN slider velocity behavior on osu!stable (e.g. /b/2628991).
+   */
+  generateTicks = true;
+
+  /**
    * The speed multiplier of this difficulty point.
    */
   private _speedMultiplier = 1;
@@ -31,7 +38,9 @@ export class DifficultyPoint extends ControlPoint {
   }
 
   /**
-   * The bpm multiplier of this difficulty point.
+   * Legacy BPM multiplier that introduces floating-point 
+   * errors for rulesets that depend on it.
+   * DO NOT USE THIS UNLESS 100% SURE.
    */
   bpmMultiplier = 1;
 
@@ -41,6 +50,8 @@ export class DifficultyPoint extends ControlPoint {
    * @returns Whether the difficulty point is redundant.
    */
   isRedundant(existing: DifficultyPoint | null): boolean {
-    return existing !== null && existing.speedMultiplier === this.speedMultiplier;
+    return existing !== null
+      && existing.speedMultiplier === this.speedMultiplier
+      && existing.generateTicks === this.generateTicks;
   }
 }
