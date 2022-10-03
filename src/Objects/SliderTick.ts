@@ -18,7 +18,7 @@ export class SliderTick extends StandardHitObject {
      * This is so on repeats ticks don't appear too late
      * to be visually processed by the player.
      */
-    const offset = this.spanIndex > 0 ? 200 : this.timeFadeIn * Math.fround(0.66);
+    const offset = this.spanIndex > 0 ? 200 : this.timePreempt * Math.fround(0.66);
 
     this.timePreempt = (this.startTime - this.spanStartTime) / 2 + offset;
   }
