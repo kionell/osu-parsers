@@ -132,7 +132,7 @@ export abstract class DifficultyCalculator<T extends DifficultyAttributes = Diff
    * @param clockRate Custom clock rate for the difficulty calculation.
    * @returns The set of timed difficulty attributes.
    */
-  calculateTimed(clockRate?: number): TimedDifficultyAttributes<T>[] {
+  calculateTimed(clockRate?: number): Generator<TimedDifficultyAttributes<T>> {
     return this.calculateTimedWithMods(this._mods, clockRate);
   }
 
@@ -144,11 +144,10 @@ export abstract class DifficultyCalculator<T extends DifficultyAttributes = Diff
    * @param clockRate Custom clock rate for the difficulty calculation.
    * @returns The set of timed difficulty attributes.
    */
-  calculateTimedWithMods(mods: ModCombination, clockRate?: number): TimedDifficultyAttributes<T>[] {
+  *calculateTimedWithMods(mods: ModCombination, clockRate?: number): Generator<TimedDifficultyAttributes<T>> {
     const beatmap = this._getWorkingBeatmap(mods);
-    const attributes: TimedDifficultyAttributes<T>[] = [];
 
-    if (!beatmap.hitObjects.length) return attributes;
+    if (!beatmap.hitObjects.length) return;
 
     clockRate ??= beatmap.difficulty.clockRate;
 
@@ -165,10 +164,8 @@ export abstract class DifficultyCalculator<T extends DifficultyAttributes = Diff
       const time = hitObject.endTime * clockRate;
       const atts = this._createDifficultyAttributes(progressiveBeatmap, mods, skills, clockRate);
 
-      attributes.push(new TimedDifficultyAttributes(time, atts));
+      yield new TimedDifficultyAttributes(time, atts);
     }
-
-    return attributes;
   }
 
   /**
