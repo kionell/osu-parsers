@@ -23,18 +23,18 @@ export class DifficultyPoint extends ControlPoint {
    */
   generateTicks = true;
 
-  /**
-   * The speed multiplier of this difficulty point.
-   */
-  private _speedMultiplier = 1;
+  private _sliderVelocity = 1;
 
-  get speedMultiplier(): number {
+  /**
+   * The slider velocity at this difficulty point.
+   */
+  get sliderVelocity(): number {
     // Imitate bindable value with range [0.1, 10].
-    return clamp(this._speedMultiplier, 0.1, 10);
+    return clamp(this._sliderVelocity, 0.1, 10);
   }
 
-  set speedMultiplier(value: number) {
-    this._speedMultiplier = value;
+  set sliderVelocity(value: number) {
+    this._sliderVelocity = value;
   }
 
   /**
@@ -51,7 +51,7 @@ export class DifficultyPoint extends ControlPoint {
    */
   isRedundant(existing: DifficultyPoint | null): boolean {
     return existing !== null
-      && existing.speedMultiplier === this.speedMultiplier
+      && existing.sliderVelocity === this.sliderVelocity
       && existing.generateTicks === this.generateTicks;
   }
 }
