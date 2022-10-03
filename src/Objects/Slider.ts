@@ -160,8 +160,12 @@ export class Slider extends StandardHitObject implements ISlidableObject {
     const scoringDistance = StandardHitObject.BASE_SCORING_DISTANCE
       * difficulty.sliderMultiplier * difficultyPoint.sliderVelocity;
 
+    const generateTicks = difficultyPoint.generateTicks;
+
     this.velocity = scoringDistance / timingPoint.beatLength;
-    this.tickDistance = (scoringDistance / difficulty.sliderTickRate) * this.tickRate;
+    this.tickDistance = generateTicks
+      ? (scoringDistance / difficulty.sliderTickRate) * this.tickRate
+      : Infinity;
   }
 
   createNestedHitObjects(): void {
