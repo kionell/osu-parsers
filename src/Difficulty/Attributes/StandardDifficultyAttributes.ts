@@ -11,11 +11,4 @@ export class StandardDifficultyAttributes extends DifficultyAttributes {
   hitCircleCount = 0;
   sliderCount = 0;
   spinnerCount = 0;
-
-  /**
-   * Used implicitly to not serialize flashlight property in some cases.
-   */
-  get shouldSerializeFlashlightRating(): boolean {
-    return this.mods.has(ModBitwise.Flashlight);
-  }
 }
