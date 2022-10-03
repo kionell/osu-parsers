@@ -19,6 +19,12 @@ import { existsSync, readFileSync, statSync } from '../Utils/FileSystem';
  * Beatmap decoder.
  */
 export class BeatmapDecoder extends Decoder<Beatmap> {
+  /**
+   * An offset which needs to be applied to old beatmaps (v4 and lower) 
+   * to correct timing changes that were applied at a game client level.
+   */
+  static readonly EARLY_VERSION_TIMING_OFFSET = 24;
+
   /** 
    * Current offset for all time values.
    */
@@ -129,11 +135,8 @@ export class BeatmapDecoder extends Decoder<Beatmap> {
     if (line.includes('osu file format v')) {
       beatmap.fileFormat = Parsing.parseInt(line.split('v')[1]);
 
-      /**
-       * Beatmaps of version 4 and lower had an incorrect offset 
-       * (stable has this set as 24ms off).
-       */
-      this._offset = beatmap.fileFormat <= 4 ? 24 : 0;
+      this._offset = beatmap.fileFormat <= 4
+        ? BeatmapDecoder.EARLY_VERSION_TIMING_OFFSET : 0;
 
       return;
     }
