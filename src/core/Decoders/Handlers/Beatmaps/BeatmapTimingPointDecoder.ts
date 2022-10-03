@@ -74,16 +74,29 @@ export abstract class BeatmapTimingPointDecoder {
       throw new Error('The numerator of a time signature must be positive.');
     }
 
-    const beatLength = Parsing.parseFloat(data[1]);
     const startTime = Parsing.parseFloat(data[0]) + offset;
+
+    /**
+     * beatLength is allowed to be NaN to handle an edge case in which 
+     * some beatmaps use NaN slider velocity to disable slider tick generation.
+     */
+    const beatLength = Parsing.parseFloat(data[1], Parsing.MAX_PARSE_VALUE, true);
 
     let bpmMultiplier = 1;
     let speedMultiplier = 1;
 
+    /**
+     * If beatLength is NaN, speedMultiplier should still be 1 
+     * because all comparisons against NaN are false.
+     */
     if (beatLength < 0) {
       speedMultiplier = 100 / -beatLength;
       bpmMultiplier = Math.min(Math.fround(-beatLength), 10000);
       bpmMultiplier = Math.max(10, bpmMultiplier) / 100;
+    }
+
+    if (timingChange && Number.isNaN(beatLength)) {
+      throw new Error('Beat length cannot be NaN in a timing control point');
     }
 
     if (timingChange) {
@@ -99,6 +112,7 @@ export abstract class BeatmapTimingPointDecoder {
 
     difficultyPoint.bpmMultiplier = bpmMultiplier;
     difficultyPoint.speedMultiplier = speedMultiplier;
+    difficultyPoint.generateTicks = !Number.isNaN(beatLength);
 
     this.addControlPoint(difficultyPoint, startTime, timingChange);
 
