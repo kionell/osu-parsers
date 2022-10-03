@@ -9,12 +9,12 @@ export class Parsing {
    */
   static readonly MAX_PARSE_VALUE = 2147483647;
 
-  static parseInt(input: string, parseLimit = this.MAX_PARSE_VALUE): number {
-    return this._getValue(parseInt(input), parseLimit);
+  static parseInt(input: string, parseLimit = this.MAX_PARSE_VALUE, allowNaN = false): number {
+    return this._getValue(parseInt(input), parseLimit, allowNaN);
   }
 
-  static parseFloat(input: string, parseLimit = this.MAX_PARSE_VALUE): number {
-    return this._getValue(parseFloat(input), parseLimit);
+  static parseFloat(input: string, parseLimit = this.MAX_PARSE_VALUE, allowNaN = false): number {
+    return this._getValue(parseFloat(input), parseLimit, allowNaN);
   }
 
   static parseEnum<T extends Record<any, any>>(enumObj: T, input: string): T[keyof T] {
@@ -46,7 +46,7 @@ export class Parsing {
     return this._getValue(value);
   }
 
-  private static _getValue(value: number, parseLimit = this.MAX_PARSE_VALUE): number {
+  private static _getValue(value: number, parseLimit = this.MAX_PARSE_VALUE, allowNaN = false): number {
     if (value < -parseLimit) {
       throw new Error('Value is too low!');
     }
@@ -55,7 +55,7 @@ export class Parsing {
       throw new Error('Value is too high!');
     }
 
-    if (Number.isNaN(value)) {
+    if (!allowNaN && Number.isNaN(value)) {
       throw new Error('Not a number');
     }
 
