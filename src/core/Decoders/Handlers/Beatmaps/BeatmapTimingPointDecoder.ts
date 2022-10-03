@@ -107,7 +107,11 @@ export abstract class BeatmapTimingPointDecoder {
     effectPoint.kiai = (effects & EffectType.Kiai) > 0;
     effectPoint.omitFirstBarLine = (effects & EffectType.OmitFirstBarLine) > 0;
 
-    if (beatmap.originalMode !== 0) {
+    /**
+     * osu!taiko and osu!mania use effect points rather 
+     * than difficulty points for scroll speed adjustments.
+     */
+    if (beatmap.originalMode === 1 || beatmap.originalMode === 3) {
       effectPoint.scrollSpeed = speedMultiplier;
     }
 
