@@ -1,5 +1,6 @@
 import { ControlPointInfo } from '../Beatmaps/ControlPoints';
 import { BeatmapDifficultySection } from '../Beatmaps/Sections';
+import { HitWindows } from '../Scoring';
 import { Vector2 } from '../Types';
 import { HitSound } from './Enums/HitSound';
 import { HitType } from './Enums/HitType';
@@ -46,6 +47,11 @@ export abstract class HitObject implements IHitObject {
   startPosition: Vector2 = new Vector2(0, 0);
 
   /**
+   * Hit windows of this hit object.
+   */
+  abstract hitWindows: HitWindows;
+
+  /**
    * The starting X-position of this hit object.
    */
   get startX(): number {
@@ -81,6 +87,7 @@ export abstract class HitObject implements IHitObject {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   applyDefaultsToSelf(controlPoints: ControlPointInfo, difficulty: BeatmapDifficultySection): void {
     this.kiai = controlPoints.effectPointAt(this.startTime + 1).kiai;
+    this.hitWindows.setDifficulty(difficulty.overallDifficulty);
   }
 
   /**
