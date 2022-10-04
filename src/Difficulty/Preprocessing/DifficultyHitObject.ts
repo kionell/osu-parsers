@@ -58,13 +58,13 @@ export class DifficultyHitObject {
     this.endTime = (durationObj?.endTime ?? hitObject.startTime) / clockRate;
   }
 
-  previous(backwardsIndex: number): DifficultyHitObject {
+  previous(backwardsIndex: number): DifficultyHitObject | null {
     const index = this.index - (backwardsIndex + 1);
 
     return this._difficultyHitObjects[index] ?? null;
   }
 
-  next(forwardsIndex: number): DifficultyHitObject {
+  next(forwardsIndex: number): DifficultyHitObject | null {
     const index = this.index + (forwardsIndex + 1);
 
     return this._difficultyHitObjects[index] ?? null;
