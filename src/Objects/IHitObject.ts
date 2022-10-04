@@ -1,6 +1,7 @@
 import { HitSample } from './Sounds/HitSample';
 import { HitType } from './Enums/HitType';
 import { HitSound } from './Enums/HitSound';
+import { HitWindows } from '../Scoring';
 
 /**
  * A hit object.
@@ -25,6 +26,11 @@ export interface IHitObject {
    * Samples of this hit object.
    */
   samples: HitSample[];
+
+  /**
+   * Hit windows of this hit object.
+   */
+  hitWindows: HitWindows;
 
   /**
    * Creates a new copy of this hit object.
