@@ -1,5 +1,5 @@
 import { DifficultyHitObject, StrainSkill } from 'osu-classes';
-import { StandardFlashlight, StandardModCombination } from '../../Mods';
+import { StandardHidden, StandardModCombination } from '../../Mods';
 import { FlashlightEvaluator } from '../Evaluators';
 import { StandardStrainSkill } from './StandardStrainSkill';
 
@@ -16,7 +16,7 @@ export class Flashlight extends StrainSkill {
 
   constructor(mods: StandardModCombination) {
     super(mods);
-    this._hasHiddenMod = mods.any(StandardFlashlight);
+    this._hasHiddenMod = mods.any(StandardHidden);
   }
 
   private _strainDecay(ms: number): number {
