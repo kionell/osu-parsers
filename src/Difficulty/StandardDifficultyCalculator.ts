@@ -1,6 +1,7 @@
 import {
   DifficultyCalculator,
   DifficultyRange,
+  HitResult,
   IBeatmap,
   IMod,
   Skill,
@@ -21,10 +22,10 @@ import { Aim, Speed, Flashlight } from './Skills';
 import { StandardDifficultyAttributes } from './Attributes';
 import { StandardDifficultyHitObject } from './Preprocessing';
 import { Circle, Slider, Spinner } from '../Objects';
+import { StandardHitWindows } from '../Scoring';
 
 export class StandardDifficultyCalculator extends DifficultyCalculator<StandardDifficultyAttributes> {
   private _DIFFICULTY_MULTIPLIER = 0.0675;
-  private _hitWindowGreat = 0;
 
   protected _createDifficultyAttributes(
     beatmap: IBeatmap,
@@ -85,6 +86,12 @@ export class StandardDifficultyCalculator extends DifficultyCalculator<StandardD
 
     const nested = sliders.reduce((sum, slider) => sum + slider.nestedHitObjects.length, 0);
 
+    const hitWindows = new StandardHitWindows();
+
+    hitWindows.setDifficulty(beatmap.difficulty.overallDifficulty);
+
+    const hitWindowGreat = hitWindows.windowFor(HitResult.Great) / clockRate;
+
     const attributes = new StandardDifficultyAttributes(mods, starRating);
 
     attributes.aimDifficulty = aimRating;
@@ -97,7 +104,7 @@ export class StandardDifficultyCalculator extends DifficultyCalculator<StandardD
     attributes.spinnerCount = spinners.length;
     attributes.maxCombo = circles.length + spinners.length + nested;
     attributes.drainRate = beatmap.difficulty.drainRate;
-    attributes.overallDifficulty = (80 - this._hitWindowGreat) / 6;
+    attributes.overallDifficulty = (80 - hitWindowGreat) / 6;
     attributes.approachRate = preempt > 1200
       ? (1800 - preempt) / 120
       : (1200 - preempt) / 150 + 5;

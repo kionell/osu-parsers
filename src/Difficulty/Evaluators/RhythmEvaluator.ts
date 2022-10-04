@@ -29,10 +29,11 @@ export class RhythmEvaluator {
     let islandSize = 1;
 
     const historicalNoteCount = Math.min(current.index, 32);
-    const previousTime = current.previous(0)?.startTime ?? 0;
-    const timeDiff = current.startTime - previousTime;
 
-    while (rhythmStart < historicalNoteCount - 2 && timeDiff < this._HISTORY_TIME_MAX) {
+    while (
+      rhythmStart < historicalNoteCount - 2 &&
+      current.startTime - (current.previous(rhythmStart)?.startTime ?? 0) < this._HISTORY_TIME_MAX
+    ) {
       rhythmStart++;
     }
 

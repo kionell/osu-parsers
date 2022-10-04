@@ -81,7 +81,9 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
      * Capped to 25ms to prevent difficulty calculation breaking from simultaneous objects.
      */
     this.strainTime = Math.max(this.deltaTime, StandardDifficultyHitObject._MIN_DELTA_TIME);
-    this.hitWindowGreat = 2 * this.baseObject.hitWindows.windowFor(HitResult.Great) / clockRate;
+    this.hitWindowGreat = this.baseObject instanceof Slider && this.baseObject.head
+      ? 2 * this.baseObject.head.hitWindows.windowFor(HitResult.Great) / clockRate
+      : 2 * this.baseObject.hitWindows.windowFor(HitResult.Great) / clockRate;
 
     this._setDistances(clockRate);
   }
@@ -275,11 +277,6 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
         slider.lazyEndPosition = currCursorPosition;
       }
     }
-
-    /**
-     * Bonus for repeat sliders until a better per nested object strain system can be achieved.
-     */
-    slider.lazyTravelDistance *= Math.fround(Math.pow(1 + slider.repeats / 2.5, 1 / 2.5));
   }
 
   private _getEndCursorPosition(hitObject: StandardHitObject): Vector2 {

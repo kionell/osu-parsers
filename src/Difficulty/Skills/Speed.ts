@@ -37,10 +37,9 @@ export class Speed extends StandardStrainSkill {
     const speedValue = SpeedEvaluator.evaluateDifficultyOf(current);
 
     this._currentStrain += speedValue * Speed._SKILL_MULTIPLIER;
+    this._currentRhythm = RhythmEvaluator.evaluateDifficultyOf(current);
 
-    const currentRhythm = RhythmEvaluator.evaluateDifficultyOf(current);
-
-    const totalStrain = this._currentStrain * currentRhythm;
+    const totalStrain = this._currentStrain * this._currentRhythm;
 
     this._objectStrains.push(totalStrain);
 
