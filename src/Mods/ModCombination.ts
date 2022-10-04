@@ -153,6 +153,14 @@ export abstract class ModCombination {
   }
 
   /**
+   * @param Mod Target mod class.
+   * @returns If this mod combination has the target mod.
+   */
+  any(Mod: new () => IMod): boolean {
+    return this._mods.some((mod) => mod instanceof Mod);
+  }
+
+  /**
    * Finds all mods that are applicable to the beatmap by bitwise value or acronyms.
    * @param input The bitwise value or acronyms.
    * @returns The list of all found mods.
