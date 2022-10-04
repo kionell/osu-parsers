@@ -29,8 +29,11 @@ export class Flashlight extends StrainSkill {
 
   protected _strainValueAt(current: DifficultyHitObject): number {
     this._currentStrain *= this._strainDecay(current.deltaTime);
-    this._currentStrain += FlashlightEvaluator.evaluateDifficultyOf(current, this._hasHiddenMod);
-    this._currentStrain *= Flashlight._SKILL_MULTIPLIER;
+
+    const flashlightValue = FlashlightEvaluator
+      .evaluateDifficultyOf(current, this._hasHiddenMod);
+
+    this._currentStrain += flashlightValue * Flashlight._SKILL_MULTIPLIER;
 
     return this._currentStrain;
   }

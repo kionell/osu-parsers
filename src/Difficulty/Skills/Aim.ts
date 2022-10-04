@@ -30,8 +30,10 @@ export class Aim extends StandardStrainSkill {
 
   protected _strainValueAt(current: DifficultyHitObject): number {
     this._currentStrain *= this._strainDecay(current.deltaTime);
-    this._currentStrain += AimEvaluator.evaluateDifficultyOf(current, this._withSliders);
-    this._currentStrain *= Aim._SKILL_MULTIPLIER;
+
+    const aimValue = AimEvaluator.evaluateDifficultyOf(current, this._withSliders);
+
+    this._currentStrain += aimValue * Aim._SKILL_MULTIPLIER;
 
     return this._currentStrain;
   }
