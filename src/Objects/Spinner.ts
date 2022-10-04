@@ -1,11 +1,12 @@
-import { StandardHitObject } from './StandardHitObject';
-import { StandardEventGenerator } from './StandardEventGenerator';
-
 import {
   ControlPointInfo,
   BeatmapDifficultySection,
   ISpinnableObject,
 } from 'osu-classes';
+
+import { StandardHitObject } from './StandardHitObject';
+import { StandardEventGenerator } from './StandardEventGenerator';
+import { StandardHitWindows } from '../Scoring';
 
 export class Spinner extends StandardHitObject implements ISpinnableObject {
   /**
@@ -33,6 +34,8 @@ export class Spinner extends StandardHitObject implements ISpinnableObject {
    * The time at which this spinner ends.
    */
   endTime = 0;
+
+  hitWindows = StandardHitWindows.empty;
 
   get duration(): number {
     return this.endTime - this.startTime;

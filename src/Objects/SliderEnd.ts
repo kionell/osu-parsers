@@ -5,11 +5,14 @@ import {
   ControlPointInfo,
   BeatmapDifficultySection,
 } from 'osu-classes';
+import { StandardHitWindows } from '../Scoring';
 
 export abstract class SliderEnd extends Circle {
   protected _slider: Slider;
 
   repeatIndex = 0;
+
+  hitWindows = StandardHitWindows.empty;
 
   constructor(slider: Slider) {
     super();

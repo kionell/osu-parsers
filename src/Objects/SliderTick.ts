@@ -1,14 +1,17 @@
-import { StandardHitObject } from './StandardHitObject';
-
 import {
   ControlPointInfo,
   BeatmapDifficultySection,
 } from 'osu-classes';
 
+import { StandardHitObject } from './StandardHitObject';
+import { StandardHitWindows } from '../Scoring';
+
 export class SliderTick extends StandardHitObject {
   spanIndex = 0;
 
   spanStartTime = 0;
+
+  hitWindows = StandardHitWindows.empty;
 
   applyDefaultsToSelf(controlPoints: ControlPointInfo, difficulty: BeatmapDifficultySection): void {
     super.applyDefaultsToSelf(controlPoints, difficulty);

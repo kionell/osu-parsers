@@ -1,8 +1,3 @@
-import { StandardEventGenerator } from './StandardEventGenerator';
-import { StandardHitObject } from './StandardHitObject';
-import { SliderHead } from './SliderHead';
-import { SliderTail } from './SliderTail';
-
 import {
   ControlPointInfo,
   BeatmapDifficultySection,
@@ -11,6 +6,12 @@ import {
   HitSample,
   ISlidableObject,
 } from 'osu-classes';
+
+import { StandardEventGenerator } from './StandardEventGenerator';
+import { StandardHitObject } from './StandardHitObject';
+import { SliderHead } from './SliderHead';
+import { SliderTail } from './SliderTail';
+import { StandardHitWindows } from '../Scoring';
 
 export class Slider extends StandardHitObject implements ISlidableObject {
   tickDistance = 0;
@@ -38,6 +39,8 @@ export class Slider extends StandardHitObject implements ISlidableObject {
    * with as few movements as possible. This is set and used by difficulty calculation.
    */
   lazyTravelTime = 0;
+
+  hitWindows = StandardHitWindows.empty;
 
   path: SliderPath = new SliderPath();
 
