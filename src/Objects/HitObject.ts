@@ -49,7 +49,7 @@ export abstract class HitObject implements IHitObject {
   /**
    * Hit windows of this hit object.
    */
-  abstract hitWindows: HitWindows;
+  hitWindows: HitWindows = new HitWindows();
 
   /**
    * The starting X-position of this hit object.
@@ -87,7 +87,7 @@ export abstract class HitObject implements IHitObject {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   applyDefaultsToSelf(controlPoints: ControlPointInfo, difficulty: BeatmapDifficultySection): void {
     this.kiai = controlPoints.effectPointAt(this.startTime + 1).kiai;
-    this.hitWindows.setDifficulty(difficulty.overallDifficulty);
+    this.hitWindows?.setDifficulty(difficulty.overallDifficulty);
   }
 
   /**
