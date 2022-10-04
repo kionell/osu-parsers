@@ -27,7 +27,8 @@ export abstract class StrainDecaySkill extends StrainSkill {
   protected _currentStrain = 0;
 
   protected _calculateInitialStrain(time: number, current: DifficultyHitObject): number {
-    const strainDecay = this._strainDecay(time - current.previous(0).startTime);
+    const previousTime = current.previous(0)?.startTime ?? 0;
+    const strainDecay = this._strainDecay(time - previousTime);
 
     return this._currentStrain * strainDecay;
   }
