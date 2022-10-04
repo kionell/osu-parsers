@@ -35,7 +35,7 @@ export abstract class StrainSkill extends Skill {
   /**
    * Process a difficulty hit object and update current strain values accordingly.
    */
-  protected _process(current: DifficultyHitObject ): void {
+  process(current: DifficultyHitObject): void {
     /**
      * The first object doesn't generate a strain, 
      * so we begin with an incremented section end.
