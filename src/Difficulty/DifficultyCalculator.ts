@@ -199,7 +199,7 @@ export abstract class DifficultyCalculator<T extends DifficultyAttributes = Diff
    * @param clockRate Custom clock rate for the difficulty calculation.
    * @returns The difficulty hit objects to calculate against.
    */
-  private _getDifficultyHitObjects(beatmap: IBeatmap, clockRate: number): Iterable<DifficultyHitObject> {
+  private _getDifficultyHitObjects(beatmap: IBeatmap, clockRate: number): DifficultyHitObject[] {
     return this._sortObjects(this._createDifficultyHitObjects(beatmap, clockRate));
   }
 
@@ -208,8 +208,8 @@ export abstract class DifficultyCalculator<T extends DifficultyAttributes = Diff
    * @param input The difficulty hit objects to sort.
    * @returns The sorted difficulty hit objects.
    */
-  protected _sortObjects(input: Generator<DifficultyHitObject>): Iterable<DifficultyHitObject> {
-    return [...input].sort((a, b) => a.startTime - b.startTime);
+  protected _sortObjects(input: DifficultyHitObject[]): DifficultyHitObject[] {
+    return input.sort((a, b) => a.startTime - b.startTime);
   }
 
   /**
@@ -286,7 +286,7 @@ export abstract class DifficultyCalculator<T extends DifficultyAttributes = Diff
    * @param clockRate Custom clock rate for the difficulty calculation.
    * @returns The enumerated difficulty hit objects.
    */
-  protected abstract _createDifficultyHitObjects(beatmap: IBeatmap, clockRate: number): Generator<DifficultyHitObject>;
+  protected abstract _createDifficultyHitObjects(beatmap: IBeatmap, clockRate: number): DifficultyHitObject[];
 
   /**
    * Creates the Skills to calculate the difficulty of an IBeatmap.
