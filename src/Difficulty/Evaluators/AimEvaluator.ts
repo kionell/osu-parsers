@@ -4,8 +4,8 @@ import { DifficultyHitObject } from 'osu-classes';
 
 export class AimEvaluator {
   private static _WIDE_ANGLE_MULTIPLIER = 1.5;
-  private static _ACUTE_ANGLE_MULTIPLIER = 2.0;
-  private static _SLIDER_MULTIPLIER = 1.5;
+  private static _ACUTE_ANGLE_MULTIPLIER = 1.95;
+  private static _SLIDER_MULTIPLIER = 1.35;
   private static _VELOCITY_CHANGE_MULTIPLIER = 0.75;
 
   /**
