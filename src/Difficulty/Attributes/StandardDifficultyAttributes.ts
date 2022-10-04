@@ -20,7 +20,7 @@ export class StandardDifficultyAttributes extends DifficultyAttributes {
   /**
    * The difficulty corresponding to the flashlight skill.
    */
-  flashlightRating = 0;
+  flashlightDifficulty = 0;
 
   /**
    * Describes how much of {@link aimDifficulty} is contributed to by hitcircles or sliders.

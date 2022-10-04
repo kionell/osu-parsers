@@ -1,10 +1,8 @@
 import {
   DifficultyCalculator,
   DifficultyRange,
-  HitResult,
   IBeatmap,
   IMod,
-  ModBitwise,
   Skill,
 } from 'osu-classes';
 
@@ -15,12 +13,13 @@ import {
   StandardHalfTime,
   StandardHardRock,
   StandardModCombination,
+  StandardRelax,
+  StandardTouchDevice,
 } from '../Mods';
 
 import { Aim, Speed, Flashlight } from './Skills';
 import { StandardDifficultyAttributes } from './Attributes';
 import { StandardDifficultyHitObject } from './Preprocessing';
-import { StandardHitWindows } from '../Scoring';
 import { Circle, Slider, Spinner } from '../Objects';
 
 export class StandardDifficultyCalculator extends DifficultyCalculator<StandardDifficultyAttributes> {
@@ -37,21 +36,32 @@ export class StandardDifficultyCalculator extends DifficultyCalculator<StandardD
       return new StandardDifficultyAttributes(mods, 0);
     }
 
-    const aimRating = Math.sqrt(skills[0].difficultyValue) * this._DIFFICULTY_MULTIPLIER;
-    const aimRatingNoSliders = Math.sqrt(skills[1].difficultyValue) * this._DIFFICULTY_MULTIPLIER;
+    let aimRating = Math.sqrt(skills[0].difficultyValue) * this._DIFFICULTY_MULTIPLIER;
     let speedRating = Math.sqrt(skills[2].difficultyValue) * this._DIFFICULTY_MULTIPLIER;
-    const flashlightRating = Math.sqrt(skills[3].difficultyValue) * this._DIFFICULTY_MULTIPLIER;
+    let flashlightRating = Math.sqrt(skills[3].difficultyValue) * this._DIFFICULTY_MULTIPLIER;
+
+    const aimRatingNoSliders = Math.sqrt(skills[1].difficultyValue) * this._DIFFICULTY_MULTIPLIER;
+    const speedNoteCount = (skills[2] as Speed).relevantNoteCount();
 
     const sliderFactor = aimRating > 0 ? aimRatingNoSliders / aimRating : 1;
 
-    if (mods.has(ModBitwise.Relax)) speedRating = 0;
+    if (mods.any(StandardTouchDevice)) {
+      aimRating = Math.pow(aimRating, 0.8);
+      flashlightRating = Math.pow(flashlightRating, 0.8);
+    }
+
+    if (mods.any(StandardRelax)) {
+      aimRating *= 0.9;
+      speedRating = 0;
+      flashlightRating *= 0.7;
+    }
 
     const baseAimPerformance = Math.pow(5 * Math.max(1, aimRating / 0.0675) - 4, 3) / 100000;
     const baseSpeedPerformance = Math.pow(5 * Math.max(1, speedRating / 0.0675) - 4, 3) / 100000;
 
     let baseFlashlightPerformance = 0;
 
-    if (mods.has(ModBitwise.Flashlight)) {
+    if (mods.any(StandardFlashlight)) {
       baseFlashlightPerformance = Math.pow(flashlightRating, 2) * 25;
     }
 
@@ -61,30 +71,26 @@ export class StandardDifficultyCalculator extends DifficultyCalculator<StandardD
       Math.pow(baseFlashlightPerformance, 1.1), 1 / 1.1,
     );
 
-    let starRating = 0;
-
-    if (basePerformance > 0.00001) {
-      starRating = Math.cbrt(1.12) * 0.027
-        * (Math.cbrt(100000 / Math.pow(2, 1 / 1.1) * basePerformance) + 4);
-    }
+    const starRating = basePerformance > 0.00001
+      ? Math.cbrt(1.12) * 0.027 * (Math.cbrt(100000 / Math.pow(2, 1 / 1.1) * basePerformance) + 4)
+      : 0;
 
     const approachRate = beatmap.difficulty.approachRate;
 
     const preempt = DifficultyRange.map(approachRate, 1800, 1200, 450) / clockRate;
 
-    const circles = beatmap.hitObjects.filter((h) => h instanceof Circle);
-    const sliders = beatmap.hitObjects.filter((h) => h instanceof Slider);
-    const spinners = beatmap.hitObjects.filter((h) => h instanceof Spinner);
+    const circles = beatmap.hitObjects.filter((h) => h instanceof Circle) as Circle[];
+    const sliders = beatmap.hitObjects.filter((h) => h instanceof Slider) as Slider[];
+    const spinners = beatmap.hitObjects.filter((h) => h instanceof Spinner) as Spinner[];
 
-    const nested = sliders.reduce((sum, slider) => {
-      return sum + (slider as Slider).nestedHitObjects.length;
-    }, 0);
+    const nested = sliders.reduce((sum, slider) => sum + slider.nestedHitObjects.length, 0);
 
     const attributes = new StandardDifficultyAttributes(mods, starRating);
 
-    attributes.aimStrain = aimRating;
-    attributes.speedStrain = speedRating;
-    attributes.flashlightRating = flashlightRating;
+    attributes.aimDifficulty = aimRating;
+    attributes.speedDifficulty = speedRating;
+    attributes.speedNoteCount = speedNoteCount;
+    attributes.flashlightDifficulty = flashlightRating;
     attributes.sliderFactor = sliderFactor;
     attributes.hitCircleCount = circles.length;
     attributes.sliderCount = sliders.length;
@@ -99,7 +105,9 @@ export class StandardDifficultyCalculator extends DifficultyCalculator<StandardD
     return attributes;
   }
 
-  protected *_createDifficultyHitObjects(beatmap: IBeatmap, clockRate: number): Generator<StandardDifficultyHitObject> {
+  protected _createDifficultyHitObjects(beatmap: IBeatmap, clockRate: number): StandardDifficultyHitObject[] {
+    const objects: StandardDifficultyHitObject[] = [];
+
     /**
      * The first jump is formed by the first two hitobjects of the map.
      * If the map has less than two hit objects, the enumerator will not return anything.
@@ -109,21 +117,26 @@ export class StandardDifficultyCalculator extends DifficultyCalculator<StandardD
       const last = beatmap.hitObjects[i - 1];
       const current = beatmap.hitObjects[i];
 
-      yield new StandardDifficultyHitObject(current, lastLast, last, clockRate);
+      const object = new StandardDifficultyHitObject(
+        current,
+        last,
+        lastLast,
+        clockRate,
+        objects,
+        objects.length,
+      );
+
+      objects.push(object);
     }
+
+    return objects;
   }
 
-  protected _createSkills(beatmap: IBeatmap, mods: StandardModCombination, clockRate: number): Skill[] {
-    const hitWindows = new StandardHitWindows();
-
-    hitWindows.setDifficulty(beatmap.difficulty.overallDifficulty);
-
-    this._hitWindowGreat = hitWindows.windowFor(HitResult.Great) / clockRate;
-
+  protected _createSkills(_: IBeatmap, mods: StandardModCombination): Skill[] {
     return [
       new Aim(mods, true),
       new Aim(mods, false),
-      new Speed(mods, this._hitWindowGreat),
+      new Speed(mods),
       new Flashlight(mods),
     ];
   }

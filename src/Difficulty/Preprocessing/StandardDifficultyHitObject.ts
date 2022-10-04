@@ -1,62 +1,77 @@
-import { DifficultyHitObject, IHitObject, Vector2 } from 'osu-classes';
+import { DifficultyHitObject, HitResult, IHitObject, MathUtils, Vector2 } from 'osu-classes';
+import { StandardHidden } from '../../Mods';
 import { Slider, SliderRepeat, Spinner, StandardHitObject } from '../../Objects';
 
 export class StandardDifficultyHitObject extends DifficultyHitObject {
   /**
-   * Change radius to 50 to make 100 the diameter. Easier for mental maths.
+   * A distance by which all distances should be scaled in order to assume a uniform circle size.
    */
-  private _NORMALIZED_RADIUS = 50;
-  private _MIN_DELTA_TIME = 25;
-  private _MAXIMUM_SLIDER_RADIUS = this._NORMALIZED_RADIUS * Math.fround(2.4);
-  private _ASSUMED_SLIDER_RADIUS = this._NORMALIZED_RADIUS * Math.fround(1.8);
+  private static _NORMALIZED_RADIUS = 50;
+  private static _MIN_DELTA_TIME = 25;
+  private static _MAXIMUM_SLIDER_RADIUS = Math.fround(this._NORMALIZED_RADIUS * 2.4);
+  private static _ASSUMED_SLIDER_RADIUS = Math.fround(this._NORMALIZED_RADIUS * 1.8);
 
   /**
-   * Angle the player has to take to hit this difficulty hit object.
+   * Milliseconds elapsed since the start time of the previous  
+   * {@link StandardDifficultyHitObject}, with a minimum of 25ms.
+   */
+  readonly strainTime: number;
+
+  /**
+   * Normalized distance from the end position of the previous 
+   * {@link StandardDifficultyHitObject} to the start position of this {@link StandardDifficultyHitObject}.
+   * The "lazy" end position is the position at which the cursor ends up if the previous hitobject 
+   * is followed with as minimal movement as possible (i.e. on the edge of slider follow circles).
+   */
+  lazyJumpDistance = 0;
+
+  /**
+   * Normalised shortest distance to consider for a jump between the previou
+   * {@link StandardDifficultyHitObject} and this {@link StandardDifficultyHitObject}.
+   * This is bounded from above by {@link lazyJumpDistance}, and is smaller than the former 
+   * if a more natural path is able to be taken through the previous {@link StandardDifficultyHitObject}.
+   */
+  minimumJumpDistance = 0;
+
+  /**
+   * The time taken to travel through {@link minimumJumpDistance}, with a minimum of 25ms.
+   */
+  minimumJumpTime = 0;
+
+  /**
+   * Normalised distance between the start and end position of this {@link StandardDifficultyHitObject}.
+   */
+  travelDistance = 0;
+
+  /**
+   * The time taken to travel through {@link travelDistance}, with a minimum value of 25ms {@link Slider} objects.
+   */
+  travelTime = 0;
+
+  /**
+   * Angle the player has to take to hit this {@link StandardDifficultyHitObject}.
    * Calculated as the angle between the circles (current-2, current-1, current).
    */
   angle: number | null = null;
 
   /**
-   * Normalized distance from the end position of the previous 
-   * difficulty hit object to the start position of this difficulty hit object.
+   * Retrieves the full hit window for a Great {@link HitResult}.
    */
-  jumpDistance = 0;
-
-  /**
-   * Minimum distance from the end position of the previous 
-   * difficulty hit object to the start position of this difficulty hit object.
-   */
-  movementDistance = 0;
-
-  /**
-   * Milliseconds elapsed since the end time of the previous 
-   * difficulty hit object with a minimum of 25ms.
-   */
-  movementTime = 0;
-
-  /**
-   * Normalized distance between the start and end position of the previous difficulty hit object.
-   */
-  travelDistance = 0;
-
-  /**
-   * Milliseconds elapsed since the start time of the previous difficulty hit object 
-   * to the end time of the same previous difficulty hit object, with a minimum of 25ms.
-   */
-  travelTime = 0;
-
-  /**
-   * Milliseconds elapsed since the start time of the previous  
-   * difficulty hit object, with a minimum of 25ms.
-   */
-  readonly strainTime: number;
+  hitWindowGreat = 0;
 
   readonly baseObject: StandardHitObject;
   readonly lastObject: StandardHitObject;
   private readonly _lastLastObject: StandardHitObject;
 
-  constructor(hitObject: IHitObject, lastLastObject: IHitObject | null, lastObject: IHitObject, clockRate: number) {
-    super(hitObject, lastObject, clockRate);
+  constructor(
+    hitObject: IHitObject,
+    lastObject: IHitObject,
+    lastLastObject: IHitObject | null,
+    clockRate: number,
+    objects: StandardDifficultyHitObject[],
+    index: number,
+  ) {
+    super(hitObject, lastObject, clockRate, objects, index);
 
     this.baseObject = hitObject as StandardHitObject;
     this.lastObject = lastObject as StandardHitObject;
@@ -65,14 +80,49 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
     /**
      * Capped to 25ms to prevent difficulty calculation breaking from simultaneous objects.
      */
-    this.strainTime = Math.max(this.deltaTime, this._MIN_DELTA_TIME);
+    this.strainTime = Math.max(this.deltaTime, StandardDifficultyHitObject._MIN_DELTA_TIME);
+    this.hitWindowGreat = 2 * this.baseObject.hitWindows.windowFor(HitResult.Great) / clockRate;
 
     this._setDistances(clockRate);
+  }
+
+  opacityAt(time: number, hidden: boolean): number {
+    if (time > this.baseObject.startTime) return 0;
+
+    const fadeInStartTime = this.baseObject.startTime - this.baseObject.timePreempt;
+    const fadeInDuration = this.baseObject.timeFadeIn;
+
+    if (hidden) {
+      const fadeOutStartTime = this.baseObject.startTime
+        - this.baseObject.timePreempt + this.baseObject.timeFadeIn;
+
+      const fadeOutDuration = this.baseObject.timePreempt
+        * StandardHidden.FADE_OUT_DURATION_MULTIPLIER;
+
+      return Math.min(
+        MathUtils.clamp((time - fadeInStartTime) / fadeInDuration, 0, 1),
+        1.0 - MathUtils.clamp((time - fadeOutStartTime) / fadeOutDuration, 0, 1),
+      );
+    }
+
+    return MathUtils.clamp((time - fadeInStartTime) / fadeInDuration, 0, 1);
   }
 
   private _setDistances(clockRate: number): void {
     const baseObj = this.baseObject as StandardHitObject;
     const lastObj = this.lastObject as StandardHitObject;
+
+    if (baseObj instanceof Slider) {
+      this._computeSliderCursorPosition(baseObj);
+
+      this.travelDistance = baseObj.lazyTravelDistance *
+        Math.fround(Math.pow(1 + baseObj.repeats / 2.5, 1 / 2.5));
+
+      this.travelTime = Math.max(
+        baseObj.lazyTravelTime / clockRate,
+        StandardDifficultyHitObject._MIN_DELTA_TIME,
+      );
+    }
 
     /**
      * We don't need to calculate either angle or distance 
@@ -86,10 +136,12 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
      * We will scale distances by this factor, 
      * so we can assume a uniform CircleSize among beatmaps.
      */
-    let scalingFactor = Math.fround(this._NORMALIZED_RADIUS / Math.fround(baseObj.radius));
+    let scalingFactor = Math.fround(
+      StandardDifficultyHitObject._NORMALIZED_RADIUS / baseObj.radius,
+    );
 
     if (baseObj.radius < 30) {
-      const smallCircleBonus = Math.min(30 - baseObj.radius, 5) / 50;
+      const smallCircleBonus = Math.min(30 - Math.fround(baseObj.radius), 5) / 50;
 
       scalingFactor *= 1 + smallCircleBonus;
     }
@@ -99,30 +151,34 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
     const scaledStackPos = baseObj.stackedStartPosition.scale(scalingFactor);
     const scaledCursorPos = lastCursorPosition.scale(scalingFactor);
 
-    this.jumpDistance = scaledStackPos.subtract(scaledCursorPos).flength();
+    this.lazyJumpDistance = scaledStackPos.subtract(scaledCursorPos).flength();
+    this.minimumJumpTime = this.strainTime;
+    this.minimumJumpDistance = this.lazyJumpDistance;
 
     if (lastObj instanceof Slider) {
-      this._computeSliderCursorPosition(lastObj);
+      const lastTravelDistance = Math.max(
+        lastObj.lazyTravelTime / clockRate,
+        StandardDifficultyHitObject._MIN_DELTA_TIME,
+      );
 
-      this.travelDistance = lastObj.lazyTravelDistance;
-      this.travelTime = Math.max(lastObj.lazyTravelTime / clockRate, this._MIN_DELTA_TIME);
-      this.movementTime = Math.max(this.strainTime - this.travelTime, this._MIN_DELTA_TIME);
+      this.minimumJumpTime = Math.max(
+        this.strainTime - lastTravelDistance,
+        StandardDifficultyHitObject._MIN_DELTA_TIME,
+      );
 
       const tailStackPos = lastObj.tail?.stackedStartPosition ?? lastObj.stackedStartPosition;
       const baseStackPos = baseObj.stackedStartPosition;
 
       const tailJumpDistance = tailStackPos.subtract(baseStackPos).flength() * scalingFactor;
 
-      const movementDistance = Math.min(
-        this.jumpDistance - (this._MAXIMUM_SLIDER_RADIUS - this._ASSUMED_SLIDER_RADIUS),
-        tailJumpDistance - this._MAXIMUM_SLIDER_RADIUS,
-      );
+      const maxSliderRadius = StandardDifficultyHitObject._MAXIMUM_SLIDER_RADIUS;
+      const assumedSliderRadius = StandardDifficultyHitObject._ASSUMED_SLIDER_RADIUS;
 
-      this.movementDistance = Math.max(0, movementDistance);
-    }
-    else {
-      this.movementDistance = this.jumpDistance;
-      this.movementTime = this.strainTime;
+      this.minimumJumpDistance = MathUtils.clamp(
+        this.lazyJumpDistance - (maxSliderRadius - assumedSliderRadius),
+        0,
+        tailJumpDistance - maxSliderRadius,
+      );
     }
 
     if (this._lastLastObject !== null && !(this._lastLastObject instanceof Spinner)) {
@@ -159,20 +215,21 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
     let currCursorPosition = slider.stackedStartPosition;
 
     /**
-     * LazySliderDistance is coded to be sensitive to scaling, 
+     * Lazy slider distance is coded to be sensitive to scaling, 
      * this makes the maths easier with the thresholds being used.
      */
-    const scalingFactor = this._NORMALIZED_RADIUS / slider.radius;
+    const scalingFactor = StandardDifficultyHitObject._NORMALIZED_RADIUS / slider.radius;
 
     for (let i = 1; i < slider.nestedHitObjects.length; ++i) {
       const currMovementObj = slider.nestedHitObjects[i] as StandardHitObject;
+
       let currMovement = currMovementObj.stackedStartPosition.fsubtract(currCursorPosition);
       let currMovementLength = scalingFactor * currMovement.flength();
 
       /**
        * Amount of movement required so that the cursor position needs to be updated.
        */
-      let requiredMovement = this._ASSUMED_SLIDER_RADIUS;
+      let requiredMovement = StandardDifficultyHitObject._ASSUMED_SLIDER_RADIUS;
 
       if (i === slider.nestedHitObjects.length - 1) {
         /**
@@ -197,7 +254,7 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
          * For a slider repeat, assume a tighter movement 
          * threshold to better assess repeat sliders.
          */
-        requiredMovement = this._NORMALIZED_RADIUS;
+        requiredMovement = StandardDifficultyHitObject._NORMALIZED_RADIUS;
       }
 
       if (currMovementLength > requiredMovement) {
@@ -205,7 +262,9 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
          * This finds the positional delta from the required radius and the current position,
          * and updates the currCursorPosition accordingly, as well as rewarding distance.
          */
-        const movementScale = (currMovementLength - requiredMovement) / currMovementLength;
+        const movementScale = Math.fround(
+          (currMovementLength - requiredMovement) / currMovementLength,
+        );
 
         currCursorPosition = currCursorPosition.fadd(currMovement.fscale(movementScale));
         currMovementLength *= (currMovementLength - requiredMovement) / currMovementLength;

@@ -6,6 +6,7 @@ import {
   IHasPosition,
   IHasComboInformation,
 } from 'osu-classes';
+import { StandardHitWindows } from '../Scoring';
 
 export abstract class StandardHitObject extends HitObject implements IHasPosition, IHasComboInformation {
   /**
@@ -40,6 +41,8 @@ export abstract class StandardHitObject extends HitObject implements IHasPositio
   comboOffset = 0;
   lastInCombo = false;
   isNewCombo = false;
+
+  hitWindows = new StandardHitWindows();
 
   get endPosition(): Vector2 {
     return this.startPosition;
