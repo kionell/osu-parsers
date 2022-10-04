@@ -54,7 +54,7 @@ export class Speed extends StandardStrainSkill {
     if (maxStrain === 0) return 0;
 
     return this._objectStrains.reduce((sum, strain) => {
-      return sum + 1 / (1 + Math.exp(-(strain / maxStrain * 12 - 6)));
+      return sum + 1 / (1 + Math.exp(6 - strain / maxStrain * 12));
     });
   }
 }
