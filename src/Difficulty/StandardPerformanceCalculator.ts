@@ -146,7 +146,7 @@ export class StandardPerformanceCalculator extends PerformanceCalculator {
       aimValue *= 0.97 * Math.pow(1 - pow, this._effectiveMissCount);
     }
 
-    aimValue * this._getComboScalingFactor(attributes);
+    aimValue *= this._getComboScalingFactor(attributes);
 
     let approachRateFactor = 0;
 
