@@ -97,7 +97,7 @@ export abstract class BeatmapTimingPointEncoder {
     let beatLength = -100;
 
     if (difficultyPoint !== null) {
-      beatLength /= difficultyPoint.speedMultiplier;
+      beatLength /= difficultyPoint.sliderVelocity;
     }
 
     let sampleSet: SampleSet = SampleSet.None;

@@ -102,7 +102,7 @@ export class SlidableObject extends HitObject implements ISlidableObject, IHasCo
     const difficultyPoint = controlPoints.difficultyPointAt(this.startTime);
 
     const scoringDistance = SlidableObject.BASE_SCORING_DISTANCE
-      * difficulty.sliderMultiplier * difficultyPoint.speedMultiplier;
+      * difficulty.sliderMultiplier * difficultyPoint.sliderVelocity;
 
     this.velocity = scoringDistance / timingPoint.beatLength;
   }

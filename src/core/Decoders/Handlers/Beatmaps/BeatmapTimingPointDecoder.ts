@@ -111,7 +111,7 @@ export abstract class BeatmapTimingPointDecoder {
     const difficultyPoint = new DifficultyPoint();
 
     difficultyPoint.bpmMultiplier = bpmMultiplier;
-    difficultyPoint.speedMultiplier = speedMultiplier;
+    difficultyPoint.sliderVelocity = speedMultiplier;
     difficultyPoint.generateTicks = !Number.isNaN(beatLength);
 
     this.addControlPoint(difficultyPoint, startTime, timingChange);
