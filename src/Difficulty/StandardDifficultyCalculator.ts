@@ -23,6 +23,7 @@ import { StandardDifficultyAttributes } from './Attributes';
 import { StandardDifficultyHitObject } from './Preprocessing';
 import { Circle, Slider, Spinner } from '../Objects';
 import { StandardHitWindows } from '../Scoring';
+import { StandardPerformanceCalculator } from './StandardPerformanceCalculator';
 
 export class StandardDifficultyCalculator extends DifficultyCalculator<StandardDifficultyAttributes> {
   private _DIFFICULTY_MULTIPLIER = 0.0675;
@@ -72,8 +73,10 @@ export class StandardDifficultyCalculator extends DifficultyCalculator<StandardD
       Math.pow(baseFlashlightPerformance, 1.1), 1 / 1.1,
     );
 
+    const baseMultiplier = StandardPerformanceCalculator.PERFORMANCE_BASE_MULTIPLIER;
+
     const starRating = basePerformance > 0.00001
-      ? Math.cbrt(1.12) * 0.027 * (Math.cbrt(100000 / Math.pow(2, 1 / 1.1) * basePerformance) + 4)
+      ? Math.cbrt(baseMultiplier) * 0.027 * (Math.cbrt(100000 / Math.pow(2, 1 / 1.1) * basePerformance) + 4)
       : 0;
 
     const approachRate = beatmap.difficulty.approachRate;
