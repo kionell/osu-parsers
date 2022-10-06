@@ -208,8 +208,8 @@ export class PathApproximator {
       const theta = pr.thetaStart + pr.direction * fract * pr.thetaRange;
 
       const vector2 = new Vector2(
-        Math.fround(Math.cos(Math.fround(theta))),
-        Math.fround(Math.sin(Math.fround(theta))),
+        Math.fround(Math.cos(theta)),
+        Math.fround(Math.sin(theta)),
       );
 
       output.push(vector2.fscale(pr.radius).fadd(pr.centre));
