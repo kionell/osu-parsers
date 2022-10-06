@@ -70,8 +70,13 @@ export abstract class StandardHitObject extends HitObject implements IHasPositio
   set scale(value: number) {
     this._scale = value;
 
-    this._stackOffset.x = Math.fround(-6.4) * Math.fround(value) * this._stackHeight;
-    this._stackOffset.y = Math.fround(-6.4) * Math.fround(value) * this._stackHeight;
+    this._stackOffset.x = Math.fround(
+      Math.fround(Math.fround(-6.4) * Math.fround(value)) * this._stackHeight,
+    );
+
+    this._stackOffset.y = Math.fround(
+      Math.fround(Math.fround(-6.4) * Math.fround(value)) * this._stackHeight,
+    );
   }
 
   get radius(): number {
@@ -85,8 +90,13 @@ export abstract class StandardHitObject extends HitObject implements IHasPositio
   set stackHeight(value: number) {
     this._stackHeight = value;
 
-    this._stackOffset.x = Math.fround(-6.4) * Math.fround(this._scale) * value;
-    this._stackOffset.y = Math.fround(-6.4) * Math.fround(this._scale) * value;
+    this._stackOffset.x = Math.fround(
+      Math.fround(-6.4) * Math.fround(this._scale) * value,
+    );
+
+    this._stackOffset.y = Math.fround(
+      Math.fround(-6.4) * Math.fround(this._scale) * value,
+    );
 
     this.nestedHitObjects.forEach((n) => {
       (n as StandardHitObject).stackHeight = this._stackHeight;
@@ -102,11 +112,11 @@ export abstract class StandardHitObject extends HitObject implements IHasPositio
   }
 
   get stackedStartPosition(): Vector2 {
-    return this.startPosition.add(this.stackedOffset);
+    return this.startPosition.fadd(this.stackedOffset);
   }
 
   get stackedEndPosition(): Vector2 {
-    return this.endPosition.add(this.stackedOffset);
+    return this.endPosition.fadd(this.stackedOffset);
   }
 
   applyDefaultsToSelf(controlPoints: ControlPointInfo, difficulty: BeatmapDifficultySection): void {

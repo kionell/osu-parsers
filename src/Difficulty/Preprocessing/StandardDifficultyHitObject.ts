@@ -8,8 +8,8 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
    */
   private static _NORMALIZED_RADIUS = 50;
   private static _MIN_DELTA_TIME = 25;
-  private static _MAXIMUM_SLIDER_RADIUS = Math.fround(this._NORMALIZED_RADIUS * 2.4);
-  private static _ASSUMED_SLIDER_RADIUS = Math.fround(this._NORMALIZED_RADIUS * 1.8);
+  private static _MAXIMUM_SLIDER_RADIUS = Math.fround(this._NORMALIZED_RADIUS * Math.fround(2.4));
+  private static _ASSUMED_SLIDER_RADIUS = Math.fround(this._NORMALIZED_RADIUS * Math.fround(1.8));
 
   /**
    * Milliseconds elapsed since the start time of the previous  
@@ -117,11 +117,13 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
     if (baseObj instanceof Slider) {
       this._computeSliderCursorPosition(baseObj);
 
-      this.travelDistance = baseObj.lazyTravelDistance *
-        Math.fround(Math.pow(1 + baseObj.repeats / 2.5, 1 / 2.5));
+      this.travelDistance = Math.fround(
+        Math.fround(baseObj.lazyTravelDistance) *
+        Math.fround(Math.pow(1 + baseObj.repeats / 2.5, 1 / 2.5)),
+      );
 
       this.travelTime = Math.max(
-        baseObj.lazyTravelTime / clockRate,
+        Math.fround(baseObj.lazyTravelTime / clockRate),
         StandardDifficultyHitObject._MIN_DELTA_TIME,
       );
     }
@@ -139,39 +141,43 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
      * so we can assume a uniform CircleSize among beatmaps.
      */
     let scalingFactor = Math.fround(
-      StandardDifficultyHitObject._NORMALIZED_RADIUS / baseObj.radius,
+      StandardDifficultyHitObject._NORMALIZED_RADIUS / Math.fround(baseObj.radius),
     );
 
     if (baseObj.radius < 30) {
-      const smallCircleBonus = Math.min(30 - Math.fround(baseObj.radius), 5) / 50;
+      const smallCircleBonus = Math.fround(
+        Math.min(Math.fround(30 - Math.fround(baseObj.radius)), 5) / 50,
+      );
 
       scalingFactor *= 1 + smallCircleBonus;
     }
 
     const lastCursorPosition = this._getEndCursorPosition(lastObj);
 
-    const scaledStackPos = baseObj.stackedStartPosition.scale(scalingFactor);
-    const scaledCursorPos = lastCursorPosition.scale(scalingFactor);
+    const scaledStackPos = baseObj.stackedStartPosition.fscale(scalingFactor);
+    const scaledCursorPos = lastCursorPosition.fscale(scalingFactor);
 
-    this.lazyJumpDistance = scaledStackPos.subtract(scaledCursorPos).flength();
+    this.lazyJumpDistance = scaledStackPos.fsubtract(scaledCursorPos).flength();
     this.minimumJumpTime = this.strainTime;
     this.minimumJumpDistance = this.lazyJumpDistance;
 
     if (lastObj instanceof Slider) {
-      const lastTravelDistance = Math.max(
+      const lastTraveTime = Math.max(
         lastObj.lazyTravelTime / clockRate,
         StandardDifficultyHitObject._MIN_DELTA_TIME,
       );
 
       this.minimumJumpTime = Math.max(
-        this.strainTime - lastTravelDistance,
+        this.strainTime - lastTraveTime,
         StandardDifficultyHitObject._MIN_DELTA_TIME,
       );
 
       const tailStackPos = lastObj.tail?.stackedStartPosition ?? lastObj.stackedStartPosition;
       const baseStackPos = baseObj.stackedStartPosition;
 
-      const tailJumpDistance = tailStackPos.subtract(baseStackPos).flength() * scalingFactor;
+      const tailJumpDistance = Math.fround(
+        tailStackPos.fsubtract(baseStackPos).flength() * scalingFactor,
+      );
 
       const maxSliderRadius = StandardDifficultyHitObject._MAXIMUM_SLIDER_RADIUS;
       const assumedSliderRadius = StandardDifficultyHitObject._ASSUMED_SLIDER_RADIUS;
@@ -186,11 +192,13 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
     if (this._lastLastObject !== null && !(this._lastLastObject instanceof Spinner)) {
       const lastLastCursorPosition = this._getEndCursorPosition(this._lastLastObject);
 
-      const v1 = lastLastCursorPosition.subtract(lastObj.stackedStartPosition);
-      const v2 = baseObj.stackedStartPosition.subtract(lastCursorPosition);
+      const v1 = lastLastCursorPosition.fsubtract(lastObj.stackedStartPosition);
+      const v2 = baseObj.stackedStartPosition.fsubtract(lastCursorPosition);
 
       const dot = v1.fdot(v2);
-      const det = Math.fround(v1.x * v2.y) - Math.fround(v1.y * v2.x);
+      const det = Math.fround(
+        Math.fround(v1.floatX * v2.floatY) - Math.fround(v1.floatY * v2.floatX),
+      );
 
       this.angle = Math.abs(Math.atan2(det, dot));
     }

@@ -48,9 +48,9 @@ export class StandardBeatmapProcessor extends BeatmapProcessor {
             break;
           }
 
-          const distance1 = stackBaseObject.startPosition.distance(objectN.startPosition) < stackDistance;
+          const distance1 = stackBaseObject.startPosition.fdistance(objectN.startPosition) < stackDistance;
           const distance2 = (stackBaseObject instanceof Slider)
-            && stackBaseObject.endPosition.distance(objectN.startPosition) < stackDistance;
+            && stackBaseObject.endPosition.fdistance(objectN.startPosition) < stackDistance;
 
           if (distance1 || distance2) {
             stackBaseIndex = n;
@@ -126,7 +126,7 @@ export class StandardBeatmapProcessor extends BeatmapProcessor {
            *       o <- hitCircle has stack of -1
            *        o <- hitCircle has stack of -2
            */
-          const distanceNI = objectN.endPosition.distance(objectI.startPosition);
+          const distanceNI = objectN.endPosition.fdistance(objectI.startPosition);
 
           if ((objectN instanceof Slider) && distanceNI < stackDistance) {
             const offset = objectI.stackHeight - objectN.stackHeight + 1;
@@ -137,7 +137,7 @@ export class StandardBeatmapProcessor extends BeatmapProcessor {
                * we will offset it to appear *below* the slider end (rather than above).
                */
               const objectJ = hitObjects[j];
-              const distanceNJ = objectN.endPosition.distance(objectJ.startPosition);
+              const distanceNJ = objectN.endPosition.fdistance(objectJ.startPosition);
 
               if (distanceNJ < stackDistance) {
                 objectJ.stackHeight -= offset;
@@ -151,7 +151,7 @@ export class StandardBeatmapProcessor extends BeatmapProcessor {
             break;
           }
 
-          if (objectN.startPosition.distance(objectI.startPosition) < stackDistance) {
+          if (objectN.startPosition.fdistance(objectI.startPosition) < stackDistance) {
             /**
              * Keep processing as if there are no sliders.  If we come across a slider, this gets cancelled out.
              * NOTE: Sliders with start startPositions stacking are a special case that is also handled here.
@@ -177,7 +177,7 @@ export class StandardBeatmapProcessor extends BeatmapProcessor {
             break;
           }
 
-          const distance = objectN.endPosition.distance(objectI.startPosition);
+          const distance = objectN.endPosition.fdistance(objectI.startPosition);
 
           if (distance < stackDistance) {
             objectN.stackHeight = objectI.stackHeight + 1;
@@ -212,12 +212,12 @@ export class StandardBeatmapProcessor extends BeatmapProcessor {
 
         const pos2 = currHitObject.endPosition;
 
-        if (hitObjects[j].startPosition.distance(currHitObject.startPosition) < stackDistance) {
+        if (hitObjects[j].startPosition.fdistance(currHitObject.startPosition) < stackDistance) {
           ++currHitObject.stackHeight;
 
           startTime = (hitObjects[j] as Slider).endTime || hitObjects[j].startTime;
         }
-        else if (hitObjects[j].startPosition.distance(pos2) < stackDistance) {
+        else if (hitObjects[j].startPosition.fdistance(pos2) < stackDistance) {
           // Case for sliders - bump notes down and right, rather than up and left.
           hitObjects[j].stackHeight -= ++sliderStack;
 

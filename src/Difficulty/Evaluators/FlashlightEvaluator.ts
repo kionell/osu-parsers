@@ -43,8 +43,8 @@ export class FlashlightEvaluator {
 
       if (!(currentObj.baseObject instanceof Spinner)) {
         const jumpDistance = osuHitObject.stackedStartPosition
-          .subtract(currentHitObject.stackedEndPosition)
-          .length();
+          .fsubtract(currentHitObject.stackedEndPosition)
+          .flength();
 
         cumulativeStrainTime += lastObj.strainTime;
 

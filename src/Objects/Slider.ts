@@ -53,7 +53,7 @@ export class Slider extends StandardHitObject implements ISlidableObject {
   get startX(): number {
     this._updateHeadPosition();
 
-    return this.startPosition.x;
+    return this.startPosition.floatX;
   }
 
   set startX(value: number) {
@@ -64,7 +64,7 @@ export class Slider extends StandardHitObject implements ISlidableObject {
   get startY(): number {
     this._updateHeadPosition();
 
-    return this.startPosition.y;
+    return this.startPosition.floatY;
   }
 
   set startY(value: number) {
@@ -75,7 +75,7 @@ export class Slider extends StandardHitObject implements ISlidableObject {
   get endX(): number {
     this._updateTailPosition();
 
-    return this.endPosition.x;
+    return this.endPosition.floatX;
   }
 
   set endX(value: number) {
@@ -86,7 +86,7 @@ export class Slider extends StandardHitObject implements ISlidableObject {
   get endY(): number {
     this._updateTailPosition();
 
-    return this.endPosition.y;
+    return this.endPosition.floatY;
   }
 
   set endY(value: number) {
@@ -119,15 +119,11 @@ export class Slider extends StandardHitObject implements ISlidableObject {
   }
 
   get spanDuration(): number {
-    return this.path.distance / this.velocity;
+    return this.duration / this.spans;
   }
 
   get duration(): number {
-    return this.spans * this.spanDuration;
-  }
-
-  set duration(value: number) {
-    this.velocity = this.spans * this.distance / value;
+    return this.endTime - this.startTime;
   }
 
   get endPosition(): Vector2 {
@@ -138,7 +134,7 @@ export class Slider extends StandardHitObject implements ISlidableObject {
      * approximate it by setting it to the last point
      */
     if (isFinite(endPoint.x) && isFinite(endPoint.y)) {
-      return this.startPosition.add(endPoint);
+      return this.startPosition.fadd(endPoint);
     }
 
     const controlPoints = this.path.controlPoints;
@@ -151,7 +147,7 @@ export class Slider extends StandardHitObject implements ISlidableObject {
   }
 
   get endTime(): number {
-    return this.startTime + this.duration;
+    return this.startTime + this.spans * this.distance / this.velocity;
   }
 
   applyDefaultsToSelf(controlPoints: ControlPointInfo, difficulty: BeatmapDifficultySection): void {

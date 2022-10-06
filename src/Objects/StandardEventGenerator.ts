@@ -34,7 +34,7 @@ export class StandardEventGenerator extends EventGenerator {
 
           repeat.repeatIndex = event.spanIndex;
           repeat.startTime = event.startTime;
-          repeat.startPosition = slider.startPosition.add(offset);
+          repeat.startPosition = slider.startPosition.fadd(offset);
           repeat.scale = slider.scale;
 
           yield repeat;
@@ -65,7 +65,7 @@ export class StandardEventGenerator extends EventGenerator {
           tick.spanIndex = event.spanIndex as number;
           tick.spanStartTime = event.spanStartTime as number;
           tick.startTime = event.startTime;
-          tick.startPosition = slider.startPosition.add(offset);
+          tick.startPosition = slider.startPosition.fadd(offset);
           tick.scale = slider.scale;
 
           yield tick;
