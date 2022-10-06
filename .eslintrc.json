@@ -136,8 +136,7 @@
   "overrides": [
     {
       "files": [
-        "./**/*.ts",
-        "./**/*.d.ts"
+        "./**/*.ts"
       ],
       "rules": {
         // This rule is disabled for reverse indexing in enums
@@ -163,7 +162,8 @@
       "files": [
         "./**/*.js",
         "./**/*.cjs",
-        "./**/*.mjs"
+        "./**/*.mjs",
+        "./**/*.d.ts"
       ],
       "rules": {
         "@typescript-eslint/no-var-requires": "off",
