@@ -152,11 +152,17 @@ export class PathApproximator {
         : v3.fadd(v3).fsubtract(v2);
 
       for (let c = 0; c < PathApproximator.CATMULL_DETAIL; c++) {
-        output.push(PathApproximator._catmullFindPoint(v1, v2, v3, v4,
-          Math.fround(c) / PathApproximator.CATMULL_DETAIL));
+        output.push(
+          PathApproximator._catmullFindPoint(v1, v2, v3, v4,
+            Math.fround(Math.fround(c) / PathApproximator.CATMULL_DETAIL),
+          ),
+        );
 
-        output.push(PathApproximator._catmullFindPoint(v1, v2, v3, v4,
-          Math.fround(c + 1) / PathApproximator.CATMULL_DETAIL));
+        output.push(
+          PathApproximator._catmullFindPoint(v1, v2, v3, v4,
+            Math.fround(Math.fround(c + 1) / PathApproximator.CATMULL_DETAIL),
+          ),
+        );
       }
     }
 
@@ -185,8 +191,12 @@ export class PathApproximator {
     let amountPoints = 2;
 
     if (2 * pr.radius > PathApproximator.CIRCULAR_ARC_TOLERANCE) {
-      const angle = 2 * Math.acos(1 - PathApproximator.CIRCULAR_ARC_TOLERANCE / pr.radius);
-      const points = Math.trunc(Math.ceil(pr.thetaRange / angle));
+      let angle = Math.fround(PathApproximator.CIRCULAR_ARC_TOLERANCE / pr.radius);
+
+      angle = Math.fround(1 - angle);
+      angle = Math.fround(2 * Math.fround(Math.acos(angle)));
+
+      const points = Math.ceil(Math.fround(pr.thetaRange / angle));
 
       amountPoints = Math.max(2, points);
     }
@@ -198,8 +208,8 @@ export class PathApproximator {
       const theta = pr.thetaStart + pr.direction * fract * pr.thetaRange;
 
       const vector2 = new Vector2(
-        Math.fround(Math.cos(theta)),
-        Math.fround(Math.sin(theta)),
+        Math.fround(Math.cos(Math.fround(theta))),
+        Math.fround(Math.sin(Math.fround(theta))),
       );
 
       output.push(vector2.fscale(pr.radius).fadd(pr.centre));
@@ -222,27 +232,38 @@ export class PathApproximator {
      * If we have a degenerate triangle where a side-length is almost zero,
      * then give up and fallback to a more numerically stable method.
      */
-    const sideLength =
-      (b.floatY - a.floatY) * (c.floatX - a.floatX) -
-      (b.floatX - a.floatX) * (c.floatY - a.floatY);
+    const sideLength = Math.fround(
+      Math.fround(b.floatY - a.floatY) * Math.fround(c.floatX - a.floatX) -
+      Math.fround(b.floatX - a.floatX) * Math.fround(c.floatY - a.floatY),
+    );
 
     if (Math.abs(sideLength) < Math.fround(0.001)) {
       return new CircularArcProperties();
     }
 
-    const d = 2 * (
-      a.floatX * b.fsubtract(c).floatY +
-      b.floatX * c.fsubtract(a).floatY +
-      c.floatX * a.fsubtract(b).floatY
-    );
+    const d = Math.fround(2 * Math.fround((
+      Math.fround(a.floatX * b.fsubtract(c).floatY) +
+      Math.fround(b.floatX * c.fsubtract(a).floatY) +
+      Math.fround(c.floatX * a.fsubtract(b).floatY)
+    )));
 
-    const aSq = a.flength() ** 2;
-    const bSq = b.flength() ** 2;
-    const cSq = c.flength() ** 2;
+    const aSq = Math.fround(Math.fround(a.floatX * a.floatX) + Math.fround(a.floatY * a.floatY));
+    const bSq = Math.fround(Math.fround(b.floatX * b.floatX) + Math.fround(b.floatY * b.floatY));
+    const cSq = Math.fround(Math.fround(c.floatX * c.floatX) + Math.fround(c.floatY * c.floatY));
 
     const centre = new Vector2(
-      aSq * b.fsubtract(c).floatY + bSq * c.fsubtract(a).floatY + cSq * a.fsubtract(b).floatY,
-      aSq * c.fsubtract(b).floatX + bSq * a.fsubtract(c).floatX + cSq * b.fsubtract(a).floatX,
+      Math.fround(
+        Math.fround(
+          Math.fround(aSq * b.fsubtract(c).floatY) +
+          Math.fround(bSq * c.fsubtract(a).floatY),
+        ) + Math.fround(cSq * a.fsubtract(b).floatY),
+      ),
+      Math.fround(
+        Math.fround(
+          Math.fround(aSq * c.fsubtract(b).floatX) +
+          Math.fround(bSq * a.fsubtract(c).floatX),
+        ) + Math.fround(cSq * b.fsubtract(a).floatX),
+      ),
     ).fdivide(d);
 
     const dA = a.fsubtract(centre);

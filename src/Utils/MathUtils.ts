@@ -28,8 +28,8 @@ export function lerpClamped01(value: number, a: number, b: number): number {
 }
 
 export function lerpVector2(value: number, a: Vector2, b: Vector2): Vector2 {
-  const x = lerpClamped01(value, a.x, b.x);
-  const y = lerpClamped01(value, a.y, b.y);
+  const x = lerpClamped01(value, a.floatX, b.floatX);
+  const y = lerpClamped01(value, a.floatY, b.floatY);
 
   return new Vector2(x, y);
 }

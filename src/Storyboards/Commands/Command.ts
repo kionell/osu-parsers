@@ -97,8 +97,8 @@ export class Command<T = any> {
       const endValue = this.endValue as T & Vector2;
 
       return new Vector2(
-        getNumber(progress, startValue.x, endValue.x),
-        getNumber(progress, startValue.y, endValue.y),
+        getNumber(progress, startValue.floatX, endValue.floatX),
+        getNumber(progress, startValue.floatY, endValue.floatY),
       ) as T & Vector2;
     }
 

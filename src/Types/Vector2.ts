@@ -41,7 +41,10 @@ export class Vector2 {
    * @param vec Vector to add.
    */
   fadd(vec: Vector2): Vector2 {
-    return new Vector2(this.floatX + vec.floatX, this.floatY + vec.floatY);
+    return new Vector2(
+      Math.fround(this.floatX + vec.floatX),
+      Math.fround(this.floatY + vec.floatY),
+    );
   }
 
   /**
@@ -58,7 +61,10 @@ export class Vector2 {
    * @param vec Vector to substract.
    */
   fsubtract(vec: Vector2): Vector2 {
-    return new Vector2(this.floatX - vec.floatX, this.floatY - vec.floatY);
+    return new Vector2(
+      Math.fround(this.floatX - vec.floatX),
+      Math.fround(this.floatY - vec.floatY),
+    );
   }
 
   /**
@@ -78,8 +84,8 @@ export class Vector2 {
     const floatMultiplier = Math.fround(multiplier);
 
     return new Vector2(
-      this.floatX * floatMultiplier,
-      this.floatY * floatMultiplier,
+      Math.fround(this.floatX * floatMultiplier),
+      Math.fround(this.floatY * floatMultiplier),
     );
   }
 
@@ -100,8 +106,8 @@ export class Vector2 {
     const floatDivisor = Math.fround(divisor);
 
     return new Vector2(
-      this.floatX / floatDivisor,
-      this.floatY / floatDivisor,
+      Math.fround(this.floatX / floatDivisor),
+      Math.fround(this.floatY / floatDivisor),
     );
   }
 
@@ -118,7 +124,12 @@ export class Vector2 {
    * @param vec Second vector.
    */
   fdot(vec: Vector2): number {
-    return this.floatX * vec.floatX + this.floatY * vec.floatY;
+    return Math.fround(
+      Math.fround(
+        Math.fround(this.floatX * vec.floatX) +
+        Math.fround(this.floatY * vec.floatY),
+      ),
+    );
   }
 
   /**
@@ -132,10 +143,14 @@ export class Vector2 {
    * Returns a single precision length of two points in a vector.
    */
   flength(): number {
-    return Math.fround(Math.sqrt(
-      this.floatX * this.floatX +
-      this.floatY * this.floatY,
-    ));
+    return Math.fround(
+      Math.sqrt(
+        Math.fround(
+          Math.fround(this.floatX * this.floatX) +
+          Math.fround(this.floatY * this.floatY),
+        ),
+      ),
+    );
   }
 
   /**
@@ -150,10 +165,14 @@ export class Vector2 {
   }
 
   fdistance(vec: Vector2): number {
-    const x = this.floatX - vec.floatX;
-    const y = this.floatY - vec.floatY;
+    const x = Math.fround(this.floatX - vec.floatX);
+    const y = Math.fround(this.floatY - vec.floatY);
 
-    return Math.fround(Math.sqrt(x * x + y * y));
+    return Math.fround(
+      Math.sqrt(
+        Math.fround(Math.fround(x * x) + Math.fround(y * y)),
+      ),
+    );
   }
 
   /**
@@ -171,7 +190,10 @@ export class Vector2 {
   fnormalize(): Vector2 {
     const scale = Math.fround(1 / this.flength());
 
-    return new Vector2(this.floatX * scale, this.floatY * scale);
+    return new Vector2(
+      Math.fround(this.floatX * scale),
+      Math.fround(this.floatY * scale),
+    );
   }
 
   /**
