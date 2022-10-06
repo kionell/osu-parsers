@@ -130,7 +130,9 @@ export abstract class StandardHitObject extends HitObject implements IHasPositio
      * Closest approximation:
      * 23.0400009155273 + (7 - CS) * 4.47999954223635
      */
-    this.scale = Math.fround((1 - Math.fround(0.7) * (difficulty.circleSize - 5) / 5) / 2);
+    const scale = Math.fround(Math.fround(0.7) * Math.fround(difficulty.circleSize - 5));
+
+    this.scale = Math.fround(Math.fround(1 - Math.fround(scale / 5)) / 2);
   }
 
   /**

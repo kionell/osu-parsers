@@ -123,7 +123,7 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
       );
 
       this.travelTime = Math.max(
-        Math.fround(baseObj.lazyTravelTime / clockRate),
+        baseObj.lazyTravelTime / clockRate,
         StandardDifficultyHitObject._MIN_DELTA_TIME,
       );
     }
