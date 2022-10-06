@@ -87,14 +87,14 @@ export class RhythmEvaluator {
           /**
            * BPM change is into slider, this is easy acc window.
            */
-          if (current.previous(i - 1).baseObject instanceof Slider) {
+          if (current.previous(i - 1)?.baseObject instanceof Slider) {
             effectiveRatio *= 0.125;
           }
 
           /**
            * BPM change was from a slider, this is easier typically than circle -> circle
            */
-          if (current.previous(i).baseObject instanceof Slider) {
+          if (current.previous(i)?.baseObject instanceof Slider) {
             effectiveRatio *= 0.25;
           }
 

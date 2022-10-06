@@ -24,7 +24,7 @@ export class Speed extends StandardStrainSkill {
   }
 
   protected _calculateInitialStrain(time: number, current: DifficultyHitObject): number {
-    const strainDecay = this._strainDecay(time - current.previous(0).startTime);
+    const strainDecay = this._strainDecay(time - (current.previous(0)?.startTime ?? 0));
 
     return (this._currentStrain * this._currentRhythm) * strainDecay;
   }
@@ -55,6 +55,6 @@ export class Speed extends StandardStrainSkill {
 
     return this._objectStrains.reduce((sum, strain) => {
       return sum + 1 / (1 + Math.exp(6 - strain / maxStrain * 12));
-    });
+    }, 0);
   }
 }

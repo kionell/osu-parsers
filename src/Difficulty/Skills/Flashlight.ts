@@ -24,7 +24,7 @@ export class Flashlight extends StrainSkill {
   }
 
   protected _calculateInitialStrain(time: number, current: DifficultyHitObject): number {
-    return this._currentStrain * this._strainDecay(time - current.previous(0).startTime);
+    return this._currentStrain * this._strainDecay(time - (current.previous(0)?.startTime ?? 0));
   }
 
   protected _strainValueAt(current: DifficultyHitObject): number {

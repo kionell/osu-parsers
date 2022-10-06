@@ -22,7 +22,7 @@ export class AimEvaluator {
   static evaluateDifficultyOf(current: DifficultyHitObject, withSliders: boolean): number {
     if (current.baseObject instanceof Spinner) return 0;
     if (current.index <= 1) return 0;
-    if (current.previous(0).baseObject instanceof Spinner) return 0;
+    if (current.previous(0)?.baseObject instanceof Spinner) return 0;
 
     const osuCurrObj = current as StandardDifficultyHitObject;
     const osuLastObj = current.previous(0) as StandardDifficultyHitObject;
