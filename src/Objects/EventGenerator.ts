@@ -35,7 +35,7 @@ export abstract class EventGenerator {
       progress: 0,
     };
 
-    if (slider.tickDistance !== 0 && slider.tickDistance !== Infinity) {
+    if (tickDistance !== 0 && tickDistance !== Infinity) {
       for (let spanIndex = 0; spanIndex < slider.spans; ++spanIndex) {
         const reversed = !!(spanIndex & 1);
         const events: ISliderEventDescriptor[] = [];
