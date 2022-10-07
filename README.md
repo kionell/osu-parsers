@@ -80,7 +80,7 @@ const parsed = decoder.decodeFromPath(decodePath);
 const ruleset = new StandardRuleset();
 
 // Create mod combination.
-const mods = ruleset.createModCombination('HDDT');
+const mods = ruleset.createModCombination('HDDTHR');
 
 // Create difficulty calculator for IBeatmap object.
 const difficultyCalculator = ruleset.createDifficultyCalculator(parsed);
@@ -94,19 +94,20 @@ const difficultyAttributes = difficultyCalculator.calculateWithMods(mods);
 
 ```json
 {
-  "maxCombo": 7540,
-  "mods": "EZHTFL",
-  "starRating": 10.637008677038498,
-  "aimStrain": 2.9681940391008124,
-  "speedStrain": 2.693580451310595,
-  "flashlightRating": 5.889289503849482,
-  "sliderFactor": 0.9993173565222806,
-  "approachRate": 1.3333333333333333,
-  "overallDifficulty": 1.5555555555555547,
-  "drainRate": 2,
-  "hitCircleCount": 4011,
-  "sliderCount": 1636,
-  "spinnerCount": 15
+  "maxCombo": 428,
+  "mods": "HDHRDT",
+  "starRating": 9.476473467176532,
+  "aimDifficulty": 5.299074243144462,
+  "speedDifficulty": 3.22604582775375,
+  "speedNoteCount": 214.6042205878083,
+  "flashlightDifficulty": 3.94679878308455,
+  "sliderFactor": 0.979793529981964,
+  "approachRate": 11,
+  "overallDifficulty": 11.111111111111112,
+  "drainRate": 8.679999351501465,
+  "hitCircleCount": 210,
+  "sliderCount": 105,
+  "spinnerCount": 1
 }
 ```
 
@@ -283,7 +284,7 @@ const parsed = decoder.decodeFromPath(decodePath);
 const ruleset = new StandardRuleset();
 
 // Create mod combination and apply it to beatmap.
-const mods = ruleset.createModCombination('EZHTFL');
+const mods = ruleset.createModCombination('HDDTHR');
 const standardBeatmap = ruleset.applyToBeatmapWithMods(parsed, mods);
 
 // Create difficulty calculator for osu!std beatmap.
@@ -292,15 +293,15 @@ const difficultyCalculator = ruleset.createDifficultyCalculator(standardBeatmap)
 // Calculate difficulty attributes.
 const difficultyAttributes = difficultyCalculator.calculate();
 
-// Because Maybe! pt. 3 (Renard) [Marathon]
-// Kalanluu + EZHTFL 1253.18 pp.
+// Team Magma & Aqua Leader Battle Theme (Unofficial) (Bliitzit) [Catastrophe]
+// mrekk + HDDTHR 1215.82 pp.
 const score = new ScoreInfo({
-  maxCombo: 7262,
+  maxCombo: 428,
   rulesetId: 0,
-  count300: 5656, // score.statistics.great
+  count300: 316, // score.statistics.great
   count100: 4, // score.statistics.good
   count50: 0, // score.statistics.meh
-  countMiss: 2, // score.statistics.miss
+  countMiss: 0, // score.statistics.miss
   mods,
 });
 
@@ -321,13 +322,13 @@ const totalPerformance = performanceCalculator.calculate();
 
 ```json
 {
-  "mods": "EZHTFL",
-  "totalPerformance": 1253.1769458607175,
-  "aimPerformance": 298.64232489960165,
-  "speedPerformance": 105.00718455675117,
-  "accuracyPerformance": 6.202151426321113,
-  "flashlightPerformance": 797.2179419754594,
-  "effectiveMissCount": 2
+  "mods": "HDHRDT",
+  "totalPerformance": 1215.8265664016758,
+  "aimPerformance": 765.7030578076648,
+  "speedPerformance": 183.38740932231886,
+  "accuracyPerformance": 203.01691542543904,
+  "flashlightPerformance": 0,
+  "effectiveMissCount": 0
 }
 ```
 
