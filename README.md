@@ -9,6 +9,8 @@ Basic classes, interfaces and utils for developing new osu! projects.
 - Supports TypeScript.
 - Based on the osu!lazer source code.
 - Can be used to create your own osu! projects.
+- Supports latest difficulty & performance changes.
+- Works in browsers.
 
 ## Installation
 
