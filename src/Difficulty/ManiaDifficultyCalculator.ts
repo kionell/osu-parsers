@@ -82,7 +82,7 @@ export class ManiaDifficultyCalculator extends DifficultyCalculator<ManiaDifficu
 
     const sortedObjects = SortHelper.depthSort(hitObjects, comparerFn);
 
-    const difficultyObjects = new Array(sortedObjects.length);
+    const difficultyObjects: ManiaDifficultyHitObject[] = [];
 
     for (let i = 1; i < sortedObjects.length; ++i) {
       const object = new ManiaDifficultyHitObject(
