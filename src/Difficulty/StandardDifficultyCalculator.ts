@@ -116,7 +116,7 @@ export class StandardDifficultyCalculator extends DifficultyCalculator<StandardD
   }
 
   protected _createDifficultyHitObjects(beatmap: IBeatmap, clockRate: number): StandardDifficultyHitObject[] {
-    const difficultyObjects: StandardDifficultyHitObject[] = [];
+    const difficultyObjects = new Array(beatmap.hitObjects.length);
 
     /**
      * The first jump is formed by the first two hitobjects of the map.
