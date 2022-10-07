@@ -23,6 +23,11 @@ export class DifficultyPoint extends ControlPoint {
    */
   generateTicks = true;
 
+  /**
+   * Indicates whether this difficulty control point should be considered as legacy or not.
+   */
+  isLegacy = false;
+
   private _sliderVelocity = 1;
 
   /**
