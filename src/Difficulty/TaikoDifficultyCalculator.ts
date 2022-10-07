@@ -33,9 +33,9 @@ import { TaikoHitWindows } from '../Scoring';
  * A taiko difficulty calculator.
  */
 export class TaikoDifficultyCalculator extends DifficultyCalculator<TaikoDifficultyAttributes> {
-  private static _COLOUR_SKILL_MULTIPLIER = 0.01;
-  private static _RHYTHM_SKILL_MULTIPLIER = 0.014;
-  private static _STAMINA_SKILL_MULTIPLIER = 0.02;
+  private static readonly COLOUR_SKILL_MULTIPLIER = 0.01;
+  private static readonly RHYTHM_SKILL_MULTIPLIER = 0.014;
+  private static readonly STAMINA_SKILL_MULTIPLIER = 0.02;
 
   protected _createSkills(_: IBeatmap, mods: TaikoModCombination): Skill[] {
     return [
@@ -96,9 +96,9 @@ export class TaikoDifficultyCalculator extends DifficultyCalculator<TaikoDifficu
     const staminaRight = skills[2] as Stamina;
     const staminaLeft = skills[3] as Stamina;
 
-    const colourMultiplier = TaikoDifficultyCalculator._COLOUR_SKILL_MULTIPLIER;
-    const rhythmMultiplier = TaikoDifficultyCalculator._RHYTHM_SKILL_MULTIPLIER;
-    const staminaMultiplier = TaikoDifficultyCalculator._STAMINA_SKILL_MULTIPLIER;
+    const colourMultiplier = TaikoDifficultyCalculator.COLOUR_SKILL_MULTIPLIER;
+    const rhythmMultiplier = TaikoDifficultyCalculator.RHYTHM_SKILL_MULTIPLIER;
+    const staminaMultiplier = TaikoDifficultyCalculator.STAMINA_SKILL_MULTIPLIER;
 
     const colourRating = colour.difficultyValue * colourMultiplier;
     const rhythmRating = rhythm.difficultyValue * rhythmMultiplier;
@@ -176,9 +176,9 @@ export class TaikoDifficultyCalculator extends DifficultyCalculator<TaikoDifficu
     const staminaRightPeaks = [...staminaRight.getCurrentStrainPeaks()];
     const staminaLeftPeaks = [...staminaLeft.getCurrentStrainPeaks()];
 
-    const colourMultiplier = TaikoDifficultyCalculator._COLOUR_SKILL_MULTIPLIER;
-    const rhythmMultiplier = TaikoDifficultyCalculator._RHYTHM_SKILL_MULTIPLIER;
-    const staminaMultiplier = TaikoDifficultyCalculator._STAMINA_SKILL_MULTIPLIER * staminaPenalty;
+    const colourMultiplier = TaikoDifficultyCalculator.COLOUR_SKILL_MULTIPLIER;
+    const rhythmMultiplier = TaikoDifficultyCalculator.RHYTHM_SKILL_MULTIPLIER;
+    const staminaMultiplier = TaikoDifficultyCalculator.STAMINA_SKILL_MULTIPLIER * staminaPenalty;
 
     for (let i = 0; i < colourPeaks.length; ++i) {
       const colourPeak = colourPeaks[i] * colourMultiplier;

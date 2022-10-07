@@ -13,7 +13,7 @@ export class TaikoDifficultyHitObject extends DifficultyHitObject {
    *  - rhythm changes with ratio closer to 1 (that are not 1) are harder to play;
    *  - speeding up is generally harder than slowing down (with exceptions of rhythm changes requiring a hand switch).
    */
-  private static readonly _COMMON_RHYTHMS: TaikoDifficultyHitObjectRhythm[] = [
+  private static readonly COMMON_RHYTHMS: TaikoDifficultyHitObjectRhythm[] = [
     new TaikoDifficultyHitObjectRhythm(1, 1, 0.0),
     new TaikoDifficultyHitObjectRhythm(2, 1, 0.3),
     new TaikoDifficultyHitObjectRhythm(1, 2, 0.5),
@@ -80,7 +80,7 @@ export class TaikoDifficultyHitObject extends DifficultyHitObject {
     const prevLength = (lastObject.startTime - lastLastObject.startTime) / clockRate;
     const ratio = this.deltaTime / prevLength;
 
-    return TaikoDifficultyHitObject._COMMON_RHYTHMS.slice()
+    return TaikoDifficultyHitObject.COMMON_RHYTHMS.slice()
       .sort((a, b) => Math.abs(a.ratio - ratio) - Math.abs(b.ratio - ratio))[0];
   }
 }

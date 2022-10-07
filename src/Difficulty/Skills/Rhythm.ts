@@ -10,17 +10,17 @@ export class Rhythm extends StrainDecaySkill {
    * The note-based decay for rhythm strain.
    * StrainDecayBase is not used here, as it's time- and not note-based.
    */
-  private static _STRAIN_DECAY = 0.96;
+  private static readonly STRAIN_DECAY = 0.96;
 
   /**
    * Maximum number of entries in rhythmHistory.
    */
-  private static _RHYTHM_HISTORY_MAX_LENGTH = 8;
+  private static readonly RHYTHM_HISTORY_MAX_LENGTH = 8;
 
   /**
    * Contains the last RHYTHM_HISTORY_MAX_LENGTH changes in note sequence rhythms.
    */
-  private readonly _rhythmHistory = new LimitedCapacityQueue<TaikoDifficultyHitObject>(Rhythm._RHYTHM_HISTORY_MAX_LENGTH);
+  private readonly _rhythmHistory = new LimitedCapacityQueue<TaikoDifficultyHitObject>(Rhythm.RHYTHM_HISTORY_MAX_LENGTH);
 
   /**
    * Contains the rolling rhythm strain.
@@ -46,7 +46,7 @@ export class Rhythm extends StrainDecaySkill {
       return 0;
     }
 
-    this._currentRhythmStrain *= Rhythm._STRAIN_DECAY;
+    this._currentRhythmStrain *= Rhythm.STRAIN_DECAY;
 
     const hitObject = current as TaikoDifficultyHitObject;
 
@@ -84,7 +84,7 @@ export class Rhythm extends StrainDecaySkill {
 
     this._rhythmHistory.enqueue(hitObject);
 
-    const halfMaxLength = Rhythm._RHYTHM_HISTORY_MAX_LENGTH / 2;
+    const halfMaxLength = Rhythm.RHYTHM_HISTORY_MAX_LENGTH / 2;
 
     for (let i = 2; i <= halfMaxLength; ++i) {
       const startIndex = this._rhythmHistory.count - i - 1;

@@ -11,7 +11,7 @@ export class Stamina extends StrainDecaySkill {
   /**
    * Maximum number of entries to keep in notePairDurationHistory.
    */
-  private static _MAX_HISTORY_LENGTH = 2;
+  private static MAX_HISTORY_LENGTH = 2;
 
   /**
    * The index of the hand this Stamina instance is associated with.
@@ -23,7 +23,7 @@ export class Stamina extends StrainDecaySkill {
   /**
    * Stores the last max_history_length durations between notes hit with the hand indicated by hand.
    */
-  private readonly _notePairDurationHistory = new LimitedCapacityQueue<number>(Stamina._MAX_HISTORY_LENGTH);
+  private readonly _notePairDurationHistory = new LimitedCapacityQueue<number>(Stamina.MAX_HISTORY_LENGTH);
 
   /**
    * Stores delta time of the last object that was hit by the other hand.

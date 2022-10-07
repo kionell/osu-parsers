@@ -1,7 +1,7 @@
 import { DifficultyRange, HitResult, HitWindows } from 'osu-classes';
 
 export class TaikoHitWindows extends HitWindows {
-  private static readonly _TAIKO_RANGES: DifficultyRange[] = [
+  private static readonly TAIKO_RANGES: DifficultyRange[] = [
     new DifficultyRange(HitResult.Great, 50, 35, 20),
     new DifficultyRange(HitResult.Ok, 120, 80, 50),
     new DifficultyRange(HitResult.Miss, 135, 95, 70),
@@ -19,6 +19,6 @@ export class TaikoHitWindows extends HitWindows {
   }
 
   protected _getRanges(): DifficultyRange[] {
-    return TaikoHitWindows._TAIKO_RANGES;
+    return TaikoHitWindows.TAIKO_RANGES;
   }
 }
