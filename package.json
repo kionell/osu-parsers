@@ -1,6 +1,6 @@
 {
   "name": "osu-taiko-stable",
-  "version": "3.1.0",
+  "version": "4.0.0",
   "description": "osu!stable version of osu!taiko ruleset based on osu!lazer source code.",
   "exports": {
     "import": "./lib/index.mjs",
