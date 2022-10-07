@@ -47,7 +47,7 @@ export class CatchBeatmapConverter extends BeatmapConverter {
       return this._convertSlidableObject(slidable);
     }
 
-    if (spinnable.endTime) {
+    if (typeof spinnable.endTime === 'number') {
       return this._convertSpinnableObject(spinnable);
     }
 
