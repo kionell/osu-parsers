@@ -116,7 +116,7 @@ export class StandardDifficultyCalculator extends DifficultyCalculator<StandardD
   }
 
   protected _createDifficultyHitObjects(beatmap: IBeatmap, clockRate: number): StandardDifficultyHitObject[] {
-    const objects: StandardDifficultyHitObject[] = [];
+    const difficultyObjects: StandardDifficultyHitObject[] = [];
 
     /**
      * The first jump is formed by the first two hitobjects of the map.
@@ -132,14 +132,14 @@ export class StandardDifficultyCalculator extends DifficultyCalculator<StandardD
         last,
         lastLast,
         clockRate,
-        objects,
-        objects.length,
+        difficultyObjects,
+        difficultyObjects.length,
       );
 
-      objects.push(object);
+      difficultyObjects.push(object);
     }
 
-    return objects;
+    return difficultyObjects;
   }
 
   protected _createSkills(_: IBeatmap, mods: StandardModCombination): Skill[] {
