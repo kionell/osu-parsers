@@ -8,14 +8,19 @@ export class TaikoPerformanceAttributes extends PerformanceAttributes {
   mods: TaikoModCombination;
 
   /**
-   * The strain performance of a score.
+   * The difficulty performance of a score.
    */
-  strainPerformance = 0;
+  difficultyPerformance = 0;
 
   /**
    * The accuracy performance of a score.
    */
   accuracyPerformance = 0;
+
+  /**
+   * Effective miss count of a score.
+   */
+  effectiveMissCount = 0;
 
   /**
    * Creates new difficulty attributes.

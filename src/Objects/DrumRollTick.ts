@@ -1,3 +1,4 @@
+import { TaikoHitWindows } from '../Scoring';
 import { TaikoHitObject } from './TaikoHitObject';
 
 export class DrumRollTick extends TaikoHitObject {
@@ -18,6 +19,8 @@ export class DrumRollTick extends TaikoHitObject {
   get hitWindow(): number {
     return this.tickInterval / 2;
   }
+
+  hitWindows = TaikoHitWindows.empty;
 
   clone(): this {
     const cloned = super.clone();

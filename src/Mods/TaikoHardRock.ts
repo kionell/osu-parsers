@@ -13,6 +13,8 @@ export class TaikoHardRock extends HardRock {
      * Stable applies the latter by dividing the width of the user's display
      * by the width of a display with the same height, but 4:3 aspect ratio.
      */
-    difficulty.sliderMultiplier *= (1.4 * 4 / 3);
+    const sliderMultiplier = 1.4 * 4 / 3;
+
+    difficulty.sliderMultiplier *= sliderMultiplier;
   }
 }

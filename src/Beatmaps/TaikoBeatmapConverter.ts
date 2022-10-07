@@ -49,7 +49,7 @@ export class TaikoBeatmapConverter extends BeatmapConverter {
   tickInterval = 0;
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  canConvert(beatmap: IBeatmap): boolean {
+  canConvert(_: IBeatmap): boolean {
     return true;
   }
 
@@ -65,11 +65,15 @@ export class TaikoBeatmapConverter extends BeatmapConverter {
     converted.difficulty.sliderMultiplier *= TaikoBeatmapConverter.VELOCITY_MULTIPLIER;
 
     if (this.isForManiaRuleset) {
+      type GroupedTaikoHitObjects = {
+        [key: string]: TaikoHitObject[];
+      };
+
       /**
        * Post processing step to transform mania hit objects
        * with the same start time into strong hits.
        */
-      const groups: { [key: string]: TaikoHitObject[] } = {};
+      const groups: GroupedTaikoHitObjects = {};
 
       converted.hitObjects.forEach((hitObject) => {
         const key = hitObject.startTime;

@@ -6,12 +6,14 @@ export abstract class TaikoStrongHitObject extends TaikoHitObject {
   /**
    * Scale multiplier for a strong drawable taiko hit object.
    */
-  static STRONG_SCALE: number = Math.fround(1.4);
+  static STRONG_SCALE: number = Math.fround(1 / Math.fround(0.65));
 
   /**
    * Default size of a strong drawable taiko hit object.
    */
-  static DEFAULT_STRONG_SIZE: number = TaikoHitObject.DEFAULT_SIZE * TaikoStrongHitObject.STRONG_SCALE;
+  static DEFAULT_STRONG_SIZE = Math.fround(
+    TaikoHitObject.DEFAULT_SIZE * TaikoStrongHitObject.STRONG_SCALE,
+  );
 
   /**
    * Whether this HitObject is a "strong" type.

@@ -2,11 +2,20 @@ import { TaikoHitObject } from './TaikoHitObject';
 import { TaikoEventGenerator } from './TaikoEventGenerator';
 
 import { ISpinnableObject } from 'osu-classes';
+import { TaikoHitWindows } from '../Scoring';
 
 export class Swell extends TaikoHitObject implements ISpinnableObject {
+  /**
+   * The number of hits required to complete the swell successfully.
+   */
   requiredHits = 10;
 
+  /**
+   * Ending time of this {@link Swell}
+   */
   endTime = 0;
+
+  hitWindows = TaikoHitWindows.empty;
 
   get duration(): number {
     return this.endTime - this.startTime;

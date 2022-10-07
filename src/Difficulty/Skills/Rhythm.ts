@@ -1,35 +1,36 @@
-﻿import { DifficultyHitObject, LimitedCapacityQueue, StrainDecaySkill } from 'osu-classes';
-import { TaikoDifficultyHitObject } from '../Preprocessing/TaikoDifficultyHitObject';
+﻿import { DifficultyHitObject, LimitedCapacityQueue, MathUtils, StrainDecaySkill } from 'osu-classes';
 import { Hit } from '../../Objects';
+import { TaikoDifficultyHitObject } from '../Preprocessing';
 
 /**
  * Calculates the rhythm coefficient of taiko difficulty.
  */
 export class Rhythm extends StrainDecaySkill {
-  /**
-   * The note-based decay for rhythm strain.
-   * StrainDecayBase is not used here, as it's time- and not note-based.
-   */
-  private static readonly STRAIN_DECAY = 0.96;
-
-  /**
-   * Maximum number of entries in rhythmHistory.
-   */
-  private static readonly RHYTHM_HISTORY_MAX_LENGTH = 8;
-
-  /**
-   * Contains the last RHYTHM_HISTORY_MAX_LENGTH changes in note sequence rhythms.
-   */
-  private readonly _rhythmHistory = new LimitedCapacityQueue<TaikoDifficultyHitObject>(Rhythm.RHYTHM_HISTORY_MAX_LENGTH);
-
-  /**
-   * Contains the rolling rhythm strain.
-   * Used to apply per-note decay.
-   */
-  private _currentRhythmStrain = 0;
-
   protected _skillMultiplier = 10;
   protected _strainDecayBase = 0;
+
+  /**
+   * The note-based decay for rhythm strain.
+   * {@link strainDecayBase} is not used here, as it's time- and not note-based.
+   */
+  private static STRAIN_DECAY = 0.96;
+
+  /**
+   * Maximum number of entries in {@link rhythmHistory}.
+   */
+  private static RHYTHM_HISTORY_MAX_LENGTH = 8;
+
+  /**
+   * Contains the last {@link RHYTHM_HISTORY_MAX_LENGTH} changes in note sequence rhythms.
+   */
+  private readonly _rhythmHistory = new LimitedCapacityQueue<TaikoDifficultyHitObject>(
+    Rhythm.RHYTHM_HISTORY_MAX_LENGTH,
+  );
+
+  /**
+   * Contains the rolling rhythm strain. Used to apply per-note decay.
+   */
+  private _currentRhythmStrain = 0;
 
   /**
    * Number of notes since the last rhythm change has taken place.
@@ -84,15 +85,19 @@ export class Rhythm extends StrainDecaySkill {
 
     this._rhythmHistory.enqueue(hitObject);
 
-    const halfMaxLength = Rhythm.RHYTHM_HISTORY_MAX_LENGTH / 2;
+    for (
+      let mostRecentPatternsToCompare = 2;
+      mostRecentPatternsToCompare <= Rhythm.RHYTHM_HISTORY_MAX_LENGTH / 2;
+      mostRecentPatternsToCompare++
+    ) {
+      const startIndex = this._rhythmHistory.count - mostRecentPatternsToCompare - 1;
 
-    for (let i = 2; i <= halfMaxLength; ++i) {
-      const startIndex = this._rhythmHistory.count - i - 1;
+      for (let start = startIndex; start >= 0; start--) {
+        if (!this._samePattern(start, mostRecentPatternsToCompare)) {
+          continue;
+        }
 
-      for (let start = startIndex; start >= 0; --start) {
-        if (!this._samePattern(start, i)) continue;
-
-        const notesSince = hitObject.objectIndex - this._rhythmHistory.get(start).objectIndex;
+        const notesSince = hitObject.index - this._rhythmHistory.get(start).index;
 
         penalty *= Rhythm._repetitionPenalty(notesSince);
 
@@ -104,16 +109,17 @@ export class Rhythm extends StrainDecaySkill {
   }
 
   /**
-   * Determines whether the rhythm change pattern starting at start 
-   * is a repeat of any of the mostRecentPatternsToCompare.
+   * Determines whether the rhythm change pattern starting at 
+   * {@link start} is a repeat of any of the {@link mostRecentPatternsToCompare}.
    */
   private _samePattern(start: number, mostRecentPatternsToCompare: number): boolean {
-    for (let i = 0; i < mostRecentPatternsToCompare; ++i) {
-      const index = this._rhythmHistory.count - mostRecentPatternsToCompare + i;
+    for (let i = 0; i < mostRecentPatternsToCompare; i++) {
+      const firstRhythm = this._rhythmHistory.get(start + i).rhythm;
+      const secondRhythm = this._rhythmHistory.get(
+        this._rhythmHistory.count - mostRecentPatternsToCompare + i,
+      ).rhythm;
 
-      if (this._rhythmHistory.get(start + i).rhythm !== this._rhythmHistory.get(index).rhythm) {
-        return false;
-      }
+      if (firstRhythm !== secondRhythm) return false;
     }
 
     return true;
@@ -132,9 +138,9 @@ export class Rhythm extends StrainDecaySkill {
    * Both rare and frequent rhythm changes are penalised.
    * @param patternLength Number of notes since the last rhythm change.
    */
-  private static _patternLengthPenalty(patternLength: number) {
+  private static _patternLengthPenalty(patternLength: number): number {
     const shortPatternPenalty = Math.min(0.15 * patternLength, 1.0);
-    const longPatternPenalty = Math.min(Math.max(0.0, 2.5 - 0.15 * patternLength), 1.0);
+    const longPatternPenalty = MathUtils.clamp01(2.5 - 0.15 * patternLength);
 
     return Math.min(shortPatternPenalty, longPatternPenalty);
   }
@@ -153,7 +159,7 @@ export class Rhythm extends StrainDecaySkill {
   }
 
   /**
-   * Resets the rolling strain value and notesSinceRhythmChange counter.
+   * Resets the rolling strain value and {@link notesSinceRhythmChange} counter.
    */
   private _resetRhythmAndStrain(): void {
     this._currentRhythmStrain = 0.0;
