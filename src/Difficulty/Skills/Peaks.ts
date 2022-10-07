@@ -11,9 +11,9 @@ export class Peaks extends Skill {
   private static COLOUR_SKILL_MULTIPLIER = 0.375 * this.FINAL_MULTIPLIER;
   private static STAMINA_SKILL_MULTIPLIER = 0.375 * this.FINAL_MULTIPLIER;
 
-  private readonly rhythm: Rhythm;
-  private readonly colour: Colour;
-  private readonly stamina: Stamina;
+  readonly rhythm: Rhythm;
+  readonly colour: Colour;
+  readonly stamina: Stamina;
 
   constructor(mods: TaikoModCombination) {
     super(mods);
