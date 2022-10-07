@@ -77,15 +77,24 @@ export class TaikoDifficultyHitObject extends DifficultyHitObject {
     this.colour = new TaikoDifficultyHitObjectColour();
     this.rhythm = this._getClosestRhythm(lastObject, lastLastObject, clockRate);
 
-    if ((hitObject as Hit)?.isRim) {
+    const taikoHit = hitObject as Hit;
+
+    // TODO: There are should be taiko hit type enum (with 'Rim' or 'Centre' values)
+    if (taikoHit?.isRim === true) {
       this.monoIndex = rimHitObjects.length;
       rimHitObjects.push(this);
       this._monoDifficultyHitObjects = rimHitObjects;
     }
-    else {
+    else if (taikoHit?.isRim === false) {
+      // isRim === false means that our type is 'Centre'
       this.monoIndex = centreHitObjects.length;
       centreHitObjects.push(this);
       this._monoDifficultyHitObjects = centreHitObjects;
+    }
+    else {
+      // This is for drumrolls and swells.
+      this.monoIndex = 0;
+      this._monoDifficultyHitObjects = [];
     }
 
     if (hitObject instanceof Hit) {
