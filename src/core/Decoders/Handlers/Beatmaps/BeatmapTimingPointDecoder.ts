@@ -114,6 +114,13 @@ export abstract class BeatmapTimingPointDecoder {
     difficultyPoint.sliderVelocity = speedMultiplier;
     difficultyPoint.generateTicks = !Number.isNaN(beatLength);
 
+    /**
+     * All difficulty control points created with this beatmap decoder are legacy.
+     * This flag is required for some beatmap converters (like Taiko and Mania).
+     * https://github.com/ppy/osu/blob/master/osu.Game/Beatmaps/Formats/LegacyBeatmapDecoder.cs#L431
+     */
+    difficultyPoint.isLegacy = true;
+
     this.addControlPoint(difficultyPoint, startTime, timingChange);
 
     const effectPoint = new EffectPoint();
