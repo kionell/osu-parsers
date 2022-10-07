@@ -23,8 +23,15 @@ export class CatchDifficultyHitObject extends DifficultyHitObject {
    */
   readonly strainTime: number;
 
-  constructor(hitObject: IHitObject, lastObject: IHitObject, clockRate: number, halfCatcherWidth: number) {
-    super(hitObject, lastObject, clockRate);
+  constructor(
+    hitObject: IHitObject,
+    lastObject: IHitObject,
+    clockRate: number,
+    halfCatcherWidth: number,
+    objects: DifficultyHitObject[],
+    index: number,
+  ) {
+    super(hitObject, lastObject, clockRate, objects, index);
 
     this.baseObject = hitObject as PalpableHitObject;
     this.lastObject = lastObject as PalpableHitObject;

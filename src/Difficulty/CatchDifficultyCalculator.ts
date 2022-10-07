@@ -62,10 +62,10 @@ export class CatchDifficultyCalculator extends DifficultyCalculator<CatchDifficu
     return attributes;
   }
 
-  protected *_createDifficultyHitObjects(beatmap: IBeatmap, clockRate: number): Generator<CatchDifficultyHitObject> {
+  protected _createDifficultyHitObjects(beatmap: IBeatmap, clockRate: number): CatchDifficultyHitObject[] {
     let lastObject: CatchHitObject | null = null;
 
-    const halfCatcherWidth = this._halfCatcherWidth;
+    const difficultyObjects: CatchDifficultyHitObject[] = [];
 
     /**
      * In 2B beatmaps, it is possible that 
@@ -83,11 +83,22 @@ export class CatchDifficultyCalculator extends DifficultyCalculator<CatchDifficu
       if (hitObject instanceof JuiceTinyDroplet) continue;
 
       if (lastObject !== null) {
-        yield new CatchDifficultyHitObject(hitObject, lastObject, clockRate, halfCatcherWidth);
+        const object = new CatchDifficultyHitObject(
+          hitObject,
+          lastObject,
+          clockRate,
+          this._halfCatcherWidth,
+          difficultyObjects,
+          difficultyObjects.length,
+        );
+
+        difficultyObjects.push(object);
       }
 
       lastObject = hitObject;
     }
+
+    return difficultyObjects;
   }
 
   protected _createSkills(beatmap: IBeatmap, mods: ModCombination, clockRate: number): Skill[] {
