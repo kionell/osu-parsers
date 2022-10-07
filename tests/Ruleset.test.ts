@@ -71,11 +71,11 @@ function testBeatmap(beatmap: StandardBeatmap, data: ITestAttributes): void {
       expect(difficulty.starRating).toBeCloseTo(data.starRating, 1);
     });
 
-    test('Should match aim star rating', () => {
+    test('Should match aim difficulty', () => {
       expect(difficulty.aimDifficulty).toBeCloseTo(data.aimDifficulty, 1);
     });
 
-    test('Should match speed star rating', () => {
+    test('Should match speed difficulty', () => {
       expect(difficulty.speedDifficulty).toBeCloseTo(data.speedDifficulty, 1);
     });
 
@@ -83,7 +83,7 @@ function testBeatmap(beatmap: StandardBeatmap, data: ITestAttributes): void {
       expect(difficulty.speedNoteCount).toBeCloseTo(data.speedNoteCount, 1);
     });
 
-    test('Should match flashligh star rating', () => {
+    test('Should match flashlight difficulty', () => {
       expect(difficulty.flashlightDifficulty).toBeCloseTo(data.flashlightDifficulty, 1);
     });
 
