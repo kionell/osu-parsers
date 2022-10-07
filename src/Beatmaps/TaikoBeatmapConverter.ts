@@ -215,7 +215,9 @@ export class TaikoBeatmapConverter extends BeatmapConverter {
     const timingPoint = beatmap.controlPoints.timingPointAt(slidable.startTime);
     const difficultyPoint = beatmap.controlPoints.difficultyPointAt(slidable.startTime);
 
-    let beatLength = timingPoint.beatLength * difficultyPoint.bpmMultiplier;
+    let beatLength = difficultyPoint.isLegacy
+      ? timingPoint.beatLength * difficultyPoint.bpmMultiplier
+      : timingPoint.beatLength / difficultyPoint.sliderVelocity;
 
     const sliderMultiplier =
       beatmap.difficulty.sliderMultiplier *
@@ -268,7 +270,7 @@ export class TaikoBeatmapConverter extends BeatmapConverter {
     if (beatmap.fileFormat >= 8) {
       beatLength = timingPoint.beatLength;
 
-      tickMultiplier = 1 / difficultyPoint.speedMultiplier;
+      tickMultiplier = 1 / difficultyPoint.sliderVelocity;
     }
 
     this.tickDistance = (sliderScoringPointDistance / sliderTickRate) * tickMultiplier;
