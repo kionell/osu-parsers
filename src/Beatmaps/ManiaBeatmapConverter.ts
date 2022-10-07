@@ -192,7 +192,7 @@ export class ManiaBeatmapConverter extends BeatmapConverter {
 
       conversion = generator;
     }
-    else if ((hitObject as IHitObject & IHasDuration).endTime) {
+    else if (typeof (hitObject as IHitObject & IHasDuration).endTime === 'number') {
       const generator = new EndTimeObjectPatternGenerator(
         hitObject,
         converted,
