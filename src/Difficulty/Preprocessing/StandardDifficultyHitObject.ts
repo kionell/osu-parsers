@@ -6,10 +6,10 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
   /**
    * A distance by which all distances should be scaled in order to assume a uniform circle size.
    */
-  private static _NORMALIZED_RADIUS = 50;
-  private static _MIN_DELTA_TIME = 25;
-  private static _MAXIMUM_SLIDER_RADIUS = Math.fround(this._NORMALIZED_RADIUS * Math.fround(2.4));
-  private static _ASSUMED_SLIDER_RADIUS = Math.fround(this._NORMALIZED_RADIUS * Math.fround(1.8));
+  private static readonly NORMALIZED_RADIUS = 50;
+  private static readonly MIN_DELTA_TIME = 25;
+  private static readonly MAXIMUM_SLIDER_RADIUS = Math.fround(this.NORMALIZED_RADIUS * Math.fround(2.4));
+  private static readonly ASSUMED_SLIDER_RADIUS = Math.fround(this.NORMALIZED_RADIUS * Math.fround(1.8));
 
   /**
    * Milliseconds elapsed since the start time of the previous  
@@ -80,7 +80,7 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
     /**
      * Capped to 25ms to prevent difficulty calculation breaking from simultaneous objects.
      */
-    this.strainTime = Math.max(this.deltaTime, StandardDifficultyHitObject._MIN_DELTA_TIME);
+    this.strainTime = Math.max(this.deltaTime, StandardDifficultyHitObject.MIN_DELTA_TIME);
     this.hitWindowGreat = this.baseObject instanceof Slider && this.baseObject.head
       ? 2 * this.baseObject.head.hitWindows.windowFor(HitResult.Great) / clockRate
       : 2 * this.baseObject.hitWindows.windowFor(HitResult.Great) / clockRate;
@@ -124,7 +124,7 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
 
       this.travelTime = Math.max(
         baseObj.lazyTravelTime / clockRate,
-        StandardDifficultyHitObject._MIN_DELTA_TIME,
+        StandardDifficultyHitObject.MIN_DELTA_TIME,
       );
     }
 
@@ -141,7 +141,7 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
      * so we can assume a uniform CircleSize among beatmaps.
      */
     let scalingFactor = Math.fround(
-      StandardDifficultyHitObject._NORMALIZED_RADIUS / Math.fround(baseObj.radius),
+      StandardDifficultyHitObject.NORMALIZED_RADIUS / Math.fround(baseObj.radius),
     );
 
     if (baseObj.radius < 30) {
@@ -164,12 +164,12 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
     if (lastObj instanceof Slider) {
       const lastTraveTime = Math.max(
         lastObj.lazyTravelTime / clockRate,
-        StandardDifficultyHitObject._MIN_DELTA_TIME,
+        StandardDifficultyHitObject.MIN_DELTA_TIME,
       );
 
       this.minimumJumpTime = Math.max(
         this.strainTime - lastTraveTime,
-        StandardDifficultyHitObject._MIN_DELTA_TIME,
+        StandardDifficultyHitObject.MIN_DELTA_TIME,
       );
 
       const tailStackPos = lastObj.tail?.stackedStartPosition ?? lastObj.stackedStartPosition;
@@ -179,8 +179,8 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
         tailStackPos.fsubtract(baseStackPos).flength() * scalingFactor,
       );
 
-      const maxSliderRadius = StandardDifficultyHitObject._MAXIMUM_SLIDER_RADIUS;
-      const assumedSliderRadius = StandardDifficultyHitObject._ASSUMED_SLIDER_RADIUS;
+      const maxSliderRadius = StandardDifficultyHitObject.MAXIMUM_SLIDER_RADIUS;
+      const assumedSliderRadius = StandardDifficultyHitObject.ASSUMED_SLIDER_RADIUS;
 
       this.minimumJumpDistance = MathUtils.clamp(
         this.lazyJumpDistance - (maxSliderRadius - assumedSliderRadius),
@@ -228,7 +228,7 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
      * Lazy slider distance is coded to be sensitive to scaling, 
      * this makes the maths easier with the thresholds being used.
      */
-    const scalingFactor = StandardDifficultyHitObject._NORMALIZED_RADIUS / slider.radius;
+    const scalingFactor = StandardDifficultyHitObject.NORMALIZED_RADIUS / slider.radius;
 
     for (let i = 1; i < slider.nestedHitObjects.length; ++i) {
       const currMovementObj = slider.nestedHitObjects[i] as StandardHitObject;
@@ -239,7 +239,7 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
       /**
        * Amount of movement required so that the cursor position needs to be updated.
        */
-      let requiredMovement = StandardDifficultyHitObject._ASSUMED_SLIDER_RADIUS;
+      let requiredMovement = StandardDifficultyHitObject.ASSUMED_SLIDER_RADIUS;
 
       if (i === slider.nestedHitObjects.length - 1) {
         /**
@@ -264,7 +264,7 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
          * For a slider repeat, assume a tighter movement 
          * threshold to better assess repeat sliders.
          */
-        requiredMovement = StandardDifficultyHitObject._NORMALIZED_RADIUS;
+        requiredMovement = StandardDifficultyHitObject.NORMALIZED_RADIUS;
       }
 
       if (currMovementLength > requiredMovement) {

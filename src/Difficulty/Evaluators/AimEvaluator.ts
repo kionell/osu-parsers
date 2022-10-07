@@ -3,10 +3,10 @@ import { Slider, Spinner } from '../../Objects';
 import { DifficultyHitObject } from 'osu-classes';
 
 export class AimEvaluator {
-  private static _WIDE_ANGLE_MULTIPLIER = 1.5;
-  private static _ACUTE_ANGLE_MULTIPLIER = 1.95;
-  private static _SLIDER_MULTIPLIER = 1.35;
-  private static _VELOCITY_CHANGE_MULTIPLIER = 0.75;
+  private static readonly WIDE_ANGLE_MULTIPLIER = 1.5;
+  private static readonly ACUTE_ANGLE_MULTIPLIER = 1.95;
+  private static readonly SLIDER_MULTIPLIER = 1.35;
+  private static readonly VELOCITY_CHANGE_MULTIPLIER = 0.75;
 
   /**
    * Evaluates the difficulty of aiming the current object, based on:
@@ -193,9 +193,9 @@ export class AimEvaluator {
      * Add in acute angle bonus or 
      * wide angle bonus + velocity change bonus, whichever is larger.
      */
-    const acuteBonus = acuteAngleBonus * this._ACUTE_ANGLE_MULTIPLIER;
-    const wideBonus = wideAngleBonus * this._WIDE_ANGLE_MULTIPLIER;
-    const velocityBonus = velocityChangeBonus * this._VELOCITY_CHANGE_MULTIPLIER;
+    const acuteBonus = acuteAngleBonus * this.ACUTE_ANGLE_MULTIPLIER;
+    const wideBonus = wideAngleBonus * this.WIDE_ANGLE_MULTIPLIER;
+    const velocityBonus = velocityChangeBonus * this.VELOCITY_CHANGE_MULTIPLIER;
 
     aimStrain += Math.max(acuteBonus, wideBonus + velocityBonus);
 
@@ -203,7 +203,7 @@ export class AimEvaluator {
      * Add in additional slider velocity bonus.
      */
     if (withSliders) {
-      aimStrain += sliderBonus * this._SLIDER_MULTIPLIER;
+      aimStrain += sliderBonus * this.SLIDER_MULTIPLIER;
     }
 
     return aimStrain;

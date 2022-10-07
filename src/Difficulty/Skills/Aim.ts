@@ -8,8 +8,8 @@ import { AimEvaluator } from '../Evaluators';
  * in the map with a uniform CircleSize and normalized distances.
  */
 export class Aim extends StandardStrainSkill {
-  private static _SKILL_MULTIPLIER = 23.55;
-  private static _STRAIN_DECAY_BASE = 0.15;
+  private static readonly SKILL_MULTIPLIER = 23.55;
+  private static readonly STRAIN_DECAY_BASE = 0.15;
 
   private _currentStrain = 0;
 
@@ -21,7 +21,7 @@ export class Aim extends StandardStrainSkill {
   }
 
   private _strainDecay(ms: number) {
-    return Math.pow(Aim._STRAIN_DECAY_BASE, ms / 1000);
+    return Math.pow(Aim.STRAIN_DECAY_BASE, ms / 1000);
   }
 
   protected _calculateInitialStrain(time: number, current: DifficultyHitObject): number {
@@ -33,7 +33,7 @@ export class Aim extends StandardStrainSkill {
 
     const aimValue = AimEvaluator.evaluateDifficultyOf(current, this._withSliders);
 
-    this._currentStrain += aimValue * Aim._SKILL_MULTIPLIER;
+    this._currentStrain += aimValue * Aim.SKILL_MULTIPLIER;
 
     return this._currentStrain;
   }

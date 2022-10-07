@@ -6,8 +6,8 @@ export class RhythmEvaluator {
   /**
    * 5 seconds of calculatingRhythmBonus max.
    */
-  private static _HISTORY_TIME_MAX = 5000;
-  private static _RHYTHM_MULTIPLIER = 0.75;
+  private static readonly HISTORY_TIME_MAX = 5000;
+  private static readonly RHYTHM_MULTIPLIER = 0.75;
 
   /**
    * Calculates a rhythm multiplier for the difficulty of the tap associated 
@@ -32,7 +32,7 @@ export class RhythmEvaluator {
 
     while (
       rhythmStart < historicalNoteCount - 2 &&
-      current.startTime - (current.previous(rhythmStart)?.startTime ?? 0) < this._HISTORY_TIME_MAX
+      current.startTime - (current.previous(rhythmStart)?.startTime ?? 0) < this.HISTORY_TIME_MAX
     ) {
       rhythmStart++;
     }
@@ -46,8 +46,8 @@ export class RhythmEvaluator {
        * Scales note 0 to 1 from history to now.
        */
       let currHistoricalDecay = (
-        this._HISTORY_TIME_MAX - (current.startTime - currObj.startTime)
-      ) / this._HISTORY_TIME_MAX;
+        this.HISTORY_TIME_MAX - (current.startTime - currObj.startTime)
+      ) / this.HISTORY_TIME_MAX;
 
       /**
        * Either we're limited by time or limited by object count.
@@ -159,6 +159,6 @@ export class RhythmEvaluator {
      * Produces multiplier that can be applied to strain. 
      * Range [1, infinity) (not really though)
      */
-    return Math.sqrt(4 + rhythmComplexitySum * this._RHYTHM_MULTIPLIER) / 2;
+    return Math.sqrt(4 + rhythmComplexitySum * this.RHYTHM_MULTIPLIER) / 2;
   }
 }

@@ -7,9 +7,9 @@ import { StandardDifficultyHitObject } from '../Preprocessing/StandardDifficulty
  * to keeping up with the speed at which objects need to be hit.
  */
 export class SpeedEvaluator {
-  private static _SINGLE_SPACING_THRESHOLD = 125;
-  private static _MIN_SPEED_BONUS = 75; // ~200BPM
-  private static _SPEED_BALANCING_FACTOR = 40;
+  private static readonly SINGLE_SPACING_THRESHOLD = 125;
+  private static readonly MIN_SPEED_BONUS = 75; // ~200BPM
+  private static readonly SPEED_BALANCING_FACTOR = 40;
 
   /**
    * Evaluates the difficulty of tapping the current object, based on:
@@ -58,19 +58,19 @@ export class SpeedEvaluator {
      */
     let speedBonus = 1;
 
-    if (strainTime < this._MIN_SPEED_BONUS) {
+    if (strainTime < this.MIN_SPEED_BONUS) {
       speedBonus = 1 + 0.75 * Math.pow(
-        (this._MIN_SPEED_BONUS - strainTime) / this._SPEED_BALANCING_FACTOR, 2,
+        (this.MIN_SPEED_BONUS - strainTime) / this.SPEED_BALANCING_FACTOR, 2,
       );
     }
 
     const travelDistance = osuPrevObj?.travelDistance ?? 0;
     const distance = Math.min(
-      this._SINGLE_SPACING_THRESHOLD,
+      this.SINGLE_SPACING_THRESHOLD,
       travelDistance + osuCurrObj.minimumJumpDistance,
     );
 
-    const pow = Math.pow(distance / this._SINGLE_SPACING_THRESHOLD, 3.5);
+    const pow = Math.pow(distance / this.SINGLE_SPACING_THRESHOLD, 3.5);
 
     return (speedBonus + speedBonus * pow) * doubletapness / strainTime;
   }

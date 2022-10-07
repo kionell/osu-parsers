@@ -8,8 +8,8 @@ import { StandardStrainSkill } from './StandardStrainSkill';
  * to keeping up with the speed at which objects need to be hit.
  */
 export class Speed extends StandardStrainSkill {
-  private static _SKILL_MULTIPLIER = 1375;
-  private static _STRAIN_DECAY_BASE = 0.3;
+  private static readonly SKILL_MULTIPLIER = 1375;
+  private static readonly STRAIN_DECAY_BASE = 0.3;
 
   private _currentStrain = 0;
   private _currentRhythm = 0;
@@ -20,7 +20,7 @@ export class Speed extends StandardStrainSkill {
   private readonly _objectStrains: number[] = [];
 
   private _strainDecay(ms: number): number {
-    return Math.pow(Speed._STRAIN_DECAY_BASE, ms / 1000);
+    return Math.pow(Speed.STRAIN_DECAY_BASE, ms / 1000);
   }
 
   protected _calculateInitialStrain(time: number, current: DifficultyHitObject): number {
@@ -36,7 +36,7 @@ export class Speed extends StandardStrainSkill {
 
     const speedValue = SpeedEvaluator.evaluateDifficultyOf(current);
 
-    this._currentStrain += speedValue * Speed._SKILL_MULTIPLIER;
+    this._currentStrain += speedValue * Speed.SKILL_MULTIPLIER;
     this._currentRhythm = RhythmEvaluator.evaluateDifficultyOf(current);
 
     const totalStrain = this._currentStrain * this._currentRhythm;

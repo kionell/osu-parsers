@@ -1,7 +1,7 @@
 import { DifficultyRange, HitResult, HitWindows } from 'osu-classes';
 
 export class StandardHitWindows extends HitWindows {
-  private static readonly _OSU_RANGES: DifficultyRange[] = [
+  private static readonly OSU_RANGES: DifficultyRange[] = [
     new DifficultyRange(HitResult.Great, 80, 50, 20),
     new DifficultyRange(HitResult.Ok, 140, 100, 60),
     new DifficultyRange(HitResult.Meh, 200, 150, 100),
@@ -21,6 +21,6 @@ export class StandardHitWindows extends HitWindows {
   }
 
   protected _getRanges(): DifficultyRange[] {
-    return StandardHitWindows._OSU_RANGES;
+    return StandardHitWindows.OSU_RANGES;
   }
 }
