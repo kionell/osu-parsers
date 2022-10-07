@@ -80,7 +80,7 @@ const parsed = decoder.decodeFromPath(decodePath);
 const ruleset = new TaikoRuleset();
 
 // Create mod combination.
-const mods = ruleset.createModCombination('HDHRNCFL');
+const mods = ruleset.createModCombination('DT');
 
 // Create difficulty calculator for IBeatmap object.
 const difficultyCalculator = ruleset.createDifficultyCalculator(parsed);
@@ -94,14 +94,14 @@ const difficultyAttributes = difficultyCalculator.calculateWithMods(mods);
 
 ```json
 {
-  "maxCombo": 1237,
-  "mods": "HDHRNCFL",
-  "starRating": 7.880605544897504,
-  "staminaStrain": 3.318267825678439,
-  "rhythmStrain": 2.733676323652416,
-  "colourStrain": 0.5701148584485592,
-  "approachRate": 0,
-  "greatHitWindow": 13.333333333333334
+  "maxCombo": 3790,
+  "mods": "DT",
+  "starRating": 9.740127684747108,
+  "staminaDifficulty": 5.894611764439881,
+  "rhythmDifficulty": 2.2944574943096203,
+  "colourDifficulty": 5.29230503132103,
+  "peakDifficulty": 8.824591169784874,
+  "greatHitWindow": 18.93333371480306
 }
 ```
 
@@ -278,7 +278,7 @@ const parsed = decoder.decodeFromPath(decodePath);
 const ruleset = new TaikoRuleset();
 
 // Create mod combination and apply it to beatmap.
-const mods = ruleset.createModCombination('EZHTFL');
+const mods = ruleset.createModCombination('DT');
 const taikoBeatmap = ruleset.applyToBeatmapWithMods(parsed, mods);
 
 // Create difficulty calculator for osu!taiko beatmap.
@@ -287,13 +287,13 @@ const difficultyCalculator = ruleset.createDifficultyCalculator(taikoBeatmap);
 // Calculate difficulty attributes.
 const difficultyAttributes = difficultyCalculator.calculate();
 
-// Period. ~ Seishin no Kousoku to Jiyuu o Tsukamu Jouka (tsunamix_underground) [Inner Oni]
-// Eriha + HDHRNCFL 728.77 pp.
+// Yomi yori Kikoyu, Koukoku no Tou to Honoo no Shoujo. (Imperial Circus Dead Decadence) [Reverberation]
+// shinchikuhome + DT 1101.85 pp.
 const score = new ScoreInfo({
-  maxCombo: 1237,
+  maxCombo: 3790,
   rulesetId: 1,
-  count300: 1235, // score.statistics.great
-  count100: 2, // score.statistics.good
+  count300: 3770, // score.statistics.great
+  count100: 20, // score.statistics.good
   countMiss: 0, // score.statistics.miss
   mods,
 });
@@ -315,10 +315,11 @@ const totalPerformance = performanceCalculator.calculate();
 
 ```json
 {
-  "mods": "HDHRNCFL",
-  "totalPerformance": 728.7696451295643,
-  "strainPerformance": 347.26906467835136,
-  "accuracyPerformance": 293.97172076602436
+  "mods": "DT",
+  "totalPerformance": 1101.8503039408731,
+  "difficultyPerformance": 757.7208517730753,
+  "accuracyPerformance": 268.7353265177381,
+  "effectiveMissCount": 0
 }
 ```
 
