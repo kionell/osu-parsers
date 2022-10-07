@@ -4,7 +4,7 @@ import { RepeatingHitPatterns } from './RepeatingHitPatterns';
 
 /**
  * Encodes a list of {@link MonoStreak}s. {@link MonoStreak}s with the same 
- * {@link MonoStreak.RunLength} are grouped together.
+ * {@link MonoStreak.runLength} are grouped together.
  */
 export class AlternatingMonoPattern {
   /**
