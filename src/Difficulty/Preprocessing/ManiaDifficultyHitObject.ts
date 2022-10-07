@@ -7,8 +7,14 @@ export class ManiaDifficultyHitObject extends DifficultyHitObject {
    */
   baseObject: ManiaHitObject;
 
-  constructor(hitObject: IHitObject, lastObject: IHitObject, clockRate: number) {
-    super(hitObject, lastObject, clockRate);
+  constructor(
+    hitObject: IHitObject,
+    lastObject: IHitObject,
+    clockRate: number,
+    objects: DifficultyHitObject[],
+    index: number,
+  ) {
+    super(hitObject, lastObject, clockRate, objects, index);
 
     this.baseObject = hitObject as ManiaHitObject;
   }

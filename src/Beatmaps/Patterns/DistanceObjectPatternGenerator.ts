@@ -67,7 +67,8 @@ export class DistanceObjectPatternGenerator extends PatternGenerator {
     const sliderMultiplier = beatmap.difficulty.sliderMultiplier;
 
     // This matches stable's calculation.
-    this.endTime = ((slider.path.distance || 0) * beatLength * this.spanCount * 0.01) / sliderMultiplier;
+    this.endTime = ((slider.path.distance || 0)
+      * beatLength * this.spanCount * 0.01) / sliderMultiplier;
 
     this.endTime = Math.trunc(Math.floor(this.startTime + this.endTime));
 

@@ -2,8 +2,8 @@ import { DifficultyHitObject, ModCombination, StrainDecaySkill } from 'osu-class
 import { ManiaDifficultyHitObject } from '../Preprocessing';
 
 export class Strain extends StrainDecaySkill {
-  private static _INDIVIDUAL_DECAY_BASE = 0.125;
-  private static _OVERALL_DECAY_BASE = 0.30;
+  private static INDIVIDUAL_DECAY_BASE = 0.125;
+  private static OVERALL_DECAY_BASE = 0.30;
 
   protected _skillMultiplier = 1;
   protected _strainDecayBase = 1;
@@ -73,7 +73,7 @@ export class Strain extends StrainDecaySkill {
       this._individualStrains[i] = Strain._applyDecay(
         this._individualStrains[i],
         current.deltaTime,
-        Strain._INDIVIDUAL_DECAY_BASE,
+        Strain.INDIVIDUAL_DECAY_BASE,
       );
     }
 
@@ -88,7 +88,7 @@ export class Strain extends StrainDecaySkill {
     this._overallStrain = Strain._applyDecay(
       this._overallStrain,
       current.deltaTime,
-      Strain._OVERALL_DECAY_BASE,
+      Strain.OVERALL_DECAY_BASE,
     );
 
     this._overallStrain += (1 + holdAddition) * holdFactor;
@@ -96,17 +96,17 @@ export class Strain extends StrainDecaySkill {
     return this._individualStrain + this._overallStrain - this._currentStrain;
   }
 
-  protected _calculateInitialStrain(offset: number): number {
+  protected _calculateInitialStrain(time: number, current: DifficultyHitObject): number {
     const decay1 = Strain._applyDecay(
       this._individualStrain,
-      offset - this._previous.get(0).startTime,
-      Strain._INDIVIDUAL_DECAY_BASE,
+      time - (current.previous(0)?.startTime ?? 0),
+      Strain.INDIVIDUAL_DECAY_BASE,
     );
 
     const decay2 = Strain._applyDecay(
       this._overallStrain,
-      offset - this._previous.get(0).startTime,
-      Strain._OVERALL_DECAY_BASE,
+      time - (current.previous(0)?.startTime ?? 0),
+      Strain.OVERALL_DECAY_BASE,
     );
 
     return decay1 + decay2;

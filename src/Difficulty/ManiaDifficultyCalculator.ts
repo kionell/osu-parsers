@@ -35,7 +35,7 @@ import { ManiaDifficultyHitObject } from './Preprocessing';
 import { Strain } from './Skills';
 
 export class ManiaDifficultyCalculator extends DifficultyCalculator<ManiaDifficultyAttributes> {
-  private static _STAR_SCALING_FACTOR = 0.018;
+  private static STAR_SCALING_FACTOR = 0.018;
 
   private readonly _isForCurrentRuleset: boolean;
   private readonly _originalOverallDifficulty: number;
@@ -61,7 +61,7 @@ export class ManiaDifficultyCalculator extends DifficultyCalculator<ManiaDifficu
 
     hitWindows.setDifficulty(beatmap.difficulty.overallDifficulty);
 
-    const starRating = skills[0].difficultyValue * ManiaDifficultyCalculator._STAR_SCALING_FACTOR;
+    const starRating = skills[0].difficultyValue * ManiaDifficultyCalculator.STAR_SCALING_FACTOR;
 
     const attributes = new ManiaDifficultyAttributes(mods, starRating);
 
@@ -73,7 +73,7 @@ export class ManiaDifficultyCalculator extends DifficultyCalculator<ManiaDifficu
     return attributes;
   }
 
-  protected *_createDifficultyHitObjects(beatmap: IBeatmap, clockRate: number): Generator<ManiaDifficultyHitObject> {
+  protected _createDifficultyHitObjects(beatmap: IBeatmap, clockRate: number): ManiaDifficultyHitObject[] {
     const hitObjects = beatmap.hitObjects.slice() as ManiaHitObject[];
 
     const comparerFn = (a: ManiaHitObject, b: ManiaHitObject) => {
@@ -82,9 +82,21 @@ export class ManiaDifficultyCalculator extends DifficultyCalculator<ManiaDifficu
 
     const sortedObjects = SortHelper.depthSort(hitObjects, comparerFn);
 
+    const difficultyObjects = new Array(sortedObjects.length);
+
     for (let i = 1; i < sortedObjects.length; ++i) {
-      yield new ManiaDifficultyHitObject(sortedObjects[i], sortedObjects[i - 1], clockRate);
+      const object = new ManiaDifficultyHitObject(
+        sortedObjects[i],
+        sortedObjects[i - 1],
+        clockRate,
+        difficultyObjects,
+        difficultyObjects.length,
+      );
+
+      difficultyObjects.push(object);
     }
+
+    return difficultyObjects;
   }
 
   protected _createSkills(beatmap: IBeatmap, mods: ManiaModCombination): Skill[] {
