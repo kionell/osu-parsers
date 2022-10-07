@@ -127,7 +127,7 @@ export class StandardDifficultyCalculator extends DifficultyCalculator<StandardD
       const last = beatmap.hitObjects[i - 1];
       const current = beatmap.hitObjects[i];
 
-      const object = new StandardDifficultyHitObject(
+      difficultyObjects[i - 1] = new StandardDifficultyHitObject(
         current,
         last,
         lastLast,
@@ -135,8 +135,6 @@ export class StandardDifficultyCalculator extends DifficultyCalculator<StandardD
         difficultyObjects,
         difficultyObjects.length,
       );
-
-      difficultyObjects.push(object);
     }
 
     return difficultyObjects;
