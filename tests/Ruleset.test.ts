@@ -63,43 +63,43 @@ function testBeatmap(beatmap: TaikoBeatmap, data: ITestAttributes): void {
       expect(difficulty.maxCombo).toEqual(data.maxCombo);
     });
 
-    test('Should match total star rating', () => {
+    it('Should match total star rating', () => {
       expect(difficulty.starRating).toBeCloseTo(data.starRating, 1);
     });
 
-    test('Should match stamina difficulty', () => {
+    it('Should match stamina difficulty', () => {
       expect(difficulty.staminaDifficulty).toBeCloseTo(data.staminaDifficulty, 1);
     });
 
-    test('Should match rhythm difficulty', () => {
+    it('Should match rhythm difficulty', () => {
       expect(difficulty.rhythmDifficulty).toBeCloseTo(data.rhythmDifficulty, 1);
     });
 
-    test('Should match colour difficulty', () => {
+    it('Should match colour difficulty', () => {
       expect(difficulty.colourDifficulty).toBeCloseTo(data.colourDifficulty, 1);
     });
 
-    test('Should match peak difficulty', () => {
+    it('Should match peak difficulty', () => {
       expect(difficulty.peakDifficulty).toBeCloseTo(data.peakDifficulty, 1);
     });
 
-    test('Should match great hit window', () => {
+    it('Should match great hit window', () => {
       expect(difficulty.greatHitWindow).toBeCloseTo(data.greatHitWindow, 1);
     });
 
-    test('Should match total performance', () => {
+    it('Should match total performance', () => {
       expect(performance.totalPerformance).toBeCloseTo(data.totalPerformance, 1);
     });
 
-    test('Should match difficulty performance', () => {
+    it('Should match difficulty performance', () => {
       expect(performance.difficultyPerformance).toBeCloseTo(data.difficultyPerformance, 1);
     });
 
-    test('Should match accuracy performance', () => {
+    it('Should match accuracy performance', () => {
       expect(performance.accuracyPerformance).toBeCloseTo(data.accuracyPerformance, 1);
     });
 
-    test('Should match effective miss count', () => {
+    it('Should match effective miss count', () => {
       expect(performance.effectiveMissCount).toBeCloseTo(data.effectiveMissCount, 1);
     });
   });
