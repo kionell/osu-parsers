@@ -39,17 +39,18 @@ export class TaikoDifficultyCalculator extends DifficultyCalculator<TaikoDifficu
   }
 
   protected _createDifficultyHitObjects(beatmap: IBeatmap, clockRate: number): DifficultyHitObject[] {
-    const difficultyObjects: DifficultyHitObject[] = [];
     const centreObjects: TaikoDifficultyHitObject[] = [];
     const rimObjects: TaikoDifficultyHitObject[] = [];
     const noteObjects: TaikoDifficultyHitObject[] = [];
+
+    const difficultyObjects = new Array(beatmap.hitObjects.length);
 
     for (let i = 2; i < beatmap.hitObjects.length; ++i) {
       const hitObject = beatmap.hitObjects[i];
       const lastObject = beatmap.hitObjects[i - 1];
       const lastLastObject = beatmap.hitObjects[i - 2];
 
-      const difficultyObject = new TaikoDifficultyHitObject(
+      const object = new TaikoDifficultyHitObject(
         hitObject,
         lastObject,
         lastLastObject,
@@ -61,7 +62,7 @@ export class TaikoDifficultyCalculator extends DifficultyCalculator<TaikoDifficu
         difficultyObjects.length,
       );
 
-      difficultyObjects.push(difficultyObject);
+      difficultyObjects.push(object);
     }
 
     TaikoColourDifficultyPreprocessor.processAndAssign(difficultyObjects);
