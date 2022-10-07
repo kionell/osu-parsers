@@ -74,7 +74,7 @@ export class Beatmap implements IBeatmap {
   fileUpdateDate: Date = new Date();
 
   /**
-   * Beatmap original gamemode.
+   * Original gamemode of a beatmap before any conversions.
    */
   originalMode = 0;
 
