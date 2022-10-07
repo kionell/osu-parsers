@@ -50,7 +50,7 @@ export class TaikoDifficultyCalculator extends DifficultyCalculator<TaikoDifficu
       const lastObject = beatmap.hitObjects[i - 1];
       const lastLastObject = beatmap.hitObjects[i - 2];
 
-      const object = new TaikoDifficultyHitObject(
+      difficultyObjects[i - 2] = new TaikoDifficultyHitObject(
         hitObject,
         lastObject,
         lastLastObject,
@@ -61,8 +61,6 @@ export class TaikoDifficultyCalculator extends DifficultyCalculator<TaikoDifficu
         noteObjects,
         difficultyObjects.length,
       );
-
-      difficultyObjects.push(object);
     }
 
     TaikoColourDifficultyPreprocessor.processAndAssign(difficultyObjects);
