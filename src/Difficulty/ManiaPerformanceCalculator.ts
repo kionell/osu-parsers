@@ -115,6 +115,8 @@ export class ManiaPerformanceCalculator extends PerformanceCalculator {
     const meh = this._countMeh;
     const totalHits = this._totalHits;
 
+    if (!totalHits) return 0;
+
     return (perfect * 320 + great * 300 + good * 200 + ok * 100 + meh * 50) / (totalHits * 320);
   }
 }
