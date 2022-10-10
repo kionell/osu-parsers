@@ -1,6 +1,7 @@
 import {
   RulesetBeatmap,
   HitType,
+  IHasDuration,
 } from 'osu-classes';
 
 import { ManiaHitObject } from '../Objects';
@@ -46,7 +47,13 @@ export class ManiaBeatmap extends RulesetBeatmap {
 
   get maxCombo(): number {
     return this.hitObjects.reduce((combo, obj) => {
-      return combo + (obj.hitType & HitType.Hold ? obj.nestedHitObjects.length : 0);
+      if (obj.hitType & HitType.Hold) {
+        const hold = obj as ManiaHitObject & IHasDuration;
+
+        return combo + 1 + Math.trunc((hold.endTime - hold.startTime) / 100);
+      }
+
+      return combo;
     }, this.notes);
   }
 
