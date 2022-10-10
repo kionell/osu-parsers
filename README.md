@@ -11,6 +11,8 @@ JavaScript port of the current live version of the osu!mania ruleset.
 - Supports beatmap conversion from other game modes.
 - Can apply & reset osu!mania mods.
 - Very accurate difficulty & performance calculation (up to 6 digits after decimal point)
+- Supports latest star rating & performance rework
+- Works in browsers.
 
 ## Installation
 
@@ -94,11 +96,10 @@ const difficultyAttributes = difficultyCalculator.calculateWithMods(mods);
 
 ```json
 {
-  "maxCombo": 9887,
+  "maxCombo": 10406,
   "mods": "DT",
-  "starRating": 11.624385891144286,
-  "greatHitWindow": 42,
-  "scoreMultiplier": 1
+  "starRating": 11.433692671697369,
+  "greatHitWindow": 42
 }
 ```
 
@@ -285,16 +286,15 @@ const difficultyCalculator = ruleset.createDifficultyCalculator(maniaBeatmap);
 const difficultyAttributes = difficultyCalculator.calculate();
 
 // TIEFSEE (SOUND HOLIC vs. dj TAKA feat. YURiCa) [[7K] Despair]
-// dressurf + DT 1458.83 pp.
+// dressurf + NC 1450.8 pp.
 const score = new ScoreInfo({
   rulesetId: 3,
-  totalScore: 885767,
-  countGeki: 4394, // score.statistics.perfect
-  count300: 2161, // score.statistics.great
-  countKatu: 234, // score.statistics.good
-  count100: 36, // score.statistics.ok
-  count50: 18, // score.statistics.meh
-  countMiss: 46, // score.statistics.miss
+  countGeki: 4545, // score.statistics.perfect
+  count300: 2073, // score.statistics.great
+  countKatu: 179, // score.statistics.good
+  count100: 20, // score.statistics.ok
+  count50: 22, // score.statistics.meh
+  countMiss: 50, // score.statistics.miss
   mods,
 });
 
@@ -313,10 +313,8 @@ const totalPerformance = performanceCalculator.calculate();
 ```json
 {
   "mods": "DT",
-  "totalPerformance": 1458.8304993446936,
-  "strainPerformance": 1823.5381241808661,
-  "accuracyPerformance": 0,
-  "scaledScore": 885767
+  "totalPerformance": 1450.80114694415,
+  "difficultyPerformance": 181.35014336801876
 }
 ```
 
