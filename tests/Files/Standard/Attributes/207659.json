@@ -1,0 +1,107 @@
+{
+  "1K": {
+    "totalPerformance": 99.82346023231344,
+    "starRating": 3.247950608197869,
+    "maxCombo": 1089,
+    "greatHitWindow": 34,
+    "difficultyPerformance": 12.47793252903918
+  },
+  "2K": {
+    "totalPerformance": 63.15802117764562,
+    "starRating": 2.6575806194301546,
+    "maxCombo": 1263,
+    "greatHitWindow": 34,
+    "difficultyPerformance": 7.894752647205703
+  },
+  "3K": {
+    "totalPerformance": 58.30216993567146,
+    "starRating": 2.5648136558287105,
+    "maxCombo": 1351,
+    "greatHitWindow": 34,
+    "difficultyPerformance": 7.287771241958932
+  },
+  "4K": {
+    "totalPerformance": 58.39253425250671,
+    "starRating": 2.5612904632351814,
+    "maxCombo": 1536,
+    "greatHitWindow": 34,
+    "difficultyPerformance": 7.299066781563338
+  },
+  "5K": {
+    "totalPerformance": 62.1909758954392,
+    "starRating": 2.6287968063964198,
+    "maxCombo": 1570,
+    "greatHitWindow": 34,
+    "difficultyPerformance": 7.7738719869299
+  },
+  "6K": {
+    "totalPerformance": 58.02653500216488,
+    "starRating": 2.5508872936120173,
+    "maxCombo": 1598,
+    "greatHitWindow": 34,
+    "difficultyPerformance": 7.25331687527061
+  },
+  "7K": {
+    "totalPerformance": 57.843788805814704,
+    "starRating": 2.547103541864338,
+    "maxCombo": 1633,
+    "greatHitWindow": 34,
+    "difficultyPerformance": 7.230473600726838
+  },
+  "8K": {
+    "totalPerformance": 57.776284145259055,
+    "starRating": 2.546037754372984,
+    "maxCombo": 1641,
+    "greatHitWindow": 34,
+    "difficultyPerformance": 7.222035518157382
+  },
+  "9K": {
+    "totalPerformance": 61.92474309885201,
+    "starRating": 2.6212725233703003,
+    "maxCombo": 1657,
+    "greatHitWindow": 34,
+    "difficultyPerformance": 7.7405928873565015
+  },
+  "DS": {
+    "totalPerformance": 53.56029653692036,
+    "starRating": 2.464455843627509,
+    "maxCombo": 1626,
+    "greatHitWindow": 34,
+    "difficultyPerformance": 6.695037067115045
+  },
+  "DT": {
+    "totalPerformance": 102.9048259453206,
+    "starRating": 3.2646161107340035,
+    "maxCombo": 1633,
+    "greatHitWindow": 34,
+    "difficultyPerformance": 12.863103243165074
+  },
+  "EZ": {
+    "totalPerformance": 28.921894402907352,
+    "starRating": 2.547103541864338,
+    "maxCombo": 1633,
+    "greatHitWindow": 47,
+    "difficultyPerformance": 7.230473600726838
+  },
+  "HR": {
+    "totalPerformance": 57.843788805814704,
+    "starRating": 2.547103541864338,
+    "maxCombo": 1633,
+    "greatHitWindow": 24,
+    "difficultyPerformance": 7.230473600726838
+  },
+  "HT": {
+    "totalPerformance": 39.37824127792454,
+    "starRating": 2.162692895207581,
+    "maxCombo": 1633,
+    "greatHitWindow": 34,
+    "difficultyPerformance": 4.922280159740567
+  },
+  "NM": {
+    "totalPerformance": 57.843788805814704,
+    "starRating": 2.547103541864338,
+    "maxCombo": 1633,
+    "greatHitWindow": 34,
+    "difficultyPerformance": 7.230473600726838
+  }
+}

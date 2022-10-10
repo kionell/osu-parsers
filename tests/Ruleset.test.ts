@@ -2,8 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import { IScoreInfo, ScoreInfo } from 'osu-classes';
 import { BeatmapDecoder } from 'osu-parsers';
-import { ManiaRuleset, ManiaDifficultyAttributes, ManiaBeatmap } from '../src';
-import { ILoadedFiles } from './Interfaces';
+import { ITestAttributes, IModdedAttributes } from './Attributes';
+import { ManiaRuleset, ManiaBeatmap } from '../src';
 
 const ruleset = new ManiaRuleset();
 const decoder = new BeatmapDecoder();
@@ -24,59 +24,63 @@ function testBeatmaps(rulesetPath: string): void {
 
   for (const beatmapFile of beatmapFiles) {
     const beatmapPath = path.resolve(beatmapsPath, beatmapFile);
-    const data = loadTestFiles(rulesetPath, beatmapFile.split('.')[0]);
+    const beatmapId = beatmapFile.split('.')[0];
+
+    const attributesPath = `${rulesetPath}/Attributes/${beatmapId}.json`;
+    const attributesData = fs.readFileSync(attributesPath).toString();
+    const attributes: IModdedAttributes = JSON.parse(attributesData);
 
     const decoded = decoder.decodeFromPath(beatmapPath, false);
 
-    for (const acronym in data.stars) {
+    for (const acronym in attributes) {
       const mods = ruleset.createModCombination(acronym);
       const beatmap = ruleset.applyToBeatmapWithMods(decoded, mods);
 
-      testBeatmap(beatmap, data);
+      testBeatmap(beatmap, attributes[acronym]);
     }
   }
 }
 
-function testBeatmap(beatmap: ManiaBeatmap, data: ILoadedFiles): void {
+function testBeatmap(beatmap: ManiaBeatmap, data: ITestAttributes): void {
   const acronyms = beatmap.mods.toString();
 
   const difficultyCalculator = ruleset.createDifficultyCalculator(beatmap);
   const difficulty = difficultyCalculator.calculate();
 
-  const score = simulateScore(beatmap, difficulty);
+  const score = simulateScore(beatmap);
   const performanceCalculator = ruleset.createPerformanceCalculator(difficulty, score);
-  const performance = performanceCalculator.calculate();
+  const performance = performanceCalculator.calculateAttributes();
 
   const { artist, title, version } = beatmap.metadata;
 
   describe(`${artist} - ${title} [${version}] +${acronyms}`, () => {
-    test('Should match star ratings', () => {
-      expect(difficulty.starRating).toBeCloseTo(data.stars[acronyms], 1);
+    it('Should match beatmap max combo', () => {
+      expect(difficulty.maxCombo).toEqual(data.maxCombo);
     });
 
-    test('Should match performances', () => {
-      expect(performance).toBeCloseTo(data.performances[acronyms], 0);
+    it('Should match total star rating', () => {
+      expect(difficulty.starRating).toBeCloseTo(data.starRating, 1);
+    });
+
+    it('Should match great hit window', () => {
+      expect(difficulty.greatHitWindow).toBeCloseTo(data.greatHitWindow, 1);
+    });
+
+    it('Should match total performance', () => {
+      expect(performance.totalPerformance).toBeCloseTo(data.totalPerformance, 1);
+    });
+
+    it('Should match difficulty performance', () => {
+      expect(performance.difficultyPerformance).toBeCloseTo(data.difficultyPerformance, 1);
     });
   });
 }
 
-function loadTestFiles(rulesetPath: string, beatmapId: string): ILoadedFiles {
-  const paths = [
-    `${rulesetPath}/Stars/${beatmapId}.json`,
-    `${rulesetPath}/Performances/${beatmapId}.json`,
-  ];
-
-  return {
-    stars: JSON.parse(fs.readFileSync(paths[0]).toString()),
-    performances: JSON.parse(fs.readFileSync(paths[1]).toString()),
-  };
-}
-
-function simulateScore(beatmap: ManiaBeatmap, attributes: ManiaDifficultyAttributes): IScoreInfo {
+function simulateScore(beatmap: ManiaBeatmap): IScoreInfo {
   return new ScoreInfo({
-    maxCombo: attributes.maxCombo,
-    mods: attributes.mods,
-    totalScore: 1e6 * attributes.scoreMultiplier,
+    maxCombo: beatmap.maxCombo,
+    mods: beatmap.mods,
+    accuracy: 1,
     statistics: {
       perfect: beatmap.hitObjects.length,
     },
