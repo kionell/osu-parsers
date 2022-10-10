@@ -45,7 +45,7 @@ export class ManiaPerformanceCalculator extends PerformanceCalculator {
      * The specific number has no intrinsic meaning 
      * and can be adjusted as needed.
      */
-    let multiplier = 0.8;
+    let multiplier = 8;
 
     if (this._mods.any(ManiaNoFail)) {
       multiplier *= 0.75;
