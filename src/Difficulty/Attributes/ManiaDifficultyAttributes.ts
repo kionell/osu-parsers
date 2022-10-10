@@ -6,9 +6,4 @@ export class ManiaDifficultyAttributes extends DifficultyAttributes {
    * Rate-adjusting mods do not affect the hit window at all in osu-stable.
    */
   greatHitWindow = 0;
-
-  /**
-   * The score multiplier applied via score-reducing mods.
-   */
-  scoreMultiplier = 0;
 }

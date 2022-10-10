@@ -1,6 +1,5 @@
 ﻿import {
   DifficultyAttributes,
-  ModBitwise,
   PerformanceCalculator,
   IRuleset,
   IScoreInfo,
@@ -11,25 +10,19 @@ import {
   ManiaPerformanceAttributes,
 } from './Attributes';
 
-import { ManiaModCombination } from '../Mods';
+import { ManiaEasy, ManiaModCombination, ManiaNoFail } from '../Mods';
 
 export class ManiaPerformanceCalculator extends PerformanceCalculator {
   attributes: ManiaDifficultyAttributes;
 
   private _mods = new ManiaModCombination();
 
-  private _totalScore = 0;
   private _countPerfect = 0;
   private _countGreat = 0;
   private _countGood = 0;
   private _countOk = 0;
   private _countMeh = 0;
   private _countMiss = 0;
-
-  /**
-   * Score after being scaled by non-difficulty-increasing mods.
-   */
-  private _scaledScore = 0;
 
   constructor(ruleset: IRuleset, attributes?: DifficultyAttributes, score?: IScoreInfo) {
     super(ruleset, attributes, score);
@@ -46,13 +39,6 @@ export class ManiaPerformanceCalculator extends PerformanceCalculator {
       return new ManiaPerformanceAttributes(this._mods, 0);
     }
 
-    if (this.attributes.scoreMultiplier > 0) {
-      /**
-       * Scale score up, so it's comparable to other keymods
-       */
-      this._scaledScore = this._totalScore / this.attributes.scoreMultiplier;
-    }
-
     /**
      * Arbitrary initial value for scaling pp in order 
      * to standardize distributions across game modes.
@@ -61,92 +47,48 @@ export class ManiaPerformanceCalculator extends PerformanceCalculator {
      */
     let multiplier = 0.8;
 
-    if (this._mods.has(ModBitwise.NoFail)) {
-      multiplier *= 0.9;
+    if (this._mods.any(ManiaNoFail)) {
+      multiplier *= 0.75;
     }
 
-    if (this._mods.has(ModBitwise.Easy)) {
+    if (this._mods.any(ManiaEasy)) {
       multiplier *= 0.5;
     }
 
-    const strainValue = this._computeStrainValue();
-    const accValue = this._computeAccuracyValue(strainValue);
-
-    const totalValue = Math.pow(
-      Math.pow(strainValue, 1.1) +
-      Math.pow(accValue, 1.1), 1.0 / 1.1,
-    ) * multiplier;
+    const difficultyValue = this._computeDifficultyValue();
+    const totalValue = difficultyValue * multiplier;
 
     const performance = new ManiaPerformanceAttributes(this._mods, totalValue);
 
-    performance.strainPerformance = strainValue;
-    performance.accuracyPerformance = accValue;
-    performance.scaledScore = this._scaledScore;
+    performance.difficultyPerformance = difficultyValue;
 
     return performance;
   }
 
-  private _computeStrainValue(): number {
+  private _computeDifficultyValue(): number {
     /**
-     * Obtain strain difficulty.
+     * Star rating to pp curve.
      */
-    const max = Math.max(1, this.attributes.starRating / 0.2);
-    let strainValue = Math.pow(5 * max - 4.0, 2.2) / 135.0;
-
-    /**
-     * Longer maps are worth more.
-     */
-    strainValue *= 1.0 + 0.1 * Math.min(1.0, this._totalHits / 1500.0);
-
-    return strainValue * this._getStrainMultiplier(this._scaledScore);
-  }
-
-  private _computeAccuracyValue(strainValue: number) {
-    const scaledScore = this._scaledScore;
-    const greatHitWindow = this.attributes.greatHitWindow;
-
-    if (greatHitWindow <= 0) return 0;
+    let difficultyValue = Math.pow(
+      Math.max(this.attributes.starRating - 0.15, 0.05), 2.2,
+    );
 
     /**
-     * Lots of arbitrary values from testing.
-     * Considering to use derivation from perfect accuracy 
-     * in a probabilistic manner - assume normal distribution
+     * From 80% accuracy, 1/20th of total pp is awarded per additional 1% accuracy.
      */
-    let accuracyValue = 1;
+    difficultyValue *= Math.max(0, 5 * this._customAccuracy - 4);
 
-    accuracyValue *= Math.max(0.0, 0.2 - (greatHitWindow - 34) * 0.006667);
-    accuracyValue *= Math.pow(Math.max(0.0, scaledScore - 960000) / 40000, 1.1);
-    accuracyValue *= strainValue;
+    /**
+     * Length bonus, capped at 1500 notes.
+     */
+    difficultyValue *= 1 + 0.1 * Math.min(1, this._totalHits / 1500);
 
-    return accuracyValue;
-  }
-
-  private _getStrainMultiplier(scaledScore: number) {
-    if (scaledScore <= 500000) return 0;
-
-    if (scaledScore <= 600000) {
-      return (scaledScore - 500000) / 100000 * 0.3;
-    }
-
-    if (scaledScore <= 700000) {
-      return 0.3 + (scaledScore - 600000) / 100000 * 0.25;
-    }
-
-    if (scaledScore <= 800000) {
-      return 0.55 + (scaledScore - 700000) / 100000 * 0.20;
-    }
-
-    if (scaledScore <= 900000) {
-      return 0.75 + (scaledScore - 800000) / 100000 * 0.15;
-    }
-
-    return 0.90 + (scaledScore - 900000) / 100000 * 0.1;
+    return difficultyValue;
   }
 
   private _addParams(attributes?: DifficultyAttributes, score?: IScoreInfo): void {
     if (score) {
       this._mods = score?.mods as ManiaModCombination ?? this._mods;
-      this._totalScore = score.totalScore ?? 0;
       this._countPerfect = score.statistics.perfect ?? 0;
       this._countGreat = score.statistics.great ?? 0;
       this._countGood = score.statistics.good ?? 0;
@@ -163,5 +105,16 @@ export class ManiaPerformanceCalculator extends PerformanceCalculator {
   private get _totalHits(): number {
     return this._countPerfect + this._countOk + this._countGreat +
       this._countGood + this._countMeh + this._countMiss;
+  }
+
+  private get _customAccuracy(): number {
+    const perfect = this._countPerfect;
+    const great = this._countGreat;
+    const good = this._countGood;
+    const ok = this._countOk;
+    const meh = this._countMeh;
+    const totalHits = this._totalHits;
+
+    return (perfect * 320 + great * 300 + good * 200 + ok * 100 + meh * 50) / (totalHits * 320);
   }
 }

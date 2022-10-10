@@ -1,5 +1,6 @@
 import {
   DifficultyCalculator,
+  DifficultyHitObject,
   IBeatmap,
   IMod,
   IRuleset,
@@ -29,7 +30,6 @@ import {
 
 import { ManiaBeatmap } from '../Beatmaps';
 import { ManiaHitObject } from '../Objects';
-import { ManiaHitWindows } from '../Scoring';
 import { ManiaDifficultyAttributes } from './Attributes';
 import { ManiaDifficultyHitObject } from './Preprocessing';
 import { Strain } from './Skills';
@@ -57,18 +57,17 @@ export class ManiaDifficultyCalculator extends DifficultyCalculator<ManiaDifficu
       return new ManiaDifficultyAttributes(mods, 0);
     }
 
-    const hitWindows = new ManiaHitWindows();
-
-    hitWindows.setDifficulty(beatmap.difficulty.overallDifficulty);
-
-    const starRating = skills[0].difficultyValue * ManiaDifficultyCalculator.STAR_SCALING_FACTOR;
+    const starRating = skills[0].difficultyValue
+      * ManiaDifficultyCalculator.STAR_SCALING_FACTOR;
 
     const attributes = new ManiaDifficultyAttributes(mods, starRating);
 
     attributes.mods = mods;
-    attributes.greatHitWindow = Math.ceil(Math.trunc(this._getHitWindow300(mods) * clockRate) / clockRate);
-    attributes.scoreMultiplier = this._getScoreMultiplier(mods);
-    attributes.maxCombo = (beatmap as ManiaBeatmap).maxCombo;
+    attributes.maxCombo = (beatmap as ManiaBeatmap)?.maxCombo ?? 0;
+
+    attributes.greatHitWindow = Math.ceil(
+      Math.trunc(this._getHitWindow300(mods) * clockRate) / clockRate,
+    );
 
     return attributes;
   }
@@ -99,9 +98,17 @@ export class ManiaDifficultyCalculator extends DifficultyCalculator<ManiaDifficu
     return difficultyObjects;
   }
 
+  protected _sortObjects(input: DifficultyHitObject[]): DifficultyHitObject[] {
+    /**
+     * Sorting is done in {@link _createDifficultyHitObjects}, 
+     * since the full list of hitobjects is required.
+     */
+    return input;
+  }
+
   protected _createSkills(beatmap: IBeatmap, mods: ManiaModCombination): Skill[] {
     return [
-      new Strain(mods, (beatmap as ManiaBeatmap).totalColumns),
+      new Strain(mods, (beatmap as ManiaBeatmap)?.totalColumns ?? 0),
     ];
   }
 
@@ -158,25 +165,5 @@ export class ManiaDifficultyCalculator extends DifficultyCalculator<ManiaDifficu
     }
 
     return applyModAdjustments(47);
-  }
-
-  private _getScoreMultiplier(mods: ManiaModCombination): number {
-    let scoreMultiplier = 1;
-
-    if (mods.has(ModBitwise.NoFail)) scoreMultiplier *= 0.5;
-    if (mods.has(ModBitwise.Easy)) scoreMultiplier *= 0.5;
-    if (mods.has(ModBitwise.HalfTime)) scoreMultiplier *= 0.5;
-
-    const maniaBeatmap = this._beatmap as ManiaBeatmap;
-
-    const totalColumns = maniaBeatmap?.totalColumns ?? 0;
-    const originalTotalColumns = maniaBeatmap?.originalTotalColumns ?? 0;
-
-    const diff = totalColumns - originalTotalColumns;
-
-    if (diff > 0) return scoreMultiplier * 0.9;
-    if (diff < 0) return scoreMultiplier * 0.9 + 0.04 * diff;
-
-    return scoreMultiplier;
   }
 }

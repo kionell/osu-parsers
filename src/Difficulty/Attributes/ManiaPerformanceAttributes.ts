@@ -13,17 +13,7 @@ export class ManiaPerformanceAttributes extends PerformanceAttributes {
   /**
    * The strain performance of a score.
    */
-  strainPerformance = 0;
-
-  /**
-   * The accuracy performance of a score.
-   */
-  accuracyPerformance = 0;
-
-  /**
-   * Total score of the play scaled with mods.
-   */
-  scaledScore = 0;
+  difficultyPerformance = 0;
 
   /**
    * Creates new difficulty attributes.
