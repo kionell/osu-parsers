@@ -16,6 +16,7 @@ import { CatchModCombination } from '../Mods';
 export class CatchPerformanceCalculator extends PerformanceCalculator {
   attributes: CatchDifficultyAttributes;
 
+  private _scoreMaxCombo = 0;
   private _mods = new CatchModCombination();
 
   private _fruitsHit = 0;
@@ -35,7 +36,7 @@ export class CatchPerformanceCalculator extends PerformanceCalculator {
   calculateAttributes(attributes?: DifficultyAttributes, score?: IScoreInfo): CatchPerformanceAttributes {
     this._addParams(attributes, score);
 
-    if (!this.attributes || !this._score) {
+    if (!this.attributes) {
       return new CatchPerformanceAttributes(this._mods, 0);
     }
 
@@ -67,7 +68,7 @@ export class CatchPerformanceCalculator extends PerformanceCalculator {
      * Combo scaling.
      */
     if (this.attributes.maxCombo > 0) {
-      const scoreMaxCombo = Math.pow(this._score.maxCombo, 0.8);
+      const scoreMaxCombo = Math.pow(this._scoreMaxCombo, 0.8);
       const maxCombo = Math.pow(this.attributes.maxCombo, 0.8);
 
       totalValue *= Math.min(scoreMaxCombo / maxCombo, 1.0);
@@ -142,6 +143,7 @@ export class CatchPerformanceCalculator extends PerformanceCalculator {
 
   private _addParams(attributes?: DifficultyAttributes, score?: IScoreInfo): void {
     if (score) {
+      this._scoreMaxCombo = score.maxCombo ?? this._scoreMaxCombo;
       this._mods = score?.mods as CatchModCombination ?? this._mods;
       this._fruitsHit = score.statistics.great ?? this._fruitsHit;
       this._ticksHit = score.statistics.largeTickHit ?? this._ticksHit;
