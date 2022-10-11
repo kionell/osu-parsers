@@ -35,7 +35,7 @@ export class ManiaPerformanceCalculator extends PerformanceCalculator {
   calculateAttributes(attributes?: DifficultyAttributes, score?: IScoreInfo): ManiaPerformanceAttributes {
     this._addParams(attributes, score);
 
-    if (!this.attributes || !this._score) {
+    if (!this.attributes) {
       return new ManiaPerformanceAttributes(this._mods, 0);
     }
 
