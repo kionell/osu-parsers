@@ -42,7 +42,7 @@ export class TaikoPerformanceCalculator extends PerformanceCalculator {
   calculateAttributes(attributes?: DifficultyAttributes, score?: IScoreInfo): TaikoPerformanceAttributes {
     this._addParams(attributes, score);
 
-    if (!this.attributes || !this._score) {
+    if (!this.attributes) {
       return new TaikoPerformanceAttributes(this._mods, 0);
     }
 
