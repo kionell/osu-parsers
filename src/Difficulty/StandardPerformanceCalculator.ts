@@ -47,7 +47,7 @@ export class StandardPerformanceCalculator extends PerformanceCalculator {
   calculateAttributes(attributes?: StandardDifficultyAttributes, score?: IScoreInfo): StandardPerformanceAttributes {
     this._addParams(attributes, score);
 
-    if (!this.attributes || !this._score) {
+    if (!this.attributes) {
       return new StandardPerformanceAttributes(this._mods, 0);
     }
 
