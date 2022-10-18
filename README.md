@@ -29,6 +29,7 @@ All projects below are based on this code.
 - [osu-taiko-stable](https://github.com/kionell/osu-taiko-stable.git) - The osu!taiko ruleset based on the osu!lazer source code.
 - [osu-catch-stable](https://github.com/kionell/osu-catch-stable.git) - The osu!catch ruleset based on the osu!lazer source code.
 - [osu-mania-stable](https://github.com/kionell/osu-mania-stable.git) - The osu!mania ruleset based on the osu!lazer source code.
+- [osu-pp-calculator](https://github.com/kionell/osu-pp-calculator) - Package for difficulty & performance calculation based on this code.
 
 ## Documentation
 
