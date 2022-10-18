@@ -133,7 +133,7 @@ const encodePath = 'path/to/your/encoding/file.osu';
 encoder.encodeToPath(encodePath, beatmap);
 
 // Also you can encode IBeatmap object to a string.
-const stringified = encoder.encodeToString(storyboard);
+const stringified = encoder.encodeToString(beatmap);
 ```
 
 ### Example of storyboard encoding
