@@ -20,6 +20,10 @@ Add a new dependency to your project via npm:
 npm install osu-catch-stable
 ```
 
+## Existing performance calculator library
+
+This ruleset is a part of [osu-pp-calculator](https://github.com/kionell/osu-pp-calculator) package. It's highly recommended to use existing package for performance calculation if you don't want to write a lot of boilerplate code for score simulation and beatmap downloading. 
+
 ## Requirements
 
 Before you can start using this ruleset library, you need to install [osu-classes](https://github.com/kionell/osu-classes)) package as this ruleset based on it. Also you need to install [osu-parsers](https://github.com/kionell/osu-parsers)) or any other compatible beatmap parser that works with [IBeatmap](https://kionell.github.io/osu-classes/interfaces/IBeatmap.html) interface.
