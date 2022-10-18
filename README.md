@@ -188,7 +188,7 @@ encoder.encodeToBuffer(score)
   });
 ```
 
-## Rulesets
+## Difficulty & performance calculation
 
 This library by itself doesn't provide any tools for difficulty and performance calculation!!!!
 If you are looking for something related to this, then rulesets may come in handy for you.
@@ -201,6 +201,8 @@ There are 4 basic rulesets that support parsed beatmaps from this decoder:
 - [osu-taiko-stable](https://github.com/kionell/osu-taiko-stable.git) - The osu!taiko ruleset based on the osu!lazer source code.
 - [osu-catch-stable](https://github.com/kionell/osu-catch-stable.git) - The osu!catch ruleset based on the osu!lazer source code.
 - [osu-mania-stable](https://github.com/kionell/osu-mania-stable.git) - The osu!mania ruleset based on the osu!lazer source code.
+
+You can also try existing [osu-pp-calculator](https://github.com/kionell/osu-pp-calculator) package. It's a wrapper for all 4 rulesets above with a lot of extra useful stuff like score simulation and beatmap downloading.
 
 ## Documentation
 
