@@ -57,6 +57,24 @@ export class StoryboardDecoder extends Decoder<Storyboard> {
   }
 
   /**
+   * Performs storyboard decoding from a data buffer.
+   * If two data buffers were specified, storyboard decoder will try to combine storyboards.
+   * 
+   * NOTE: Commands from the `.osb` file take precedence over those 
+   * from the `.osu` file within the layers, as if the commands 
+   * from the `.osb` were appended to the end of the `.osu` commands.
+   * @param firstBuffer A buffer with the main storyboard data (from `.osu` or `.osb` file).
+   * @param secondBuffer A buffer with the secondary storyboard data (from `.osb` file).
+   * @returns Decoded storyboard.
+   */
+  decodeFromBuffer(firstBuffer: Buffer, secondBuffer?: Buffer): Storyboard {
+    const firstString = firstBuffer.toString();
+    const secondString = secondBuffer?.toString();
+
+    return this.decodeFromString(firstString, secondString);
+  }
+
+  /**
    * Performs storyboard decoding from a string.
    * If two strings were specified, storyboard decoder will try to combine storyboards.
    * 
@@ -68,13 +86,13 @@ export class StoryboardDecoder extends Decoder<Storyboard> {
    * @returns Decoded storyboard.
    */
   decodeFromString(firstString: string, secondString?: string): Storyboard {
-    firstString = typeof firstString !== 'string'
-      ? String(firstString)
-      : firstString;
+    if (typeof firstString !== 'string') {
+      firstString = String(firstString);
+    }
 
-    secondString = typeof secondString !== 'string'
-      ? (typeof secondString === 'undefined' ? undefined : String(secondString))
-      : secondString;
+    if (typeof secondString !== 'string' && typeof secondString !== 'undefined') {
+      secondString = String(secondString);
+    }
 
     const firstData = firstString.split(/\r?\n/);
     const secondData = secondString?.split(/\r?\n/);

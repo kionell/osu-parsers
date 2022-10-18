@@ -26,8 +26,9 @@ Beatmap decoder is used to read .osu files and convert them to the plain Beatmap
 This decoder is fully synchronous and there is no support for async version right now.
 Note that beatmap decoder will return only parsed beatmap without max combo or mods!
 
-There are 3 ways to read data using this decoders:
+There are 4 ways to read data using this decoders:
 - via file path
+- via data buffer
 - via string
 - via array of split lines
 
@@ -54,8 +55,9 @@ console.log(beatmap) // Beatmap object.
 Storyboard decoder is used to read both .osu and .osb files and convert them to the Storyboard objects.
 This decoder is also fully synchronous with no async support at all.
 
-As in beatmap decoder, there are 3 ways to decode your .osu and .osb files:
+As in beatmap decoder, there are 4 ways to decode your .osu and .osb files:
 - via file path
+- via data buffer
 - via string
 - via array of split lines
 

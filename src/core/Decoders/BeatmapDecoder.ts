@@ -50,12 +50,22 @@ export class BeatmapDecoder extends Decoder<Beatmap> {
       throw new Error('File doesn\'t exists!');
     }
 
-    const str = readFileSync(path).toString();
-    const beatmap = this.decodeFromString(str, parseSb);
+    const data = readFileSync(path);
+    const beatmap = this.decodeFromBuffer(data, parseSb);
 
     beatmap.fileUpdateDate = statSync(path).mtime;
 
     return beatmap;
+  }
+
+  /**
+   * Performs beatmap decoding from a data buffer.
+   * @param data Buffer with beatmap data.
+   * @param parseSb Should a storyboard be parsed?
+   * @returns Decoded beatmap.
+   */
+  decodeFromBuffer(data: Buffer, parseSb = true): Beatmap {
+    return this.decodeFromString(data.toString(), parseSb);
   }
 
   /**
