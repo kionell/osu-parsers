@@ -24,6 +24,10 @@ npm install osu-standard-stable
 
 Before you can start using this ruleset library, you need to install [osu-classes](https://github.com/kionell/osu-classes)) package as this ruleset based on it. Also you need to install [osu-parsers](https://github.com/kionell/osu-parsers)) or any other compatible beatmap parser that works with [IBeatmap](https://kionell.github.io/osu-classes/interfaces/IBeatmap.html) interface.
 
+## Existing performance calculator library
+
+This ruleset is a part of [osu-pp-calculator](https://github.com/kionell/osu-pp-calculator) package. It's highly recommended to use existing package for performance calculation if you don't want to write a lot of boilerplate code for score simulation and beatmap downloading. 
+
 ## Beatmap conversion
 
 Any beatmap that implements IBeatmap interface can be converted to this ruleset. Unlike the game itself, you can convert beatmaps between different game modes, not just from osu!standard. This is possible due to the fact that hit objects from [osu-classes](https://github.com/kionell/osu-classes)) keep their initial position taken from the .osu file. All beatmaps with applied ruleset keep the reference to the original beatmap, which allows you to repeat the process of conversion or apply different ruleset.
