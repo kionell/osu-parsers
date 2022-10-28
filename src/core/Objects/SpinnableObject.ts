@@ -32,6 +32,8 @@ export class SpinnableObject extends HitObject implements ISpinnableObject, IHas
     const cloned = super.clone();
 
     cloned.endTime = this.endTime;
+    cloned.isNewCombo = this.isNewCombo;
+    cloned.comboOffset = this.comboOffset;
 
     return cloned;
   }

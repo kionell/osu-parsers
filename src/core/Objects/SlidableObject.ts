@@ -120,6 +120,8 @@ export class SlidableObject extends HitObject implements ISlidableObject, IHasCo
     cloned.velocity = this.velocity;
     cloned.repeats = this.repeats;
     cloned.path = this.path.clone();
+    cloned.isNewCombo = this.isNewCombo;
+    cloned.comboOffset = this.comboOffset;
 
     return cloned;
   }
