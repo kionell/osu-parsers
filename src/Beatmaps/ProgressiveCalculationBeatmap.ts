@@ -25,7 +25,7 @@ export class ProgressiveCalculationBeatmap implements IBeatmap {
   /**
    * Beatmap hit objects.
    */
-  readonly hitObjects: IHitObject[] = [];
+  hitObjects: IHitObject[] = [];
 
   /**
    * Beatmap general info.

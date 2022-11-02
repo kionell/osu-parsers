@@ -111,15 +111,12 @@ export abstract class DifficultyCalculator<T extends DifficultyAttributes = Diff
 
     const progressiveBeatmap = new ProgressiveCalculationBeatmap(beatmap);
 
-    for (const hitObject of this._getDifficultyHitObjects(beatmap, clockRate)) {
-      progressiveBeatmap.hitObjects.push(hitObject.baseObject);
+    progressiveBeatmap.hitObjects = beatmap.hitObjects.slice(0, objectCount);
 
+    for (const hitObject of this._getDifficultyHitObjects(progressiveBeatmap, clockRate)) {
       for (const skill of skills) {
         skill.process(hitObject);
       }
-
-      // Progressive beatmap has enough objects to calculate difficulty.
-      if (progressiveBeatmap.hitObjects.length >= objectCount) break;
     }
 
     return this._createDifficultyAttributes(progressiveBeatmap, mods, skills, clockRate);
