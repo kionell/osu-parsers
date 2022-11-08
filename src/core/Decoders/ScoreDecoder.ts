@@ -9,7 +9,7 @@ import {
   SerializationReader,
 } from './Handlers';
 
-import { readFileSync } from '../Utils/FileSystem';
+import { existsSync, readFileSync } from '../Utils/FileSystem';
 import { LZMA } from '../Utils/LZMA';
 import { FileFormat } from '../Enums';
 
@@ -26,6 +26,10 @@ export class ScoreDecoder {
   async decodeFromPath(path: string, parseReplay = true): Promise<Score> {
     if (!path.endsWith(FileFormat.Replay)) {
       throw new Error(`Wrong file format! Only ${FileFormat.Replay} files are supported!`);
+    }
+
+    if (!existsSync(path)) {
+      throw new Error('File doesn\'t exists!');
     }
 
     const buffer = readFileSync(path);
