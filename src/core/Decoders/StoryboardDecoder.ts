@@ -40,11 +40,11 @@ export class StoryboardDecoder extends Decoder<Storyboard> {
     }
 
     if (typeof secondPath === 'string') {
-      if (!firstPath.endsWith('.osb')) {
+      if (!secondPath.endsWith(FileFormat.Storyboard)) {
         throw new Error(`Wrong file format! Only ${FileFormat.Storyboard} files are supported as a second argument!`);
       }
 
-      if (!existsSync(firstPath)) {
+      if (!existsSync(secondPath)) {
         throw new Error('File doesn\'t exists!');
       }
     }
@@ -133,7 +133,7 @@ export class StoryboardDecoder extends Decoder<Storyboard> {
   }
 
   protected _parseLine(line: string, storyboard: Storyboard): void {
-    // .osu file version
+    // .osu or .osb file version
     if (line.includes('osu file format v')) {
       storyboard.fileFormat = Parsing.parseInt(line.split('v')[1]);
 
