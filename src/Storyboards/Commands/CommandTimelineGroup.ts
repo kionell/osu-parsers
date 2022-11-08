@@ -39,6 +39,10 @@ export class CommandTimelineGroup {
     return this._timelines;
   }
 
+  get totalCommands(): number {
+    return this._timelines.reduce((c, t) => c + t.commands.length, 0);
+  }
+
   get commands(): Command[] {
     return this._timelines
       .flatMap((t) => t.commands)
