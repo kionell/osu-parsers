@@ -41,7 +41,10 @@ export class CommandTimeline<T = any> implements Iterable<Command<T>> {
     endValue: T,
     parameter?: ParameterType,
   ): void {
-    if (endTime < startTime) return;
+    if (endTime < startTime) {
+      [startTime, endTime] = [endTime, startTime];
+      [startValue, endValue] = [endValue, startValue];
+    }
 
     this._commands.push(new Command<T>({
       type,
