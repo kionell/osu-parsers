@@ -1,11 +1,7 @@
 import { Storyboard } from 'osu-classes';
 import { FileFormat } from '../Enums';
 import { mkdirSync, writeFileSync, dirname } from '../Utils/FileSystem';
-
-import {
-  StoryboardVariableEncoder,
-  StoryboardEventEncoder,
-} from './Handlers';
+import { StoryboardEventEncoder } from './Handlers';
 
 /**
  * Storyboard encoder.
@@ -33,15 +29,16 @@ export class StoryboardEncoder {
   encodeToString(storyboard?: Storyboard): string {
     if (!(storyboard instanceof Storyboard)) return '';
 
+    /**
+     * Variable encoding is now temporary (???) disabled.
+     * Some storyboards use weird invisible characters as variable names
+     * which can break osu! storyboard decoder. 
+     * Example: https://osu.ppy.sh/beatmapsets/774573#osu/1627968
+     */
     const encoded: string[] = [
       `osu file format v${storyboard.fileFormat}`,
+      StoryboardEventEncoder.encodeEventSection(storyboard),
     ];
-
-    if (storyboard.hasVariables) {
-      encoded.push(StoryboardVariableEncoder.encodeVariables(storyboard));
-    }
-
-    encoded.push(StoryboardEventEncoder.encodeEventSection(storyboard));
 
     return encoded.join('\n\n') + '\n';
   }
