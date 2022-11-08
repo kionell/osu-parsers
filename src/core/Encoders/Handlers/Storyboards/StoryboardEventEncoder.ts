@@ -233,8 +233,12 @@ export abstract class StoryboardEventEncoder {
 
         const currentMoveX = current.type === CommandType.MovementX;
         const nextMoveY = next.type === CommandType.MovementY;
+        const sameEasing = current.easing === next.easing;
+        const sameStartTime = current.startTime === next.startTime;
+        const sameEndTime = current.endTime === next.endTime;
+        const sameCommand = sameEasing && sameStartTime && sameEndTime;
 
-        if (currentMoveX && nextMoveY && current.equals(next)) {
+        if (currentMoveX && nextMoveY && sameCommand) {
           encoded.push(indentation + this.encodeMoveCommand(current, next));
 
           /**
