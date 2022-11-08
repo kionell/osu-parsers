@@ -1,4 +1,5 @@
 import { Storyboard } from 'osu-classes';
+import { FileFormat } from '../Enums';
 import { mkdirSync, writeFileSync, dirname } from '../Utils/FileSystem';
 
 import {
@@ -16,8 +17,8 @@ export class StoryboardEncoder {
    * @param storyboard Storyboard for encoding.
    */
   encodeToPath(path: string, storyboard?: Storyboard): void {
-    if (!path.endsWith('.osb')) {
-      path += '.osb';
+    if (!path.endsWith(FileFormat.Storyboard)) {
+      path += FileFormat.Storyboard;
     }
 
     mkdirSync(dirname(path), { recursive: true });

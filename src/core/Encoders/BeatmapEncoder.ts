@@ -1,4 +1,5 @@
 import { IBeatmap } from 'osu-classes';
+import { FileFormat } from '../Enums';
 import { mkdirSync, writeFileSync, dirname } from '../Utils/FileSystem';
 
 import {
@@ -27,8 +28,8 @@ export class BeatmapEncoder {
    * @param beatmap Beatmap for encoding.
    */
   encodeToPath(path: string, beatmap?: IBeatmap): void {
-    if (!path.endsWith('.osu')) {
-      path += '.osu';
+    if (!path.endsWith(FileFormat.Beatmap)) {
+      path += FileFormat.Beatmap;
     }
 
     mkdirSync(dirname(path), { recursive: true });

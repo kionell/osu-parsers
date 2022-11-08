@@ -2,6 +2,7 @@ import { Storyboard } from 'osu-classes';
 import { Decoder } from './Decoder';
 import { Parsing } from '../Utils/Parsing';
 import { existsSync, readFileSync } from '../Utils/FileSystem';
+import { FileFormat } from '../Enums';
 
 import {
   StoryboardGeneralDecoder,
@@ -30,8 +31,8 @@ export class StoryboardDecoder extends Decoder<Storyboard> {
    * @returns Decoded storyboard.
    */
   decodeFromPath(firstPath: string, secondPath?: string): Storyboard {
-    if (!firstPath.endsWith('.osb') && !firstPath.endsWith('.osu')) {
-      throw new Error('Wrong file format! Only .osb and .osu files are supported!');
+    if (!firstPath.endsWith(FileFormat.Beatmap) && !firstPath.endsWith(FileFormat.Storyboard)) {
+      throw new Error(`Wrong file format! Only ${FileFormat.Beatmap} and ${FileFormat.Storyboard} files are supported!`);
     }
 
     if (!existsSync(firstPath)) {
@@ -40,7 +41,7 @@ export class StoryboardDecoder extends Decoder<Storyboard> {
 
     if (typeof secondPath === 'string') {
       if (!firstPath.endsWith('.osb')) {
-        throw new Error('Wrong file format! Only .osb files are supported as a second argument!');
+        throw new Error(`Wrong file format! Only ${FileFormat.Storyboard} files are supported as a second argument!`);
       }
 
       if (!existsSync(firstPath)) {

@@ -14,6 +14,7 @@ import { Decoder } from './Decoder';
 import { StoryboardDecoder } from './StoryboardDecoder';
 import { Parsing } from '../Utils/Parsing';
 import { existsSync, readFileSync, statSync } from '../Utils/FileSystem';
+import { FileFormat } from '../Enums';
 
 /**
  * Beatmap decoder.
@@ -42,8 +43,8 @@ export class BeatmapDecoder extends Decoder<Beatmap> {
    * @returns Decoded beatmap.
    */
   decodeFromPath(path: string, parseSb = true): Beatmap {
-    if (!path.endsWith('.osu')) {
-      throw new Error('Wrong file format! Only .osu files are supported!');
+    if (!path.endsWith(FileFormat.Beatmap)) {
+      throw new Error(`Wrong file format! Only ${FileFormat.Beatmap} files are supported!`);
     }
 
     if (!existsSync(path)) {

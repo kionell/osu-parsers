@@ -11,6 +11,7 @@ import {
 
 import { readFileSync } from '../Utils/FileSystem';
 import { LZMA } from '../Utils/LZMA';
+import { FileFormat } from '../Enums';
 
 /**
  * Score decoder.
@@ -23,8 +24,8 @@ export class ScoreDecoder {
    * @returns Decoded score.
    */
   async decodeFromPath(path: string, parseReplay = true): Promise<Score> {
-    if (!path.endsWith('.osr')) {
-      throw new Error('Wrong file format! Only .osr files are supported!');
+    if (!path.endsWith(FileFormat.Replay)) {
+      throw new Error(`Wrong file format! Only ${FileFormat.Replay} files are supported!`);
     }
 
     const buffer = readFileSync(path);

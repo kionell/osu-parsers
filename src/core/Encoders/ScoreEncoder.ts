@@ -2,6 +2,7 @@ import { IScore } from 'osu-classes';
 import { ReplayEncoder, SerializationWriter } from './Handlers';
 import { mkdirSync, writeFileSync, dirname } from '../Utils/FileSystem';
 import { LZMA } from '../Utils/LZMA';
+import { FileFormat } from '../Enums';
 
 /**
  * Score encoder.
@@ -13,8 +14,8 @@ export class ScoreEncoder {
    * @param score Score info for encoding.
    */
   async encodeToPath(path: string, score?: IScore): Promise<void> {
-    if (!path.endsWith('.osr')) {
-      path += '.osr';
+    if (!path.endsWith(FileFormat.Replay)) {
+      path += FileFormat.Replay;
     }
 
     const data = await this.encodeToBuffer(score);
