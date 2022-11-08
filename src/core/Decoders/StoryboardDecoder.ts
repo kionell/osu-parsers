@@ -116,6 +116,7 @@ export class StoryboardDecoder extends Decoder<Storyboard> {
     const storyboard = new Storyboard();
 
     this._reset();
+    this._setEnabledSections();
 
     this._lines = [
       ...this._getLines(firstData),

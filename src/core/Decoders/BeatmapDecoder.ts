@@ -12,6 +12,7 @@ import {
 
 import { Decoder } from './Decoder';
 import { StoryboardDecoder } from './StoryboardDecoder';
+import { IBeatmapParsingOptions } from '../Interfaces';
 import { Parsing } from '../Utils/Parsing';
 import { existsSync, readFileSync, statSync } from '../Utils/FileSystem';
 import { FileFormat } from '../Enums';
@@ -39,10 +40,12 @@ export class BeatmapDecoder extends Decoder<Beatmap> {
   /**
    * Performs beatmap decoding from the specified .osu file.
    * @param path Path to the .osu file.
-   * @param parseSb Should a storyboard be parsed?
+   * @param options Beatmap parsing options.
+   * Setting this to boolean will only affect storyboard parsing.
+   * All sections that weren't specified will be enabled by default.
    * @returns Decoded beatmap.
    */
-  decodeFromPath(path: string, parseSb = true): Beatmap {
+  decodeFromPath(path: string, options?: boolean | IBeatmapParsingOptions): Beatmap {
     if (!path.endsWith(FileFormat.Beatmap)) {
       throw new Error(`Wrong file format! Only ${FileFormat.Beatmap} files are supported!`);
     }
@@ -52,7 +55,7 @@ export class BeatmapDecoder extends Decoder<Beatmap> {
     }
 
     const data = readFileSync(path);
-    const beatmap = this.decodeFromBuffer(data, parseSb);
+    const beatmap = this.decodeFromBuffer(data, options);
 
     beatmap.fileUpdateDate = statSync(path).mtime;
 
@@ -62,39 +65,46 @@ export class BeatmapDecoder extends Decoder<Beatmap> {
   /**
    * Performs beatmap decoding from a data buffer.
    * @param data Buffer with beatmap data.
-   * @param parseSb Should a storyboard be parsed?
+   * @param options Beatmap parsing options.
+   * Setting this to boolean will only affect storyboard parsing.
+   * All sections that weren't specified will be enabled by default.
    * @returns Decoded beatmap.
    */
-  decodeFromBuffer(data: Buffer, parseSb = true): Beatmap {
-    return this.decodeFromString(data.toString(), parseSb);
+  decodeFromBuffer(data: Buffer, options?: boolean | IBeatmapParsingOptions): Beatmap {
+    return this.decodeFromString(data.toString(), options);
   }
 
   /**
    * Performs beatmap decoding from a string.
    * @param str String with beatmap data.
-   * @param parseSb Should a storyboard be parsed?
+   * @param options Beatmap parsing options.
+   * Setting this to boolean will only affect storyboard parsing.
+   * All sections that weren't specified will be enabled by default.
    * @returns Decoded beatmap.
    */
-  decodeFromString(str: string, parseSb = true): Beatmap {
+  decodeFromString(str: string, options?: boolean | IBeatmapParsingOptions): Beatmap {
     str = typeof str !== 'string' ? String(str) : str;
 
-    return this.decodeFromLines(str.split(/\r?\n/), parseSb);
+    return this.decodeFromLines(str.split(/\r?\n/), options);
   }
 
   /**
    * Performs beatmap decoding from a string array.
    * @param data Array of split lines.
-   * @param parseSb Should a storyboard be parsed?
+   * @param options Beatmap parsing options.
+   * Setting this to boolean will only affect storyboard parsing.
    * @returns Decoded beatmap.
    */
-  decodeFromLines(data: string[], parseSb = true): Beatmap {
+  decodeFromLines(data: string[], options?: boolean | IBeatmapParsingOptions): Beatmap {
     const beatmap = new Beatmap();
 
     this._reset();
     this._lines = this._getLines(data);
 
+    this._setEnabledSections(options);
+
     // This array isn't needed if we don't parse a storyboard. 
-    this._sbLines = parseSb ? [] : null;
+    this._sbLines = this._shouldParseStoryboard(options) ? [] : null;
 
     /**
      * There is one known case of .osu file starting with "\uFEFF" symbol
@@ -124,7 +134,7 @@ export class BeatmapDecoder extends Decoder<Beatmap> {
     beatmap.hitObjects.sort((a, b) => a.startTime - b.startTime);
 
     // Storyboard
-    if (parseSb && this._sbLines && this._sbLines.length) {
+    if (this._sbLines && this._sbLines.length) {
       const storyboardDecoder = new StoryboardDecoder();
 
       beatmap.events.storyboard = storyboardDecoder.decodeFromLines(this._sbLines);
@@ -180,5 +190,35 @@ export class BeatmapDecoder extends Decoder<Beatmap> {
     }
 
     super._parseSectionData(line, beatmap);
+  }
+
+  /**
+   * Sets current enabled sections.
+   * All sections are enabled by default.
+   * @param options Parsing options.
+   */
+  protected _setEnabledSections(options?: boolean | IBeatmapParsingOptions): void {
+    super._setEnabledSections(options);
+
+    if (typeof options === 'boolean') return;
+
+    this._enabledSections.General = options?.parseGeneral ?? true;
+    this._enabledSections.Editor = options?.parseEditor ?? true;
+    this._enabledSections.Metadata = options?.parseMetadata ?? true;
+    this._enabledSections.Difficulty = options?.parseDifficulty ?? true;
+    this._enabledSections.Events = options?.parseEvents ?? true;
+    this._enabledSections.TimingPoints = options?.parseTimingPoints ?? true;
+    this._enabledSections.HitObjects = options?.parseHitObjects ?? true;
+  }
+
+  protected _shouldParseStoryboard(options?: boolean | IBeatmapParsingOptions): boolean {
+    const parsingOptions = options as IBeatmapParsingOptions;
+    const storyboardFlag = parsingOptions?.parseStoryboard ?? options as boolean;
+
+    const parseSb = typeof storyboardFlag === 'boolean' ? storyboardFlag : true;
+    const parseEvents = parsingOptions?.parseEvents ?? true;
+
+    // Storyboard should be parsed only if both events and storyboard flags are enabled.
+    return parseEvents && parseSb;
   }
 }

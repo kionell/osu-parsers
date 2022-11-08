@@ -1,6 +1,6 @@
 import { BeatmapColorDecoder } from './Handlers';
 import { Section } from '../Enums';
-import { IHasBeatmapColors } from '../Interfaces';
+import { EnabledSections, IHasBeatmapColors, IParsingOptions } from '../Interfaces';
 
 /**
  * Basic decoder for readable file formats.
@@ -15,6 +15,11 @@ export abstract class Decoder<T> {
    * Current data lines.
    */
   protected _lines: string[] | null = null;
+
+  /**
+   * Current parsing options.
+   */
+  declare protected _enabledSections: EnabledSections;
 
   protected _getLines(data: any[]): string[] {
     let lines = null;
@@ -48,6 +53,9 @@ export abstract class Decoder<T> {
 
       return;
     }
+
+    // Skip disabled sections
+    if (!this._isSectionEnabled()) return;
 
     try {
       // Section data
@@ -91,5 +99,36 @@ export abstract class Decoder<T> {
   protected _reset(): void {
     this._section = null;
     this._lines = null;
+  }
+
+  /**
+   * Sets current enabled sections.
+   * All sections are enabled by default.
+   * @param options Parsing options.
+   */
+  protected _setEnabledSections(options?: boolean | IParsingOptions): void {
+    const enabledSections: Partial<EnabledSections> = {};
+
+    for (const section in Section) {
+      // Skip numbers
+      if (!isNaN(parseInt(section))) continue;
+
+      enabledSections[section as keyof typeof Section] = true;
+    }
+
+    if (typeof options !== 'boolean') {
+      enabledSections.Colours = options?.parseColours ?? true;
+    }
+
+    this._enabledSections = enabledSections as EnabledSections;
+  }
+
+  /**
+   * Check if current section is enabled and should be parsed.
+   * Unknown sections are enabled by default.
+   * @returns If this section is enabled.
+   */
+  protected _isSectionEnabled(): boolean {
+    return this._section ? this._enabledSections[this._section] : true;
   }
 }
