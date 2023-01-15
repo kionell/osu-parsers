@@ -20,11 +20,16 @@ Add a new dependency to your project via npm:
 npm install osu-parsers
 ```
 
+## Requirements
+
+This package comes with built-in LZMA codec and Buffer polyfill for browsers as it required for replay processing.
+All classes and their typings can be found in [osu-classes](https://github.com/kionell/osu-classes) package which is a peer dependency and must be installed separately.
+
 ## Beatmap decoding
 
-Beatmap decoder is used to read .osu files and convert them to the plain Beatmap objects.
+Beatmap decoder is used to read .osu files and convert them to the objects of plain [Beatmap](https://kionell.github.io/osu-classes/classes/Beatmap.html) type.
 This decoder is fully synchronous and there is no support for async version right now.
-Note that beatmap decoder will return only parsed beatmap without max combo or mods!
+Note that beatmap decoder will return only parsed beatmap without max combo or mods! (read about rulesets below)
 
 There are 4 ways to read data using this decoders:
 - via file path
@@ -32,7 +37,8 @@ There are 4 ways to read data using this decoders:
 - via string
 - via array of split lines
 
-By default, beatmap decoder will decode both beatmap and storyboard. If you want to decode beatmap without storyboard, you can pass false as the second parameter to any of the methods.
+By default, beatmap decoder will decode both beatmap and storyboard. If you want to decode beatmap without storyboard, you can pass `false` as the second parameter to any of the methods.
+There is also support for partial beatmap decoding which allows you to skip unnecessary sections.
 
 ### Example of beatmap decoding
 
@@ -40,19 +46,34 @@ By default, beatmap decoder will decode both beatmap and storyboard. If you want
 import { BeatmapDecoder } from 'osu-parsers'
 
 const path = 'path/to/your/file.osu';
+const data = 'osu file format v14...';
 
 // This is optional and true by default.
 const shouldParseSb = true;
 
 const decoder = new BeatmapDecoder();
-const beatmap = decoder.decodeFromPath(path, shouldParseSb);
+const beatmap1 = decoder.decodeFromPath(path, shouldParseSb);
 
-console.log(beatmap) // Beatmap object.
+// Partial beatmap decoding without unnecessary sections.
+const beatmap2 = decoder.decodeFromString(data, {
+  parseGeneral: false,
+  parseEditor: false,
+  parseMetadata: false,
+  parseDifficulty: false,
+  parseEvents: false,
+  parseTimingPoints: false,
+  parseHitObjects: false,
+  parseStoryboard: false,
+  parseColours: false,
+});
+
+console.log(beatmap1) // Beatmap object.
+console.log(beatmap2) // Another Beatmap object.
 ```
 
 ## Storyboard decoding
 
-Storyboard decoder is used to read both .osu and .osb files and convert them to the Storyboard objects.
+Storyboard decoder is used to read both .osu and .osb files and convert them to the [Storyboard](https://kionell.github.io/osu-classes/classes/Storyboard.html) objects.
 This decoder is also fully synchronous with no async support at all.
 
 As in beatmap decoder, there are 4 ways to decode your .osu and .osb files:
@@ -66,25 +87,33 @@ As in beatmap decoder, there are 4 ways to decode your .osu and .osb files:
 ```js
 import { StoryboardDecoder } from 'osu-parsers'
 
-const path = 'path/to/your/file.osb';
+const pathToOsb = 'path/to/your/file.osb';
+const pathToOsu = 'path/to/your/file.osu';
 
 const decoder = new StoryboardDecoder();
-const storyboard = decoder.decodeFromPath(path);
 
-console.log(storyboard); // Storyboard object.
+// Parse a single storyboard file (from .osb) for beatmaps that doesn't have internal storyboard (from .osu)
+const storyboard1 = decoder.decodeFromPath(pathToOsb);
+
+// Combines main storyboard (from .osu) with secondary storyboard (from .osb)
+const storyboard2 = decoder.decodeFromPath(pathToOsu, pathToOsb);
+
+console.log(storyboard1); // Storyboard object.
+console.log(storyboard2); // Another Storyboard object.
 ```
 
 ## Score & replay decoding
 
 Score decoder is used to decode .osr files and convert them to the Score objects.
-Score object contains score information and replay data.
+Score object contains score information and replay data of plain [Replay](https://kionell.github.io/osu-classes/classes/Replay.html) type.
+Note that plain [Replay](https://kionell.github.io/osu-classes/classes/Replay.html) type doesn't have any data for non-stardard replays and must be converted using one of the supported rulesets. (read about rulesets below)
 This decoder is based on external LZMA library and works asynchronously.
 
 There are 2 ways to read data through this decoder:
 - via file path
 - via buffer
 
-By default, score decoder will decode both score information and replay. If you want to decode score information without replay, you can pass false as the second parameter to any of the methods.
+By default, score decoder will decode both score information and replay. If you want to decode score information without replay, you can pass `false` as the second parameter to any of the methods.
 
 ### Example of score & replay decoding
 
@@ -188,12 +217,12 @@ encoder.encodeToBuffer(score)
   });
 ```
 
-## Difficulty & performance calculation
+## Rulesets
 
 This library by itself doesn't provide any tools for difficulty and performance calculation!!!!
 If you are looking for something related to this, then rulesets may come in handy for you.
 Rulesets are separate libraries based on the classes from the [osu-classes](https://github.com/kionell/osu-classes.git) project. They allow you to work with gamemode specific stuff as difficulty, performance, mods and max combo calculation. Because of the shared logic between all of the rulesets they are compatible between each other. If you want, you can even write your own custom ruleset!
-The great thing about all this stuff is a beatmap conversion. Any beatmap can be used with any ruleset library as long as they implement the same interfaces.
+The great thing about all this stuff is a beatmap and replay conversion. Any beatmap or replay can be used with any ruleset library as long as they implement the same interfaces.
 
 There are 4 basic rulesets that support parsed beatmaps from this decoder:
 
