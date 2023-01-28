@@ -198,7 +198,13 @@ export class PathApproximator {
 
       const points = Math.ceil(Math.fround(pr.thetaRange / angle));
 
-      amountPoints = Math.max(2, points);
+      /**
+       * Edge case for beatmaps with huge radius and infinite points:
+       * https://osu.ppy.sh/beatmapsets/1235519#osu/2568364
+       */
+      const validPoints = !isFinite(points) ? -(2 ** 31) : points;
+
+      amountPoints = Math.max(2, validPoints);
     }
 
     const output: Vector2[] = [];
