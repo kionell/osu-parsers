@@ -443,10 +443,10 @@ export abstract class BeatmapHitObjectDecoder {
 
     function readPoint(point: string, offset: Vector2): PathPoint {
       const coords = point.split(':').map((v) => {
-        return Parsing.parseFloat(v, Parsing.MAX_COORDINATE_VALUE);
+        return Math.trunc(Parsing.parseFloat(v, Parsing.MAX_COORDINATE_VALUE));
       });
 
-      const pos = new Vector2(coords[0], coords[1]).subtract(offset);
+      const pos = new Vector2(coords[0], coords[1]).fsubtract(offset);
 
       return new PathPoint(pos);
     }
