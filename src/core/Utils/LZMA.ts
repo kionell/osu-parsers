@@ -1,4 +1,4 @@
-import { decompress, compress } from 'lzma-js-simple';
+import { decompress, compress } from 'lzma-js-simple-v2';
 
 export class LZMA {
   private static _lzma = getLZMAInstance();
