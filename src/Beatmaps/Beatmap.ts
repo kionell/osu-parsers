@@ -156,35 +156,47 @@ export class Beatmap implements IBeatmap {
   /**
    * The most common BPM of a beatmap.
    */
-  get bpmMode(): number {
-    if (this.hitObjects.length === 0) {
-      return this.bpmMax;
-    }
+  get bpm(): number {
+    return this.bpmMode;
+  }
 
-    const hitObjects = this.hitObjects;
+  /**
+   * The most common BPM of a beatmap.
+   * Use the {@link bpm} instead.
+   * @deprecated Since 2.1.1
+   */
+  get bpmMode(): number {
     const timingPoints = this.controlPoints.timingPoints;
+    const hitObjects = this.hitObjects;
 
     /**
      * The last playable time in the beatmap - the last timing point extends to this time.
      * Note: This is more accurate and may present different results because 
      * osu-stable didn't have the ability to calculate slider durations in this context.
      */
-    const lastObj = hitObjects[hitObjects.length - 1];
-    const durationObj = lastObj as unknown as IHasDuration;
+    const lastTimingPoint = timingPoints[timingPoints.length - 1];
+    const lastHitObject = hitObjects[hitObjects.length - 1];
+    const durationObject = lastHitObject as HitObject & IHasDuration;
 
-    const lastTime = durationObj.endTime || lastObj.startTime || 0;
+    const lastTime = durationObject?.endTime
+      ?? lastHitObject?.startTime
+      ?? lastTimingPoint?.startTime
+      ?? 0;
+
     let nextTime = 0;
     let nextBeat = 0;
 
-    const groups: { [key: string]: number } = {};
+    const groups: Record<string, number> = {};
 
     for (let i = 0, len = timingPoints.length; i < len; ++i) {
-      if (timingPoints[i].startTime > lastTime) {
-        break;
-      }
-
       nextTime = i === len - 1 ? lastTime : timingPoints[i + 1].startTime;
       nextBeat = RoundHelper.round(timingPoints[i].beatLength * 1000) / 1000;
+
+      if (timingPoints[i].startTime > lastTime) {
+        groups[nextBeat] = 0;
+
+        continue;
+      }
 
       if (!groups[nextBeat]) {
         groups[nextBeat] = 0;
