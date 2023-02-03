@@ -70,13 +70,11 @@ export abstract class StandardHitObject extends HitObject implements IHasPositio
   set scale(value: number) {
     this._scale = value;
 
-    this._stackOffset.x = Math.fround(
-      Math.fround(Math.fround(-6.4) * Math.fround(value)) * this._stackHeight,
+    const stackOffset = Math.fround(
+      Math.fround(this._stackHeight * this._scale) * Math.fround(-6.4),
     );
 
-    this._stackOffset.y = Math.fround(
-      Math.fround(Math.fround(-6.4) * Math.fround(value)) * this._stackHeight,
-    );
+    this._stackOffset.x = this._stackOffset.y = stackOffset;
   }
 
   get radius(): number {
@@ -90,13 +88,11 @@ export abstract class StandardHitObject extends HitObject implements IHasPositio
   set stackHeight(value: number) {
     this._stackHeight = value;
 
-    this._stackOffset.x = Math.fround(
-      Math.fround(-6.4) * Math.fround(this._scale) * value,
+    const stackOffset = Math.fround(
+      Math.fround(this._stackHeight * this._scale) * Math.fround(-6.4),
     );
 
-    this._stackOffset.y = Math.fround(
-      Math.fround(-6.4) * Math.fround(this._scale) * value,
-    );
+    this._stackOffset.x = this._stackOffset.y = stackOffset;
 
     this.nestedHitObjects.forEach((n) => {
       (n as StandardHitObject).stackHeight = this._stackHeight;
