@@ -149,7 +149,9 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
         Math.min(Math.fround(30 - Math.fround(baseObj.radius)), 5) / 50,
       );
 
-      scalingFactor *= 1 + smallCircleBonus;
+      scalingFactor = Math.fround(
+        scalingFactor * Math.fround(1 + smallCircleBonus),
+      );
     }
 
     const lastCursorPosition = this._getEndCursorPosition(lastObj);
@@ -278,7 +280,10 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
 
         currCursorPosition = currCursorPosition.fadd(currMovement.fscale(movementScale));
         currMovementLength *= (currMovementLength - requiredMovement) / currMovementLength;
-        slider.lazyTravelDistance += Math.fround(currMovementLength);
+
+        slider.lazyTravelDistance = Math.fround(
+          slider.lazyTravelDistance + Math.fround(currMovementLength),
+        );
       }
 
       if (i === slider.nestedHitObjects.length - 1) {
