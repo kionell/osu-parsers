@@ -187,7 +187,7 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
       this.minimumJumpDistance = MathUtils.clamp(
         this.lazyJumpDistance - (maxSliderRadius - assumedSliderRadius),
         0,
-        tailJumpDistance - maxSliderRadius,
+        Math.fround(tailJumpDistance - maxSliderRadius),
       );
     }
 
@@ -293,13 +293,12 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
   }
 
   private _getEndCursorPosition(hitObject: StandardHitObject): Vector2 {
-    let pos = hitObject.stackedStartPosition;
-
     if (hitObject instanceof Slider) {
       this._computeSliderCursorPosition(hitObject);
-      pos = hitObject.lazyEndPosition ?? pos;
+
+      return hitObject.lazyEndPosition ?? hitObject.stackedStartPosition;
     }
 
-    return pos;
+    return hitObject.stackedStartPosition;
   }
 }
