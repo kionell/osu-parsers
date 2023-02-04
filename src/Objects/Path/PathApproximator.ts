@@ -253,9 +253,17 @@ export class PathApproximator {
       Math.fround(c.floatX * a.fsubtract(b).floatY)
     )));
 
-    const aSq = Math.fround(Math.fround(a.floatX * a.floatX) + Math.fround(a.floatY * a.floatY));
-    const bSq = Math.fround(Math.fround(b.floatX * b.floatX) + Math.fround(b.floatY * b.floatY));
-    const cSq = Math.fround(Math.fround(c.floatX * c.floatX) + Math.fround(c.floatY * c.floatY));
+    const aSq = Math.fround(
+      Math.fround(a.floatX * a.floatX) + Math.fround(a.floatY * a.floatY),
+    );
+
+    const bSq = Math.fround(
+      Math.fround(b.floatX * b.floatX) + Math.fround(b.floatY * b.floatY),
+    );
+
+    const cSq = Math.fround(
+      Math.fround(c.floatX * c.floatX) + Math.fround(c.floatY * c.floatY),
+    );
 
     const centre = new Vector2(
       Math.fround(
@@ -457,19 +465,55 @@ export class PathApproximator {
     vec4: Vector2,
     t: number,
   ): Vector2 {
-    t = Math.fround(t);
-
     const t2 = Math.fround(t * t);
     const t3 = Math.fround(t * t2);
 
-    return new Vector2(
-      Math.fround(0.5 * (2 * vec2.floatX + (-vec1.floatX + vec3.floatX)
-        * t + (2 * vec1.floatX - 5 * vec2.floatX + 4 * vec3.floatX - vec4.floatX)
-        * t2 + (-vec1.floatX + 3 * vec2.floatX - 3 * vec3.floatX + vec4.floatX) * t3)),
-      Math.fround(0.5 * (2 * vec2.floatY + (-vec1.floatY + vec3.floatY)
-        * t + (2 * vec1.floatY - 5 * vec2.floatY + 4 * vec3.floatY - vec4.floatY)
-        * t2 + (-vec1.floatY + 3 * vec2.floatY - 3 * vec3.floatY + vec4.floatY) * t3)),
-    );
+    const coordinates: number[] = [];
+
+    /**
+     * Please help me...
+     * 
+     * result.X = 0.5f * (2f * vec2.X + (-vec1.X + vec3.X) * t + (2f * vec1.X - 5f * vec2.X + 4f * vec3.X - vec4.X) * t2 + (-vec1.X + 3f * vec2.X - 3f * vec3.X + vec4.X) * t3);
+     * result.Y = 0.5f * (2f * vec2.Y + (-vec1.Y + vec3.Y) * t + (2f * vec1.Y - 5f * vec2.Y + 4f * vec3.Y - vec4.Y) * t2 + (-vec1.Y + 3f * vec2.Y - 3f * vec3.Y + vec4.Y) * t3);
+     */
+    for (let i = 0; i <= 1; ++i) {
+      const value1 = i === 0 ? vec1.floatX : vec1.floatY;
+      const value2 = i === 0 ? vec2.floatX : vec2.floatY;
+      const value3 = i === 0 ? vec3.floatX : vec3.floatY;
+      const value4 = i === 0 ? vec4.floatX : vec4.floatY;
+
+      const v1 = Math.fround(2 * value2);
+      const v2 = Math.fround(value3 - value1);
+
+      const v31 = Math.fround(2 * value1);
+      const v32 = Math.fround(5 * value2);
+      const v33 = Math.fround(4 * value3);
+
+      const v41 = Math.fround(3 * value2);
+      const v42 = Math.fround(3 * value3);
+
+      const v5 = Math.fround(v2 * t);
+
+      const v61 = Math.fround(v31 - v32);
+      const v62 = Math.fround(v61 + v33);
+      const v63 = Math.fround(v62 - value4);
+      const v6 = Math.fround(v63);
+
+      const v71 = Math.fround(v41 - value1);
+      const v72 = Math.fround(v71 - v42);
+      const v7 = Math.fround(v72 + value4);
+
+      const v8 = Math.fround(v6 * t2);
+      const v9 = Math.fround(v7 * t3);
+
+      const v101 = Math.fround(v1 + v5);
+      const v102 = Math.fround(v101 + v8);
+      const v10 = Math.fround(v102 + v9);
+
+      coordinates.push(Math.fround(Math.fround(0.5) * v10));
+    }
+
+    return new Vector2(coordinates[0], coordinates[1]);
   }
 }
 
