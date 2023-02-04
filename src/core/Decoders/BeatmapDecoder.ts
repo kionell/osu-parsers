@@ -156,8 +156,7 @@ export class BeatmapDecoder extends Decoder<Beatmap> {
     if (line.includes('osu file format v')) {
       beatmap.fileFormat = Parsing.parseInt(line.split('v')[1]);
 
-      this._offset = beatmap.fileFormat <= 4
-        ? BeatmapDecoder.EARLY_VERSION_TIMING_OFFSET : 0;
+      // this._offset = beatmap.fileFormat <= 4 ? BeatmapDecoder.EARLY_VERSION_TIMING_OFFSET : 0;
 
       return;
     }
