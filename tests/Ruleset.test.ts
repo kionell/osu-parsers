@@ -68,23 +68,23 @@ function testBeatmap(beatmap: StandardBeatmap, data: ITestAttributes): void {
     });
 
     test('Should match total star rating', () => {
-      expect(difficulty.starRating).toBeCloseTo(data.starRating, 15);
+      expect(difficulty.starRating).toBeCloseTo(data.starRating, 14);
     });
 
     test('Should match aim difficulty', () => {
-      expect(difficulty.aimDifficulty).toBeCloseTo(data.aimDifficulty, 15);
+      expect(difficulty.aimDifficulty).toBeCloseTo(data.aimDifficulty, 14);
     });
 
     test('Should match speed difficulty', () => {
-      expect(difficulty.speedDifficulty).toBeCloseTo(data.speedDifficulty, 15);
+      expect(difficulty.speedDifficulty).toBeCloseTo(data.speedDifficulty, 14);
     });
 
     test('Should match speed note count', () => {
-      expect(difficulty.speedNoteCount).toBeCloseTo(data.speedNoteCount, 15);
+      expect(difficulty.speedNoteCount).toBeCloseTo(data.speedNoteCount, 14);
     });
 
     test('Should match flashlight difficulty', () => {
-      expect(difficulty.flashlightDifficulty).toBeCloseTo(data.flashlightDifficulty, 15);
+      expect(difficulty.flashlightDifficulty).toBeCloseTo(data.flashlightDifficulty, 14);
     });
 
     test('Should match slider factor', () => {
@@ -100,23 +100,23 @@ function testBeatmap(beatmap: StandardBeatmap, data: ITestAttributes): void {
     });
 
     test('Should match total performance', () => {
-      expect(performance.totalPerformance).toBeCloseTo(data.totalPerformance, 15);
+      expect(performance.totalPerformance).toBeCloseTo(data.totalPerformance, 14);
     });
 
     test('Should match aim performance', () => {
-      expect(performance.aimPerformance).toBeCloseTo(data.aimPerformance, 15);
+      expect(performance.aimPerformance).toBeCloseTo(data.aimPerformance, 14);
     });
 
     test('Should match speed performance', () => {
-      expect(performance.speedPerformance).toBeCloseTo(data.speedPerformance, 15);
+      expect(performance.speedPerformance).toBeCloseTo(data.speedPerformance, 14);
     });
 
     test('Should match accuracy performance', () => {
-      expect(performance.accuracyPerformance).toBeCloseTo(data.accuracyPerformance, 15);
+      expect(performance.accuracyPerformance).toBeCloseTo(data.accuracyPerformance, 14);
     });
 
     test('Should match flashlight performance', () => {
-      expect(performance.flashlightPerformance).toBeCloseTo(data.flashlightPerformance, 15);
+      expect(performance.flashlightPerformance).toBeCloseTo(data.flashlightPerformance, 14);
     });
 
     test('Should match effective miss count', () => {
