@@ -118,7 +118,9 @@ export abstract class StandardHitObject extends HitObject implements IHasPositio
   applyDefaultsToSelf(controlPoints: ControlPointInfo, difficulty: BeatmapDifficultySection): void {
     super.applyDefaultsToSelf(controlPoints, difficulty);
 
-    this.timePreempt = BeatmapDifficultySection.range(difficulty.approachRate, 1800, 1200, 450);
+    this.timePreempt = Math.fround(
+      BeatmapDifficultySection.range(difficulty.approachRate, 1800, 1200, 450),
+    );
 
     this.timeFadeIn = 400 * Math.min(1, this.timePreempt / StandardHitObject.PREEMPT_MIN);
 
