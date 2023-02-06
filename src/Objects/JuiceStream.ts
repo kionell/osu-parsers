@@ -53,7 +53,9 @@ export class JuiceStream extends CatchHitObject implements ISlidableObject {
   }
 
   get endX(): number {
-    return this.originalX + this.path.curvePositionAt(1, this.spans).x;
+    return CatchEventGenerator.clampToPlayfield(
+      this.effectiveX + this.path.curvePositionAt(1, this.spans).x,
+    );
   }
 
   applyDefaultsToSelf(controlPoints: ControlPointInfo, difficulty: BeatmapDifficultySection): void {

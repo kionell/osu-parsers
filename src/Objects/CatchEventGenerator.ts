@@ -1,5 +1,5 @@
 import { CatchHitObject } from './CatchHitObject';
-import { JuiceStream } from './JuiceStream';
+import type { JuiceStream } from './JuiceStream';
 import { JuiceFruit } from './JuiceFruit';
 import { JuiceDroplet } from './JuiceDroplet';
 import { JuiceTinyDroplet } from './JuiceTinyDroplet';
@@ -9,6 +9,7 @@ import { Banana } from './Banana';
 import {
   EventGenerator,
   ISliderEventDescriptor,
+  MathUtils,
   SliderEventType,
 } from 'osu-classes';
 
@@ -41,7 +42,9 @@ export class CatchEventGenerator extends EventGenerator {
             const droplet = new JuiceTinyDroplet();
 
             droplet.startTime = startTime;
-            droplet.startX = stream.originalX + stream.path.positionAt(offset).x;
+            droplet.startX = this.clampToPlayfield(
+              stream.effectiveX + stream.path.positionAt(offset).x,
+            );
 
             yield droplet;
 
@@ -67,7 +70,9 @@ export class CatchEventGenerator extends EventGenerator {
           nested = new JuiceFruit();
 
           nested.startTime = event.startTime;
-          nested.startX = stream.originalX + stream.path.positionAt(event.progress).x;
+          nested.startX = this.clampToPlayfield(
+            stream.effectiveX + stream.path.positionAt(event.progress).x,
+          );
 
           yield nested;
 
@@ -77,7 +82,9 @@ export class CatchEventGenerator extends EventGenerator {
           nested = new JuiceDroplet();
 
           nested.startTime = event.startTime;
-          nested.startX = stream.originalX + stream.path.positionAt(event.progress).x;
+          nested.startX = this.clampToPlayfield(
+            stream.effectiveX + stream.path.positionAt(event.progress).x,
+          );
 
           yield nested;
       }
@@ -109,5 +116,11 @@ export class CatchEventGenerator extends EventGenerator {
 
       time += tickInterval;
     }
+  }
+
+  static clampToPlayfield(value: number): number {
+    const PLAYFIELD_WIDTH = 512;
+
+    return MathUtils.clamp(value, 0, PLAYFIELD_WIDTH);
   }
 }
