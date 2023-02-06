@@ -10,7 +10,7 @@ JavaScript port of the current live version of the osu!standard ruleset.
 - Based on the osu!lazer source code.
 - Supports beatmap conversion from other game modes.
 - Can apply & reset osu!standard mods.
-- Very accurate difficulty & performance calculation (up to 6 digits after decimal point)
+- Very accurate difficulty & performance calculation (up to 15-16 digits after decimal point)
 
 ## Installation
 
@@ -84,7 +84,7 @@ const parsed = decoder.decodeFromPath(decodePath);
 const ruleset = new StandardRuleset();
 
 // Create mod combination.
-const mods = ruleset.createModCombination('HDDTHR');
+const mods = ruleset.createModCombination('HDDT');
 
 // Create difficulty calculator for IBeatmap object.
 const difficultyCalculator = ruleset.createDifficultyCalculator(parsed);
@@ -98,21 +98,21 @@ const difficultyAttributes = difficultyCalculator.calculateWithMods(mods);
 
 ```json
 {
-  "maxCombo": 428,
-  "mods": "HDHRDT",
-  "starRating": 9.476473467176532,
-  "aimDifficulty": 5.299074243144462,
-  "speedDifficulty": 3.22604582775375,
-  "speedNoteCount": 214.6042205878083,
-  "flashlightDifficulty": 3.94679878308455,
-  "sliderFactor": 0.979793529981964,
-  "approachRate": 11,
-  "overallDifficulty": 11.111111111111112,
-  "drainRate": 8.679999351501465,
-  "hitCircleCount": 210,
-  "sliderCount": 105,
+  "maxCombo": 2496,
+  "mods": "HDDT",
+  "starRating": 9.604287641287677,
+  "aimDifficulty": 4.431096363500523,
+  "speedDifficulty": 4.7498818169147095,
+  "speedNoteCount": 411.55482693254766,
+  "flashlightDifficulty": 6.310966523926074,
+  "sliderFactor": 0.996588779020487,
+  "approachRate": 10.53333346048991,
+  "overallDifficulty": 10.111111111111112,
+  "drainRate": 6,
+  "hitCircleCount": 1162,
+  "sliderCount": 619,
   "spinnerCount": 1
-}
+},
 ```
 
 ## Advanced difficulty calculation
@@ -178,7 +178,7 @@ const parsed = decoder.decodeFromPath(decodePath);
 const ruleset = new StandardRuleset();
 
 // Create mod combination and apply it to beatmap.
-const mods = ruleset.createModCombination('NCHR');
+const mods = ruleset.createModCombination('HDDT');
 
 // Create difficulty calculator for IBeatmap object.
 const difficultyCalculator = ruleset.createDifficultyCalculator(parsed);
@@ -288,7 +288,7 @@ const parsed = decoder.decodeFromPath(decodePath);
 const ruleset = new StandardRuleset();
 
 // Create mod combination and apply it to beatmap.
-const mods = ruleset.createModCombination('HDDTHR');
+const mods = ruleset.createModCombination('HDDT');
 const standardBeatmap = ruleset.applyToBeatmapWithMods(parsed, mods);
 
 // Create difficulty calculator for osu!std beatmap.
@@ -297,13 +297,13 @@ const difficultyCalculator = ruleset.createDifficultyCalculator(standardBeatmap)
 // Calculate difficulty attributes.
 const difficultyAttributes = difficultyCalculator.calculate();
 
-// Team Magma & Aqua Leader Battle Theme (Unofficial) (Bliitzit) [Catastrophe]
-// mrekk + HDDTHR 1215.82 pp.
+// MariannE (Yooh) [Collab]
+// mrekk + HDDT 1371.45 pp.
 const score = new ScoreInfo({
-  maxCombo: 428,
+  maxCombo: 2492,
   rulesetId: 0,
-  count300: 316, // score.statistics.great
-  count100: 4, // score.statistics.good
+  count300: 1756, // score.statistics.great
+  count100: 26, // score.statistics.good
   count50: 0, // score.statistics.meh
   countMiss: 0, // score.statistics.miss
   mods,
@@ -326,11 +326,11 @@ const totalPerformance = performanceCalculator.calculate();
 
 ```json
 {
-  "mods": "HDHRDT",
-  "totalPerformance": 1215.8265664016758,
-  "aimPerformance": 765.7030578076648,
-  "speedPerformance": 183.38740932231886,
-  "accuracyPerformance": 203.01691542543904,
+  "mods": "HDDT",
+  "totalPerformance": 1371.4670260135895,
+  "aimPerformance": 513.6728800186834,
+  "speedPerformance": 643.653687558857,
+  "accuracyPerformance": 155.40643792332443,
   "flashlightPerformance": 0,
   "effectiveMissCount": 0
 }
