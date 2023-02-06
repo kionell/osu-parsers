@@ -11,6 +11,7 @@ JavaScript port of the current live version of the osu!catch ruleset.
 - Supports beatmap conversion from other game modes.
 - Can apply & reset osu!catch mods.
 - Very accurate difficulty & performance calculation (up to 15-16 digits after decimal point)
+- Works in browsers.
 
 ## Installation
 
