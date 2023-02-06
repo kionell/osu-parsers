@@ -10,7 +10,7 @@ JavaScript port of the current live version of the osu!catch ruleset.
 - Based on the osu!lazer source code.
 - Supports beatmap conversion from other game modes.
 - Can apply & reset osu!catch mods.
-- Very accurate difficulty & performance calculation (up to 6 digits after decimal point)
+- Very accurate difficulty & performance calculation (up to 15-16 digits after decimal point)
 
 ## Installation
 
@@ -100,7 +100,7 @@ const difficultyAttributes = difficultyCalculator.calculateWithMods(mods);
 {
   "maxCombo": 3333,
   "mods": "HR",
-  "starRating": 10.337597581799514,
+  "starRating": 10.337597581797825,
   "approachRate": 10
 }
 ```
@@ -315,7 +315,7 @@ const totalPerformance = performanceCalculator.calculate();
 ```json
 {
   "mods": "HR",
-  "totalPerformance": 1601.3928968614696
+  "totalPerformance": 1601.3928968609464
 }
 ```
 
