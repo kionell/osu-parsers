@@ -105,15 +105,17 @@ export class CatchDifficultyCalculator extends DifficultyCalculator<CatchDifficu
   protected _createSkills(beatmap: IBeatmap, mods: ModCombination, clockRate: number): Skill[] {
     const difficulty = beatmap.difficulty;
     const catcherWidth = CatchPlayfield.calculateCatcherWidth(difficulty);
-
-    this._halfCatcherWidth = Math.fround(catcherWidth / 2);
+    const catcherWidthScale = Math.fround(
+      Math.max(0, Math.fround(difficulty.circleSize - 5.5)) * 0.0625,
+    );
 
     /**
      * For circle sizes above 5.5, 
      * reduce the catcher width further to simulate imperfect gameplay.
      */
-    this._halfCatcherWidth *= 1 - Math.fround(
-      Math.max(0, Math.fround(difficulty.circleSize - 5.5)) * 0.0625,
+    this._halfCatcherWidth = Math.fround(catcherWidth / 2);
+    this._halfCatcherWidth = Math.fround(
+      this._halfCatcherWidth * (1 - catcherWidthScale),
     );
 
     return [
