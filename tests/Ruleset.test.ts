@@ -64,23 +64,23 @@ function testBeatmap(beatmap: TaikoBeatmap, data: ITestAttributes): void {
     });
 
     it('Should match total star rating', () => {
-      expect(difficulty.starRating).toBeCloseTo(data.starRating, 1);
+      expect(difficulty.starRating).toBeCloseTo(data.starRating, 6);
     });
 
     it('Should match stamina difficulty', () => {
-      expect(difficulty.staminaDifficulty).toBeCloseTo(data.staminaDifficulty, 1);
+      expect(difficulty.staminaDifficulty).toBeCloseTo(data.staminaDifficulty, 6);
     });
 
     it('Should match rhythm difficulty', () => {
-      expect(difficulty.rhythmDifficulty).toBeCloseTo(data.rhythmDifficulty, 1);
+      expect(difficulty.rhythmDifficulty).toBeCloseTo(data.rhythmDifficulty, 6);
     });
 
     it('Should match colour difficulty', () => {
-      expect(difficulty.colourDifficulty).toBeCloseTo(data.colourDifficulty, 1);
+      expect(difficulty.colourDifficulty).toBeCloseTo(data.colourDifficulty, 6);
     });
 
     it('Should match peak difficulty', () => {
-      expect(difficulty.peakDifficulty).toBeCloseTo(data.peakDifficulty, 1);
+      expect(difficulty.peakDifficulty).toBeCloseTo(data.peakDifficulty, 6);
     });
 
     it('Should match great hit window', () => {
@@ -88,15 +88,15 @@ function testBeatmap(beatmap: TaikoBeatmap, data: ITestAttributes): void {
     });
 
     it('Should match total performance', () => {
-      expect(performance.totalPerformance).toBeCloseTo(data.totalPerformance, 1);
+      expect(performance.totalPerformance).toBeCloseTo(data.totalPerformance, 6);
     });
 
     it('Should match difficulty performance', () => {
-      expect(performance.difficultyPerformance).toBeCloseTo(data.difficultyPerformance, 1);
+      expect(performance.difficultyPerformance).toBeCloseTo(data.difficultyPerformance, 6);
     });
 
     it('Should match accuracy performance', () => {
-      expect(performance.accuracyPerformance).toBeCloseTo(data.accuracyPerformance, 1);
+      expect(performance.accuracyPerformance).toBeCloseTo(data.accuracyPerformance, 6);
     });
 
     it('Should match effective miss count', () => {
