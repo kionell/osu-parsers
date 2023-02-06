@@ -10,7 +10,7 @@ JavaScript port of the current live version of the osu!mania ruleset.
 - Based on the osu!lazer source code.
 - Supports beatmap conversion from other game modes.
 - Can apply & reset osu!mania mods.
-- Very accurate difficulty & performance calculation (up to 6 digits after decimal point)
+- Very accurate difficulty & performance calculation (up to 15-16 digits after decimal point)
 - Supports latest star rating & performance rework
 - Works in browsers.
 
