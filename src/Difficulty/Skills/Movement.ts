@@ -65,7 +65,11 @@ export class Movement extends StrainDecaySkill {
 
       if (Math.abs(this._lastDistanceMoved) > 0.1 && signDiff) {
         const bonusFactor = Math.fround(Math.min(50, Math.abs(distanceMoved)) / 50);
-        const antiflowFactor = Math.max(Math.fround(Math.min(70, Math.abs(this._lastDistanceMoved)) / 70), 0.38);
+        const antiflowFactor = Math.max(
+          Math.fround(Math.min(70, Math.abs(this._lastDistanceMoved)) / 70),
+          0.38,
+        );
+
         const sqrt = Math.sqrt(this._lastStrainTime + 16);
         const max = Math.max(1 - Math.pow(weightedStrainTime / 1000, 3), 0);
 
@@ -94,14 +98,17 @@ export class Movement extends StrainDecaySkill {
         playerPosition = catchCurrent.normalizedPosition;
       }
 
-      const hyperDash = (20 - catchCurrent.lastObject.distanceToHyperDash) / 20;
+      const hyperDash = Math.fround(
+        Math.fround(20 - catchCurrent.lastObject.distanceToHyperDash) / 20,
+      );
+
       const min = Math.min(catchCurrent.strainTime * this._catcherSpeedMultiplier, 265);
       const pow = Math.pow((min / 265), 1.5);
 
       /**
        * Edge Dashes are easier at lower ms values.
        */
-      distanceAddition *= 1.0 + edgeDashBonus * hyperDash * pow;
+      distanceAddition *= 1 + edgeDashBonus * hyperDash * pow;
     }
 
     this._lastPlayerPosition = playerPosition;

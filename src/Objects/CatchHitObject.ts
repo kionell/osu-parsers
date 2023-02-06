@@ -73,8 +73,17 @@ export abstract class CatchHitObject extends HitObject implements IHasComboInfor
   applyDefaultsToSelf(controlPoints: ControlPointInfo, difficulty: BeatmapDifficultySection): void {
     super.applyDefaultsToSelf(controlPoints, difficulty);
 
-    this.timePreempt = BeatmapDifficultySection.range(difficulty.approachRate, 1800, 1200, 450);
-    this.scale = Math.fround((1 - Math.fround(0.7) * (difficulty.circleSize - 5) / 5) / 2);
+    this.timePreempt = Math.fround(
+      BeatmapDifficultySection.range(difficulty.approachRate, 1800, 1200, 450),
+    );
+
+    /**
+     * Closest approximation:
+     * 23.0400009155273 + (7 - CS) * 4.47999954223635
+     */
+    const scale = Math.fround(Math.fround(0.7) * Math.fround(difficulty.circleSize - 5));
+
+    this.scale = Math.fround(Math.fround(1 - Math.fround(scale / 5)) / 2);
   }
 
   clone(): this {

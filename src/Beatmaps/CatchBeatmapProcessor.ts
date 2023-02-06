@@ -18,6 +18,7 @@ import {
   ModBitwise,
   HitType,
   SortHelper,
+  BeatmapDifficultySection,
 } from 'osu-classes';
 
 export class CatchBeatmapProcessor extends BeatmapProcessor {
@@ -25,7 +26,16 @@ export class CatchBeatmapProcessor extends BeatmapProcessor {
 
   static BASE_SPEED = 1;
 
-  static CATCHER_SIZE = 106.75;
+  /**
+   * The size of the catcher at 1x scale.
+   */
+  static BASE_CATCHER_SIZE = 106.75;
+
+  /**
+   * The width of the catcher which can receive fruit. 
+   * Equivalent to "catchMargin" in osu-stable.
+   */
+  static ALLOWED_CATCH_RANGE = Math.fround(0.8);
 
   static PLAYFIELD_WIDTH = 512;
 
@@ -228,9 +238,17 @@ export class CatchBeatmapProcessor extends BeatmapProcessor {
 
     SortHelper.introSort(palpableObjects, (a, b) => a.startTime - b.startTime);
 
-    const scale = 1 - (0.7 * (beatmap.difficulty.circleSize - 5)) / 5;
+    let halfCatcherWidth = this._calculateCatcherWidth(beatmap.difficulty) / 2;
 
-    const halfCatcherWidth = (CatchBeatmapProcessor.CATCHER_SIZE * Math.abs(scale)) / 2;
+    /**
+     * TODO: This is wrong. osu!stable calculated hyperdashes 
+     * using the full catcher size, excluding the margins.
+     * This should theoretically cause impossible scenarios, but practically, 
+     * likely due to the size of the playfield, it doesn't seem possible.
+     * For now, to bring gameplay (and diffcalc!) completely in-line with stable, 
+     * this code also uses the full catcher size.
+     */
+    halfCatcherWidth /= CatchBeatmapProcessor.ALLOWED_CATCH_RANGE;
 
     let lastDirection = 0;
     let lastExcess = halfCatcherWidth;
@@ -248,7 +266,7 @@ export class CatchBeatmapProcessor extends BeatmapProcessor {
       // 1/4th of a frame of grace time, taken } from osu-stable
       const timeToNext = next.startTime - current.startTime - Math.fround(1000 / 60) / 4;
 
-      const distanceToNext = Math.abs(next.effectiveX - current.effectiveX) -
+      const distanceToNext = Math.abs(Math.fround(next.effectiveX - current.effectiveX)) -
         (lastDirection === thisDirection ? lastExcess : halfCatcherWidth);
 
       const distanceToHyper = Math.fround(timeToNext * CatchBeatmapProcessor.BASE_SPEED - distanceToNext);
@@ -264,5 +282,19 @@ export class CatchBeatmapProcessor extends BeatmapProcessor {
 
       lastDirection = thisDirection;
     }
+  }
+
+  private _calculateCatcherWidth(difficulty: BeatmapDifficultySection): number {
+    let scale = Math.fround(
+      Math.fround(0.7) * Math.fround(difficulty.circleSize - 5),
+    );
+
+    scale = Math.fround(1 - Math.fround(scale / 5));
+
+    const catcherWidth = Math.fround(
+      CatchBeatmapProcessor.BASE_CATCHER_SIZE * Math.abs(scale),
+    );
+
+    return Math.fround(catcherWidth * CatchBeatmapProcessor.ALLOWED_CATCH_RANGE);
   }
 }
