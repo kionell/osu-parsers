@@ -18,27 +18,14 @@ import {
   ModBitwise,
   HitType,
   SortHelper,
-  BeatmapDifficultySection,
   MathUtils,
 } from 'osu-classes';
+import { CatchPlayfield } from '../UI/CatchPlayfield';
 
 export class CatchBeatmapProcessor extends BeatmapProcessor {
   static RNG_SEED = 1337;
 
   static BASE_SPEED = 1;
-
-  /**
-   * The size of the catcher at 1x scale.
-   */
-  static BASE_CATCHER_SIZE = 106.75;
-
-  /**
-   * The width of the catcher which can receive fruit. 
-   * Equivalent to "catchMargin" in osu-stable.
-   */
-  static ALLOWED_CATCH_RANGE = Math.fround(0.8);
-
-  static PLAYFIELD_WIDTH = 512;
 
   private _lastX: number | null = null;
 
@@ -91,7 +78,7 @@ export class CatchBeatmapProcessor extends BeatmapProcessor {
             juice.offsetX = MathUtils.clamp(
               this._rng.nextInt(-20, 20),
               -juice.originalX,
-              Math.fround(CatchBeatmapProcessor.PLAYFIELD_WIDTH - juice.originalX),
+              Math.fround(CatchPlayfield.PLAYFIELD_WIDTH - juice.originalX),
             );
           }
           else if (nested instanceof JuiceDroplet) {
@@ -107,7 +94,7 @@ export class CatchBeatmapProcessor extends BeatmapProcessor {
 
         bananas.forEach((banana) => {
           banana.offsetX = Math.fround(
-            this._rng.nextDouble() * CatchBeatmapProcessor.PLAYFIELD_WIDTH,
+            this._rng.nextDouble() * CatchPlayfield.PLAYFIELD_WIDTH,
           );
 
           // Osu!stable retrieved a random banana type.
@@ -187,7 +174,7 @@ export class CatchBeatmapProcessor extends BeatmapProcessor {
     }
 
     // Clamp to the right bound
-    return positionPlusRand <= CatchBeatmapProcessor.PLAYFIELD_WIDTH
+    return positionPlusRand <= CatchPlayfield.PLAYFIELD_WIDTH
       ? positionPlusRand
       : positionMinusRand;
   }
@@ -200,10 +187,9 @@ export class CatchBeatmapProcessor extends BeatmapProcessor {
    */
   private _applyOffset(position: number, amount: number): number {
     const positionPlusAmount = Math.fround(position + amount);
-    const playfieldWidth = CatchBeatmapProcessor.PLAYFIELD_WIDTH;
 
     // Clamp to the right bound
-    if (amount > 0 && positionPlusAmount < playfieldWidth) {
+    if (amount > 0 && positionPlusAmount < CatchPlayfield.PLAYFIELD_WIDTH) {
       return positionPlusAmount;
     }
     // Clamp to the left bound
@@ -237,7 +223,7 @@ export class CatchBeatmapProcessor extends BeatmapProcessor {
 
     SortHelper.introSort(palpableObjects, (a, b) => a.startTime - b.startTime);
 
-    let halfCatcherWidth = this._calculateCatcherWidth(beatmap.difficulty) / 2;
+    let halfCatcherWidth = CatchPlayfield.calculateCatcherWidth(beatmap.difficulty) / 2;
 
     /**
      * TODO: This is wrong. osu!stable calculated hyperdashes 
@@ -247,7 +233,7 @@ export class CatchBeatmapProcessor extends BeatmapProcessor {
      * For now, to bring gameplay (and diffcalc!) completely in-line with stable, 
      * this code also uses the full catcher size.
      */
-    halfCatcherWidth /= CatchBeatmapProcessor.ALLOWED_CATCH_RANGE;
+    halfCatcherWidth /= CatchPlayfield.ALLOWED_CATCH_RANGE;
 
     let lastDirection = 0;
     let lastExcess = halfCatcherWidth;
@@ -281,19 +267,5 @@ export class CatchBeatmapProcessor extends BeatmapProcessor {
 
       lastDirection = thisDirection;
     }
-  }
-
-  private _calculateCatcherWidth(difficulty: BeatmapDifficultySection): number {
-    let scale = Math.fround(
-      Math.fround(0.7) * Math.fround(difficulty.circleSize - 5),
-    );
-
-    scale = Math.fround(1 - Math.fround(scale / 5));
-
-    const catcherWidth = Math.fround(
-      CatchBeatmapProcessor.BASE_CATCHER_SIZE * Math.abs(scale),
-    );
-
-    return Math.fround(catcherWidth * CatchBeatmapProcessor.ALLOWED_CATCH_RANGE);
   }
 }

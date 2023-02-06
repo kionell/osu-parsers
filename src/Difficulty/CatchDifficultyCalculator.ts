@@ -26,6 +26,7 @@ import { CatchBeatmap } from '../Beatmaps';
 import { CatchDifficultyAttributes } from './Attributes';
 import { CatchDifficultyHitObject } from './Preprocessing';
 import { Movement } from './Skills';
+import { CatchPlayfield } from '../UI/CatchPlayfield';
 
 export class CatchDifficultyCalculator extends DifficultyCalculator<CatchDifficultyAttributes> {
   private static _STAR_SCALING_FACTOR = 0.153;
@@ -102,20 +103,8 @@ export class CatchDifficultyCalculator extends DifficultyCalculator<CatchDifficu
   }
 
   protected _createSkills(beatmap: IBeatmap, mods: ModCombination, clockRate: number): Skill[] {
-    /**
-     * The size of the catcher at 1x scale.
-     */
-    const BASE_SIZE = Math.fround(106.75);
-
-    /**
-     * The width of the catcher which can receive fruit. 
-     * Equivalent to "catchMargin" in osu-stable.
-     */
-    const ALLOWED_CATCH_RANGE = Math.fround(0.8);
-
-    const circleSize = beatmap.difficulty.circleSize;
-    const scale = 1 - Math.fround(0.7) * (circleSize - 5) / 5;
-    const catcherWidth = BASE_SIZE * Math.abs(scale) * ALLOWED_CATCH_RANGE;
+    const difficulty = beatmap.difficulty;
+    const catcherWidth = CatchPlayfield.calculateCatcherWidth(difficulty);
 
     this._halfCatcherWidth = Math.fround(catcherWidth / 2);
 
@@ -123,7 +112,9 @@ export class CatchDifficultyCalculator extends DifficultyCalculator<CatchDifficu
      * For circle sizes above 5.5, 
      * reduce the catcher width further to simulate imperfect gameplay.
      */
-    this._halfCatcherWidth *= 1 - (Math.fround(Math.max(0, circleSize - 5.5) * 0.0625));
+    this._halfCatcherWidth *= 1 - Math.fround(
+      Math.max(0, Math.fround(difficulty.circleSize - 5.5)) * 0.0625,
+    );
 
     return [
       new Movement(mods, this._halfCatcherWidth, clockRate),

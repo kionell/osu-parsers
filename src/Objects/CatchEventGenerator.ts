@@ -1,3 +1,9 @@
+import {
+  EventGenerator,
+  ISliderEventDescriptor,
+  SliderEventType,
+} from 'osu-classes';
+
 import { CatchHitObject } from './CatchHitObject';
 import type { JuiceStream } from './JuiceStream';
 import { JuiceFruit } from './JuiceFruit';
@@ -5,13 +11,7 @@ import { JuiceDroplet } from './JuiceDroplet';
 import { JuiceTinyDroplet } from './JuiceTinyDroplet';
 import { BananaShower } from './BananaShower';
 import { Banana } from './Banana';
-
-import {
-  EventGenerator,
-  ISliderEventDescriptor,
-  MathUtils,
-  SliderEventType,
-} from 'osu-classes';
+import { CatchPlayfield } from '../UI/CatchPlayfield';
 
 export class CatchEventGenerator extends EventGenerator {
   static *generateDroplets(stream: JuiceStream): Generator<CatchHitObject> {
@@ -42,7 +42,7 @@ export class CatchEventGenerator extends EventGenerator {
             const droplet = new JuiceTinyDroplet();
 
             droplet.startTime = startTime;
-            droplet.startX = this.clampToPlayfield(
+            droplet.startX = CatchPlayfield.clampToPlayfield(
               stream.effectiveX + stream.path.positionAt(offset).x,
             );
 
@@ -70,7 +70,7 @@ export class CatchEventGenerator extends EventGenerator {
           nested = new JuiceFruit();
 
           nested.startTime = event.startTime;
-          nested.startX = this.clampToPlayfield(
+          nested.startX = CatchPlayfield.clampToPlayfield(
             stream.effectiveX + stream.path.positionAt(event.progress).x,
           );
 
@@ -82,7 +82,7 @@ export class CatchEventGenerator extends EventGenerator {
           nested = new JuiceDroplet();
 
           nested.startTime = event.startTime;
-          nested.startX = this.clampToPlayfield(
+          nested.startX = CatchPlayfield.clampToPlayfield(
             stream.effectiveX + stream.path.positionAt(event.progress).x,
           );
 
@@ -116,11 +116,5 @@ export class CatchEventGenerator extends EventGenerator {
 
       time += tickInterval;
     }
-  }
-
-  static clampToPlayfield(value: number): number {
-    const PLAYFIELD_WIDTH = 512;
-
-    return MathUtils.clamp(value, 0, PLAYFIELD_WIDTH);
   }
 }

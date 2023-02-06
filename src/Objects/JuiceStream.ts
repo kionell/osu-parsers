@@ -1,6 +1,3 @@
-import { CatchHitObject } from './CatchHitObject';
-import { CatchEventGenerator } from './CatchEventGenerator';
-
 import {
   ControlPointInfo,
   BeatmapDifficultySection,
@@ -8,6 +5,10 @@ import {
   SliderPath,
   ISlidableObject,
 } from 'osu-classes';
+
+import { CatchHitObject } from './CatchHitObject';
+import { CatchEventGenerator } from './CatchEventGenerator';
+import { CatchPlayfield } from '../UI/CatchPlayfield';
 
 export class JuiceStream extends CatchHitObject implements ISlidableObject {
   static BASE_DISTANCE = 100;
@@ -53,7 +54,7 @@ export class JuiceStream extends CatchHitObject implements ISlidableObject {
   }
 
   get endX(): number {
-    return CatchEventGenerator.clampToPlayfield(
+    return CatchPlayfield.clampToPlayfield(
       this.effectiveX + this.path.curvePositionAt(1, this.spans).x,
     );
   }
