@@ -64,11 +64,11 @@ function testBeatmap(beatmap: CatchBeatmap, data: ILoadedFiles): void {
     });
 
     test('Should match star ratings', () => {
-      expect(difficulty.starRating).toBeCloseTo(data.stars[acronyms], 1);
+      expect(difficulty.starRating).toBeCloseTo(data.stars[acronyms], 6);
     });
 
     test('Should match performances', () => {
-      expect(performance).toBeCloseTo(data.performances[acronyms], 0);
+      expect(performance).toBeCloseTo(data.performances[acronyms], 6);
     });
   });
 }
