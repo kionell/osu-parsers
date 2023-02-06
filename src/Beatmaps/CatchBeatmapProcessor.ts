@@ -188,9 +188,11 @@ export class CatchBeatmapProcessor extends BeatmapProcessor {
   private _applyOffset(position: number, amount: number): number {
     const positionPlusAmount = Math.fround(position + amount);
 
-    // Clamp to the right bound
-    if (amount > 0 && positionPlusAmount < CatchPlayfield.PLAYFIELD_WIDTH) {
-      return positionPlusAmount;
+    if (amount > 0) {
+      // Clamp to the right bound
+      if (positionPlusAmount < CatchPlayfield.PLAYFIELD_WIDTH) {
+        return positionPlusAmount;
+      }
     }
     // Clamp to the left bound
     else if (positionPlusAmount > 0) {
