@@ -22,9 +22,9 @@ export abstract class Easy implements IMod, IApplicableToDifficulty {
   incompatibles: ModBitwise = ModBitwise.HardRock;
 
   applyToDifficulty(difficulty: BeatmapDifficultySection): void {
-    difficulty.circleSize /= 2;
-    difficulty.approachRate /= 2;
-    difficulty.drainRate /= 2;
-    difficulty.overallDifficulty /= 2;
+    difficulty.circleSize = Math.fround(difficulty.circleSize * 0.5);
+    difficulty.approachRate = Math.fround(difficulty.approachRate * 0.5);
+    difficulty.drainRate = Math.fround(difficulty.drainRate * 0.5);
+    difficulty.overallDifficulty = Math.fround(difficulty.overallDifficulty * 0.5);
   }
 }
