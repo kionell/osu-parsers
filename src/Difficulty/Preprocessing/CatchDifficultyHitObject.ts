@@ -43,11 +43,8 @@ export class CatchDifficultyHitObject extends DifficultyHitObject {
     const normalizedRadius = CatchDifficultyHitObject._NORMALIZED_HITOBJECT_RADIUS;
     const scalingFactor = Math.fround(normalizedRadius / halfCatcherWidth);
 
-    const baseX = Math.fround(this.baseObject.effectiveX);
-    const lastX = Math.fround(this.lastObject.effectiveX);
-
-    this.normalizedPosition = Math.fround(baseX * scalingFactor);
-    this.lastNormalizedPosition = Math.fround(lastX * scalingFactor);
+    this.normalizedPosition = Math.fround(this.baseObject.effectiveX * scalingFactor);
+    this.lastNormalizedPosition = Math.fround(this.lastObject.effectiveX * scalingFactor);
 
     /**
      * Every strain interval is hard capped at the equivalent 

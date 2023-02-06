@@ -1,4 +1,4 @@
-import { DifficultyHitObject, ModCombination, StrainDecaySkill } from 'osu-classes';
+import { DifficultyHitObject, MathUtils, ModCombination, StrainDecaySkill } from 'osu-classes';
 import { CatchDifficultyHitObject } from '../Preprocessing';
 
 export class Movement extends StrainDecaySkill {
@@ -45,10 +45,12 @@ export class Movement extends StrainDecaySkill {
     const directionBonus = Math.fround(Movement._DIRECTION_CHANGE_BONUS);
 
     const offset = Math.fround(normalizedRaidus - positioningError);
-    const min = Math.fround(catchCurrent.normalizedPosition - offset);
-    const max = Math.fround(catchCurrent.normalizedPosition + offset);
 
-    let playerPosition = Math.min(Math.max(this._lastPlayerPosition, min), max);
+    let playerPosition = MathUtils.clamp(
+      this._lastPlayerPosition,
+      Math.fround(catchCurrent.normalizedPosition - offset),
+      Math.fround(catchCurrent.normalizedPosition + offset),
+    );
 
     const distanceMoved = Math.fround(playerPosition - this._lastPlayerPosition);
     const weightedStrainTime = catchCurrent.strainTime + 13 + (3 / this._catcherSpeedMultiplier);
