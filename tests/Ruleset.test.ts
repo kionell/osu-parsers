@@ -59,7 +59,7 @@ function testBeatmap(beatmap: ManiaBeatmap, data: ITestAttributes): void {
     });
 
     it('Should match total star rating', () => {
-      expect(difficulty.starRating).toBeCloseTo(data.starRating, 1);
+      expect(difficulty.starRating).toBeCloseTo(data.starRating, 6);
     });
 
     it('Should match great hit window', () => {
@@ -67,11 +67,11 @@ function testBeatmap(beatmap: ManiaBeatmap, data: ITestAttributes): void {
     });
 
     it('Should match total performance', () => {
-      expect(performance.totalPerformance).toBeCloseTo(data.totalPerformance, 1);
+      expect(performance.totalPerformance).toBeCloseTo(data.totalPerformance, 6);
     });
 
     it('Should match difficulty performance', () => {
-      expect(performance.difficultyPerformance).toBeCloseTo(data.difficultyPerformance, 1);
+      expect(performance.difficultyPerformance).toBeCloseTo(data.difficultyPerformance, 6);
     });
   });
 }
