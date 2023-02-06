@@ -56,14 +56,14 @@ export abstract class CatchHitObject extends HitObject implements IHasComboInfor
    * Original start X-position of the hit object before any changes.
    */
   get originalX(): number {
-    return this._originalX;
+    return Math.fround(this._originalX);
   }
 
   /**
    * Start X-position with applied offset.
    */
   get effectiveX(): number {
-    return this._originalX + this.offsetX;
+    return Math.fround(this._originalX + this.offsetX);
   }
 
   get randomSeed(): number {

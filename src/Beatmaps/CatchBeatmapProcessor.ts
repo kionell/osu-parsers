@@ -19,6 +19,7 @@ import {
   HitType,
   SortHelper,
   BeatmapDifficultySection,
+  MathUtils,
 } from 'osu-classes';
 
 export class CatchBeatmapProcessor extends BeatmapProcessor {
@@ -73,8 +74,9 @@ export class CatchBeatmapProcessor extends BeatmapProcessor {
         const juiceStream = hitObject as JuiceStream;
         const controlPoints = juiceStream.path.controlPoints;
 
-        this._lastX = juiceStream.originalX
-          + controlPoints[controlPoints.length - 1].position.x;
+        this._lastX = Math.fround(juiceStream.originalX
+          + controlPoints[controlPoints.length - 1].position.x,
+        );
 
         this._lastStartTime = juiceStream.startTime;
 
@@ -86,10 +88,11 @@ export class CatchBeatmapProcessor extends BeatmapProcessor {
           juice.offsetX = 0;
 
           if (nested instanceof JuiceTinyDroplet) {
-            const min = -juice.originalX;
-            const max = min + CatchBeatmapProcessor.PLAYFIELD_WIDTH;
-
-            juice.offsetX = Math.max(min, Math.min(this._rng.nextInt(-20, 20), max));
+            juice.offsetX = MathUtils.clamp(
+              this._rng.nextInt(-20, 20),
+              -juice.originalX,
+              Math.fround(CatchBeatmapProcessor.PLAYFIELD_WIDTH - juice.originalX),
+            );
           }
           else if (nested instanceof JuiceDroplet) {
             // Osu!stable retrieved a random droplet rotation.
@@ -103,7 +106,9 @@ export class CatchBeatmapProcessor extends BeatmapProcessor {
         const bananas = bananaShower.nestedHitObjects as Banana[];
 
         bananas.forEach((banana) => {
-          banana.offsetX = this._rng.nextDouble() * CatchBeatmapProcessor.PLAYFIELD_WIDTH;
+          banana.offsetX = Math.fround(
+            this._rng.nextDouble() * CatchBeatmapProcessor.PLAYFIELD_WIDTH,
+          );
 
           // Osu!stable retrieved a random banana type.
           this._rng.next();
@@ -121,41 +126,41 @@ export class CatchBeatmapProcessor extends BeatmapProcessor {
   }
 
   private _applyHardRockOffset(hitObject: CatchHitObject): void {
-    let positionX = hitObject.originalX;
+    let offsetPosition = hitObject.originalX;
     const startTime = hitObject.startTime;
 
     if (this._lastX === null) {
-      this._lastX = positionX;
+      this._lastX = offsetPosition;
       this._lastStartTime = startTime;
 
       return;
     }
 
-    const xDiff = positionX - this._lastX;
+    const xDiff = Math.fround(offsetPosition - this._lastX);
     const timeDiff = Math.trunc(startTime - this._lastStartTime);
 
     if (timeDiff > 1000) {
-      this._lastX = positionX;
+      this._lastX = offsetPosition;
       this._lastStartTime = startTime;
 
       return;
     }
 
     if (xDiff === 0) {
-      positionX = this._applyRandomOffset(positionX, timeDiff / 4);
+      offsetPosition = this._applyRandomOffset(offsetPosition, timeDiff / 4);
 
-      hitObject.offsetX = positionX - hitObject.originalX;
+      hitObject.offsetX = Math.fround(offsetPosition - hitObject.originalX);
 
       return;
     }
 
     if (Math.abs(xDiff) < Math.trunc(timeDiff / 3)) {
-      positionX = this._applyOffset(positionX, xDiff);
+      offsetPosition = this._applyOffset(offsetPosition, xDiff);
     }
 
-    hitObject.offsetX = positionX - hitObject.originalX;
+    hitObject.offsetX = Math.fround(offsetPosition - hitObject.originalX);
 
-    this._lastX = positionX;
+    this._lastX = offsetPosition;
     this._lastStartTime = startTime;
   }
 
@@ -167,29 +172,24 @@ export class CatchBeatmapProcessor extends BeatmapProcessor {
    * @param rng The random number generator.
    */
   private _applyRandomOffset(position: number, maxOffset: number): number {
-    const right = this._rng.nextBool();
-    const rand = Math.min(20, this._rng.nextInt(0, Math.max(0, maxOffset)));
+    const left = !this._rng.nextBool();
+    const rand = Math.min(
+      20,
+      Math.fround(this._rng.nextInt(0, Math.max(0, maxOffset))),
+    );
 
-    if (right) {
-      // Clamp to the right bound
-      if (position + rand <= CatchBeatmapProcessor.PLAYFIELD_WIDTH) {
-        position += rand;
-      }
-      else {
-        position -= rand;
-      }
-    }
-    else {
+    const positionPlusRand = Math.fround(position + rand);
+    const positionMinusRand = Math.fround(position - rand);
+
+    if (left) {
       // Clamp to the left bound
-      if (position - rand >= 0) {
-        position -= rand;
-      }
-      else {
-        position += rand;
-      }
+      return positionMinusRand >= 0 ? positionMinusRand : positionPlusRand;
     }
 
-    return position;
+    // Clamp to the right bound
+    return positionPlusRand <= CatchBeatmapProcessor.PLAYFIELD_WIDTH
+      ? positionPlusRand
+      : positionMinusRand;
   }
 
   /**
@@ -199,17 +199,16 @@ export class CatchBeatmapProcessor extends BeatmapProcessor {
    * @param amount The amount to offset by.
    */
   private _applyOffset(position: number, amount: number): number {
-    if (amount > 0) {
-      // Clamp to the right bound
-      if (position + amount < CatchBeatmapProcessor.PLAYFIELD_WIDTH) {
-        position += amount;
-      }
+    const positionPlusAmount = Math.fround(position + amount);
+    const playfieldWidth = CatchBeatmapProcessor.PLAYFIELD_WIDTH;
+
+    // Clamp to the right bound
+    if (amount > 0 && positionPlusAmount < playfieldWidth) {
+      return positionPlusAmount;
     }
-    else {
-      // Clamp to the left bound
-      if (position + amount > 0) {
-        position += amount;
-      }
+    // Clamp to the left bound
+    else if (positionPlusAmount > 0) {
+      return positionPlusAmount;
     }
 
     return position;
@@ -264,7 +263,7 @@ export class CatchBeatmapProcessor extends BeatmapProcessor {
       const thisDirection = next.effectiveX > current.effectiveX ? 1 : -1;
 
       // 1/4th of a frame of grace time, taken } from osu-stable
-      const timeToNext = next.startTime - current.startTime - Math.fround(1000 / 60) / 4;
+      const timeToNext = next.startTime - current.startTime - Math.fround(Math.fround(1000 / 60) / 4);
 
       const distanceToNext = Math.abs(Math.fround(next.effectiveX - current.effectiveX)) -
         (lastDirection === thisDirection ? lastExcess : halfCatcherWidth);
