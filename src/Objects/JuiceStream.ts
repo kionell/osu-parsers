@@ -13,9 +13,9 @@ import { CatchPlayfield } from '../UI/CatchPlayfield';
 export class JuiceStream extends CatchHitObject implements ISlidableObject {
   static BASE_DISTANCE = 100;
 
-  tickDistance = 100;
+  tickDistance = 100.0;
 
-  velocity = 1;
+  velocity = 1.0;
 
   legacyLastTickOffset?: number;
 
@@ -65,11 +65,13 @@ export class JuiceStream extends CatchHitObject implements ISlidableObject {
     const timingPoint = controlPoints.timingPointAt(this.startTime);
     const difficultyPoint = controlPoints.difficultyPointAt(this.startTime);
 
-    const scoringDistance = JuiceStream.BASE_DISTANCE
-      * difficulty.sliderMultiplier * difficultyPoint.sliderVelocity;
+    const scoringDistance = JuiceStream.BASE_DISTANCE * difficulty.sliderMultiplier;
 
-    this.tickDistance = scoringDistance / difficulty.sliderTickRate;
-    this.velocity = scoringDistance / timingPoint.beatLength;
+    const tickDistanceFactor = scoringDistance / difficulty.sliderTickRate;
+    const velocityFactor = scoringDistance / timingPoint.beatLength;
+
+    this.tickDistance = tickDistanceFactor * difficultyPoint.sliderVelocity;
+    this.velocity = velocityFactor * difficultyPoint.sliderVelocity;
   }
 
   createNestedHitObjects(): void {
