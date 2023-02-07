@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { IHitStatistics, IScoreInfo, ScoreInfo } from 'osu-classes';
 import { BeatmapDecoder } from 'osu-parsers';
-
+import { ITestAttributes, IModdedAttributes } from './Attributes';
 import {
   CatchRuleset,
   CatchDifficultyAttributes,
@@ -11,8 +11,6 @@ import {
   JuiceTinyDroplet,
   JuiceDroplet,
 } from '../src';
-
-import { ILoadedFiles } from './Interfaces';
 
 const ruleset = new CatchRuleset();
 const decoder = new BeatmapDecoder();
@@ -33,20 +31,24 @@ function testBeatmaps(rulesetPath: string): void {
 
   for (const beatmapFile of beatmapFiles) {
     const beatmapPath = path.resolve(beatmapsPath, beatmapFile);
-    const data = loadTestFiles(rulesetPath, beatmapFile.split('.')[0]);
+    const beatmapId = beatmapFile.split('.')[0];
+
+    const attributesPath = `${rulesetPath}/Attributes/${beatmapId}.json`;
+    const attributesData = fs.readFileSync(attributesPath).toString();
+    const attributes: IModdedAttributes = JSON.parse(attributesData);
 
     const decoded = decoder.decodeFromPath(beatmapPath, false);
 
-    for (const acronym in data.stars) {
+    for (const acronym in attributes) {
       const mods = ruleset.createModCombination(acronym);
       const beatmap = ruleset.applyToBeatmapWithMods(decoded, mods);
 
-      testBeatmap(beatmap, data);
+      testBeatmap(beatmap, attributes[acronym]);
     }
   }
 }
 
-function testBeatmap(beatmap: CatchBeatmap, data: ILoadedFiles): void {
+function testBeatmap(beatmap: CatchBeatmap, data: ITestAttributes): void {
   const acronyms = beatmap.mods.toString();
 
   const difficultyCalculator = ruleset.createDifficultyCalculator(beatmap);
@@ -54,37 +56,27 @@ function testBeatmap(beatmap: CatchBeatmap, data: ILoadedFiles): void {
 
   const score = simulateScore(beatmap, difficulty);
   const performanceCalculator = ruleset.createPerformanceCalculator(difficulty, score);
-  const performance = performanceCalculator.calculate();
+  const performance = performanceCalculator.calculateAttributes();
 
   const { artist, title, version } = beatmap.metadata;
 
   describe(`${artist} - ${title} [${version}] +${acronyms}`, () => {
     it('Should match beatmap max combo', () => {
-      expect(difficulty.maxCombo).toEqual(data.values.maxCombo);
+      expect(difficulty.maxCombo).toEqual(data.maxCombo);
     });
 
-    test('Should match star ratings', () => {
-      expect(difficulty.starRating).toBeCloseTo(data.stars[acronyms], 6);
+    it('Should match approach rate', () => {
+      expect(difficulty.approachRate).toBeCloseTo(data.approachRate, 6);
     });
 
-    test('Should match performances', () => {
-      expect(performance).toBeCloseTo(data.performances[acronyms], 6);
+    it('Should match total star rating', () => {
+      expect(difficulty.starRating).toBeCloseTo(data.starRating, 6);
+    });
+
+    it('Should match total performance', () => {
+      expect(performance.totalPerformance).toBeCloseTo(data.totalPerformance, 6);
     });
   });
-}
-
-function loadTestFiles(rulesetPath: string, beatmapId: string): ILoadedFiles {
-  const paths = [
-    `${rulesetPath}/Values/${beatmapId}.json`,
-    `${rulesetPath}/Stars/${beatmapId}.json`,
-    `${rulesetPath}/Performances/${beatmapId}.json`,
-  ];
-
-  return {
-    values: JSON.parse(fs.readFileSync(paths[0]).toString()),
-    stars: JSON.parse(fs.readFileSync(paths[1]).toString()),
-    performances: JSON.parse(fs.readFileSync(paths[2]).toString()),
-  };
 }
 
 function simulateScore(beatmap: CatchBeatmap, attributes: CatchDifficultyAttributes): IScoreInfo {
