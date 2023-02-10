@@ -1,10 +1,9 @@
 import { decompress, compress } from 'lzma-js-simple-v2';
-import { BufferLike } from './Buffer';
 
 export class LZMA {
   private static _lzma = getLZMAInstance();
 
-  static async decompress(data: CompressedData): Promise<string> {
+  static async decompress(data: CompressedData): Promise<DecompressedData> {
     try {
       return await this._lzma.decompress(data);
     }
@@ -13,22 +12,22 @@ export class LZMA {
     }
   }
 
-  static async compress(data: DecompressedData): Promise<BufferLike> {
+  static async compress(data: DecompressedData): Promise<CompressedData> {
     try {
-      return await this._lzma.compress(data);
+      return await this._lzma.compress(data, 1);
     }
     catch {
-      return new Uint8Array([]).buffer;
+      return new Uint8Array([]);
     }
   }
 }
 
-type DecompressedData = string | ArrayLike<number> | BufferLike;
-type CompressedData = ArrayLike<number> | BufferLike;
+type DecompressedData = string | Uint8Array;
+type CompressedData = Uint8Array;
 
 interface LZMAInstance {
-  decompress(data: CompressedData, ...args: any[]): Promise<string>;
-  compress(data: DecompressedData, ...args: any[]): Promise<BufferLike>;
+  decompress(data: CompressedData, ...args: any[]): Promise<DecompressedData>;
+  compress(data: DecompressedData, ...args: any[]): Promise<CompressedData>;
 }
 
 /**

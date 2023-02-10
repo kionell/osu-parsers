@@ -3,7 +3,6 @@ import { ReplayEncoder, SerializationWriter } from './Handlers';
 import { mkdir, writeFile, dirname } from '../Utils/FileSystem';
 import { LZMA } from '../Utils/LZMA';
 import { FileFormat } from '../Enums';
-import { BufferLike } from '../Utils/Buffer';
 
 /**
  * Score encoder.
@@ -30,9 +29,9 @@ export class ScoreEncoder {
    * @param score Score info for encoding.
    * @returns A buffer with encoded score & replay data.
    */
-  async encodeToBuffer(score?: IScore): Promise<BufferLike> {
+  async encodeToBuffer(score?: IScore): Promise<Uint8Array> {
     if (typeof score?.info?.id !== 'number') {
-      return new Uint8Array().buffer;
+      return new Uint8Array();
     }
 
     const writer = new SerializationWriter();

@@ -39,7 +39,7 @@ export class SerializationReader {
    * @param length The number of bytes to be read.
    * @returns Sliced buffer.
    */
-  readBytes(length: number): BufferLike {
+  readBytes(length: number): Uint8Array {
     const bytes = this.view.buffer.slice(
       this._bytesRead,
       this._bytesRead + length,
