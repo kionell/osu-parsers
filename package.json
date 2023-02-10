@@ -56,7 +56,7 @@
     "typescript": "^4.1.5"
   },
   "dependencies": {
-    "lzma-js-simple-v2": "^1.2.1"
+    "lzma-js-simple-v2": "^1.2.2"
   },
   "peerDependencies": {
     "osu-classes": "^2.1.2"
