@@ -11,7 +11,7 @@ import {
 
 import { access, readFile } from '../Utils/FileSystem';
 import { LZMA } from '../Utils/LZMA';
-import { BufferLike } from '../Utils/Buffer';
+import { BufferLike, stringifyBuffer } from '../Utils/Buffer';
 import { FileFormat } from '../Enums';
 
 /**
@@ -96,11 +96,12 @@ export class ScoreDecoder {
         replay = new Replay();
 
         const replayData = await LZMA.decompress(compressedBytes);
+        const replayString = stringifyBuffer(replayData);
 
         replay.mode = scoreInfo.rulesetId;
         replay.gameVersion = gameVersion;
         replay.hashMD5 = replayHashMD5;
-        replay.frames = ReplayDecoder.decodeReplayFrames(replayData);
+        replay.frames = ReplayDecoder.decodeReplayFrames(replayString);
         replay.lifeBar = ReplayDecoder.decodeLifeBar(lifeData);
       }
 
