@@ -10,18 +10,17 @@ import {
   BeatmapTimingPointDecoder,
 } from './Handlers';
 
-import { Decoder } from './Decoder';
+import { SectionDecoder } from './SectionDecoder';
 import { StoryboardDecoder } from './StoryboardDecoder';
 import { IBeatmapParsingOptions } from '../Interfaces';
 import { Parsing } from '../Utils/Parsing';
-import { existsSync, readFileSync, statSync } from '../Utils/FileSystem';
 import { BufferLike, stringifyBuffer } from '../Utils/Buffer';
 import { FileFormat } from '../Enums';
 
 /**
- * Beatmap decoder.
+ * A beatmap decoder.
  */
-export class BeatmapDecoder extends Decoder<Beatmap> {
+export class BeatmapDecoder extends SectionDecoder<Beatmap> {
   /**
    * An offset which needs to be applied to old beatmaps (v4 and lower) 
    * to correct timing changes that were applied at a game client level.
@@ -40,57 +39,54 @@ export class BeatmapDecoder extends Decoder<Beatmap> {
 
   /**
    * Performs beatmap decoding from the specified .osu file.
-   * @param path Path to the .osu file.
+   * @param path A path to the .osu file.
    * @param options Beatmap parsing options.
    * Setting this to boolean will only affect storyboard parsing.
    * All sections that weren't specified will be enabled by default.
-   * @returns Decoded beatmap.
+   * @throws If file doesn't exist or can't be decoded.
+   * @returns A decoded beatmap.
    */
-  decodeFromPath(path: string, options?: boolean | IBeatmapParsingOptions): Beatmap {
+  async decodeFromPath(path: string, options?: boolean | IBeatmapParsingOptions): Promise<Beatmap> {
     if (!path.endsWith(FileFormat.Beatmap)) {
       throw new Error(`Wrong file format! Only ${FileFormat.Beatmap} files are supported!`);
     }
 
-    if (!existsSync(path)) {
-      throw new Error('File doesn\'t exist!');
-    }
-
     try {
-      const data = readFileSync(path);
-      const beatmap = this.decodeFromBuffer(data, options);
+      const data = await this._getFileBuffer(path);
+      const beatmap = await this.decodeFromBuffer(data, options);
 
-      beatmap.fileUpdateDate = statSync(path).mtime;
+      beatmap.fileUpdateDate = await this._getFileUpdateDate(path);
 
       return beatmap;
     }
     catch (err: unknown) {
       const reason = (err as Error).message || err;
 
-      throw new Error(`Failed to decode the file! Reason: ${reason}`);
+      throw new Error(`Failed to decode a beatmap! Reason: ${reason}`);
     }
   }
 
   /**
    * Performs beatmap decoding from a data buffer.
-   * @param data Buffer with beatmap data.
+   * @param data The buffer with beatmap data.
    * @param options Beatmap parsing options.
    * Setting this to boolean will only affect storyboard parsing.
    * All sections that weren't specified will be enabled by default.
-   * @returns Decoded beatmap.
+   * @returns A decoded beatmap.
    */
-  decodeFromBuffer(data: BufferLike, options?: boolean | IBeatmapParsingOptions): Beatmap {
+  async decodeFromBuffer(data: BufferLike, options?: boolean | IBeatmapParsingOptions): Promise<Beatmap> {
     return this.decodeFromString(stringifyBuffer(data), options);
   }
 
   /**
    * Performs beatmap decoding from a string.
-   * @param str String with beatmap data.
+   * @param str The string with beatmap data.
    * @param options Beatmap parsing options.
    * Setting this to boolean will only affect storyboard parsing.
    * All sections that weren't specified will be enabled by default.
-   * @returns Decoded beatmap.
+   * @returns A decoded beatmap.
    */
-  decodeFromString(str: string, options?: boolean | IBeatmapParsingOptions): Beatmap {
+  async decodeFromString(str: string, options?: boolean | IBeatmapParsingOptions): Promise<Beatmap> {
     str = typeof str !== 'string' ? String(str) : str;
 
     return this.decodeFromLines(str.split(/\r?\n/), options);
@@ -98,12 +94,12 @@ export class BeatmapDecoder extends Decoder<Beatmap> {
 
   /**
    * Performs beatmap decoding from a string array.
-   * @param data Array of split lines.
+   * @param data The array of split lines.
    * @param options Beatmap parsing options.
    * Setting this to boolean will only affect storyboard parsing.
-   * @returns Decoded beatmap.
+   * @returns A decoded beatmap.
    */
-  decodeFromLines(data: string[], options?: boolean | IBeatmapParsingOptions): Beatmap {
+  async decodeFromLines(data: string[], options?: boolean | IBeatmapParsingOptions): Promise<Beatmap> {
     const beatmap = new Beatmap();
 
     this._reset();
@@ -145,7 +141,7 @@ export class BeatmapDecoder extends Decoder<Beatmap> {
     if (this._sbLines && this._sbLines.length) {
       const storyboardDecoder = new StoryboardDecoder();
 
-      beatmap.events.storyboard = storyboardDecoder.decodeFromLines(this._sbLines);
+      beatmap.events.storyboard = await storyboardDecoder.decodeFromLines(this._sbLines);
 
       /**
        * Because we parsed storyboard through beatmap decoder

@@ -1,7 +1,6 @@
 import { Storyboard } from 'osu-classes';
-import { Decoder } from './Decoder';
+import { SectionDecoder } from './SectionDecoder';
 import { Parsing } from '../Utils/Parsing';
-import { existsSync, readFileSync } from '../Utils/FileSystem';
 import { BufferLike, stringifyBuffer } from '../Utils/Buffer';
 import { FileFormat } from '../Enums';
 
@@ -12,9 +11,9 @@ import {
 } from './Handlers';
 
 /**
- * Storyboard decoder.
+ * A storyboard decoder.
  */
-export class StoryboardDecoder extends Decoder<Storyboard> {
+export class StoryboardDecoder extends SectionDecoder<Storyboard> {
   /**
    * Current section name.
    */
@@ -27,41 +26,33 @@ export class StoryboardDecoder extends Decoder<Storyboard> {
    * NOTE: Commands from the `.osb` file take precedence over those 
    * from the `.osu` file within the layers, as if the commands 
    * from the `.osb` were appended to the end of the `.osu` commands.
-   * @param firstPath Path to the main storyboard (`.osu` or `.osb` file).
-   * @param secondPath Path to the secondary storyboard (`.osb` file).
-   * @returns Decoded storyboard.
+   * @param firstPath The path to the main storyboard (`.osu` or `.osb` file).
+   * @param secondPath The path to the secondary storyboard (`.osb` file).
+   * @returns A decoded storyboard.
    */
-  decodeFromPath(firstPath: string, secondPath?: string): Storyboard {
+  async decodeFromPath(firstPath: string, secondPath?: string): Promise<Storyboard> {
     if (!firstPath.endsWith(FileFormat.Beatmap) && !firstPath.endsWith(FileFormat.Storyboard)) {
       throw new Error(`Wrong format of the first file! Only ${FileFormat.Beatmap} and ${FileFormat.Storyboard} files are supported!`);
-    }
-
-    if (!existsSync(firstPath)) {
-      throw new Error('First storyboard file doesn\'t exist!');
     }
 
     if (typeof secondPath === 'string') {
       if (!secondPath.endsWith(FileFormat.Storyboard)) {
         throw new Error(`Wrong format of the second file! Only ${FileFormat.Storyboard} files are supported as a second argument!`);
       }
-
-      if (!existsSync(secondPath)) {
-        throw new Error('Second storyboard file doesn\'t exist!');
-      }
     }
 
     try {
-      const firstString = stringifyBuffer(readFileSync(firstPath));
-      const secondString = typeof secondPath === 'string'
-        ? stringifyBuffer(readFileSync(secondPath))
+      const firstData = await this._getFileBuffer(firstPath);
+      const secondData = typeof secondPath === 'string'
+        ? await this._getFileBuffer(firstPath)
         : undefined;
 
-      return this.decodeFromString(firstString, secondString);
+      return await this.decodeFromBuffer(firstData, secondData);
     }
     catch (err: unknown) {
       const reason = (err as Error).message || err;
 
-      throw new Error(`Failed to decode the file! Reason: ${reason}`);
+      throw new Error(`Failed to decode a storyboard! Reason: ${reason}`);
     }
   }
 
@@ -72,15 +63,13 @@ export class StoryboardDecoder extends Decoder<Storyboard> {
    * NOTE: Commands from the `.osb` file take precedence over those 
    * from the `.osu` file within the layers, as if the commands 
    * from the `.osb` were appended to the end of the `.osu` commands.
-   * @param firstBuffer A buffer with the main storyboard data (from `.osu` or `.osb` file).
-   * @param secondBuffer A buffer with the secondary storyboard data (from `.osb` file).
-   * @returns Decoded storyboard.
+   * @param firstBuffer The buffer with the main storyboard data (from `.osu` or `.osb` file).
+   * @param secondBuffer The buffer with the secondary storyboard data (from `.osb` file).
+   * @returns A decoded storyboard.
    */
-  decodeFromBuffer(firstBuffer: BufferLike, secondBuffer?: BufferLike): Storyboard {
+  async decodeFromBuffer(firstBuffer: BufferLike, secondBuffer?: BufferLike): Promise<Storyboard> {
     const firstString = stringifyBuffer(firstBuffer);
-    const secondString = secondBuffer
-      ? stringifyBuffer(secondBuffer)
-      : undefined;
+    const secondString = secondBuffer ? stringifyBuffer(secondBuffer) : undefined;
 
     return this.decodeFromString(firstString, secondString);
   }
@@ -92,11 +81,11 @@ export class StoryboardDecoder extends Decoder<Storyboard> {
    * NOTE: Commands from the `.osb` file take precedence over those 
    * from the `.osu` file within the layers, as if the commands 
    * from the `.osb` were appended to the end of the `.osu` commands.
-   * @param firstString A string with the main storyboard data (from `.osu` or `.osb` file).
-   * @param secondString A string with the secondary storyboard data (from `.osb` file).
-   * @returns Decoded storyboard.
+   * @param firstString The string with the main storyboard data (from `.osu` or `.osb` file).
+   * @param secondString The string with the secondary storyboard data (from `.osb` file).
+   * @returns A decoded storyboard.
    */
-  decodeFromString(firstString: string, secondString?: string): Storyboard {
+  async decodeFromString(firstString: string, secondString?: string): Promise<Storyboard> {
     if (typeof firstString !== 'string') {
       firstString = String(firstString);
     }
@@ -118,11 +107,11 @@ export class StoryboardDecoder extends Decoder<Storyboard> {
    * NOTE: Commands from the `.osb` file take precedence over those 
    * from the `.osu` file within the layers, as if the commands 
    * from the `.osb` were appended to the end of the `.osu` commands.
-   * @param firstData A string array with the main storyboard data (from `.osu` or `.osb` file).
-   * @param secondData A string array with the secondary storyboard data (from `.osb` file).
-   * @returns Decoded storyboard.
+   * @param firstData The string array with the main storyboard data (from `.osu` or `.osb` file).
+   * @param secondData The string array with the secondary storyboard data (from `.osb` file).
+   * @returns A decoded storyboard.
    */
-  decodeFromLines(firstData: string[], secondData?: string[]): Storyboard {
+  async decodeFromLines(firstData: string[], secondData?: string[]): Promise<Storyboard> {
     const storyboard = new Storyboard();
 
     this._reset();

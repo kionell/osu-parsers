@@ -1,6 +1,6 @@
 import { Storyboard } from 'osu-classes';
 import { FileFormat } from '../Enums';
-import { mkdirSync, writeFileSync, dirname } from '../Utils/FileSystem';
+import { mkdir, writeFile, dirname } from '../Utils/FileSystem';
 import { StoryboardEventEncoder } from './Handlers';
 
 /**
@@ -9,24 +9,32 @@ import { StoryboardEventEncoder } from './Handlers';
 export class StoryboardEncoder {
   /**
    * Performs storyboard encoding to the specified path.
-   * @param path Path for writing the .osb file.
-   * @param storyboard Storyboard for encoding.
+   * @param path The path for writing the .osb file.
+   * @param storyboard The storyboard for encoding.
+   * @throws If storyboard can't be encoded or file can't be written.
    */
-  encodeToPath(path: string, storyboard?: Storyboard): void {
+  async encodeToPath(path: string, storyboard?: Storyboard): Promise<void> {
     if (!path.endsWith(FileFormat.Storyboard)) {
       path += FileFormat.Storyboard;
     }
 
-    mkdirSync(dirname(path), { recursive: true });
-    writeFileSync(path, this.encodeToString(storyboard));
+    try {
+      await mkdir(dirname(path), { recursive: true });
+      await writeFile(path, await this.encodeToString(storyboard));
+    }
+    catch (err: unknown) {
+      const reason = (err as Error).message || err;
+
+      throw new Error(`Storyboard can't be encoded! Reason: ${reason}`);
+    }
   }
 
   /**
    * Performs storyboard encoding to a string.
-   * @param storyboard Storyboard for encoding.
-   * @returns A string with encoded storyboard data.
+   * @param storyboard The storyboard for encoding.
+   * @returns The string with encoded storyboard data.
    */
-  encodeToString(storyboard?: Storyboard): string {
+  async encodeToString(storyboard?: Storyboard): Promise<string> {
     if (!(storyboard instanceof Storyboard)) return '';
 
     /**

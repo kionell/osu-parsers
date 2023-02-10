@@ -9,9 +9,10 @@ import { FileFormat } from '../Enums';
  */
 export class ScoreEncoder {
   /**
-   * Performs score info encoding to the specified path.
-   * @param path Path for writing the .osr file.
-   * @param score Score info for encoding.
+   * Performs score & replay encoding to the specified path.
+   * @param path The path for writing the .osr file.
+   * @param score The score for encoding.
+   * @throws If score can't be encoded or file can't be written.
    */
   async encodeToPath(path: string, score?: IScore): Promise<void> {
     if (!path.endsWith(FileFormat.Replay)) {
@@ -20,14 +21,21 @@ export class ScoreEncoder {
 
     const data = await this.encodeToBuffer(score);
 
-    await mkdir(dirname(path), { recursive: true });
-    await writeFile(path, new Uint8Array(data));
+    try {
+      await mkdir(dirname(path), { recursive: true });
+      await writeFile(path, new Uint8Array(data));
+    }
+    catch (err: unknown) {
+      const reason = (err as Error).message || err;
+
+      throw new Error(`Score can't be encoded! Reason: ${reason}`);
+    }
   }
 
   /**
    * Performs score encoding to a buffer.
-   * @param score Score info for encoding.
-   * @returns A buffer with encoded score & replay data.
+   * @param score The score for encoding.
+   * @returns The buffer with encoded score & replay data.
    */
   async encodeToBuffer(score?: IScore): Promise<Uint8Array> {
     if (typeof score?.info?.id !== 'number') {

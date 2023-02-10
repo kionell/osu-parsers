@@ -9,20 +9,20 @@ import {
   SerializationReader,
 } from './Handlers';
 
-import { access, readFile } from '../Utils/FileSystem';
 import { LZMA } from '../Utils/LZMA';
 import { BufferLike, stringifyBuffer } from '../Utils/Buffer';
 import { FileFormat } from '../Enums';
+import { Decoder } from './Decoder';
 
 /**
- * Score decoder.
+ * A score decoder.
  */
-export class ScoreDecoder {
+export class ScoreDecoder extends Decoder {
   /**
    * Performs score decoding from the specified .osr file.
-   * @param path Path to the .osr file.
+   * @param path A path to the .osr file.
    * @param parseReplay Should replay be parsed?
-   * @returns Decoded score.
+   * @returns A decoded score.
    */
   async decodeFromPath(path: string, parseReplay = true): Promise<Score> {
     if (!path.endsWith(FileFormat.Replay)) {
@@ -30,29 +30,22 @@ export class ScoreDecoder {
     }
 
     try {
-      await access(path);
-    }
-    catch {
-      throw new Error('File doesn\'t exist!');
-    }
+      const data = await this._getFileBuffer(path);
 
-    try {
-      const buffer = await readFile(path);
-
-      return this.decodeFromBuffer(buffer, parseReplay);
+      return await this.decodeFromBuffer(data, parseReplay);
     }
     catch (err: unknown) {
       const reason = (err as Error).message || err;
 
-      throw new Error(`Failed to decode the file! Reason: ${reason}`);
+      throw new Error(`Failed to decode a score! Reason: ${reason}`);
     }
   }
 
   /**
    * Performs score decoding from a buffer.
-   * @param buffer Buffer with score data.
+   * @param buffer The buffer with score data.
    * @param parseReplay Should replay be parsed?
-   * @returns Decoded score.
+   * @returns A decoded score.
    */
   async decodeFromBuffer(buffer: BufferLike, parseReplay = true): Promise<Score> {
     const reader = new SerializationReader(buffer);

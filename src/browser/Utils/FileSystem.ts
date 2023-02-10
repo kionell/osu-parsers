@@ -6,13 +6,9 @@ const browserFSOperation = function() {
 
 export {
   // fs
-  browserFSOperation as existsSync,
-  browserFSOperation as readFileSync,
-  browserFSOperation as statSync,
-  browserFSOperation as mkdirSync,
-  browserFSOperation as writeFileSync,
   browserFSOperation as mkdir,
   browserFSOperation as access,
+  browserFSOperation as stat,
   browserFSOperation as readFile,
   browserFSOperation as writeFile,
 

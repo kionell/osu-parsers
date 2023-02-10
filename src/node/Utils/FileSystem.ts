@@ -1,14 +1,7 @@
 export {
-  existsSync,
-  readFileSync,
-  statSync,
-  mkdirSync,
-  writeFileSync,
-} from 'fs';
-
-export {
   access,
   mkdir,
+  stat,
   readFile,
   writeFile,
 } from 'fs/promises';

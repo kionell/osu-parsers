@@ -1,6 +1,6 @@
 import { IBeatmap } from 'osu-classes';
 import { FileFormat } from '../Enums';
-import { mkdirSync, writeFileSync, dirname } from '../Utils/FileSystem';
+import { mkdir, writeFile, dirname } from '../Utils/FileSystem';
 
 import {
   BeatmapGeneralEncoder,
@@ -24,24 +24,32 @@ export class BeatmapEncoder {
 
   /**
    * Performs beatmap encoding to the specified path.
-   * @param path Path for writing the .osu file.
-   * @param beatmap Beatmap for encoding.
+   * @param path The path for writing the .osu file.
+   * @param beatmap The beatmap for encoding.
+   * @throws If beatmap can't be encoded or file can't be written.
    */
-  encodeToPath(path: string, beatmap?: IBeatmap): void {
+  async encodeToPath(path: string, beatmap?: IBeatmap): Promise<void> {
     if (!path.endsWith(FileFormat.Beatmap)) {
       path += FileFormat.Beatmap;
     }
 
-    mkdirSync(dirname(path), { recursive: true });
-    writeFileSync(path, this.encodeToString(beatmap));
+    try {
+      await mkdir(dirname(path), { recursive: true });
+      await writeFile(path, await this.encodeToString(beatmap));
+    }
+    catch (err: unknown) {
+      const reason = (err as Error).message || err;
+
+      throw new Error(`Beatmap can't be encoded! Reason: ${reason}`);
+    }
   }
 
   /**
    * Performs beatmap encoding to a string.
-   * @param beatmap Beatmap for encoding.
-   * @returns A string with encoded beatmap data.
+   * @param beatmap The beatmap for encoding.
+   * @returns The string with encoded beatmap data.
    */
-  encodeToString(beatmap?: IBeatmap): string {
+  async encodeToString(beatmap?: IBeatmap): Promise<string> {
     if (!beatmap?.fileFormat) return '';
 
     const fileFormat = beatmap.fileFormat ?? BeatmapEncoder.FIRST_LAZER_VERSION;
