@@ -65,9 +65,14 @@ export class SerializationWriter {
 
     bytesWritten += this.writeULEB128(value.length);
 
+    const view = new Uint8Array(value.length);
+
     for (let i = 0; i < value.length; ++i) {
-      bytesWritten += this.writeByte(value.charCodeAt(i));
+      view[i] = value.charCodeAt(i);
+      bytesWritten++;
     }
+
+    this._update(bytesWritten, view);
 
     return bytesWritten;
   }
