@@ -50,7 +50,7 @@ function getLZMAInstance(): LZMAInstance {
 
     compress(data: DecompressedData) {
       return new Promise((res, rej) => {
-        compress(data, 6, (result, err) => {
+        compress(data, 1, (result, err) => {
           err ? rej(err) : res(new Uint8Array(result));
         });
       });
