@@ -1,20 +1,22 @@
 export type BufferLike = ArrayBufferLike | Uint8Array;
+export type BufferViewLike = BufferLike | ArrayBufferView;
 
-export function concatBuffers(list: ArrayBufferLike[]): BufferLike {
+export function concatBufferViews(list: BufferViewLike[]): BufferLike {
   if (list.length <= 0) {
     return new Uint8Array(0).buffer;
   }
 
-  const arrayBuffer = list.reduce((cbuf, buf, i) => {
-    if (i === 0) return cbuf;
+  const bufferLength = list.reduce((len, buf) => len + buf.byteLength, 0);
 
-    const tmp = new Uint8Array(cbuf.byteLength + buf.byteLength);
+  const arrayBuffer = new Uint8Array(bufferLength);
 
-    tmp.set(new Uint8Array(cbuf), 0);
-    tmp.set(new Uint8Array(buf), cbuf.byteLength);
+  list.reduce((offset, view) => {
+    const buffer = (view as ArrayBufferView).buffer ?? view;
 
-    return tmp.buffer;
-  }, list[0]);
+    arrayBuffer.set(new Uint8Array(buffer), offset);
+
+    return offset + view.byteLength;
+  }, 0);
 
   return arrayBuffer;
 }

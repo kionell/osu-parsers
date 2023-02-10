@@ -1,4 +1,8 @@
-import { BufferLike, concatBuffers } from '../../../Utils/Buffer';
+import {
+  BufferLike,
+  BufferViewLike,
+  concatBufferViews,
+} from '../../../Utils/Buffer';
 
 export class SerializationWriter {
   /**
@@ -7,16 +11,16 @@ export class SerializationWriter {
   private _bytesWritten = 0;
 
   /**
-   * Temp buffers for writing.
+   * Temp buffer views for writing.
    */
-  private _buffers: BufferLike[] = [];
+  private _views: BufferViewLike[] = [];
 
   get bytesWritten(): number {
     return this._bytesWritten;
   }
 
   finish(): BufferLike {
-    return concatBuffers(this._buffers);
+    return concatBufferViews(this._views);
   }
 
   writeByte(value: number): number {
@@ -25,7 +29,7 @@ export class SerializationWriter {
 
   writeBytes(value: BufferLike): number {
     this._bytesWritten += value.byteLength;
-    this._buffers.push(value);
+    this._views.push(value);
 
     return value.byteLength;
   }
@@ -92,7 +96,7 @@ export class SerializationWriter {
 
   private _update(bytesWritten: number, buffer: BufferLike): number {
     this._bytesWritten += bytesWritten;
-    this._buffers.push(buffer);
+    this._views.push(buffer);
 
     return bytesWritten;
   }
