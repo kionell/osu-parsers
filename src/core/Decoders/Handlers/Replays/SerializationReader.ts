@@ -16,7 +16,8 @@ export class SerializationReader {
   }
 
   constructor(buffer: BufferLike) {
-    this.view = new DataView(buffer);
+    // Wrap BufferLike in Uint8Array to get ArrayBuffer
+    this.view = new DataView(new Uint8Array(buffer).buffer);
   }
 
   /**
