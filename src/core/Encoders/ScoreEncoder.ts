@@ -61,7 +61,7 @@ export class ScoreEncoder {
       writer.writeShort(score.info.maxCombo);
 
       writer.writeByte(Number(score.info.perfect));
-      writer.writeInteger(score.info.mods?.bitwise ?? 0);
+      writer.writeInteger((score.info.mods?.bitwise ?? Number(score.info.rawMods)) || 0);
 
       writer.writeString(ReplayEncoder.encodeLifeBar(score.replay?.lifeBar ?? []));
 
