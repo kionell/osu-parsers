@@ -2,6 +2,7 @@ import { Storyboard } from 'osu-classes';
 import { Decoder } from './Decoder';
 import { Parsing } from '../Utils/Parsing';
 import { existsSync, readFileSync } from '../Utils/FileSystem';
+import { BufferLike, stringifyBuffer } from '../Utils/Buffer';
 import { FileFormat } from '../Enums';
 
 import {
@@ -9,7 +10,6 @@ import {
   StoryboardEventDecoder,
   StoryboardVariableDecoder,
 } from './Handlers';
-import { BufferLike } from '../Utils/Buffer';
 
 /**
  * Storyboard decoder.
@@ -51,9 +51,9 @@ export class StoryboardDecoder extends Decoder<Storyboard> {
     }
 
     try {
-      const firstString = readFileSync(firstPath).toString();
+      const firstString = stringifyBuffer(readFileSync(firstPath));
       const secondString = typeof secondPath === 'string'
-        ? readFileSync(secondPath).toString()
+        ? stringifyBuffer(readFileSync(secondPath))
         : undefined;
 
       return this.decodeFromString(firstString, secondString);

@@ -1,6 +1,8 @@
 export type BufferLike = ArrayBufferLike | Uint8Array;
 export type BufferViewLike = BufferLike | ArrayBufferView;
 
+const textDecoder = new TextDecoder();
+
 export function concatBufferViews(list: BufferViewLike[]): BufferLike {
   if (list.length <= 0) {
     return new Uint8Array(0).buffer;
@@ -22,21 +24,5 @@ export function concatBufferViews(list: BufferViewLike[]): BufferLike {
 }
 
 export function stringifyBuffer(buffer: BufferLike): string {
-  const view = new Uint16Array(buffer);
-  const length = view.length;
-
-  let result = '';
-  let addition = Math.pow(2, 16) - 1;
-
-  for (let i = 0; i < length; i += addition) {
-    if (i + addition > length) {
-      addition = length - i;
-    }
-
-    const subarray = view.subarray(i, i + addition) as ArrayLike<number> as number[];
-
-    result += String.fromCharCode.apply(null, subarray);
-  }
-
-  return result;
+  return textDecoder.decode(buffer);
 }

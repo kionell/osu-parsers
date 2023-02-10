@@ -15,8 +15,8 @@ import { StoryboardDecoder } from './StoryboardDecoder';
 import { IBeatmapParsingOptions } from '../Interfaces';
 import { Parsing } from '../Utils/Parsing';
 import { existsSync, readFileSync, statSync } from '../Utils/FileSystem';
+import { BufferLike, stringifyBuffer } from '../Utils/Buffer';
 import { FileFormat } from '../Enums';
-import { BufferLike } from '../Utils/Buffer';
 
 /**
  * Beatmap decoder.
@@ -77,7 +77,7 @@ export class BeatmapDecoder extends Decoder<Beatmap> {
    * @returns Decoded beatmap.
    */
   decodeFromBuffer(data: BufferLike, options?: boolean | IBeatmapParsingOptions): Beatmap {
-    return this.decodeFromString(data.toString(), options);
+    return this.decodeFromString(stringifyBuffer(data), options);
   }
 
   /**
