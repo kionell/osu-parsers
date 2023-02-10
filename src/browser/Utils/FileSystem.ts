@@ -11,6 +11,10 @@ export {
   browserFSOperation as statSync,
   browserFSOperation as mkdirSync,
   browserFSOperation as writeFileSync,
+  browserFSOperation as mkdir,
+  browserFSOperation as access,
+  browserFSOperation as readFile,
+  browserFSOperation as writeFile,
 
   // path
   browserFSOperation as dirname,

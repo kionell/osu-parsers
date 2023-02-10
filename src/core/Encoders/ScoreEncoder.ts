@@ -1,6 +1,6 @@
 import { IScore } from 'osu-classes';
 import { ReplayEncoder, SerializationWriter } from './Handlers';
-import { mkdirSync, writeFileSync, dirname } from '../Utils/FileSystem';
+import { mkdir, writeFile, dirname } from '../Utils/FileSystem';
 import { LZMA } from '../Utils/LZMA';
 import { FileFormat } from '../Enums';
 
@@ -20,8 +20,8 @@ export class ScoreEncoder {
 
     const data = await this.encodeToBuffer(score);
 
-    mkdirSync(dirname(path), { recursive: true });
-    writeFileSync(path, data);
+    await mkdir(dirname(path), { recursive: true });
+    await writeFile(path, data);
   }
 
   /**
