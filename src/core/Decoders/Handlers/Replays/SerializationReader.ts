@@ -1,4 +1,4 @@
-import { BufferLike } from '../../../Utils/Buffer';
+import { BufferLike, stringifyBuffer } from '../../../Utils/Buffer';
 
 export class SerializationReader {
   /**
@@ -46,7 +46,7 @@ export class SerializationReader {
 
     this._bytesRead += length;
 
-    return bytes;
+    return new Uint8Array(bytes);
   }
 
   /**
@@ -119,6 +119,6 @@ export class SerializationReader {
 
     const length = this.readULEB128();
 
-    return length > 0 ? this.readBytes(length).toString() : '';
+    return length > 0 ? stringifyBuffer(this.readBytes(length)) : '';
   }
 }
