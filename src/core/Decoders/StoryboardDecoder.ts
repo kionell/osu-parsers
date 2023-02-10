@@ -77,8 +77,10 @@ export class StoryboardDecoder extends Decoder<Storyboard> {
    * @returns Decoded storyboard.
    */
   decodeFromBuffer(firstBuffer: BufferLike, secondBuffer?: BufferLike): Storyboard {
-    const firstString = firstBuffer.toString();
-    const secondString = secondBuffer?.toString();
+    const firstString = stringifyBuffer(firstBuffer);
+    const secondString = secondBuffer
+      ? stringifyBuffer(secondBuffer)
+      : undefined;
 
     return this.decodeFromString(firstString, secondString);
   }
