@@ -63,8 +63,10 @@ export class BeatmapDecoder extends Decoder<Beatmap> {
 
       return beatmap;
     }
-    catch {
-      throw new Error('Failed to read the file!');
+    catch (err: unknown) {
+      const reason = (err as Error).message || err;
+
+      throw new Error(`Failed to decode the file! Reason: ${reason}`);
     }
   }
 

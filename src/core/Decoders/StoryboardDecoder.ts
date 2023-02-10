@@ -58,8 +58,10 @@ export class StoryboardDecoder extends Decoder<Storyboard> {
 
       return this.decodeFromString(firstString, secondString);
     }
-    catch {
-      throw new Error('Failed to read one of the files!');
+    catch (err: unknown) {
+      const reason = (err as Error).message || err;
+
+      throw new Error(`Failed to decode the file! Reason: ${reason}`);
     }
   }
 

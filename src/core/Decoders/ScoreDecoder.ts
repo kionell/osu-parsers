@@ -31,18 +31,20 @@ export class ScoreDecoder {
 
     try {
       await access(path);
-
-      try {
-        const buffer = await readFile(path);
-
-        return this.decodeFromBuffer(buffer, parseReplay);
-      }
-      catch {
-        throw new Error('Failed to read the file!');
-      }
     }
     catch {
       throw new Error('File doesn\'t exist!');
+    }
+
+    try {
+      const buffer = await readFile(path);
+
+      return this.decodeFromBuffer(buffer, parseReplay);
+    }
+    catch (err: unknown) {
+      const reason = (err as Error).message || err;
+
+      throw new Error(`Failed to decode the file! Reason: ${reason}`);
     }
   }
 
