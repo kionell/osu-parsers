@@ -52,7 +52,7 @@ export class BeatmapDecoder extends Decoder<Beatmap> {
     }
 
     if (!existsSync(path)) {
-      throw new Error('File doesn\'t exists!');
+      throw new Error('File doesn\'t exist!');
     }
 
     try {

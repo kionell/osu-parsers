@@ -42,7 +42,7 @@ export class ScoreDecoder {
       }
     }
     catch {
-      throw new Error('File doesn\'t exists!');
+      throw new Error('File doesn\'t exist!');
     }
   }
 

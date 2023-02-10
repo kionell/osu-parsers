@@ -33,20 +33,20 @@ export class StoryboardDecoder extends Decoder<Storyboard> {
    */
   decodeFromPath(firstPath: string, secondPath?: string): Storyboard {
     if (!firstPath.endsWith(FileFormat.Beatmap) && !firstPath.endsWith(FileFormat.Storyboard)) {
-      throw new Error(`Wrong file format! Only ${FileFormat.Beatmap} and ${FileFormat.Storyboard} files are supported!`);
+      throw new Error(`Wrong format of the first file! Only ${FileFormat.Beatmap} and ${FileFormat.Storyboard} files are supported!`);
     }
 
     if (!existsSync(firstPath)) {
-      throw new Error('File doesn\'t exists!');
+      throw new Error('First storyboard file doesn\'t exist!');
     }
 
     if (typeof secondPath === 'string') {
       if (!secondPath.endsWith(FileFormat.Storyboard)) {
-        throw new Error(`Wrong file format! Only ${FileFormat.Storyboard} files are supported as a second argument!`);
+        throw new Error(`Wrong format of the second file! Only ${FileFormat.Storyboard} files are supported as a second argument!`);
       }
 
       if (!existsSync(secondPath)) {
-        throw new Error('File doesn\'t exists!');
+        throw new Error('Second storyboard file doesn\'t exist!');
       }
     }
 
