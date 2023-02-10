@@ -11,6 +11,7 @@ import {
 
 import { access, readFile } from '../Utils/FileSystem';
 import { LZMA } from '../Utils/LZMA';
+import { BufferLike } from '../Utils/Buffer';
 import { FileFormat } from '../Enums';
 
 /**
@@ -51,7 +52,7 @@ export class ScoreDecoder {
    * @param parseReplay Should replay be parsed?
    * @returns Decoded score.
    */
-  async decodeFromBuffer(buffer: Buffer, parseReplay = true): Promise<Score> {
+  async decodeFromBuffer(buffer: BufferLike, parseReplay = true): Promise<Score> {
     const reader = new SerializationReader(buffer);
     const scoreInfo = new ScoreInfo();
 

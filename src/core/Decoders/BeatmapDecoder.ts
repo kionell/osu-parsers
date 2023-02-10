@@ -16,6 +16,7 @@ import { IBeatmapParsingOptions } from '../Interfaces';
 import { Parsing } from '../Utils/Parsing';
 import { existsSync, readFileSync, statSync } from '../Utils/FileSystem';
 import { FileFormat } from '../Enums';
+import { BufferLike } from '../Utils/Buffer';
 
 /**
  * Beatmap decoder.
@@ -54,12 +55,17 @@ export class BeatmapDecoder extends Decoder<Beatmap> {
       throw new Error('File doesn\'t exists!');
     }
 
-    const data = readFileSync(path);
-    const beatmap = this.decodeFromBuffer(data, options);
+    try {
+      const data = readFileSync(path);
+      const beatmap = this.decodeFromBuffer(data, options);
 
-    beatmap.fileUpdateDate = statSync(path).mtime;
+      beatmap.fileUpdateDate = statSync(path).mtime;
 
-    return beatmap;
+      return beatmap;
+    }
+    catch {
+      throw new Error('Failed to read the file!');
+    }
   }
 
   /**
@@ -70,7 +76,7 @@ export class BeatmapDecoder extends Decoder<Beatmap> {
    * All sections that weren't specified will be enabled by default.
    * @returns Decoded beatmap.
    */
-  decodeFromBuffer(data: Buffer, options?: boolean | IBeatmapParsingOptions): Beatmap {
+  decodeFromBuffer(data: BufferLike, options?: boolean | IBeatmapParsingOptions): Beatmap {
     return this.decodeFromString(data.toString(), options);
   }
 

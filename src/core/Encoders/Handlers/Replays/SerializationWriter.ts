@@ -1,3 +1,5 @@
+import { BufferLike, concatBuffers } from '../../../Utils/Buffer';
+
 export class SerializationWriter {
   /**
    * Number of written bytes.
@@ -7,24 +9,21 @@ export class SerializationWriter {
   /**
    * Temp buffers for writing.
    */
-  private _buffers: Buffer[] = [];
+  private _buffers: BufferLike[] = [];
 
   get bytesWritten(): number {
     return this._bytesWritten;
   }
 
-  finish(): Buffer {
-    return Buffer.concat(this._buffers);
+  finish(): BufferLike {
+    return concatBuffers(this._buffers);
   }
 
   writeByte(value: number): number {
-    const buffer = Buffer.alloc(1);
-    const bytesWritten = buffer.writeUInt8(value, 0);
-
-    return this._update(bytesWritten, buffer);
+    return this._update(1, new Uint8Array([value]));
   }
 
-  writeBytes(value: Buffer): number {
+  writeBytes(value: BufferLike): number {
     this._bytesWritten += value.byteLength;
     this._buffers.push(value);
 
@@ -32,28 +31,15 @@ export class SerializationWriter {
   }
 
   writeShort(value: number): number {
-    const buffer = Buffer.alloc(2);
-    const bytesWritten = buffer.writeUInt16LE(value, 0);
-
-    return this._update(bytesWritten, buffer);
+    return this._update(2, new Uint16Array([value]));
   }
 
   writeInteger(value: number): number {
-    const buffer = Buffer.alloc(4);
-    const bytesWritten = buffer.writeInt32LE(value, 0);
-
-    return this._update(bytesWritten, buffer);
+    return this._update(4, new Int32Array([value]));
   }
 
   writeLong(value: bigint): number {
-    const buffer = Buffer.alloc(8);
-
-    /**
-     * Are the types of first arg and return value swapped or what?
-     */
-    const bytesWritten = buffer.writeBigInt64LE(value as any, 0);
-
-    return this._update(+bytesWritten, buffer);
+    return this._update(8, new BigInt64Array([value]));
   }
 
   writeDate(date: Date): number {
@@ -104,7 +90,7 @@ export class SerializationWriter {
     return bytesWritten;
   }
 
-  private _update(bytesWritten: number, buffer: Buffer): number {
+  private _update(bytesWritten: number, buffer: BufferLike): number {
     this._bytesWritten += bytesWritten;
     this._buffers.push(buffer);
 

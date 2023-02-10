@@ -1,8 +1,10 @@
+import { BufferLike } from '../../../Utils/Buffer';
+
 export class SerializationReader {
   /**
    * Data buffer for reading.
    */
-  buffer: Buffer;
+  view: DataView;
 
   /**
    * Number of read bytes.
@@ -13,22 +15,22 @@ export class SerializationReader {
     return this._bytesRead;
   }
 
-  constructor(buffer: Buffer) {
-    this.buffer = buffer;
+  constructor(buffer: BufferLike) {
+    this.view = new DataView(buffer);
   }
 
   /**
    * Remaining bytes for reading.
    */
   get remainingBytes(): number {
-    return this.buffer.length - this._bytesRead;
+    return this.view.byteLength - this._bytesRead;
   }
 
   /**
    * Read single byte.
    */
   readByte(): number {
-    return this.buffer.readUInt8(this._bytesRead++);
+    return this.view.getUint8(this._bytesRead++);
   }
 
   /**
@@ -36,8 +38,11 @@ export class SerializationReader {
    * @param length The number of bytes to be read.
    * @returns Sliced buffer.
    */
-  readBytes(length: number): Buffer {
-    const bytes = this.buffer.subarray(this._bytesRead, this._bytesRead + length);
+  readBytes(length: number): BufferLike {
+    const bytes = this.view.buffer.slice(
+      this._bytesRead,
+      this._bytesRead + length,
+    );
 
     this._bytesRead += length;
 
@@ -48,7 +53,7 @@ export class SerializationReader {
    * Read single short (uint16) value.
    */
   readShort(): number {
-    const value = this.buffer.readUInt16LE(this._bytesRead);
+    const value = this.view.getUint16(this._bytesRead, true);
 
     this._bytesRead += 2;
 
@@ -59,7 +64,7 @@ export class SerializationReader {
    * Read single integer (int32) value.
    */
   readInteger(): number {
-    const value = this.buffer.readInt32LE(this._bytesRead);
+    const value = this.view.getInt32(this._bytesRead, true);
 
     this._bytesRead += 4;
 
@@ -70,7 +75,7 @@ export class SerializationReader {
    * Read single long (int64) value.
    */
   readLong(): bigint {
-    const value = this.buffer.readBigInt64LE(this._bytesRead);
+    const value = this.view.getBigInt64(this._bytesRead, true);
 
     this._bytesRead += 8;
 

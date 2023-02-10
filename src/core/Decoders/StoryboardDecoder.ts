@@ -9,6 +9,7 @@ import {
   StoryboardEventDecoder,
   StoryboardVariableDecoder,
 } from './Handlers';
+import { BufferLike } from '../Utils/Buffer';
 
 /**
  * Storyboard decoder.
@@ -49,12 +50,17 @@ export class StoryboardDecoder extends Decoder<Storyboard> {
       }
     }
 
-    const firstString = readFileSync(firstPath).toString();
-    const secondString = typeof secondPath === 'string'
-      ? readFileSync(secondPath).toString()
-      : undefined;
+    try {
+      const firstString = readFileSync(firstPath).toString();
+      const secondString = typeof secondPath === 'string'
+        ? readFileSync(secondPath).toString()
+        : undefined;
 
-    return this.decodeFromString(firstString, secondString);
+      return this.decodeFromString(firstString, secondString);
+    }
+    catch {
+      throw new Error('Failed to read one of the files!');
+    }
   }
 
   /**
@@ -68,7 +74,7 @@ export class StoryboardDecoder extends Decoder<Storyboard> {
    * @param secondBuffer A buffer with the secondary storyboard data (from `.osb` file).
    * @returns Decoded storyboard.
    */
-  decodeFromBuffer(firstBuffer: Buffer, secondBuffer?: Buffer): Storyboard {
+  decodeFromBuffer(firstBuffer: BufferLike, secondBuffer?: BufferLike): Storyboard {
     const firstString = firstBuffer.toString();
     const secondString = secondBuffer?.toString();
 

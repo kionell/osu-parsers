@@ -3,6 +3,7 @@ import { ReplayEncoder, SerializationWriter } from './Handlers';
 import { mkdir, writeFile, dirname } from '../Utils/FileSystem';
 import { LZMA } from '../Utils/LZMA';
 import { FileFormat } from '../Enums';
+import { BufferLike } from '../Utils/Buffer';
 
 /**
  * Score encoder.
@@ -21,7 +22,7 @@ export class ScoreEncoder {
     const data = await this.encodeToBuffer(score);
 
     await mkdir(dirname(path), { recursive: true });
-    await writeFile(path, data);
+    await writeFile(path, new Uint8Array(data));
   }
 
   /**
@@ -29,9 +30,9 @@ export class ScoreEncoder {
    * @param score Score info for encoding.
    * @returns A buffer with encoded score & replay data.
    */
-  async encodeToBuffer(score?: IScore): Promise<Buffer> {
+  async encodeToBuffer(score?: IScore): Promise<BufferLike> {
     if (typeof score?.info?.id !== 'number') {
-      return Buffer.from([]);
+      return new Uint8Array().buffer;
     }
 
     const writer = new SerializationWriter();
@@ -71,7 +72,7 @@ export class ScoreEncoder {
         const replayData = ReplayEncoder.encodeReplayFrames(score.replay.frames);
         const encodedData = await LZMA.compress(replayData);
 
-        writer.writeInteger(encodedData.length);
+        writer.writeInteger(encodedData.byteLength);
         writer.writeBytes(encodedData);
       }
 
