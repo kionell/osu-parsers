@@ -53,7 +53,7 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
 
     try {
       const data = await this._getFileBuffer(path);
-      const beatmap = await this.decodeFromBuffer(data, options);
+      const beatmap = this.decodeFromBuffer(data, options);
 
       beatmap.fileUpdateDate = await this._getFileUpdateDate(path);
 
@@ -74,7 +74,7 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
    * All sections that weren't specified will be enabled by default.
    * @returns A decoded beatmap.
    */
-  async decodeFromBuffer(data: BufferLike, options?: boolean | IBeatmapParsingOptions): Promise<Beatmap> {
+  decodeFromBuffer(data: BufferLike, options?: boolean | IBeatmapParsingOptions): Beatmap {
     return this.decodeFromString(stringifyBuffer(data), options);
   }
 
@@ -86,7 +86,7 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
    * All sections that weren't specified will be enabled by default.
    * @returns A decoded beatmap.
    */
-  async decodeFromString(str: string, options?: boolean | IBeatmapParsingOptions): Promise<Beatmap> {
+  decodeFromString(str: string, options?: boolean | IBeatmapParsingOptions): Beatmap {
     str = typeof str !== 'string' ? String(str) : str;
 
     return this.decodeFromLines(str.split(/\r?\n/), options);
@@ -99,7 +99,7 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
    * Setting this to boolean will only affect storyboard parsing.
    * @returns A decoded beatmap.
    */
-  async decodeFromLines(data: string[], options?: boolean | IBeatmapParsingOptions): Promise<Beatmap> {
+  decodeFromLines(data: string[], options?: boolean | IBeatmapParsingOptions): Beatmap {
     const beatmap = new Beatmap();
 
     this._reset();
@@ -141,7 +141,7 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
     if (this._sbLines && this._sbLines.length) {
       const storyboardDecoder = new StoryboardDecoder();
 
-      beatmap.events.storyboard = await storyboardDecoder.decodeFromLines(this._sbLines);
+      beatmap.events.storyboard = storyboardDecoder.decodeFromLines(this._sbLines);
 
       /**
        * Because we parsed storyboard through beatmap decoder

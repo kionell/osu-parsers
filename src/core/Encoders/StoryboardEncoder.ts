@@ -4,7 +4,7 @@ import { mkdir, writeFile, dirname } from '../Utils/FileSystem';
 import { StoryboardEventEncoder } from './Handlers';
 
 /**
- * Storyboard encoder.
+ * A storyboard encoder.
  */
 export class StoryboardEncoder {
   /**
@@ -34,7 +34,7 @@ export class StoryboardEncoder {
    * @param storyboard The storyboard for encoding.
    * @returns The string with encoded storyboard data.
    */
-  async encodeToString(storyboard?: Storyboard): Promise<string> {
+  encodeToString(storyboard?: Storyboard): string {
     if (!(storyboard instanceof Storyboard)) return '';
 
     /**

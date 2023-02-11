@@ -14,7 +14,7 @@ import {
 } from './Handlers';
 
 /**
- * Beatmap encoder.
+ * A beatmap encoder.
  */
 export class BeatmapEncoder {
   /**
@@ -49,7 +49,7 @@ export class BeatmapEncoder {
    * @param beatmap The beatmap for encoding.
    * @returns The string with encoded beatmap data.
    */
-  async encodeToString(beatmap?: IBeatmap): Promise<string> {
+  encodeToString(beatmap?: IBeatmap): string {
     if (!beatmap?.fileFormat) return '';
 
     const fileFormat = beatmap.fileFormat ?? BeatmapEncoder.FIRST_LAZER_VERSION;

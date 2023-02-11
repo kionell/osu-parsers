@@ -67,7 +67,7 @@ export class StoryboardDecoder extends SectionDecoder<Storyboard> {
    * @param secondBuffer The buffer with the secondary storyboard data (from `.osb` file).
    * @returns A decoded storyboard.
    */
-  async decodeFromBuffer(firstBuffer: BufferLike, secondBuffer?: BufferLike): Promise<Storyboard> {
+  decodeFromBuffer(firstBuffer: BufferLike, secondBuffer?: BufferLike): Storyboard {
     const firstString = stringifyBuffer(firstBuffer);
     const secondString = secondBuffer ? stringifyBuffer(secondBuffer) : undefined;
 
@@ -85,7 +85,7 @@ export class StoryboardDecoder extends SectionDecoder<Storyboard> {
    * @param secondString The string with the secondary storyboard data (from `.osb` file).
    * @returns A decoded storyboard.
    */
-  async decodeFromString(firstString: string, secondString?: string): Promise<Storyboard> {
+  decodeFromString(firstString: string, secondString?: string): Storyboard {
     if (typeof firstString !== 'string') {
       firstString = String(firstString);
     }
@@ -111,7 +111,7 @@ export class StoryboardDecoder extends SectionDecoder<Storyboard> {
    * @param secondData The string array with the secondary storyboard data (from `.osb` file).
    * @returns A decoded storyboard.
    */
-  async decodeFromLines(firstData: string[], secondData?: string[]): Promise<Storyboard> {
+  decodeFromLines(firstData: string[], secondData?: string[]): Storyboard {
     const storyboard = new Storyboard();
 
     this._reset();

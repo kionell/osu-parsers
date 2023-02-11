@@ -5,7 +5,7 @@ import { LZMA } from '../Utils/LZMA';
 import { FileFormat } from '../Enums';
 
 /**
- * Score encoder.
+ * A score encoder.
  */
 export class ScoreEncoder {
   /**
