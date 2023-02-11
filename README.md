@@ -10,7 +10,7 @@ A bundle of parsers for osu! file formats based on the osu!lazer source code.
 - Based on the osu!lazer source code.
 - Can be used for parsing beatmaps from any osu! game modes.
 - Supports beatmap conversion between different game modes.
-- Supports browsers.
+- Works in browsers.
 
 ## Installation
 
@@ -20,25 +20,24 @@ Add a new dependency to your project via npm:
 npm install osu-parsers
 ```
 
-## Requirements
+## Dependencies
 
-This package comes with built-in LZMA codec and Buffer polyfill for browsers as it required for replay processing.
+This package comes with built-in LZMA codec as it required for replay processing.
 All classes and their typings can be found in [osu-classes](https://github.com/kionell/osu-classes) package which is a peer dependency and must be installed separately.
 
 ## Beatmap decoding
 
 Beatmap decoder is used to read .osu files and convert them to the objects of plain [Beatmap](https://kionell.github.io/osu-classes/classes/Beatmap.html) type.
-This decoder is fully synchronous and there is no support for async version right now.
 Note that beatmap decoder will return only parsed beatmap without max combo or mods! (read about rulesets below)
 
 There are 4 ways to read data using this decoders:
-- via file path
-- via data buffer
-- via string
-- via array of split lines
+- via file path - async
+- via data buffer - sync
+- via string - sync
+- via array of split lines - sync
 
 By default, beatmap decoder will decode both beatmap and storyboard. If you want to decode beatmap without storyboard, you can pass `false` as the second parameter to any of the methods.
-There is also support for partial beatmap decoding which allows you to skip unnecessary sections.
+There is also a support for partial beatmap decoding which allows you to skip unnecessary sections.
 
 ### Example of beatmap decoding
 
@@ -52,7 +51,7 @@ const data = 'osu file format v14...';
 const shouldParseSb = true;
 
 const decoder = new BeatmapDecoder();
-const beatmap1 = decoder.decodeFromPath(path, shouldParseSb);
+const beatmap1 = await decoder.decodeFromPath(path, shouldParseSb);
 
 // Partial beatmap decoding without unnecessary sections.
 const beatmap2 = decoder.decodeFromString(data, {
@@ -74,13 +73,12 @@ console.log(beatmap2) // Another Beatmap object.
 ## Storyboard decoding
 
 Storyboard decoder is used to read both .osu and .osb files and convert them to the [Storyboard](https://kionell.github.io/osu-classes/classes/Storyboard.html) objects.
-This decoder is also fully synchronous with no async support at all.
 
 As in beatmap decoder, there are 4 ways to decode your .osu and .osb files:
-- via file path
-- via data buffer
-- via string
-- via array of split lines
+- via file path - async
+- via data buffer - sync
+- via string - sync
+- via array of split lines - sync
 
 ### Example of storyboard decoding
 
@@ -93,10 +91,10 @@ const pathToOsu = 'path/to/your/file.osu';
 const decoder = new StoryboardDecoder();
 
 // Parse a single storyboard file (from .osb) for beatmaps that doesn't have internal storyboard (from .osu)
-const storyboard1 = decoder.decodeFromPath(pathToOsb);
+const storyboard1 = await decoder.decodeFromPath(pathToOsb);
 
 // Combines main storyboard (from .osu) with secondary storyboard (from .osb)
-const storyboard2 = decoder.decodeFromPath(pathToOsu, pathToOsb);
+const storyboard2 = await decoder.decodeFromPath(pathToOsu, pathToOsb);
 
 console.log(storyboard1); // Storyboard object.
 console.log(storyboard2); // Another Storyboard object.
@@ -104,14 +102,14 @@ console.log(storyboard2); // Another Storyboard object.
 
 ## Score & replay decoding
 
-Score decoder is used to decode .osr files and convert them to the Score objects.
+Score decoder is used to decode .osr files and convert them to the [Score](https://kionell.github.io/osu-classes/classes/Score.html) objects.
 Score object contains score information and replay data of plain [Replay](https://kionell.github.io/osu-classes/classes/Replay.html) type.
 Note that plain [Replay](https://kionell.github.io/osu-classes/classes/Replay.html) type doesn't have any data for non-stardard replays and must be converted using one of the supported rulesets. (read about rulesets below)
 This decoder is based on external LZMA library and works asynchronously.
 
 There are 2 ways to read data through this decoder:
-- via file path
-- via buffer
+- via file path - async
+- via buffer - async
 
 By default, score decoder will decode both score information and replay. If you want to decode score information without replay, you can pass `false` as the second parameter to any of the methods.
 
@@ -127,11 +125,10 @@ const parseReplay = true;
 
 const decoder = new ScoreDecoder();
 
-decoder.decodeFromPath(path, parseReplay)
-  .then((score) => {
-    console.log(score.info); // ScoreInfo object.
-    console.log(score.replay); // Replay object or null.
-  });
+const score = await decoder.decodeFromPath(path, parseReplay)
+
+console.log(score.info); // ScoreInfo object.
+console.log(score.replay); // Replay object or null.
 ```
 
 ## Encoding
@@ -152,16 +149,16 @@ const shouldParseSb = true;
 const decoder = new BeatmapDecoder();
 const encoder = new BeatmapEncoder();
 
-const beatmap = decoder.decodeFromPath(decodePath, shouldParseSb);
+const beatmap = await decoder.decodeFromPath(decodePath, shouldParseSb);
 
 // Do your stuff with beatmap...
 
 const encodePath = 'path/to/your/encoding/file.osu';
 
 // Write IBeatmap object to an .osu file.
-encoder.encodeToPath(encodePath, beatmap);
+await encoder.encodeToPath(encodePath, beatmap);
 
-// Also you can encode IBeatmap object to a string.
+// You can also encode IBeatmap object to a string.
 const stringified = encoder.encodeToString(beatmap);
 ```
 
@@ -175,16 +172,16 @@ const decodePath = 'path/to/your/decoding/file.osb';
 const decoder = new StoryboardDecoder();
 const encoder = new StoryboardEncoder();
 
-const storyboard = decoder.decodeFromPath(decodePath);
+const storyboard = await decoder.decodeFromPath(decodePath);
 
 // Do your stuff with storyboard...
 
 const encodePath = 'path/to/your/encoding/file.osb';
 
 // Write Storyboard object to an .osb file.
-encoder.encodeToPath(encodePath, storyboard);
+await encoder.encodeToPath(encodePath, storyboard);
 
-// Also you can encode Storyboard object to a string.
+// You can also encode Storyboard object to a string.
 const stringified = encoder.encodeToString(storyboard);
 ```
 
@@ -198,23 +195,17 @@ const decodePath = 'path/to/your/decoding/file.osr';
 const decoder = new StoryboardDecoder();
 const encoder = new StoryboardEncoder();
 
-const score = decoder.decodeFromPath(decodePath);
+const score = await decoder.decodeFromPath(decodePath);
 
 // Do your stuff with score info and replay...
 
 const encodePath = 'path/to/your/encoding/file.osr';
 
 // Write IScore object to an .osr file.
-encoder.encodeToPath(encodePath, score)
-  .then(() => {
-    // Do something after .osr encoding...
-  }); 
+await encoder.encodeToPath(encodePath, score);
 
-// Also you can encode IScore object to a buffer.
-encoder.encodeToBuffer(score)
-  .then((buffer) => {
-    // Do something with .osr file buffer...
-  });
+// You can also encode IScore object to a buffer.
+const buffer = await encoder.encodeToBuffer(score);
 ```
 
 ## Rulesets
