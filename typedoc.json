@@ -1,6 +1,6 @@
 {
   "entryPoints": ["./src/core/index.ts"],
-  "out": ["docs"],
+  "out": "docs",
   "tsconfig": "./tsconfig.json",
   "excludeExternals": true,
   "excludeInternal": true,
