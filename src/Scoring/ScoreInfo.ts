@@ -42,8 +42,6 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
    */
   perfect = false;
 
-  private _accuracy: number | null = null;
-  private _rank: keyof typeof ScoreRank | null = null;
   private _ruleset: IRuleset | null = null;
   private _rulesetId = 0;
   private _mods: ModCombination | null = null;
@@ -53,22 +51,22 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
    * Score accuracy.
    */
   get accuracy(): number {
-    return this._accuracy ?? calculateAccuracy(this);
+    return calculateAccuracy(this);
   }
 
-  set accuracy(value: number | null) {
-    this._accuracy = value;
+  set accuracy(_: number) {
+    return;
   }
 
   /**
    * Score rank.
    */
   get rank(): keyof typeof ScoreRank {
-    return this._rank ?? calculateRank(this);
+    return calculateRank(this);
   }
 
-  set rank(value: keyof typeof ScoreRank | null) {
-    this._rank = value;
+  set rank(_: keyof typeof ScoreRank) {
+    return;
   }
 
   /**
