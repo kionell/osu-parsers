@@ -146,18 +146,18 @@ export abstract class LegacyScoreExtensions {
   get totalHits(): number {
     const geki = this.countGeki;
     const katu = this.countKatu;
-    const c300 = this.count300;
-    const c100 = this.count100;
-    const c50 = this.count50;
+    const n300 = this.count300;
+    const n100 = this.count100;
+    const n50 = this.count50;
     const miss = this.countMiss;
 
     switch (this.rulesetId) {
-      case 0: return c50 + c100 + c300 + miss;
-      case 1: return c100 + c300 + miss;
-      case 2: return c50 + c100 + c300 + miss + katu;
-      case 3: return c50 + c100 + c300 + miss + geki + katu;
+      case 0: return n300 + n100 + n50 + miss;
+      case 1: return n300 + n100 + n50 + miss;
+      case 2: return n300 + katu + n100 + n50 + miss;
+      case 3: return geki + n300 + katu + n100 + n50 + miss;
     }
 
-    return geki + katu + c300 + c100 + c50 + miss;
+    return geki + n300 + katu + n100 + n50 + miss;
   }
 }

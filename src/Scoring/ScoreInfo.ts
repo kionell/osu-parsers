@@ -6,6 +6,7 @@ import { LegacyScoreExtensions } from './LegacyScoreExtensions';
 import { IBeatmapInfo } from '../Beatmaps';
 import { IRuleset } from '../Rulesets';
 import { ModCombination } from '../Mods';
+import { calculateAccuracy, calculateRank } from './ScoreUtils';
 
 /**
  * A score information.
@@ -41,21 +42,38 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
    */
   perfect = false;
 
-  /**
-   * Score rank.
-   */
-  rank: keyof typeof ScoreRank = 'F';
+  private _accuracy: number | null = null;
+  private _rank: keyof typeof ScoreRank | null = null;
+  private _ruleset: IRuleset | null = null;
+  private _rulesetId = 0;
+  private _mods: ModCombination | null = null;
+  private _rawMods: string | number = 0;
 
   /**
    * Score accuracy.
    */
-  accuracy = 0;
+  get accuracy(): number {
+    return this._accuracy ?? calculateAccuracy(this);
+  }
+
+  set accuracy(value: number | null) {
+    this._accuracy = value;
+  }
+
+  /**
+   * Score rank.
+   */
+  get rank(): keyof typeof ScoreRank {
+    return this._rank ?? calculateRank(this);
+  }
+
+  set rank(value: keyof typeof ScoreRank | null) {
+    this._rank = value;
+  }
 
   /**
    * Ruleset instance.
    */
-  private _ruleset: IRuleset | null = null;
-
   get ruleset(): IRuleset | null {
     return this._ruleset;
   }
@@ -68,8 +86,6 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
   /**
    * Ruleset ID of the play.
    */
-  private _rulesetId = 0;
-
   get rulesetId(): number {
     return this.ruleset?.id ?? this._rulesetId;
   }
@@ -81,8 +97,6 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
   /**
    * Mods of the play.
    */
-  private _mods: ModCombination | null = null;
-
   get mods(): ModCombination | null {
     return this._mods;
   }
@@ -93,10 +107,10 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
   }
 
   /**
-   * Raw mods of the play.
+   * Raw mods of the play that are neutral to any of the rulesets.
+   * {@link ScoreInfo} can't work with mod combinations without an actual ruleset instance.
+   * TODO: Implement it in a better way???
    */
-  private _rawMods: string | number = 0;
-
   get rawMods(): string | number {
     return this._rawMods;
   }

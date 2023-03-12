@@ -9,3 +9,5 @@ export * from './IScoreInfo';
 export * from './LegacyScoreExtensions';
 export * from './Score';
 export * from './ScoreInfo';
+
+export * as ScoreUtils from './ScoreUtils';
