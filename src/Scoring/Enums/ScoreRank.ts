@@ -1,5 +1,5 @@
 export enum ScoreRank {
-  F,
+  F = -1,
   D,
   C,
   B,
