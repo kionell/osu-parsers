@@ -14,16 +14,16 @@ export class RankHistory {
    */
   data: number[];
 
+  constructor(mode?: string, data?: number[]) {
+    this.mode = mode ?? RankHistory.DEFAULT_MODE;
+    this.data = data ?? [];
+  }
+
   /**
    * If this rank history has valid mode and more than 1 entry to build a graph.
    */
   get hasEnoughData(): boolean {
     return this.mode !== RankHistory.DEFAULT_MODE && this.data.length > 1;
-  }
-
-  constructor(mode?: string, data?: number[]) {
-    this.mode = mode ?? RankHistory.DEFAULT_MODE;
-    this.data = data ?? [];
   }
 
   /**

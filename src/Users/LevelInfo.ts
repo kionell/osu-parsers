@@ -5,16 +5,16 @@ export class LevelInfo {
   /**
    * Current level of a user.
    */
-  current = 0;
+  current: number;
 
   /**
    * Progress to the next level.
    */
-  progress = 0;
+  progress: number;
 
-  constructor(current = 0, progress = 0) {
-    this.current = current;
-    this.progress = progress;
+  constructor(current?: number, progress?: number) {
+    this.current = current ?? 0;
+    this.progress = progress ?? 0;
   }
 
   /**

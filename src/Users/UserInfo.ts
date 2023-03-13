@@ -1,5 +1,6 @@
 import { CountryCode } from './Enums/CountryCode';
 import { Grades } from './Grades';
+import { IJsonableUserInfo, JsonableUserInfo } from './IJsonableUserInfo';
 import { IUserInfo } from './IUserInfo';
 import { LevelInfo } from './LevelInfo';
 import { RankHistory } from './RankHistory';
@@ -163,5 +164,32 @@ export class UserInfo implements IUserInfo {
     if (!other) return false;
 
     return this.id === other.id && this.username === other.username;
+  }
+
+  /**
+   * Converts this user information to a plain object convertable to JSON.
+   * @returns User information convertable to JSON.
+   */
+  toJSON(): IJsonableUserInfo {
+    return {
+      ...this as JsonableUserInfo,
+      grades: this.grades.toJSON(),
+      lastVisitAt: this.lastVisitAt ? this.lastVisitAt.getTime() / 1000 : null,
+    };
+  }
+
+  /**
+   * Converts raw JSON user information to an instance of {@link UserInfo}.
+   * @param json Raw JSON user information.
+   * @returns Adapted instance of {@link UserInfo} class.
+   */
+  static fromJSON(json: IJsonableUserInfo): UserInfo {
+    return new UserInfo({
+      ...json as JsonableUserInfo,
+      level: new LevelInfo(json?.level?.current, json?.level?.progress),
+      rankHistory: new RankHistory(json?.rankHistory?.mode, json?.rankHistory?.data),
+      grades: Grades.fromJSON(json.grades),
+      lastVisitAt: json.lastVisitAt ? new Date(json.lastVisitAt * 1000) : null,
+    });
   }
 }
