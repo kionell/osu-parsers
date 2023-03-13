@@ -34,7 +34,7 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
 
   /**
    * Whether the map was passed or not.
-   * Score rank will always be 'F' on passed = false.
+   * Score rank will always be `F` on `passed = false`.
    */
   passed = false;
 
@@ -95,6 +95,7 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
 
   /**
    * Mods of the play.
+   * This will always be `null` if {@link ruleset} is not set.
    */
   get mods(): ModCombination | null {
     return this._mods;
