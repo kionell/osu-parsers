@@ -4,7 +4,8 @@ import { LegacyScoreExtensions } from './LegacyScoreExtensions';
 import { Accuracy, Rank } from './Utils';
 import { IScoreInfo } from './IScoreInfo';
 import { IJsonableScoreInfo, JsonableScoreInfo } from './IJsonableScoreInfo';
-import { BeatmapInfo, IBeatmapInfo } from '../Beatmaps';
+import { BeatmapInfo } from '../Beatmaps/BeatmapInfo';
+import { IBeatmapInfo } from '../Beatmaps/IBeatmapInfo';
 import { IRuleset } from '../Rulesets';
 import { ModCombination } from '../Mods';
 

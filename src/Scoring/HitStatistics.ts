@@ -36,8 +36,9 @@ export class HitStatistics extends Map<HitResult, number> {
 
     entries.forEach((entry) => {
       const key = entry[0] as keyof IJsonableHitStatistics;
+      const value = entry[1] as number;
 
-      statistics.set(this._getHitResultFromJsonableKey(key), entry[1]);
+      statistics.set(this._getHitResultFromJsonableKey(key), value);
     });
 
     return statistics;

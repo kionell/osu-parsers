@@ -42,9 +42,10 @@ export class Grades extends Map<ScoreRank, number> {
     const entries = Object.entries(json);
 
     entries.forEach((entry) => {
-      const key = entry[0] as keyof typeof ScoreRank;
+      const key = ScoreRank[entry[0] as keyof typeof ScoreRank];
+      const value = entry[1] as number;
 
-      statistics.set(ScoreRank[key], entry[1]);
+      statistics.set(key, value);
     });
 
     return statistics;
