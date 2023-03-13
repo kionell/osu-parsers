@@ -34,6 +34,7 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
 
   /**
    * Whether the map was passed or not.
+   * Score rank will always be 'F' on passed = false.
    */
   passed = false;
 
@@ -65,8 +66,8 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
     return calculateRank(this);
   }
 
-  set rank(_: keyof typeof ScoreRank) {
-    return;
+  set rank(value: keyof typeof ScoreRank) {
+    this.passed = value !== 'F';
   }
 
   /**
