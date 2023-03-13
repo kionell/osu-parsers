@@ -1,7 +1,7 @@
 import { ScoreRank } from './Enums/ScoreRank';
 import { HitStatistics } from './HitStatistics';
 import { LegacyScoreExtensions } from './LegacyScoreExtensions';
-import { calculateAccuracy, calculateRank } from './ScoreUtils';
+import { Accuracy, Rank } from './Utils';
 import { IScoreInfo } from './IScoreInfo';
 import { IJsonableScoreInfo, JsonableScoreInfo } from './IJsonableScoreInfo';
 import { BeatmapInfo, IBeatmapInfo } from '../Beatmaps';
@@ -52,7 +52,7 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
    * Score accuracy.
    */
   get accuracy(): number {
-    return calculateAccuracy(this);
+    return Accuracy.calculate(this);
   }
 
   set accuracy(_: number) {
@@ -63,7 +63,7 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
    * Score rank.
    */
   get rank(): keyof typeof ScoreRank {
-    return calculateRank(this);
+    return Rank.calculate(this);
   }
 
   set rank(value: keyof typeof ScoreRank) {
