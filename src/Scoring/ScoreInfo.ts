@@ -234,7 +234,7 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
    */
   static fromJSON(json: IJsonableScoreInfo): ScoreInfo {
     return new ScoreInfo({
-      ...json as Omit<IJsonableScoreInfo, 'beatmap' | 'mods' | 'statistics' | 'date'>,
+      ...json as JsonableScoreInfo,
       rawMods: json.mods,
       beatmap: json.beatmap ? BeatmapInfo.fromJSON(json.beatmap) : null,
       statistics: HitStatistics.fromJSON(json.statistics),

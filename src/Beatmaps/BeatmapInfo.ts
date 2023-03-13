@@ -284,7 +284,7 @@ export class BeatmapInfo implements IBeatmapInfo {
    */
   static fromJSON(json: IJsonableBeatmapInfo): BeatmapInfo {
     return new BeatmapInfo({
-      ...json as Omit<IJsonableBeatmapInfo, 'mods' | 'updatedAt' | 'deletedAt'>,
+      ...json as JsonableBeatmapInfo,
       deletedAt: json.deletedAt ? new Date(json.deletedAt * 1000) : null,
       updatedAt: json.updatedAt ? new Date(json.updatedAt * 1000) : null,
       rawMods: json.mods,
