@@ -174,7 +174,7 @@ export interface IBeatmapInfo {
   /**
    * Beatmap MD5 hash.
    */
-  md5: string;
+  hashMD5: string;
 
   /**
    * Converts this beatmap information to JSON.

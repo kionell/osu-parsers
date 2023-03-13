@@ -207,7 +207,7 @@ export class BeatmapInfo implements IBeatmapInfo {
   /**
    * Beatmap MD5 hash.
    */
-  md5 = '';
+  hashMD5 = '';
 
   /**
    * Creates a new instance of a beatmap information.
