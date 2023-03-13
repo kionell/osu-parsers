@@ -164,39 +164,6 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
   }
 
   /**
-   * Converts this score information to JSON.
-   * @returns Score information convertable to JSON.
-   */
-  toJSON(): IJsonableScoreInfo {
-    const partial: Partial<this> = {};
-    const deselect = ['beatmap', 'ruleset', 'rawMods', 'mods'];
-
-    for (const key in this) {
-      if (key.startsWith('_')) continue;
-      if (deselect.includes(key)) continue;
-
-      partial[key] = this[key];
-    }
-
-    return {
-      ...partial as JsonableScoreInfo,
-      statistics: this.statistics.toJSON(),
-      beatmap: this.beatmap?.toJSON() ?? null,
-      mods: this.mods?.toString() ?? 'NM',
-      accuracy: this.accuracy,
-      rank: this.rank,
-      rulesetId: this.rulesetId,
-      countGeki: this.countGeki,
-      count300: this.count300,
-      countKatu: this.countKatu,
-      count100: this.count100,
-      count50: this.count50,
-      countMiss: this.countMiss,
-      totalHits: this.totalHits,
-    };
-  }
-
-  /**
    * Creates a deep copy of the score info.
    * @returns Cloned score info.
    */
@@ -226,12 +193,52 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
     return false;
   }
 
+  /**
+   * Converts this score information to a plain object convertable to JSON.
+   * @returns Score information convertable to JSON.
+   */
+  toJSON(): IJsonableScoreInfo {
+    const partial: Partial<this> = {};
+    const deselect = ['beatmap', 'ruleset', 'rawMods', 'mods'];
+
+    for (const key in this) {
+      if (key.startsWith('_')) continue;
+      if (deselect.includes(key)) continue;
+
+      partial[key] = this[key];
+    }
+
+    return {
+      ...partial as JsonableScoreInfo,
+      statistics: this.statistics.toJSON(),
+      beatmap: this.beatmap?.toJSON() ?? null,
+      mods: this.mods?.toString() ?? 'NM',
+      date: this.date.getTime() / 1000,
+      accuracy: this.accuracy,
+      rank: this.rank,
+      rulesetId: this.rulesetId,
+      countGeki: this.countGeki,
+      count300: this.count300,
+      countKatu: this.countKatu,
+      count100: this.count100,
+      count50: this.count50,
+      countMiss: this.countMiss,
+      totalHits: this.totalHits,
+    };
+  }
+
+  /**
+   * Converts raw JSON score information to an instance of {@link ScoreInfo}.
+   * @param json Raw JSON score information.
+   * @returns Adapted instance of {@link ScoreInfo} class.
+   */
   static fromJSON(json: IJsonableScoreInfo): ScoreInfo {
     return new ScoreInfo({
-      ...json as Omit<IJsonableScoreInfo, 'beatmap' | 'mods' | 'statistics'>,
+      ...json as Omit<IJsonableScoreInfo, 'beatmap' | 'mods' | 'statistics' | 'date'>,
       rawMods: json.mods,
       beatmap: json.beatmap ? BeatmapInfo.fromJSON(json.beatmap) : null,
       statistics: HitStatistics.fromJSON(json.statistics),
+      date: new Date(json.date * 1000),
     });
   }
 }

@@ -253,7 +253,7 @@ export class BeatmapInfo implements IBeatmapInfo {
   }
 
   /**
-   * Converts this beatmap information to JSON.
+   * Converts this beatmap information to a plain object convertable to JSON.
    * @returns Beatmap information convertable to JSON.
    */
   toJSON(): IJsonableBeatmapInfo {
@@ -272,12 +272,21 @@ export class BeatmapInfo implements IBeatmapInfo {
       mods: this.mods?.toString() ?? 'NM',
       rulesetId: this.rulesetId,
       totalHits: this.totalHits,
+      deletedAt: this.deletedAt ? this.deletedAt.getTime() / 1000 : null,
+      updatedAt: this.updatedAt ? this.updatedAt.getTime() / 1000 : null,
     };
   }
 
+  /**
+   * Converts raw JSON beatmap information to an instance of {@link BeatmapInfo}.
+   * @param json Raw JSON beatmap information.
+   * @returns Adapted instance of {@link BeatmapInfo} class.
+   */
   static fromJSON(json: IJsonableBeatmapInfo): BeatmapInfo {
     return new BeatmapInfo({
-      ...json as Omit<IJsonableBeatmapInfo, 'mods'>,
+      ...json as Omit<IJsonableBeatmapInfo, 'mods' | 'updatedAt' | 'deletedAt'>,
+      deletedAt: json.deletedAt ? new Date(json.deletedAt * 1000) : null,
+      updatedAt: json.updatedAt ? new Date(json.updatedAt * 1000) : null,
       rawMods: json.mods,
     });
   }
