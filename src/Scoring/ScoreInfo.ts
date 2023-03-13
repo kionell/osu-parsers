@@ -4,7 +4,7 @@ import { LegacyScoreExtensions } from './LegacyScoreExtensions';
 import { calculateAccuracy, calculateRank } from './ScoreUtils';
 import { IScoreInfo } from './IScoreInfo';
 import { IJsonableScoreInfo, JsonableScoreInfo } from './IJsonableScoreInfo';
-import { IBeatmapInfo } from '../Beatmaps';
+import { BeatmapInfo, IBeatmapInfo } from '../Beatmaps';
 import { IRuleset } from '../Rulesets';
 import { ModCombination } from '../Mods';
 
@@ -108,6 +108,7 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
 
   /**
    * Raw mods of the play that are neutral to any of the rulesets.
+   * This can be either bitwise or stringified mod combination.
    * {@link ScoreInfo} can't work with mod combinations without an actual ruleset instance.
    * TODO: Implement it in a better way???
    */
@@ -179,8 +180,11 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
 
     return {
       ...partial as JsonableScoreInfo,
+      statistics: this.statistics.toJSON(),
       beatmap: this.beatmap?.toJSON() ?? null,
       mods: this.mods?.toString() ?? 'NM',
+      accuracy: this.accuracy,
+      rank: this.rank,
       rulesetId: this.rulesetId,
       countGeki: this.countGeki,
       count300: this.count300,
@@ -220,5 +224,14 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
     }
 
     return false;
+  }
+
+  static fromJSON(json: IJsonableScoreInfo): ScoreInfo {
+    return new ScoreInfo({
+      ...json as Omit<IJsonableScoreInfo, 'beatmap' | 'mods' | 'statistics'>,
+      rawMods: json.mods,
+      beatmap: json.beatmap ? BeatmapInfo.fromJSON(json.beatmap) : null,
+      statistics: HitStatistics.fromJSON(json.statistics),
+    });
   }
 }

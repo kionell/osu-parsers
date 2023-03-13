@@ -218,26 +218,10 @@ export class BeatmapInfo implements IBeatmapInfo {
   }
 
   /**
-   * Converts this beatmap information to JSON.
-   * @returns Beatmap information convertable to JSON.
+   * Beatmap total hits.
    */
-  toJSON(): IJsonableBeatmapInfo {
-    const partial: Partial<this> = {};
-    const deselect = ['beatmap', 'ruleset', 'rawMods', 'mods'];
-
-    for (const key in this) {
-      if (key.startsWith('_')) continue;
-      if (deselect.includes(key)) continue;
-
-      partial[key] = this[key];
-    }
-
-    return {
-      ...partial as JsonableBeatmapInfo,
-      mods: this.mods?.toString() ?? 'NM',
-      rulesetId: this.rulesetId,
-      totalHits: this.totalHits,
-    };
+  get totalHits(): number {
+    return this.hittable + this.slidable + this.spinnable + this.holdable;
   }
 
   /**
@@ -269,9 +253,32 @@ export class BeatmapInfo implements IBeatmapInfo {
   }
 
   /**
-   * Beatmap total hits.
+   * Converts this beatmap information to JSON.
+   * @returns Beatmap information convertable to JSON.
    */
-  get totalHits(): number {
-    return this.hittable + this.slidable + this.spinnable + this.holdable;
+  toJSON(): IJsonableBeatmapInfo {
+    const partial: Partial<this> = {};
+    const deselect = ['ruleset', 'rawMods', 'mods'];
+
+    for (const key in this) {
+      if (key.startsWith('_')) continue;
+      if (deselect.includes(key)) continue;
+
+      partial[key] = this[key];
+    }
+
+    return {
+      ...partial as JsonableBeatmapInfo,
+      mods: this.mods?.toString() ?? 'NM',
+      rulesetId: this.rulesetId,
+      totalHits: this.totalHits,
+    };
+  }
+
+  static fromJSON(json: IJsonableBeatmapInfo): BeatmapInfo {
+    return new BeatmapInfo({
+      ...json as Omit<IJsonableBeatmapInfo, 'mods'>,
+      rawMods: json.mods,
+    });
   }
 }

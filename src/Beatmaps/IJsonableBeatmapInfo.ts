@@ -1,6 +1,6 @@
 import { IBeatmapInfo } from './IBeatmapInfo';
 
-export type JsonableBeatmapInfo = Omit<IBeatmapInfo, 'beatmap' | 'ruleset' | 'mods' | 'rawMods'>;
+export type JsonableBeatmapInfo = Omit<IBeatmapInfo, 'ruleset' | 'mods' | 'rawMods'>;
 
 /**
  * A beatmap information that can be converted to JSON.
