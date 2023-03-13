@@ -1,12 +1,12 @@
 import { ScoreRank } from './Enums/ScoreRank';
-import { IHitStatistics } from './IHitStatistics';
+import { HitStatistics } from './HitStatistics';
+import { LegacyScoreExtensions } from './LegacyScoreExtensions';
+import { calculateAccuracy, calculateRank } from './ScoreUtils';
 import { IScoreInfo } from './IScoreInfo';
 import { IJsonableScoreInfo, JsonableScoreInfo } from './IJsonableScoreInfo';
-import { LegacyScoreExtensions } from './LegacyScoreExtensions';
 import { IBeatmapInfo } from '../Beatmaps';
 import { IRuleset } from '../Rulesets';
 import { ModCombination } from '../Mods';
-import { calculateAccuracy, calculateRank } from './ScoreUtils';
 
 /**
  * A score information.
@@ -146,27 +146,6 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
   date: Date = new Date();
 
   /**
-   * Hit statistics.
-   */
-  statistics: IHitStatistics = {
-    none: 0,
-    miss: 0,
-    meh: 0,
-    ok: 0,
-    good: 0,
-    great: 0,
-    perfect: 0,
-    smallTickMiss: 0,
-    smallTickHit: 0,
-    largeTickMiss: 0,
-    largeTickHit: 0,
-    smallBonus: 0,
-    largeBonus: 0,
-    ignoreMiss: 0,
-    ignoreHit: 0,
-  };
-
-  /**
    * Beatmap MD5 hash.
    */
   beatmapHashMD5 = '';
@@ -220,24 +199,9 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
 
     const cloned = new ScoreInfo();
 
-    cloned.id = this.id;
-    cloned.totalScore = this.totalScore;
-    cloned.maxCombo = this.maxCombo;
-    cloned.rulesetId = this.rulesetId;
-    cloned.passed = this.passed;
-    cloned.perfect = this.perfect;
-    cloned.ruleset = this.ruleset;
-    cloned.mods = this.mods;
-    cloned.username = this.username;
-    cloned.userId = this.userId;
-    cloned.beatmap = this.beatmap;
-    cloned.beatmapId = this.beatmapId;
-    cloned.beatmapHashMD5 = this.beatmapHashMD5;
-    cloned.date = this.date;
+    Object.assign(cloned, this);
 
-    if (this.pp) cloned.pp = this.pp;
-
-    cloned.statistics = { ...this.statistics };
+    cloned.statistics = new HitStatistics(this.statistics);
 
     return cloned;
   }

@@ -2,7 +2,7 @@ export * from './DifficultyRange';
 export * from './Enums/HitResult';
 export * from './Enums/ScoreRank';
 export * from './HitWindows';
-export * from './IHitStatistics';
+export * from './HitStatistics';
 export * from './IJsonableScoreInfo';
 export * from './IScore';
 export * from './IScoreInfo';

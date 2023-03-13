@@ -1,9 +1,9 @@
 import { ScoreRank } from './Enums/ScoreRank';
-import { IHitStatistics } from './IHitStatistics';
+import { IJsonableScoreInfo } from './IJsonableScoreInfo';
+import { HitStatistics } from './HitStatistics';
 import { IBeatmapInfo } from '../Beatmaps';
 import { IRuleset } from '../Rulesets';
 import { ModCombination } from '../Mods';
-import { IJsonableScoreInfo } from './IJsonableScoreInfo';
 
 /**
  * A score information.
@@ -97,7 +97,7 @@ export interface IScoreInfo {
   /**
    * Hit statistics.
    */
-  statistics: Partial<IHitStatistics>;
+  statistics: HitStatistics;
 
   /**
    * Beatmap MD5 hash.
