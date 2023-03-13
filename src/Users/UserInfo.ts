@@ -1,23 +1,107 @@
+import { CountryCode } from './Enums/CountryCode';
+import { Grades } from './Grades';
 import { IUserInfo } from './IUserInfo';
+import { LevelInfo } from './LevelInfo';
+import { RankHistory } from './RankHistory';
 
 /**
- * An user information.
+ * A user information.
  */
 export class UserInfo implements IUserInfo {
-  /**
-   * User country code.
-   */
-  countryCode: Uppercase<string> = '';
-
   /**
    * User ID.
    */
   id = 0;
 
   /**
+   * User's name.
+   */
+  username = '';
+
+  /**
+   * User country code.
+   */
+  countryCode: keyof typeof CountryCode = 'Unknown';
+
+  /**
+   * Playmode of the user.
+   */
+  playmode = 0;
+
+  /**
+   * User performance points.
+   */
+  totalPerformance = 0;
+
+  /**
+   * Rank in the global top.
+   */
+  globalRank: number | null = null;
+
+  /**
+   * Rank in the country top.
+   */
+  countryRank: number | null = null;
+
+  /**
+   * Information about a user's level.
+   */
+  level = new LevelInfo();
+
+  /**
+   * Ranked score of a user.
+   */
+  rankedScore = 0;
+
+  /**
+   * Total score of a user.
+   */
+  totalScore = 0;
+
+  /**
+   * Total accuracy of a user.
+   */
+  accuracy = 0;
+
+  /**
+   * Total playcount of a user.
+   */
+  playcount = 0;
+
+  /**
+   * Total playtime of a user.
+   */
+  playtime = 0;
+
+  /**
+   * Total hits of a user.
+   */
+  totalHits = 0;
+
+  /**
+   * Max combo of a user.
+   */
+  maxCombo = 0;
+
+  /**
+   * How many times this user's replays have been watched.
+   */
+  replaysWatched = 0;
+
+  /**
+   * Grades count of a user.
+   */
+  grades = new Grades();
+
+  /**
+   * Rank history of a user.
+   */
+  rankHistory = new RankHistory();
+
+  /**
    * Whether the user is active or not.
    */
-  isActive = false;
+  isActive = true;
 
   /**
    * Whether the user is bot or not.
@@ -45,31 +129,6 @@ export class UserInfo implements IUserInfo {
   lastVisitAt: Date | null = null;
 
   /**
-   * User's name.
-   */
-  username = '';
-
-  /**
-   * Playmode of the user.
-   */
-  playmode = 0;
-
-  /**
-   * User performance points.
-   */
-  totalPerformance = 0;
-
-  /**
-   * Rank in the global top.
-   */
-  globalRank = 0;
-
-  /**
-   * Rank in the country top.
-   */
-  countryRank = 0;
-
-  /**
    * Creates a new instance of a user information.
    * @param options The user information options.
    */
@@ -88,6 +147,11 @@ export class UserInfo implements IUserInfo {
 
     Object.assign(cloned, this);
 
+    cloned.level = this.level.clone();
+    cloned.rankHistory = this.rankHistory.clone();
+    cloned.grades = new Grades(this.grades);
+    cloned.lastVisitAt = this.lastVisitAt ? new Date(this.lastVisitAt) : null;
+
     return cloned;
   }
 
@@ -98,10 +162,6 @@ export class UserInfo implements IUserInfo {
   equals(other: IUserInfo): boolean {
     if (!other) return false;
 
-    if (this.id !== 0 && other.id !== 0) {
-      return this.id === other.id;
-    }
-
-    return false;
+    return this.id === other.id && this.username === other.username;
   }
 }
