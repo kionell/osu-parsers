@@ -104,7 +104,7 @@ export interface IBeatmapInfo {
   /**
    * The most common BPM of a beatmap.
    */
-  bpmMode: number;
+  bpm: number;
 
   /**
    * Circle size of the beatmap.

@@ -148,8 +148,8 @@ export class ProgressiveCalculationBeatmap implements IBeatmap {
   /**
    * The most common BPM of a beatmap.
    */
-  get bpmMode(): number {
-    return this._baseBeatmap.bpmMode;
+  get bpm(): number {
+    return this._baseBeatmap.bpm;
   }
 
   /**

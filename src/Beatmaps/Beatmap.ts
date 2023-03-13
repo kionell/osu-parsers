@@ -157,15 +157,6 @@ export class Beatmap implements IBeatmap {
    * The most common BPM of a beatmap.
    */
   get bpm(): number {
-    return this.bpmMode;
-  }
-
-  /**
-   * The most common BPM of a beatmap.
-   * Use the {@link bpm} instead.
-   * @deprecated Since 2.1.1
-   */
-  get bpmMode(): number {
     const timingPoints = this.controlPoints.timingPoints;
     const hitObjects = this.hitObjects;
 

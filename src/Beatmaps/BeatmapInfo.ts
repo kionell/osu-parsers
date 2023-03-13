@@ -100,7 +100,7 @@ export class BeatmapInfo implements IBeatmapInfo {
   /**
    * The most common BPM of a beatmap.
    */
-  bpmMode = 0;
+  bpm = 0;
 
   /**
    * Circle size of the beatmap.
