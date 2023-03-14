@@ -14,9 +14,9 @@ export class RankHistory {
    */
   data: number[];
 
-  constructor(mode?: string, data?: number[]) {
-    this.mode = mode ?? RankHistory.DEFAULT_MODE;
-    this.data = data ?? [];
+  constructor(options?: Partial<RankHistory>) {
+    this.mode = options?.mode ?? RankHistory.DEFAULT_MODE;
+    this.data = options?.data ?? [];
   }
 
   /**
@@ -31,6 +31,9 @@ export class RankHistory {
    * @returns Cloned rank history.
    */
   clone(): RankHistory {
-    return new RankHistory(this.mode, [...this.data]);
+    return new RankHistory({
+      mode: this.mode,
+      data: [...this.data],
+    });
   }
 }

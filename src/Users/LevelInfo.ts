@@ -12,9 +12,9 @@ export class LevelInfo {
    */
   progress: number;
 
-  constructor(current?: number, progress?: number) {
-    this.current = current ?? 0;
-    this.progress = progress ?? 0;
+  constructor(options?: Partial<LevelInfo>) {
+    this.current = options?.current ?? 0;
+    this.progress = options?.progress ?? 0;
   }
 
   /**
@@ -22,6 +22,6 @@ export class LevelInfo {
    * @returns Cloned level info.
    */
   clone(): LevelInfo {
-    return new LevelInfo(this.current, this.progress);
+    return new LevelInfo(this);
   }
 }

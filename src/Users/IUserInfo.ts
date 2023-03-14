@@ -1,5 +1,6 @@
 import { CountryCode } from './Enums/CountryCode';
 import { Grades } from './Grades';
+import { HighestRank } from './HighestRank';
 import { LevelInfo } from './LevelInfo';
 import { RankHistory } from './RankHistory';
 
@@ -16,6 +17,11 @@ export interface IUserInfo {
    * User's name.
    */
   username: string;
+
+  /**
+   * Previous nicknames of the user.
+   */
+  previousUsernames: string[];
 
   /**
    * User country code.
@@ -41,6 +47,11 @@ export interface IUserInfo {
    * Rank in the country top.
    */
   countryRank: number | null;
+
+  /**
+   * Highest rank of the user.
+   */
+  highestRank: HighestRank | null;
 
   /**
    * Information about a user's level.
@@ -88,6 +99,11 @@ export interface IUserInfo {
   replaysWatched: number;
 
   /**
+   * How many followers does user have.
+   */
+  followersCount: number;
+
+  /**
    * Grades count of a user.
    */
   grades: Grades;
@@ -95,7 +111,7 @@ export interface IUserInfo {
   /**
    * Rank history of a user.
    */
-  rankHistory: RankHistory;
+  rankHistory: RankHistory | null;
 
   /**
    * Whether the user is active or not.
@@ -126,4 +142,9 @@ export interface IUserInfo {
    * Last visit date of the user.
    */
   lastVisitAt: Date | null;
+
+  /**
+   * Join date of the user.
+   */
+  joinedAt: Date;
 }

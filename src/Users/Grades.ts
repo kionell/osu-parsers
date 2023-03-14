@@ -1,5 +1,6 @@
 import { ScoreRank } from '../Scoring';
-import { IJsonableGrades } from './IJsonableGrades';
+
+export type IJsonableGrades = Partial<Record<keyof typeof ScoreRank, number>>;
 
 /**
  * A special case of a map structure for storing the number of user's grades.
