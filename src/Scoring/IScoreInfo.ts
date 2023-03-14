@@ -32,7 +32,7 @@ export interface IScoreInfo {
   /**
    * The performance of the play.
    */
-  pp: number | null;
+  totalPerformance: number | null;
 
   /**
    * Max combo of the play.

@@ -26,7 +26,7 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
   /**
    * The performance of the play.
    */
-  pp: number | null = null;
+  totalPerformance: number | null = null;
 
   /**
    * Max combo of the play.
