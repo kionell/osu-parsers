@@ -200,6 +200,8 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
       ...partial as JsonableScoreInfo,
       beatmap: this.beatmap?.toJSON() ?? null,
       mods: this.mods?.toString() ?? 'NM',
+      accuracy: this.accuracy,
+      rank: this.rank,
       rulesetId: this.rulesetId,
       countGeki: this.countGeki,
       count300: this.count300,
