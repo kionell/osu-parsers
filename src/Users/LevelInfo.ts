@@ -3,12 +3,12 @@
  */
 export class LevelInfo {
   /**
-   * Current level of a user.
+   * Current level of a user as integer.
    */
   current: number;
 
   /**
-   * Progress to the next level.
+   * Progress to the next level as integer in range of 0-100.
    */
   progress: number;
 
