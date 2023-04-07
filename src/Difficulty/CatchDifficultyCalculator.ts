@@ -9,6 +9,7 @@ import {
 
 import {
   CatchHitObject,
+  Fruit,
   JuiceStream,
   JuiceTinyDroplet,
   BananaShower,
@@ -22,7 +23,6 @@ import {
   CatchModCombination,
 } from '../Mods';
 
-import { CatchBeatmap } from '../Beatmaps';
 import { CatchDifficultyAttributes } from './Attributes';
 import { CatchDifficultyHitObject } from './Preprocessing';
 import { Movement } from './Skills';
@@ -58,7 +58,17 @@ export class CatchDifficultyCalculator extends DifficultyCalculator<CatchDifficu
       ? -(preempt - 1800.0) / 120.0
       : -(preempt - 1200.0) / 150.0 + 5.0;
 
-    attributes.maxCombo = (beatmap as CatchBeatmap)?.maxCombo ?? 0;
+    const fruits = beatmap.hitObjects.reduce((c, h) => {
+      return c + (h instanceof Fruit ? 1 : 0);
+    }, 0);
+
+    attributes.maxCombo = beatmap.hitObjects.reduce((c, h) => {
+      if (!(h instanceof JuiceStream)) return c;
+
+      return c + h.nestedHitObjects.reduce((c, n) => {
+        return c + (n instanceof JuiceTinyDroplet ? 0 : 1);
+      }, 0);
+    }, fruits);
 
     return attributes;
   }

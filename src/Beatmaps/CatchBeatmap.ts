@@ -1,12 +1,11 @@
-import {
-  RulesetBeatmap,
-  HitType,
-} from 'osu-classes';
+import { RulesetBeatmap } from 'osu-classes';
 
 import {
   CatchHitObject,
+  Fruit,
   JuiceStream,
   JuiceTinyDroplet,
+  BananaShower,
 } from '../Objects';
 
 import { CatchModCombination } from '../Mods/CatchModCombination';
@@ -32,19 +31,19 @@ export class CatchBeatmap extends RulesetBeatmap {
 
   get fruits(): number {
     return this.hitObjects.reduce((c, h) => {
-      return c + (h.hitType & HitType.Normal ? 1 : 0);
+      return c + (h instanceof Fruit ? 1 : 0);
     }, 0);
   }
 
   get juiceStreams(): number {
     return this.hitObjects.reduce((c, h) => {
-      return c + (h.hitType & HitType.Slider ? 1 : 0);
+      return c + (h instanceof JuiceStream ? 1 : 0);
     }, 0);
   }
 
   get bananaShowers(): number {
     return this.hitObjects.reduce((c, h) => {
-      return c + (h.hitType & HitType.Spinner ? 1 : 0);
+      return c + (h instanceof BananaShower ? 1 : 0);
     }, 0);
   }
 }
