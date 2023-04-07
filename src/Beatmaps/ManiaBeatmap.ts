@@ -1,10 +1,5 @@
-import {
-  RulesetBeatmap,
-  HitType,
-  IHasDuration,
-} from 'osu-classes';
-
-import { ManiaHitObject } from '../Objects';
+import { RulesetBeatmap } from 'osu-classes';
+import { ManiaHitObject, Note, Hold } from '../Objects';
 import { ManiaModCombination } from '../Mods';
 import { StageDefinition } from './StageDefinition';
 
@@ -47,10 +42,8 @@ export class ManiaBeatmap extends RulesetBeatmap {
 
   get maxCombo(): number {
     return this.hitObjects.reduce((combo, obj) => {
-      if (obj.hitType & HitType.Hold) {
-        const hold = obj as ManiaHitObject & IHasDuration;
-
-        return combo + 1 + Math.trunc((hold.endTime - hold.startTime) / 100);
+      if (obj instanceof Hold) {
+        return combo + 1 + Math.trunc((obj.endTime - obj.startTime) / 100);
       }
 
       return combo;
@@ -59,13 +52,13 @@ export class ManiaBeatmap extends RulesetBeatmap {
 
   get notes(): number {
     return this.hitObjects.reduce((c, h) => {
-      return c + (h.hitType & HitType.Normal ? 1 : 0);
+      return c + (h instanceof Note ? 1 : 0);
     }, 0);
   }
 
   get holds(): number {
     return this.hitObjects.reduce((c, h) => {
-      return c + (h.hitType & HitType.Hold ? 1 : 0);
+      return c + (h instanceof Hold ? 1 : 0);
     }, 0);
   }
 }

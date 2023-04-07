@@ -29,7 +29,7 @@ import {
 } from '../Mods';
 
 import { ManiaBeatmap } from '../Beatmaps';
-import { ManiaHitObject } from '../Objects';
+import { Hold, ManiaHitObject } from '../Objects';
 import { ManiaDifficultyAttributes } from './Attributes';
 import { ManiaDifficultyHitObject } from './Preprocessing';
 import { Strain } from './Skills';
@@ -63,7 +63,14 @@ export class ManiaDifficultyCalculator extends DifficultyCalculator<ManiaDifficu
     const attributes = new ManiaDifficultyAttributes(mods, starRating);
 
     attributes.mods = mods;
-    attributes.maxCombo = (beatmap as ManiaBeatmap)?.maxCombo ?? 0;
+
+    attributes.maxCombo = beatmap.hitObjects.reduce((combo, obj) => {
+      if (obj instanceof Hold) {
+        return combo + 1 + Math.trunc((obj.endTime - obj.startTime) / 100);
+      }
+
+      return combo + 1;
+    }, 0);
 
     attributes.greatHitWindow = Math.ceil(
       Math.trunc(this._getHitWindow300(mods) * clockRate) / clockRate,
