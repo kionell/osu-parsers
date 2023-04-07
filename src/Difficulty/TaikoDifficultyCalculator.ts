@@ -2,7 +2,7 @@ import { DifficultyCalculator, DifficultyHitObject, HitResult, IBeatmap, IMod, S
 import { TaikoDifficultyAttributes } from './Attributes';
 import { Peaks } from './Skills/Peaks';
 import { TaikoHitWindows } from '../Scoring';
-import { TaikoBeatmap } from '../Beatmaps';
+import { Hit } from '../Objects';
 
 import {
   TaikoColourDifficultyPreprocessor,
@@ -116,8 +116,8 @@ export class TaikoDifficultyCalculator extends DifficultyCalculator<TaikoDifficu
     attributes.rhythmDifficulty = rhythmRating;
     attributes.colourDifficulty = colourRating;
     attributes.peakDifficulty = combinedRating;
-    attributes.greatHitWindow = hitWindows.windowFor(HitResult.Great) / clockRate,
-    attributes.maxCombo = (beatmap as TaikoBeatmap)?.maxCombo ?? 0;
+    attributes.greatHitWindow = hitWindows.windowFor(HitResult.Great) / clockRate;
+    attributes.maxCombo = beatmap.hitObjects.reduce((s, c) => s + (c instanceof Hit ? 1 : 0), 0);
 
     return attributes;
   }
