@@ -5,14 +5,14 @@ export type IJsonableGrades = Partial<Record<keyof typeof ScoreRank, number>>;
 /**
  * A special case of a map structure for storing the number of user's grades.
  */
-export class Grades extends Map<ScoreRank, number> {
+export class Grades extends Map<keyof typeof ScoreRank, number> {
   /**
    * Gets the number of grades by their type.
    * If grade is not present sets it to default value and returns it.
    * @param key Score rank type.
    * @returns The number of grades of this type.
    */
-  get(key: ScoreRank): number {
+  get(key: keyof typeof ScoreRank): number {
     if (!super.has(key)) super.set(key, 0);
 
     return super.get(key) as number;
@@ -32,7 +32,7 @@ export class Grades extends Map<ScoreRank, number> {
     const result: IJsonableGrades = {};
 
     this.forEach((value, key) => {
-      result[ScoreRank[key] as keyof typeof ScoreRank] = value;
+      result[key] = value;
     });
 
     return result;
@@ -43,7 +43,7 @@ export class Grades extends Map<ScoreRank, number> {
     const entries = Object.entries(json);
 
     entries.forEach((entry) => {
-      const key = ScoreRank[entry[0] as keyof typeof ScoreRank];
+      const key = entry[0] as keyof typeof ScoreRank;
       const value = entry[1] as number;
 
       statistics.set(key, value);
