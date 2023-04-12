@@ -24,4 +24,15 @@ export class LevelInfo {
   clone(): LevelInfo {
     return new LevelInfo(this);
   }
+
+  /**
+   * @returns Stringified level information.
+   */
+  toString(): string {
+    let progress = this.progress;
+
+    while (progress > 1) progress /= 100;
+
+    return `${this.current + this.progress}`;
+  }
 }
