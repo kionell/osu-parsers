@@ -8,14 +8,14 @@ export abstract class StoryboardVariableDecoder {
    * @param variables Variables dictionary.
    * @returns Storyboard variables. 
    */
-  static handleLine(line: string, variables: Record<string, string>): void {
+  static handleLine(line: string, variables: Map<string, string>): void {
     if (!line.startsWith('$')) return;
 
     const pair = line.split('=');
 
     // If this variable is valid.
     if (pair.length === 2) {
-      variables[pair[0]] = pair[1].trimEnd();
+      variables.set(pair[0], pair[1].trimEnd());
     }
   }
 
@@ -25,15 +25,13 @@ export abstract class StoryboardVariableDecoder {
    * @param variables Storyboard variables.
    * @returns A storyboard line with replaced variables
    */
-  static decodeVariables(line: string, variables: Record<string, string>): string {
-    const keys = Object.keys(variables);
-
-    if (!line.includes('$') || !keys.length) {
+  static decodeVariables(line: string, variables: Map<string, string>): string {
+    if (!line.includes('$') || !variables.size) {
       return line;
     }
 
-    keys.forEach((key) => {
-      line = line.replace(key, variables[key]);
+    variables.forEach((value, key) => {
+      line = line.replace(key, value);
     });
 
     return line;

@@ -17,7 +17,7 @@ export class StoryboardDecoder extends SectionDecoder<Storyboard> {
   /**
    * Current section name.
    */
-  private _variables: Record<string, string> = {};
+  private _variables: Map<string, string> = new Map();
 
   /**
    * Performs storyboard decoding from the specified `.osu` or `.osb` file.
