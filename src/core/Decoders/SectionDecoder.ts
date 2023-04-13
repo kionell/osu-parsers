@@ -1,5 +1,5 @@
 import { BeatmapColorDecoder } from './Handlers';
-import { Section } from '../Enums';
+import { LineType, Section } from '../Enums';
 import { IHasBeatmapColors, IParsingOptions } from '../Interfaces';
 import { Decoder } from './Decoder';
 import { SectionMap } from '../Utils/SectionMap';
@@ -32,13 +32,17 @@ export abstract class SectionDecoder<T> extends Decoder {
     return lines;
   }
 
-  protected _parseLine(line: string, output: T): void {
-    if (this._shouldSkipLine(line)) return;
+  protected _parseLine(line: string, output: T): LineType {
+    if (this._shouldSkipLine(line)) {
+      return LineType.Empty;
+    }
 
     line = this._preprocessLine(line);
 
     // File format
-    if (line.includes('osu file format v')) return;
+    if (line.includes('osu file format v')) {
+      return LineType.FileFormat;
+    }
 
     // A file section
     if (line.startsWith('[') && line.endsWith(']')) {
@@ -52,22 +56,30 @@ export abstract class SectionDecoder<T> extends Decoder {
         this._sectionMap.currentSection = null;
       }
 
+      if (!this._sectionMap.hasEnabledSections) {
+        return LineType.Break;
+      }
+
       if (section in Section) {
         this._sectionMap.currentSection = section as Section;
       }
 
-      return;
+      return LineType.Section;
     }
 
     // Skip disabled sections
-    if (!this._isSectionEnabled()) return;
+    if (!this._sectionMap.isSectionEnabled()) {
+      return LineType.Empty;
+    }
 
     try {
       // Section data
       this._parseSectionData(line, output);
+
+      return LineType.Data;
     }
     catch {
-      return;
+      return LineType.Empty;
     }
   }
 
