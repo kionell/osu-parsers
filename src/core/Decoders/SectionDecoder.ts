@@ -68,7 +68,7 @@ export abstract class SectionDecoder<T> extends Decoder {
     }
 
     // Skip disabled sections
-    if (!this._sectionMap.isSectionEnabled()) {
+    if (!this._sectionMap.isSectionEnabled) {
       return LineType.Empty;
     }
 

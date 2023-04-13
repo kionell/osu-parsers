@@ -39,7 +39,7 @@ export class SectionMap extends Map<Section, boolean> {
     return this;
   }
 
-  hasEnabledSections(): boolean {
+  get hasEnabledSections(): boolean {
     for (const state of this.values()) {
       if (state) return true;
     }
@@ -52,7 +52,7 @@ export class SectionMap extends Map<Section, boolean> {
    * Unknown sections are disabled by default.
    * @returns If this section is enabled.
    */
-  isSectionEnabled(): boolean {
+  get isSectionEnabled(): boolean {
     return this.currentSection ? this.get(this.currentSection) : false;
   }
 }
