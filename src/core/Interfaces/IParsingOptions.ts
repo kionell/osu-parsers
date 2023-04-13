@@ -1,5 +1,3 @@
-import { Section } from '../Enums';
-
 export interface IParsingOptions {
   /**
    * Whether to parse colour section or not.
@@ -61,5 +59,3 @@ export interface IBeatmapParsingOptions extends IParsingOptions {
    */
   parseStoryboard?: boolean;
 }
-
-export type EnabledSections = Record<keyof typeof Section, boolean>;

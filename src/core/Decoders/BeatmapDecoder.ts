@@ -172,7 +172,7 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
   }
 
   protected _parseSectionData(line: string, beatmap: Beatmap): void {
-    switch (this._section) {
+    switch (this._sectionMap.currentSection) {
       case Section.General:
         return BeatmapGeneralDecoder.handleLine(line, beatmap, this._offset);
 
@@ -200,7 +200,7 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
 
   /**
    * Sets current enabled sections.
-   * All sections are enabled by default.
+   * All known sections are enabled by default.
    * @param options Parsing options.
    */
   protected _setEnabledSections(options?: boolean | IBeatmapParsingOptions): void {
@@ -208,13 +208,13 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
 
     if (typeof options === 'boolean') return;
 
-    this._enabledSections.General = options?.parseGeneral ?? true;
-    this._enabledSections.Editor = options?.parseEditor ?? true;
-    this._enabledSections.Metadata = options?.parseMetadata ?? true;
-    this._enabledSections.Difficulty = options?.parseDifficulty ?? true;
-    this._enabledSections.Events = options?.parseEvents ?? true;
-    this._enabledSections.TimingPoints = options?.parseTimingPoints ?? true;
-    this._enabledSections.HitObjects = options?.parseHitObjects ?? true;
+    this._sectionMap.set(Section.General, options?.parseGeneral);
+    this._sectionMap.set(Section.Editor, options?.parseEditor);
+    this._sectionMap.set(Section.Metadata, options?.parseMetadata);
+    this._sectionMap.set(Section.Difficulty, options?.parseDifficulty);
+    this._sectionMap.set(Section.Events, options?.parseEvents);
+    this._sectionMap.set(Section.TimingPoints, options?.parseTimingPoints);
+    this._sectionMap.set(Section.HitObjects, options?.parseHitObjects);
   }
 
   protected _shouldParseStoryboard(options?: boolean | IBeatmapParsingOptions): boolean {

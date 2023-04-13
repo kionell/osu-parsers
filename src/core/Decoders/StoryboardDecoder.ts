@@ -148,7 +148,7 @@ export class StoryboardDecoder extends SectionDecoder<Storyboard> {
   }
 
   protected _parseSectionData(line: string, storyboard: Storyboard): void {
-    switch (this._section) {
+    switch (this._sectionMap.currentSection) {
       case Section.General:
         return StoryboardGeneralDecoder.handleLine(line, storyboard);
 
@@ -162,6 +162,18 @@ export class StoryboardDecoder extends SectionDecoder<Storyboard> {
     super._parseSectionData(line, storyboard);
   }
 
+  /**
+   * Sets current enabled sections.
+   * All known sections are enabled by default.
+   */
+  protected _setEnabledSections(): void {
+    super._setEnabledSections();
+
+    this._sectionMap.set(Section.General);
+    this._sectionMap.set(Section.Variables);
+    this._sectionMap.set(Section.Events);
+  }
+
   protected _preprocessLine(line: string): string {
     // Preprocess variables in the current line.
     line = StoryboardVariableDecoder.decodeVariables(line, this._variables);
@@ -172,7 +184,13 @@ export class StoryboardDecoder extends SectionDecoder<Storyboard> {
   protected _reset(): void {
     super._reset();
 
-    // Use 'Events' section by default.
-    this._section = 'Events';
+    this._sectionMap.reset();
+
+    /**
+     * Set 'Events' section as default one.
+     * This helps to avoid issues with missing section 
+     * at the beggining when merging two files.
+     */
+    this._sectionMap.currentSection = Section.Events;
   }
 }
