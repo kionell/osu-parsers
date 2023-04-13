@@ -53,4 +53,15 @@ export class EffectPoint extends ControlPoint {
         && this.scrollSpeed === existing.scrollSpeed
     );
   }
+
+  /**
+   * @param other Other effect control point.
+   * @returns If two effect control points are equal.
+   */
+  equals(other: EffectPoint): boolean {
+    return other instanceof EffectPoint
+      && this.kiai === other.kiai
+      && this.omitFirstBarLine === other.omitFirstBarLine
+      && this.scrollSpeed === other.scrollSpeed;
+  }
 }

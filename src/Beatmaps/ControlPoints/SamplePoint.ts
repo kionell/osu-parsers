@@ -44,4 +44,15 @@ export class SamplePoint extends ControlPoint {
         && this.sampleSet === existing.sampleSet
     );
   }
+
+  /**
+   * @param other Other sample control point.
+   * @returns If two sample control points are equal.
+   */
+  equals(other: SamplePoint): boolean {
+    return other instanceof SamplePoint
+      && this.volume === other.volume
+      && this.customIndex === other.customIndex
+      && this.sampleSet === other.sampleSet;
+  }
 }

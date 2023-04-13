@@ -48,4 +48,14 @@ export class TimingPoint extends ControlPoint {
   isRedundant(): false {
     return false;
   }
+
+  /**
+   * @param other Other timing control point.
+   * @returns If two timing control points are equal.
+   */
+  equals(other: TimingPoint): boolean {
+    return other instanceof TimingPoint
+      && this.timeSignature === other.timeSignature
+      && this.beatLength === other.beatLength;
+  }
 }
