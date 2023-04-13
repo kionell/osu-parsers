@@ -15,7 +15,7 @@ import { StoryboardDecoder } from './StoryboardDecoder';
 import { IBeatmapParsingOptions } from '../Interfaces';
 import { Parsing } from '../Utils/Parsing';
 import { BufferLike, stringifyBuffer } from '../Utils/Buffer';
-import { FileFormat, Section } from '../Enums';
+import { FileFormat, LineType, Section } from '../Enums';
 
 /**
  * A beatmap decoder.
@@ -126,7 +126,10 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
 
     // Parse beatmap lines.
     for (let i = 0; i < this._lines.length; ++i) {
-      this._parseLine(this._lines[i], beatmap);
+      const type = this._parseLine(this._lines[i], beatmap);
+
+      // Break early if we parsed all enabled sections.
+      if (type === LineType.Break) break;
     }
 
     // Flush last control point group.
@@ -158,17 +161,15 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
     return beatmap;
   }
 
-  protected _parseLine(line: string, beatmap: Beatmap): void {
+  protected _parseLine(line: string, beatmap: Beatmap): LineType {
     // .osu file version
     if (line.includes('osu file format v')) {
       beatmap.fileFormat = Parsing.parseInt(line.split('v')[1]);
 
-      // this._offset = beatmap.fileFormat <= 4 ? BeatmapDecoder.EARLY_VERSION_TIMING_OFFSET : 0;
-
-      return;
+      return LineType.FileFormat;
     }
 
-    super._parseLine(line, beatmap);
+    return super._parseLine(line, beatmap);
   }
 
   protected _parseSectionData(line: string, beatmap: Beatmap): void {
