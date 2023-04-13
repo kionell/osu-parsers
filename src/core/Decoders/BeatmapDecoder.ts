@@ -108,7 +108,7 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
     this._reset();
     this._lines = this._getLines(data);
 
-    this._setEnabledSections(options);
+    this._setEnabledSections(typeof options !== 'boolean' ? options : {});
 
     // This array isn't needed if we don't parse a storyboard. 
     this._sbLines = this._shouldParseStoryboard(options) ? [] : null;
@@ -204,10 +204,8 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
    * All known sections are enabled by default.
    * @param options Parsing options.
    */
-  protected _setEnabledSections(options?: boolean | IBeatmapParsingOptions): void {
+  protected _setEnabledSections(options?: IBeatmapParsingOptions): void {
     super._setEnabledSections(options);
-
-    if (typeof options === 'boolean') return;
 
     this._sectionMap.set(Section.General, options?.parseGeneral);
     this._sectionMap.set(Section.Editor, options?.parseEditor);

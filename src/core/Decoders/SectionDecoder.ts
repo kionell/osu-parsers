@@ -127,9 +127,7 @@ export abstract class SectionDecoder<T> extends Decoder {
    * All known sections are enabled by default.
    * @param options Parsing options.
    */
-  protected _setEnabledSections(options?: boolean | IParsingOptions): void {
-    if (typeof options === 'boolean') return;
-
+  protected _setEnabledSections(options?: IParsingOptions): void {
     this._sectionMap.set(Section.Colours, options?.parseColours);
   }
 }
