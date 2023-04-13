@@ -15,7 +15,7 @@ import { StoryboardDecoder } from './StoryboardDecoder';
 import { IBeatmapParsingOptions } from '../Interfaces';
 import { Parsing } from '../Utils/Parsing';
 import { BufferLike, stringifyBuffer } from '../Utils/Buffer';
-import { FileFormat } from '../Enums';
+import { FileFormat, Section } from '../Enums';
 
 /**
  * A beatmap decoder.
@@ -173,25 +173,25 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
 
   protected _parseSectionData(line: string, beatmap: Beatmap): void {
     switch (this._section) {
-      case 'General':
+      case Section.General:
         return BeatmapGeneralDecoder.handleLine(line, beatmap, this._offset);
 
-      case 'Editor':
+      case Section.Editor:
         return BeatmapEditorDecoder.handleLine(line, beatmap);
 
-      case 'Metadata':
+      case Section.Metadata:
         return BeatmapMetadataDecoder.handleLine(line, beatmap);
 
-      case 'Difficulty':
+      case Section.Difficulty:
         return BeatmapDifficultyDecoder.handleLine(line, beatmap);
 
-      case 'Events':
+      case Section.Events:
         return BeatmapEventDecoder.handleLine(line, beatmap, this._sbLines, this._offset);
 
-      case 'TimingPoints':
+      case Section.TimingPoints:
         return BeatmapTimingPointDecoder.handleLine(line, beatmap, this._offset);
 
-      case 'HitObjects':
+      case Section.HitObjects:
         return BeatmapHitObjectDecoder.handleLine(line, beatmap, this._offset);
     }
 

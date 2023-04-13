@@ -2,7 +2,7 @@ import { Storyboard } from 'osu-classes';
 import { SectionDecoder } from './SectionDecoder';
 import { Parsing } from '../Utils/Parsing';
 import { BufferLike, stringifyBuffer } from '../Utils/Buffer';
-import { FileFormat } from '../Enums';
+import { FileFormat, Section } from '../Enums';
 
 import {
   StoryboardGeneralDecoder,
@@ -149,13 +149,13 @@ export class StoryboardDecoder extends SectionDecoder<Storyboard> {
 
   protected _parseSectionData(line: string, storyboard: Storyboard): void {
     switch (this._section) {
-      case 'General':
+      case Section.General:
         return StoryboardGeneralDecoder.handleLine(line, storyboard);
 
-      case 'Events':
+      case Section.Events:
         return StoryboardEventDecoder.handleLine(line, storyboard);
 
-      case 'Variables':
+      case Section.Variables:
         return StoryboardVariableDecoder.handleLine(line, this._variables);
     }
 
