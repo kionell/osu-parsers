@@ -10,7 +10,7 @@ export class Storyboard {
   /**
    * Variables of the storyboard.
    */
-  variables: Record<string, string> = {};
+  variables: Map<string, string> = new Map();
 
   /**
    * Custom beatmap colors.
