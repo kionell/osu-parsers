@@ -72,6 +72,7 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
    * @param options Beatmap parsing options.
    * Setting this to boolean will only affect storyboard parsing.
    * All sections that weren't specified will be enabled by default.
+   * @throws If beatmap data can't be decoded.
    * @returns A decoded beatmap.
    */
   decodeFromBuffer(data: BufferLike, options?: boolean | IBeatmapParsingOptions): Beatmap {
@@ -84,6 +85,7 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
    * @param options Beatmap parsing options.
    * Setting this to boolean will only affect storyboard parsing.
    * All sections that weren't specified will be enabled by default.
+   * @throws If beatmap data can't be decoded.
    * @returns A decoded beatmap.
    */
   decodeFromString(str: string, options?: boolean | IBeatmapParsingOptions): Beatmap {
@@ -97,6 +99,7 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
    * @param data The array of split lines.
    * @param options Beatmap parsing options.
    * Setting this to boolean will only affect storyboard parsing.
+   * @throws If beatmap data can't be decoded.
    * @returns A decoded beatmap.
    */
   decodeFromLines(data: string[], options?: boolean | IBeatmapParsingOptions): Beatmap {

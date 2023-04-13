@@ -22,6 +22,7 @@ export class ScoreDecoder extends Decoder {
    * Performs score decoding from the specified .osr file.
    * @param path A path to the .osr file.
    * @param parseReplay Should replay be parsed?
+   * @throws If file doesn't exist or can't be decoded.
    * @returns A decoded score.
    */
   async decodeFromPath(path: string, parseReplay = true): Promise<Score> {

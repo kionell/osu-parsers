@@ -28,6 +28,7 @@ export class StoryboardDecoder extends SectionDecoder<Storyboard> {
    * from the `.osb` were appended to the end of the `.osu` commands.
    * @param firstPath The path to the main storyboard (`.osu` or `.osb` file).
    * @param secondPath The path to the secondary storyboard (`.osb` file).
+   * @throws If file doesn't exist or can't be decoded.
    * @returns A decoded storyboard.
    */
   async decodeFromPath(firstPath: string, secondPath?: string): Promise<Storyboard> {
@@ -65,6 +66,7 @@ export class StoryboardDecoder extends SectionDecoder<Storyboard> {
    * from the `.osb` were appended to the end of the `.osu` commands.
    * @param firstBuffer The buffer with the main storyboard data (from `.osu` or `.osb` file).
    * @param secondBuffer The buffer with the secondary storyboard data (from `.osb` file).
+   * @throws If storyboard data can't be decoded.
    * @returns A decoded storyboard.
    */
   decodeFromBuffer(firstBuffer: BufferLike, secondBuffer?: BufferLike): Storyboard {
@@ -83,6 +85,7 @@ export class StoryboardDecoder extends SectionDecoder<Storyboard> {
    * from the `.osb` were appended to the end of the `.osu` commands.
    * @param firstString The string with the main storyboard data (from `.osu` or `.osb` file).
    * @param secondString The string with the secondary storyboard data (from `.osb` file).
+   * @throws If storyboard data can't be decoded.
    * @returns A decoded storyboard.
    */
   decodeFromString(firstString: string, secondString?: string): Storyboard {
@@ -109,6 +112,7 @@ export class StoryboardDecoder extends SectionDecoder<Storyboard> {
    * from the `.osb` were appended to the end of the `.osu` commands.
    * @param firstData The string array with the main storyboard data (from `.osu` or `.osb` file).
    * @param secondData The string array with the secondary storyboard data (from `.osb` file).
+   * @throws If storyboard data can't be decoded.
    * @returns A decoded storyboard.
    */
   decodeFromLines(firstData: string[], secondData?: string[]): Storyboard {
