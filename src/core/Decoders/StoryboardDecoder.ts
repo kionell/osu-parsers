@@ -48,7 +48,7 @@ export class StoryboardDecoder extends SectionDecoder<Storyboard> {
         ? await this._getFileBuffer(firstPath)
         : undefined;
 
-      return await this.decodeFromBuffer(firstData, secondData);
+      return this.decodeFromBuffer(firstData, secondData);
     }
     catch (err: unknown) {
       const reason = (err as Error).message || err;
