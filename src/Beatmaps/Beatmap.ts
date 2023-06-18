@@ -9,7 +9,7 @@ import {
 
 import { IBeatmap } from './IBeatmap';
 import { ControlPointInfo } from './ControlPoints';
-import { HitObject, IHasDuration } from '../Objects';
+import { HitObject, HitType, IHasDuration } from '../Objects';
 import { RoundHelper } from '../Utils';
 
 /**
@@ -205,6 +205,42 @@ export class Beatmap implements IBeatmap {
    */
   get totalBreakTime(): number {
     return (this.events.breaks || []).reduce((d, e) => d + e.duration, 0);
+  }
+
+  /**
+   * The ammount of hittable objects.
+   */
+  get hittable(): number {
+    return this.hitObjects.reduce((s, h) => {
+      return s + (h.hitType & HitType.Normal ? 1 : 0);
+    }, 0);
+  }
+
+  /**
+   * The ammount of slidable objects.
+   */
+  get slidable(): number {
+    return this.hitObjects.reduce((s, h) => {
+      return s + (h.hitType & HitType.Slider ? 1 : 0);
+    }, 0);
+  }
+
+  /**
+   * The ammount of spinnable objects.
+   */
+  get spinnable(): number {
+    return this.hitObjects.reduce((s, h) => {
+      return s + (h.hitType & HitType.Spinner ? 1 : 0);
+    }, 0);
+  }
+
+  /**
+   * The ammount of holdable objects.
+   */
+  get holdable(): number {
+    return this.hitObjects.reduce((s, h) => {
+      return s + (h.hitType & HitType.Hold ? 1 : 0);
+    }, 0);
   }
 
   /**
