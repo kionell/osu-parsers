@@ -62,7 +62,7 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
     catch (err: unknown) {
       const reason = (err as Error).message || err;
 
-      throw new Error(`Failed to decode a beatmap! Reason: ${reason}`);
+      throw new Error(`Failed to decode a beatmap: ${reason}`);
     }
   }
 

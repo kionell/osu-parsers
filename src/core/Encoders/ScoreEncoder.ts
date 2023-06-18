@@ -28,7 +28,7 @@ export class ScoreEncoder {
     catch (err: unknown) {
       const reason = (err as Error).message || err;
 
-      throw new Error(`Score can't be encoded! Reason: ${reason}`);
+      throw new Error(`Failed to encode a score: ${reason}`);
     }
   }
 

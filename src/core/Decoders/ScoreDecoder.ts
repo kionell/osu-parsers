@@ -38,7 +38,7 @@ export class ScoreDecoder extends Decoder {
     catch (err: unknown) {
       const reason = (err as Error).message || err;
 
-      throw new Error(`Failed to decode a score! Reason: ${reason}`);
+      throw new Error(`Failed to decode a score: '${reason}'`);
     }
   }
 

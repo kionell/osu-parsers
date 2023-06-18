@@ -53,7 +53,7 @@ export class StoryboardDecoder extends SectionDecoder<Storyboard> {
     catch (err: unknown) {
       const reason = (err as Error).message || err;
 
-      throw new Error(`Failed to decode a storyboard! Reason: ${reason}`);
+      throw new Error(`Failed to decode a storyboard: '${reason}'`);
     }
   }
 
