@@ -12,14 +12,16 @@ export class ScoreEncoder {
    * Performs score & replay encoding to the specified path.
    * @param path The path for writing the .osr file.
    * @param score The score for encoding.
+   * @param beatmap The beatmap of the replay.
+   * It is required if replay contains non-legacy frames.
    * @throws If score can't be encoded or file can't be written.
    */
-  async encodeToPath(path: string, score?: IScore): Promise<void> {
+  async encodeToPath(path: string, score?: IScore, beatmap?: IBeatmap): Promise<void> {
     if (!path.endsWith(FileFormat.Replay)) {
       path += FileFormat.Replay;
     }
 
-    const data = await this.encodeToBuffer(score);
+    const data = await this.encodeToBuffer(score, beatmap);
 
     try {
       await mkdir(dirname(path), { recursive: true });
@@ -35,9 +37,11 @@ export class ScoreEncoder {
   /**
    * Performs score encoding to a buffer.
    * @param score The score for encoding.
+   * @param beatmap The beatmap of the replay.
+   * It is required if replay contains non-legacy frames.
    * @returns The buffer with encoded score & replay data.
    */
-  async encodeToBuffer(score?: IScore): Promise<Uint8Array> {
+  async encodeToBuffer(score?: IScore, beatmap?: IBeatmap): Promise<Uint8Array> {
     if (typeof score?.info?.id !== 'number') {
       return new Uint8Array();
     }
@@ -76,7 +80,7 @@ export class ScoreEncoder {
       writer.writeDate(score.info.date);
 
       if (score.replay) {
-        const replayData = ReplayEncoder.encodeReplayFrames(score.replay.frames);
+        const replayData = ReplayEncoder.encodeReplayFrames(score.replay.frames, beatmap);
         const encodedData = await LZMA.compress(replayData);
 
         writer.writeInteger(encodedData.byteLength);

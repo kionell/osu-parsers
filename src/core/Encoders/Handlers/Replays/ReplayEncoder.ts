@@ -1,4 +1,11 @@
-import { ILifeBarFrame, IReplayFrame } from 'osu-classes';
+import {
+  ILifeBarFrame,
+  IReplayFrame,
+  ReplayButtonState,
+  LegacyReplayFrame,
+  IConvertibleReplayFrame,
+  IBeatmap,
+} from 'osu-classes';
 
 export abstract class ReplayEncoder {
   static encodeLifeBar(frames: ILifeBarFrame[]): string {
@@ -7,7 +14,7 @@ export abstract class ReplayEncoder {
     return frames.map((f) => `${f.startTime}|${f.health}`).join(',');
   }
 
-  static encodeReplayFrames(frames: IReplayFrame[]): string {
+  static encodeReplayFrames(frames: IReplayFrame[], beatmap?: IBeatmap): string {
     const encoded = [];
 
     if (frames) {
@@ -18,14 +25,13 @@ export abstract class ReplayEncoder {
          * Rounding because stable could only parse integral values.
          */
         const time = Math.round(frame.startTime);
-
-        const parsedFrame = frame as IReplayFrame;
+        const legacyFrame = this._getLegacyFrame(frame, beatmap);
 
         const encodedData = [
           time - lastTime,
-          parsedFrame?.mouseX ?? 0,
-          parsedFrame?.mouseY ?? 0,
-          frame.buttonState,
+          legacyFrame?.mouseX ?? 0,
+          legacyFrame?.mouseY ?? 0,
+          legacyFrame?.buttonState ?? ReplayButtonState.None,
         ];
 
         encoded.push(encodedData.join('|'));
@@ -37,5 +43,23 @@ export abstract class ReplayEncoder {
     encoded.push('-12345|0|0|0');
 
     return encoded.join(',');
+  }
+
+  private static _getLegacyFrame(frame: IReplayFrame, beatmap?: IBeatmap): LegacyReplayFrame {
+    if (frame instanceof LegacyReplayFrame) {
+      return frame;
+    }
+
+    if (!beatmap) {
+      throw new Error('Beatmap must be provided if frames are not already legacy frames.');
+    }
+
+    const convertibleFrame = frame as IReplayFrame & IConvertibleReplayFrame;
+
+    if (convertibleFrame.toLegacy) {
+      return convertibleFrame.toLegacy(beatmap);
+    }
+
+    throw new Error('Some of the replay frames can not be converted to the legacy format!');
   }
 }
