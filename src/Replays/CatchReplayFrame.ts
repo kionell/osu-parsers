@@ -1,5 +1,4 @@
 import {
-  IBeatmap,
   IConvertibleReplayFrame,
   LegacyReplayFrame,
   ReplayButtonState,
@@ -27,7 +26,6 @@ export class CatchReplayFrame extends ReplayFrame implements IConvertibleReplayF
 
   fromLegacy(
     currentFrame: LegacyReplayFrame,
-    _: IBeatmap,
     lastFrame: CatchReplayFrame | null,
   ): this {
     this.position = currentFrame.position.x;
