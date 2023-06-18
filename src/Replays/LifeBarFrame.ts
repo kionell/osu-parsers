@@ -15,6 +15,11 @@ export class LifeBarFrame implements ILifeBarFrame {
    */
   health = 0;
 
+  constructor(startTime: number, health: number) {
+    this.startTime = startTime;
+    this.health = health;
+  }
+
   /**
    * Creates a deep copy of the replay frame.
    * @returns Cloned replay frame.

@@ -9,12 +9,24 @@ export class LegacyReplayFrame extends ReplayFrame {
   /**
    * Button state of this replay frame.
    */
-  buttonState: ReplayButtonState = ReplayButtonState.None;
+  buttonState: ReplayButtonState;
 
   /**
    * Mouse position of this replay frame.
    */
-  position: Vector2 = new Vector2(0, 0);
+  position: Vector2;
+
+  constructor(
+    startTime?: number,
+    interval?: number,
+    position?: Vector2,
+    buttonState?: ReplayButtonState,
+  ) {
+    super(startTime, interval);
+
+    this.position = position ?? new Vector2(0, 0);
+    this.buttonState = buttonState ?? ReplayButtonState.None;
+  }
 
   /**
    * Mouse X-position of this replay frame.
