@@ -17,6 +17,7 @@ import {
 } from './Difficulty';
 
 import { TaikoModCombination } from './Mods/TaikoModCombination';
+import { TaikoReplayConverter } from './Replays';
 
 /**
  * osu!taiko ruleset.
@@ -69,15 +70,22 @@ export class TaikoRuleset extends Ruleset {
   /**
    * @returns A new osu!taiko beatmap processor.
    */
-  createBeatmapProcessor(): TaikoBeatmapProcessor {
+  protected _createBeatmapProcessor(): TaikoBeatmapProcessor {
     return new TaikoBeatmapProcessor();
   }
 
   /**
    * @returns A new osu!taiko beatmap converter.
    */
-  createBeatmapConverter(): TaikoBeatmapConverter {
+  protected _createBeatmapConverter(): TaikoBeatmapConverter {
     return new TaikoBeatmapConverter();
+  }
+
+  /**
+   * @returns A new osu!taiko replay converter.
+   */
+  protected _createReplayConverter(): TaikoReplayConverter {
+    return new TaikoReplayConverter();
   }
 
   /**
