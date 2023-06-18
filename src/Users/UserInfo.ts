@@ -190,8 +190,8 @@ export class UserInfo implements IUserInfo {
   }
 
   /**
-   * Converts this user information to a plain object convertable to JSON.
-   * @returns User information convertable to JSON.
+   * Converts this user information to a plain object convertible to JSON.
+   * @returns User information convertible to JSON.
    */
   toJSON(): IJsonableUserInfo {
     return {

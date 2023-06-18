@@ -141,7 +141,7 @@ export interface IScoreInfo {
 
   /**
    * Converts this score information to JSON.
-   * @returns Score information convertable to JSON.
+   * @returns Score information convertible to JSON.
    */
   toJSON(): IJsonableScoreInfo;
 }

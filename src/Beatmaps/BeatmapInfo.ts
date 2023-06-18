@@ -253,8 +253,8 @@ export class BeatmapInfo implements IBeatmapInfo {
   }
 
   /**
-   * Converts this beatmap information to a plain object convertable to JSON.
-   * @returns Beatmap information convertable to JSON.
+   * Converts this beatmap information to a plain object convertible to JSON.
+   * @returns Beatmap information convertible to JSON.
    */
   toJSON(): IJsonableBeatmapInfo {
     const partial: Partial<this> = {};

@@ -195,8 +195,8 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
   }
 
   /**
-   * Converts this score information to a plain object convertable to JSON.
-   * @returns Score information convertable to JSON.
+   * Converts this score information to a plain object convertible to JSON.
+   * @returns Score information convertible to JSON.
    */
   toJSON(): IJsonableScoreInfo {
     const partial: Partial<this> = {};
