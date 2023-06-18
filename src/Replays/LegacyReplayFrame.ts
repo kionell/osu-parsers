@@ -46,19 +46,23 @@ export class LegacyReplayFrame extends ReplayFrame {
   }
 
   get mouseLeft1(): boolean {
-    return !!(this.buttonState & ReplayButtonState.Left1);
+    return (this.buttonState & ReplayButtonState.Left1) > 0;
   }
 
   get mouseRight1(): boolean {
-    return !!(this.buttonState & ReplayButtonState.Right1);
+    return (this.buttonState & ReplayButtonState.Right1) > 0;
   }
 
   get mouseLeft2(): boolean {
-    return !!(this.buttonState & ReplayButtonState.Left2);
+    return (this.buttonState & ReplayButtonState.Left2) > 0;
   }
 
   get mouseRight2(): boolean {
-    return !!(this.buttonState & ReplayButtonState.Right2);
+    return (this.buttonState & ReplayButtonState.Right2) > 0;
+  }
+
+  get smoke(): boolean {
+    return (this.buttonState & ReplayButtonState.Smoke) > 0;
   }
 
   /**
