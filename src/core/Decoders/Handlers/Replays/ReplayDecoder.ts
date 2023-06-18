@@ -1,4 +1,4 @@
-import { ReplayFrame, LifeBarFrame } from 'osu-classes';
+import { LegacyReplayFrame, LifeBarFrame } from 'osu-classes';
 import { Parsing } from '../../../Utils/Parsing';
 
 export abstract class ReplayDecoder {
@@ -32,12 +32,12 @@ export abstract class ReplayDecoder {
     return lifeBarFrame;
   }
 
-  static decodeReplayFrames(data: string): ReplayFrame[] {
+  static decodeReplayFrames(data: string): LegacyReplayFrame[] {
     if (!data) return [];
 
     let lastTime = 0;
 
-    const replayFrames: ReplayFrame[] = [];
+    const replayFrames: LegacyReplayFrame[] = [];
     const frames = data.split(',');
 
     for (let i = 0; i < frames.length; ++i) {
@@ -80,8 +80,8 @@ export abstract class ReplayDecoder {
     return replayFrames;
   }
 
-  static handleReplayFrame(frameData: string[]): ReplayFrame {
-    const replayFrame = new ReplayFrame();
+  static handleReplayFrame(frameData: string[]): LegacyReplayFrame {
+    const replayFrame = new LegacyReplayFrame();
 
     replayFrame.interval = Parsing.parseFloat(frameData[0]);
     replayFrame.mouseX = Parsing.parseFloat(frameData[1], Parsing.MAX_COORDINATE_VALUE);
