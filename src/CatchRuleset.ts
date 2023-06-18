@@ -17,6 +17,7 @@ import {
 } from './Difficulty';
 
 import { CatchModCombination } from './Mods';
+import { CatchReplayConverter } from './Replays';
 
 /**
  * osu!catch ruleset.
@@ -69,15 +70,22 @@ export class CatchRuleset extends Ruleset {
   /**
    * @returns A new osu!catch beatmap processor.
    */
-  createBeatmapProcessor(): CatchBeatmapProcessor {
+  protected _createBeatmapProcessor(): CatchBeatmapProcessor {
     return new CatchBeatmapProcessor();
   }
 
   /**
    * @returns A new osu!catch beatmap converter.
    */
-  createBeatmapConverter(): CatchBeatmapConverter {
+  protected _createBeatmapConverter(): CatchBeatmapConverter {
     return new CatchBeatmapConverter();
+  }
+
+  /**
+   * @returns A new osu!catch replay converter.
+   */
+  protected _createReplayConverter(): CatchReplayConverter {
+    return new CatchReplayConverter();
   }
 
   /**
