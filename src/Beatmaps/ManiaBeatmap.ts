@@ -13,7 +13,7 @@ export class ManiaBeatmap extends RulesetBeatmap {
 
   /**
    * The total number of columns that were present
-   * in this ManiaBeatmap before any user adjustments.
+   * in this {@link ManiaBeatmap} before any user adjustments.
    */
   readonly originalTotalColumns: number = 0;
 
@@ -42,23 +42,23 @@ export class ManiaBeatmap extends RulesetBeatmap {
 
   get maxCombo(): number {
     return this.hitObjects.reduce((combo, obj) => {
+      if (obj instanceof Note) {
+        return combo + 1;
+      }
+
       if (obj instanceof Hold) {
         return combo + 1 + Math.trunc((obj.endTime - obj.startTime) / 100);
       }
 
       return combo;
-    }, this.notes);
-  }
-
-  get notes(): number {
-    return this.hitObjects.reduce((c, h) => {
-      return c + (h instanceof Note ? 1 : 0);
     }, 0);
   }
 
-  get holds(): number {
-    return this.hitObjects.reduce((c, h) => {
-      return c + (h instanceof Hold ? 1 : 0);
-    }, 0);
+  get notes(): Note[] {
+    return this.hitObjects.filter((h) => h instanceof Note) as Note[];
+  }
+
+  get holds(): Hold[] {
+    return this.hitObjects.filter((h) => h instanceof Hold) as Hold[];
   }
 }
