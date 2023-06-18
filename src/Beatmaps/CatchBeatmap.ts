@@ -21,29 +21,24 @@ export class CatchBeatmap extends RulesetBeatmap {
 
   get maxCombo(): number {
     return this.hitObjects.reduce((c, h) => {
-      if (!(h instanceof JuiceStream)) return c;
+      if (h instanceof Fruit) return c + 1;
+      if (h instanceof BananaShower) return c;
 
       return c + h.nestedHitObjects.reduce((c, n) => {
         return c + (n instanceof JuiceTinyDroplet ? 0 : 1);
       }, 0);
-    }, this.fruits);
-  }
-
-  get fruits(): number {
-    return this.hitObjects.reduce((c, h) => {
-      return c + (h instanceof Fruit ? 1 : 0);
     }, 0);
   }
 
-  get juiceStreams(): number {
-    return this.hitObjects.reduce((c, h) => {
-      return c + (h instanceof JuiceStream ? 1 : 0);
-    }, 0);
+  get fruits(): Fruit[] {
+    return this.hitObjects.filter((h) => h instanceof Fruit) as Fruit[];
   }
 
-  get bananaShowers(): number {
-    return this.hitObjects.reduce((c, h) => {
-      return c + (h instanceof BananaShower ? 1 : 0);
-    }, 0);
+  get juiceStreams(): JuiceStream[] {
+    return this.hitObjects.filter((h) => h instanceof JuiceStream) as JuiceStream[];
+  }
+
+  get bananaShowers(): BananaShower[] {
+    return this.hitObjects.filter((h) => h instanceof BananaShower) as BananaShower[];
   }
 }
