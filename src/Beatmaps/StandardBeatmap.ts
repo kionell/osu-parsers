@@ -1,7 +1,6 @@
+import { RulesetBeatmap } from 'osu-classes';
 import { StandardModCombination } from '../Mods/StandardModCombination';
-import { StandardHitObject } from '../Objects/StandardHitObject';
-
-import { RulesetBeatmap, HitType } from 'osu-classes';
+import { StandardHitObject, Circle, Slider, Spinner } from '../Objects';
 
 export class StandardBeatmap extends RulesetBeatmap {
   mods: StandardModCombination = new StandardModCombination();
@@ -14,15 +13,15 @@ export class StandardBeatmap extends RulesetBeatmap {
 
   get maxCombo(): number {
     return this.hitObjects.reduce((combo, obj) => {
-      if (obj.hitType & HitType.Normal) {
+      if (obj instanceof Circle) {
         return combo + 1;
       }
 
-      if (obj.hitType & HitType.Slider) {
+      if (obj instanceof Slider) {
         return combo + obj.nestedHitObjects.length;
       }
 
-      if (obj.hitType & HitType.Spinner) {
+      if (obj instanceof Spinner) {
         return combo + 1;
       }
 
@@ -30,21 +29,24 @@ export class StandardBeatmap extends RulesetBeatmap {
     }, 0);
   }
 
-  get circles(): number {
-    return this.hitObjects.reduce((c, h) => {
-      return c + (h.hitType & HitType.Normal ? 1 : 0);
-    }, 0);
+  /**
+   * A list of circles of this beatmap.
+   */
+  get circles(): Circle[] {
+    return this.hitObjects.filter((h) => h instanceof Circle) as Circle[];
   }
 
-  get sliders(): number {
-    return this.hitObjects.reduce((c, h) => {
-      return c + (h.hitType & HitType.Slider ? 1 : 0);
-    }, 0);
+  /**
+   * A list of sliders of this beatmap.
+   */
+  get sliders(): Slider[] {
+    return this.hitObjects.filter((h) => h instanceof Slider) as Slider[];
   }
 
-  get spinners(): number {
-    return this.hitObjects.reduce((c, h) => {
-      return c + (h.hitType & HitType.Spinner ? 1 : 0);
-    }, 0);
+  /**
+   * A list of spinners of this beatmap.
+   */
+  get spinners(): Spinner[] {
+    return this.hitObjects.filter((h) => h instanceof Spinner) as Spinner[];
   }
 }
