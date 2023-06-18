@@ -17,6 +17,7 @@ import {
 } from './Difficulty';
 
 import { ManiaModCombination } from './Mods/ManiaModCombination';
+import { ManiaReplayConverter } from './Replays';
 
 /**
  * osu!mania ruleset.
@@ -69,15 +70,22 @@ export class ManiaRuleset extends Ruleset {
   /**
    * @returns A new osu!mania beatmap processor.
    */
-  createBeatmapProcessor(): ManiaBeatmapProcessor {
+  protected _createBeatmapProcessor(): ManiaBeatmapProcessor {
     return new ManiaBeatmapProcessor();
   }
 
   /**
    * @returns A new osu!mania beatmap converter.
    */
-  createBeatmapConverter(): ManiaBeatmapConverter {
+  protected _createBeatmapConverter(): ManiaBeatmapConverter {
     return new ManiaBeatmapConverter();
+  }
+
+  /**
+   * @returns A new osu!mania replay converter.
+   */
+  protected _createReplayConverter(): ManiaReplayConverter {
+    return new ManiaReplayConverter();
   }
 
   /**
