@@ -6,13 +6,18 @@ import {
 } from '../Beatmaps';
 
 import {
+  IReplay,
+  Replay,
+} from '../Replays';
+
+import {
   DifficultyAttributes,
   DifficultyCalculator,
   PerformanceCalculator,
 } from '../Difficulty';
 
 import { IScoreInfo } from '../Scoring';
-import { ModCombination } from '../Mods/ModCombination';
+import { ModCombination } from '../Mods';
 
 /**
  * A ruleset.
@@ -37,6 +42,15 @@ export interface IRuleset {
    * @returns A new beatmap with applied mods.
    */
   applyToBeatmapWithMods(beatmap: IBeatmap, mods?: ModCombination): RulesetBeatmap;
+
+  /**
+   * Applies ruleset to a replay.
+   * Converts legacy replay frames to ruleset specific frames.
+   * @param replay The replay.
+   * @param beatmap The beatmap of the replay which is used to get some data.
+   * @returns A new instance of the replay with applied ruleset.
+   */
+  applyToReplay(replay: IReplay, beatmap: IBeatmap): Replay;
 
   /**
    * Resets a mod combination from a beatmap.

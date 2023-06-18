@@ -6,6 +6,12 @@ import {
 } from '../Beatmaps';
 
 import {
+  IReplay,
+  Replay,
+  ReplayConverter,
+} from '../Replays';
+
+import {
   DifficultyAttributes,
   DifficultyCalculator,
   PerformanceCalculator,
@@ -106,6 +112,23 @@ export abstract class Ruleset implements IRuleset {
   }
 
   /**
+   * Applies ruleset to a replay.
+   * Converts legacy replay frames to ruleset specific frames.
+   * @param replay The replay.
+   * @param beatmap The beatmap of the replay which is used to get some data.
+   * @returns A new instance of the replay with applied ruleset.
+   */
+  applyToReplay(replay: IReplay, beatmap: IBeatmap): Replay {
+    if (replay.mode !== beatmap.mode) {
+      throw new Error('Replay and beatmap mode does not match!');
+    }
+
+    const converter = this._createReplayConverter();
+
+    return converter.convertReplay(replay, beatmap);
+  }
+
+  /**
    * Resets a mod combination from a beatmap.
    * @param beatmap The beatmap.
    * @returns A new beatmap with no mods.
@@ -131,7 +154,11 @@ export abstract class Ruleset implements IRuleset {
   /**
    * @returns A new beatmap converter.
    */
-  abstract createBeatmapConverter(): BeatmapConverter;
+
+  /**
+   * @returns A new replay converter.
+   */
+  protected abstract _createReplayConverter(): ReplayConverter;
 
   /**
    * @param beatmap The beatmap for which the calculation will be done.
