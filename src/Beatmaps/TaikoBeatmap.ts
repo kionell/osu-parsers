@@ -1,6 +1,6 @@
-import { RulesetBeatmap, HitType } from 'osu-classes';
+import { RulesetBeatmap } from 'osu-classes';
 import { TaikoModCombination } from '../Mods/TaikoModCombination';
-import { TaikoHitObject } from '../Objects/TaikoHitObject';
+import { TaikoHitObject, Hit, DrumRoll, Swell } from '../Objects';
 
 export class TaikoBeatmap extends RulesetBeatmap {
   mods: TaikoModCombination = new TaikoModCombination();
@@ -13,25 +13,19 @@ export class TaikoBeatmap extends RulesetBeatmap {
 
   get maxCombo(): number {
     return this.hitObjects.reduce((combo, obj) => {
-      return obj.hitType & HitType.Normal ? combo + 1 : combo;
+      return obj instanceof Hit ? combo + 1 : combo;
     }, 0);
   }
 
-  get hits(): number {
-    return this.hitObjects.reduce((c, h) => {
-      return c + (h.hitType & HitType.Normal ? 1 : 0);
-    }, 0);
+  get hits(): Hit[] {
+    return this.hitObjects.filter((h) => h instanceof Hit) as Hit[];
   }
 
-  get drumRolls(): number {
-    return this.hitObjects.reduce((c, h) => {
-      return c + (h.hitType & HitType.Slider ? 1 : 0);
-    }, 0);
+  get drumRolls(): DrumRoll[] {
+    return this.hitObjects.filter((h) => h instanceof DrumRoll) as DrumRoll[];
   }
 
-  get swells(): number {
-    return this.hitObjects.reduce((c, h) => {
-      return c + (h.hitType & HitType.Spinner ? 1 : 0);
-    }, 0);
+  get swells(): Swell[] {
+    return this.hitObjects.filter((h) => h instanceof Swell) as Swell[];
   }
 }
