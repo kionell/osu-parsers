@@ -4,6 +4,7 @@ import {
   PerformanceCalculator,
   IRuleset,
   IScoreInfo,
+  HitResult,
 } from 'osu-classes';
 
 import {
@@ -145,11 +146,20 @@ export class CatchPerformanceCalculator extends PerformanceCalculator {
     if (score) {
       this._scoreMaxCombo = score.maxCombo ?? this._scoreMaxCombo;
       this._mods = score?.mods as CatchModCombination ?? this._mods;
-      this._fruitsHit = score.statistics.great ?? this._fruitsHit;
-      this._ticksHit = score.statistics.largeTickHit ?? this._ticksHit;
-      this._tinyTicksHit = score.statistics.smallTickHit ?? this._tinyTicksHit;
-      this._tinyTicksMissed = score.statistics.smallTickMiss ?? this._tinyTicksMissed;
-      this._misses = score.statistics.miss ?? this._misses;
+
+      this._fruitsHit = score.statistics.get(HitResult.Great)
+        ?? this._fruitsHit;
+
+      this._ticksHit = score.statistics.get(HitResult.LargeTickHit)
+        ?? this._ticksHit;
+
+      this._tinyTicksHit = score.statistics.get(HitResult.SmallTickHit)
+        ?? this._tinyTicksHit;
+
+      this._tinyTicksMissed = score.statistics.get(HitResult.SmallTickMiss)
+        ?? this._tinyTicksMissed;
+
+      this._misses = score.statistics.get(HitResult.Miss) ?? this._misses;
     }
 
     if (attributes) {
