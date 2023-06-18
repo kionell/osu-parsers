@@ -12,14 +12,23 @@ export class LegacyReplayFrame extends ReplayFrame {
   buttonState: ReplayButtonState = ReplayButtonState.None;
 
   /**
+   * Mouse position of this replay frame.
+   */
+  position: Vector2 = new Vector2(0, 0);
+
+  /**
    * Mouse X-position of this replay frame.
    */
-  mouseX = 0;
+  get mouseX(): number {
+    return this.position.x;
+  }
 
   /**
    * Mouse Y-position of this replay frame.
    */
-  mouseY = 0;
+  get mouseY(): number {
+    return this.position.y;
+  }
 
   /**
    * Mouse position of this replay frame.
@@ -60,8 +69,7 @@ export class LegacyReplayFrame extends ReplayFrame {
     const cloned = super.clone();
 
     cloned.buttonState = this.buttonState;
-    cloned.mouseX = this.mouseX;
-    cloned.mouseY = this.mouseY;
+    cloned.position = this.position.clone();
 
     return cloned;
   }
