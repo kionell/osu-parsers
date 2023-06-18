@@ -50,10 +50,6 @@ export abstract class ReplayEncoder {
       return frame;
     }
 
-    if (!beatmap) {
-      throw new Error('Beatmap must be provided if frames are not already legacy frames.');
-    }
-
     const convertibleFrame = frame as IReplayFrame & IConvertibleReplayFrame;
 
     if (convertibleFrame.toLegacy) {
