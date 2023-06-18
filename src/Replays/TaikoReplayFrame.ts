@@ -15,6 +15,9 @@ export class TaikoReplayFrame extends ReplayFrame implements IConvertibleReplayF
   actions: Set<TaikoAction> = new Set();
 
   fromLegacy(currentFrame: LegacyReplayFrame): this {
+    this.startTime = currentFrame.startTime;
+    this.interval = currentFrame.interval;
+
     if (currentFrame.mouseRight1) {
       this.actions.add(TaikoAction.LeftRim);
     }
