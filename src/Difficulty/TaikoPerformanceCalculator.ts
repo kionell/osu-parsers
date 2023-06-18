@@ -3,6 +3,7 @@
   PerformanceCalculator,
   IRuleset,
   IScoreInfo,
+  HitResult,
 } from 'osu-classes';
 
 import {
@@ -131,10 +132,10 @@ export class TaikoPerformanceCalculator extends PerformanceCalculator {
   private _addParams(attributes?: DifficultyAttributes, score?: IScoreInfo): void {
     if (score) {
       this._mods = score?.mods as TaikoModCombination ?? new TaikoModCombination();
-      this._countGreat = score.statistics.great ?? this._countGreat;
-      this._countOk = score.statistics.ok ?? this._countOk;
-      this._countMeh = score.statistics.meh ?? this._countMeh;
-      this._countMiss = score.statistics.miss ?? this._countMiss;
+      this._countGreat = score.statistics.get(HitResult.Great) ?? this._countGreat;
+      this._countOk = score.statistics.get(HitResult.Ok) ?? this._countOk;
+      this._countMeh = score.statistics.get(HitResult.Meh) ?? this._countMeh;
+      this._countMiss = score.statistics.get(HitResult.Miss) ?? this._countMiss;
       this._accuracy = score.accuracy ?? this._accuracy;
     }
 
