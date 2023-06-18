@@ -3,6 +3,7 @@
   PerformanceCalculator,
   IRuleset,
   IScoreInfo,
+  HitResult,
 } from 'osu-classes';
 
 import {
@@ -89,12 +90,12 @@ export class ManiaPerformanceCalculator extends PerformanceCalculator {
   private _addParams(attributes?: DifficultyAttributes, score?: IScoreInfo): void {
     if (score) {
       this._mods = score?.mods as ManiaModCombination ?? this._mods;
-      this._countPerfect = score.statistics.perfect ?? 0;
-      this._countGreat = score.statistics.great ?? 0;
-      this._countGood = score.statistics.good ?? 0;
-      this._countOk = score.statistics.ok ?? 0;
-      this._countMeh = score.statistics.meh ?? 0;
-      this._countMiss = score.statistics.miss ?? 0;
+      this._countPerfect = score.statistics.get(HitResult.Perfect) ?? 0;
+      this._countGreat = score.statistics.get(HitResult.Great) ?? 0;
+      this._countGood = score.statistics.get(HitResult.Good) ?? 0;
+      this._countOk = score.statistics.get(HitResult.Ok) ?? 0;
+      this._countMeh = score.statistics.get(HitResult.Meh) ?? 0;
+      this._countMiss = score.statistics.get(HitResult.Miss) ?? 0;
     }
 
     if (attributes) {
