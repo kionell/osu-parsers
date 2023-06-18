@@ -16,7 +16,15 @@ export class ManiaReplayFrame extends ReplayFrame implements IConvertibleReplayF
    */
   actions: Set<ManiaAction> = new Set();
 
-  fromLegacy(currentFrame: LegacyReplayFrame, beatmap: IBeatmap): this {
+  fromLegacy(
+    currentFrame: LegacyReplayFrame,
+    _: ManiaReplayFrame | null,
+    beatmap?: IBeatmap,
+  ): this {
+    if (!beatmap) {
+      throw new Error('Beatmap must be provided to convert osu!mania replay frames.');
+    }
+
     const maniaBeatmap = beatmap as ManiaBeatmap;
 
     let normalAction = ManiaAction.Key1;
@@ -41,7 +49,11 @@ export class ManiaReplayFrame extends ReplayFrame implements IConvertibleReplayF
     return this;
   }
 
-  toLegacy(beatmap: IBeatmap): LegacyReplayFrame {
+  toLegacy(beatmap?: IBeatmap): LegacyReplayFrame {
+    if (!beatmap) {
+      throw new Error('Beatmap must be provided to convert osu!mania replay frames.');
+    }
+
     const maniaBeatmap = beatmap as ManiaBeatmap;
 
     let keys = 0;
