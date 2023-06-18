@@ -10,11 +10,6 @@ import { TaikoAction } from './Enums/TaikoAction';
 
 export class TaikoReplayFrame extends ReplayFrame implements IConvertibleReplayFrame {
   /**
-   * Mouse position of this replay frame.
-   */
-  position: Vector2 = new Vector2(0, 0);
-
-  /**
    * Button actions of this replay frame.
    */
   actions: Set<TaikoAction> = new Set();
@@ -61,7 +56,7 @@ export class TaikoReplayFrame extends ReplayFrame implements IConvertibleReplayF
     return new LegacyReplayFrame(
       this.startTime,
       this.interval,
-      this.position,
+      new Vector2(0, 0),
       state,
     );
   }
