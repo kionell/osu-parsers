@@ -63,13 +63,13 @@ export abstract class Ruleset implements IRuleset {
       mods = this.createModCombination(mods.bitwise);
     }
 
-    const converter = this.createBeatmapConverter();
+    const converter = this._createBeatmapConverter();
 
     /**
      * Check if the beatmap can be converted.
      */
     if (beatmap.hitObjects.length > 0 && !converter.canConvert(beatmap)) {
-      throw new Error('Beatmap can not be converted!');
+      throw new Error('Beatmap can not be converted to this ruleset!');
     }
 
     /**
@@ -88,7 +88,7 @@ export abstract class Ruleset implements IRuleset {
       m.applyToDifficulty(converted.difficulty);
     });
 
-    const processor = this.createBeatmapProcessor();
+    const processor = this._createBeatmapProcessor();
 
     processor.preProcess(converted);
 
@@ -149,11 +149,12 @@ export abstract class Ruleset implements IRuleset {
   /**
    * @returns A new beatmap processor.
    */
-  abstract createBeatmapProcessor(): BeatmapProcessor;
+  protected abstract _createBeatmapProcessor(): BeatmapProcessor;
 
   /**
    * @returns A new beatmap converter.
    */
+  protected abstract _createBeatmapConverter(): BeatmapConverter;
 
   /**
    * @returns A new replay converter.

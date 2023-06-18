@@ -1,6 +1,4 @@
 import {
-  BeatmapProcessor,
-  BeatmapConverter,
   RulesetBeatmap,
   IBeatmap,
 } from '../Beatmaps';
@@ -65,16 +63,6 @@ export interface IRuleset {
    * @returns A new mod combination.
    */
   createModCombination(input?: number | string): ModCombination;
-
-  /**
-   * @returns A new beatmap processor.
-   */
-  createBeatmapProcessor(): BeatmapProcessor;
-
-  /**
-   * @returns A new beatmap converter.
-   */
-  createBeatmapConverter(): BeatmapConverter;
 
   /**
    * @param beatmap The beatmap for which the calculation will be done.
