@@ -20,6 +20,8 @@ export class StandardReplayFrame extends ReplayFrame implements IConvertibleRepl
   actions: Set<StandardAction> = new Set();
 
   fromLegacy(currentFrame: LegacyReplayFrame): this {
+    this.startTime = currentFrame.startTime;
+    this.interval = currentFrame.interval;
     this.position = currentFrame.position;
 
     if (currentFrame.mouseLeft) {
