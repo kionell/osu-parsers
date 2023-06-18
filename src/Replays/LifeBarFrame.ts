@@ -7,17 +7,17 @@ export class LifeBarFrame implements ILifeBarFrame {
   /**
    * Starting time of this life bar frame.
    */
-  startTime = 0;
+  startTime: number;
 
   /**
    * The amount of HP at that current time.
    * This value is in range of 0-1.
    */
-  health = 0;
+  health: number;
 
-  constructor(startTime: number, health: number) {
-    this.startTime = startTime;
-    this.health = health;
+  constructor(startTime?: number, health?: number) {
+    this.startTime = startTime ?? 0;
+    this.health = health ?? 0;
   }
 
   /**
