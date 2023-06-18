@@ -28,6 +28,8 @@ export class CatchReplayFrame extends ReplayFrame implements IConvertibleReplayF
     currentFrame: LegacyReplayFrame,
     lastFrame: CatchReplayFrame | null,
   ): this {
+    this.startTime = currentFrame.startTime;
+    this.interval = currentFrame.interval;
     this.position = currentFrame.position.x;
     this.isDashing = currentFrame.buttonState === ReplayButtonState.Left1;
 
