@@ -4,6 +4,7 @@ import {
   IRuleset,
   IScoreInfo,
   MathUtils,
+  HitResult,
 } from 'osu-classes';
 
 import {
@@ -391,10 +392,10 @@ export class StandardPerformanceCalculator extends PerformanceCalculator {
     if (score) {
       this._mods = score?.mods as StandardModCombination ?? new StandardModCombination();
       this._scoreMaxCombo = score.maxCombo ?? this._scoreMaxCombo;
-      this._countGreat = score.statistics.great ?? this._countGreat;
-      this._countOk = score.statistics.ok ?? this._countOk;
-      this._countMeh = score.statistics.meh ?? this._countMeh;
-      this._countMiss = score.statistics.miss ?? this._countMiss;
+      this._countGreat = score.statistics.get(HitResult.Great) ?? this._countGreat;
+      this._countOk = score.statistics.get(HitResult.Ok) ?? this._countOk;
+      this._countMeh = score.statistics.get(HitResult.Meh) ?? this._countMeh;
+      this._countMiss = score.statistics.get(HitResult.Miss) ?? this._countMiss;
       this._accuracy = score.accuracy ?? this._accuracy;
     }
 
