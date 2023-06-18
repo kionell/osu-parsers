@@ -25,6 +25,9 @@ export class ManiaReplayFrame extends ReplayFrame implements IConvertibleReplayF
       throw new Error('Beatmap must be provided to convert osu!mania replay frames.');
     }
 
+    this.startTime = currentFrame.startTime;
+    this.interval = currentFrame.interval;
+
     const maniaBeatmap = beatmap as ManiaBeatmap;
 
     let normalAction = ManiaAction.Key1;
