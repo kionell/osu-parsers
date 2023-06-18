@@ -7,9 +7,8 @@ import {
   BeatmapEventSection,
 } from './Sections';
 
-import { ControlPointInfo } from './ControlPoints';
-
 import { IBeatmap } from './IBeatmap';
+import { ControlPointInfo } from './ControlPoints';
 import { HitObject, IHasDuration } from '../Objects';
 import { RoundHelper } from '../Utils';
 
@@ -19,7 +18,7 @@ import { RoundHelper } from '../Utils';
 export class Beatmap implements IBeatmap {
   /**
    * The optional link to the base beatmap.
-   * Base beatmap prefered for beatmap convertation.
+   * Base beatmap is preferrable for beatmap converters.
    */
   base?: IBeatmap;
 
@@ -95,7 +94,7 @@ export class Beatmap implements IBeatmap {
 
     const first = this.hitObjects[0];
     const last = this.hitObjects[this.hitObjects.length - 1];
-    const durationLast = last as unknown as IHasDuration;
+    const durationLast = last as HitObject & IHasDuration;
 
     const startTime = first.startTime;
     const endTime = durationLast.endTime || last.startTime;
@@ -112,7 +111,7 @@ export class Beatmap implements IBeatmap {
     }
 
     const last = this.hitObjects[this.hitObjects.length - 1];
-    const durationObject = last as unknown as IHasDuration;
+    const durationObject = last as HitObject & IHasDuration;
 
     const endTime = durationObject.endTime || last.startTime;
 
