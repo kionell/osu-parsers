@@ -1,4 +1,4 @@
-import { IScore } from 'osu-classes';
+import { IBeatmap, IScore } from 'osu-classes';
 import { ReplayEncoder, SerializationWriter } from './Handlers';
 import { mkdir, writeFile, dirname } from '../Utils/FileSystem';
 import { LZMA } from '../Utils/LZMA';
@@ -14,6 +14,8 @@ export class ScoreEncoder {
    * @param score The score for encoding.
    * @param beatmap The beatmap of the replay.
    * It is required if replay contains non-legacy frames.
+   * @throws If score can't be encoded
+   * @throws If beatmap wasn't provided for non-legacy replay.
    * @throws If score can't be encoded or file can't be written.
    */
   async encodeToPath(path: string, score?: IScore, beatmap?: IBeatmap): Promise<void> {
@@ -39,6 +41,7 @@ export class ScoreEncoder {
    * @param score The score for encoding.
    * @param beatmap The beatmap of the replay.
    * It is required if replay contains non-legacy frames.
+   * @throws If beatmap wasn't provided for non-legacy replay.
    * @returns The buffer with encoded score & replay data.
    */
   async encodeToBuffer(score?: IScore, beatmap?: IBeatmap): Promise<Uint8Array> {
@@ -91,8 +94,10 @@ export class ScoreEncoder {
 
       return writer.finish();
     }
-    catch {
-      return writer.finish();
+    catch (err: unknown) {
+      const reason = (err as Error).message || err;
+
+      throw new Error(`Failed to encode a score: '${reason}'`);
     }
   }
 }
