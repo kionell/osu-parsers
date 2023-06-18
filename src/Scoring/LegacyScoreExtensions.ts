@@ -1,4 +1,5 @@
-import { IHitStatistics } from './IHitStatistics';
+import { HitResult } from './Enums/HitResult';
+import { HitStatistics } from './HitStatistics';
 
 /**
  * Score extensions.
@@ -12,7 +13,7 @@ export abstract class LegacyScoreExtensions {
   /**
    * Hit statistics.
    */
-  abstract statistics: Partial<IHitStatistics>;
+  statistics = new HitStatistics();
 
   /**
    * This is only stored for legacy scores. 
@@ -27,7 +28,9 @@ export abstract class LegacyScoreExtensions {
    */
   get countGeki(): number {
     if (this.rulesetId === 3) {
-      return this.statistics?.perfect ?? this._legacyCountGeki;
+      return this.statistics.has(HitResult.Perfect)
+        ? this.statistics.get(HitResult.Perfect)
+        : this._legacyCountGeki;
     }
 
     return this._legacyCountGeki;
@@ -37,7 +40,7 @@ export abstract class LegacyScoreExtensions {
     if (!this.statistics) return;
 
     if (this.rulesetId === 3) {
-      this.statistics.perfect = value;
+      this.statistics.set(HitResult.Perfect, value);
     }
 
     this._legacyCountGeki = value;
@@ -47,13 +50,13 @@ export abstract class LegacyScoreExtensions {
    * Number of 300s.
    */
   get count300(): number {
-    return this.statistics?.great ?? 0;
+    return this.statistics.get(HitResult.Great);
   }
 
   set count300(value: number) {
     if (!this.statistics) return;
 
-    this.statistics.great = value;
+    this.statistics.set(HitResult.Great, value);
   }
 
   /**
@@ -61,11 +64,15 @@ export abstract class LegacyScoreExtensions {
    */
   get countKatu(): number {
     if (this.rulesetId === 2) {
-      return this.statistics?.smallTickMiss ?? this._legacyCountKatu;
+      return this.statistics.has(HitResult.SmallTickMiss)
+        ? this.statistics.get(HitResult.SmallTickMiss)
+        : this._legacyCountKatu;
     }
 
     if (this.rulesetId === 3) {
-      return this.statistics?.good ?? this._legacyCountKatu;
+      return this.statistics.has(HitResult.Good)
+        ? this.statistics.get(HitResult.Good)
+        : this._legacyCountKatu;
     }
 
     return this._legacyCountKatu;
@@ -75,11 +82,11 @@ export abstract class LegacyScoreExtensions {
     if (!this.statistics) return;
 
     if (this.rulesetId === 2) {
-      this.statistics.smallTickMiss = value;
+      this.statistics.set(HitResult.SmallTickMiss, value);
     }
 
     if (this.rulesetId === 3) {
-      this.statistics.good = value;
+      this.statistics.set(HitResult.Good, value);
     }
 
     this._legacyCountKatu = value;
@@ -90,20 +97,20 @@ export abstract class LegacyScoreExtensions {
    */
   get count100(): number {
     if (this.rulesetId === 2) {
-      return this.statistics?.largeTickHit ?? 0;
+      return this.statistics.get(HitResult.LargeTickHit);
     }
 
-    return this.statistics?.ok ?? 0;
+    return this.statistics.get(HitResult.Ok);
   }
 
   set count100(value: number) {
     if (!this.statistics) return;
 
     if (this.rulesetId === 2) {
-      this.statistics.largeTickHit = value;
+      this.statistics.set(HitResult.LargeTickHit, value);
     }
 
-    this.statistics.ok = value;
+    this.statistics.set(HitResult.Ok, value);
   }
 
   /**
@@ -111,33 +118,33 @@ export abstract class LegacyScoreExtensions {
    */
   get count50(): number {
     if (this.rulesetId === 2) {
-      return this.statistics?.smallTickHit ?? 0;
+      return this.statistics.get(HitResult.SmallTickHit);
     }
 
-    return this.statistics?.meh ?? 0;
+    return this.statistics.get(HitResult.Meh);
   }
 
   set count50(value: number) {
     if (!this.statistics) return;
 
     if (this.rulesetId === 2) {
-      this.statistics.smallTickHit = value;
+      this.statistics.set(HitResult.SmallTickHit, value);
     }
 
-    this.statistics.meh = value;
+    this.statistics.set(HitResult.Meh, value);
   }
 
   /**
    * Number of misses.
    */
   get countMiss(): number {
-    return this.statistics?.miss ?? 0;
+    return this.statistics.get(HitResult.Miss);
   }
 
   set countMiss(value: number) {
     if (!this.statistics) return;
 
-    this.statistics.miss = value;
+    this.statistics.set(HitResult.Miss, value);
   }
 
   /**

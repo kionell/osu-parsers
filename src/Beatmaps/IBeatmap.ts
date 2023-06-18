@@ -93,7 +93,7 @@ export interface IBeatmap {
   /**
    * The most common BPM of a beatmap.
    */
-  bpmMode: number;
+  bpm: number;
 
   /**
    * The total break time of a beatmap.

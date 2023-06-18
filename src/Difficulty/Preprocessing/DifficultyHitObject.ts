@@ -45,7 +45,13 @@ export class DifficultyHitObject {
    * @param objects The list of {@link DifficultyHitObject}s in the current map
    * @param index The index of this {@link DifficultyHitObject} in {@link objects} list.
    */
-  constructor(hitObject: IHitObject, lastObject: IHitObject, clockRate: number, objects: Array<DifficultyHitObject>, index: number) {
+  constructor(
+    hitObject: IHitObject,
+    lastObject: IHitObject,
+    clockRate: number,
+    objects: DifficultyHitObject[],
+    index: number,
+  ) {
     this._difficultyHitObjects = objects;
     this.index = index;
     this.baseObject = hitObject;
@@ -53,7 +59,7 @@ export class DifficultyHitObject {
     this.deltaTime = (hitObject.startTime - lastObject.startTime) / clockRate;
     this.startTime = hitObject.startTime / clockRate;
 
-    const durationObj = hitObject as unknown as IHasDuration;
+    const durationObj = hitObject as IHitObject & IHasDuration;
 
     this.endTime = (durationObj?.endTime ?? hitObject.startTime) / clockRate;
   }

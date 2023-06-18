@@ -100,7 +100,7 @@ export class BeatmapInfo implements IBeatmapInfo {
   /**
    * The most common BPM of a beatmap.
    */
-  bpmMode = 0;
+  bpm = 0;
 
   /**
    * Circle size of the beatmap.
@@ -207,7 +207,7 @@ export class BeatmapInfo implements IBeatmapInfo {
   /**
    * Beatmap MD5 hash.
    */
-  md5 = '';
+  hashMD5 = '';
 
   /**
    * Creates a new instance of a beatmap information.
@@ -218,26 +218,10 @@ export class BeatmapInfo implements IBeatmapInfo {
   }
 
   /**
-   * Converts this beatmap information to JSON.
-   * @returns Beatmap information convertable to JSON.
+   * Beatmap total hits.
    */
-  toJSON(): IJsonableBeatmapInfo {
-    const partial: Partial<this> = {};
-    const deselect = ['beatmap', 'ruleset', 'rawMods', 'mods'];
-
-    for (const key in this) {
-      if (key.startsWith('_')) continue;
-      if (deselect.includes(key)) continue;
-
-      partial[key] = this[key];
-    }
-
-    return {
-      ...partial as JsonableBeatmapInfo,
-      mods: this.mods?.toString() ?? 'NM',
-      rulesetId: this.rulesetId,
-      totalHits: this.totalHits,
-    };
+  get totalHits(): number {
+    return this.hittable + this.slidable + this.spinnable + this.holdable;
   }
 
   /**
@@ -269,9 +253,41 @@ export class BeatmapInfo implements IBeatmapInfo {
   }
 
   /**
-   * Beatmap total hits.
+   * Converts this beatmap information to a plain object convertible to JSON.
+   * @returns Beatmap information convertible to JSON.
    */
-  get totalHits(): number {
-    return this.hittable + this.slidable + this.spinnable + this.holdable;
+  toJSON(): IJsonableBeatmapInfo {
+    const partial: Partial<this> = {};
+    const deselect = ['ruleset', 'rawMods', 'mods'];
+
+    for (const key in this) {
+      if (key.startsWith('_')) continue;
+      if (deselect.includes(key)) continue;
+
+      partial[key] = this[key];
+    }
+
+    return {
+      ...partial as JsonableBeatmapInfo,
+      mods: this.mods?.toString() ?? 'NM',
+      rulesetId: this.rulesetId,
+      totalHits: this.totalHits,
+      deletedAt: this.deletedAt ? this.deletedAt.getTime() / 1000 : null,
+      updatedAt: this.updatedAt ? this.updatedAt.getTime() / 1000 : null,
+    };
+  }
+
+  /**
+   * Converts raw JSON beatmap information to an instance of {@link BeatmapInfo}.
+   * @param json Raw JSON beatmap information.
+   * @returns Adapted instance of {@link BeatmapInfo} class.
+   */
+  static fromJSON(json: IJsonableBeatmapInfo): BeatmapInfo {
+    return new BeatmapInfo({
+      ...json as JsonableBeatmapInfo,
+      deletedAt: json.deletedAt ? new Date(json.deletedAt * 1000) : null,
+      updatedAt: json.updatedAt ? new Date(json.updatedAt * 1000) : null,
+      rawMods: json.mods,
+    });
   }
 }

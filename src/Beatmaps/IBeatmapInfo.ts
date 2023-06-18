@@ -104,7 +104,7 @@ export interface IBeatmapInfo {
   /**
    * The most common BPM of a beatmap.
    */
-  bpmMode: number;
+  bpm: number;
 
   /**
    * Circle size of the beatmap.
@@ -174,11 +174,11 @@ export interface IBeatmapInfo {
   /**
    * Beatmap MD5 hash.
    */
-  md5: string;
+  hashMD5: string;
 
   /**
-   * Converts this beatmap information to JSON.
-   * @returns Beatmap information convertable to JSON.
+   * Converts this beatmap information to a plain object convertible to JSON.
+   * @returns Beatmap information convertible to JSON.
    */
   toJSON(): IJsonableBeatmapInfo;
 }

@@ -284,7 +284,7 @@ export abstract class ModCombination {
 
   /**
    * Converts this mod combination to a string.
-   * @returns Stringified mod combination.
+   * @returns Formatted mod combination that can be converted to JSON.
    */
   toJSON(): string {
     return this.toString();

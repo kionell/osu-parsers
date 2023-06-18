@@ -6,6 +6,12 @@ import {
 } from '../Beatmaps';
 
 import {
+  IReplay,
+  Replay,
+  ReplayConverter,
+} from '../Replays';
+
+import {
   DifficultyAttributes,
   DifficultyCalculator,
   PerformanceCalculator,
@@ -57,13 +63,13 @@ export abstract class Ruleset implements IRuleset {
       mods = this.createModCombination(mods.bitwise);
     }
 
-    const converter = this.createBeatmapConverter();
+    const converter = this._createBeatmapConverter();
 
     /**
      * Check if the beatmap can be converted.
      */
     if (beatmap.hitObjects.length > 0 && !converter.canConvert(beatmap)) {
-      throw new Error('Beatmap can not be converted!');
+      throw new Error('Beatmap can not be converted to this ruleset!');
     }
 
     /**
@@ -82,7 +88,7 @@ export abstract class Ruleset implements IRuleset {
       m.applyToDifficulty(converted.difficulty);
     });
 
-    const processor = this.createBeatmapProcessor();
+    const processor = this._createBeatmapProcessor();
 
     processor.preProcess(converted);
 
@@ -106,6 +112,23 @@ export abstract class Ruleset implements IRuleset {
   }
 
   /**
+   * Applies ruleset to a replay.
+   * Converts legacy replay frames to ruleset specific frames.
+   * @param replay The replay.
+   * @param beatmap The beatmap of the replay which is used to get some data.
+   * @returns A new instance of the replay with applied ruleset.
+   */
+  applyToReplay(replay: IReplay, beatmap?: IBeatmap): Replay {
+    if (beatmap && replay.mode !== beatmap.mode) {
+      throw new Error('Replay and beatmap mode does not match!');
+    }
+
+    const converter = this._createReplayConverter();
+
+    return converter.convertReplay(replay, beatmap);
+  }
+
+  /**
    * Resets a mod combination from a beatmap.
    * @param beatmap The beatmap.
    * @returns A new beatmap with no mods.
@@ -126,12 +149,17 @@ export abstract class Ruleset implements IRuleset {
   /**
    * @returns A new beatmap processor.
    */
-  abstract createBeatmapProcessor(): BeatmapProcessor;
+  protected abstract _createBeatmapProcessor(): BeatmapProcessor;
 
   /**
    * @returns A new beatmap converter.
    */
-  abstract createBeatmapConverter(): BeatmapConverter;
+  protected abstract _createBeatmapConverter(): BeatmapConverter;
+
+  /**
+   * @returns A new replay converter.
+   */
+  protected abstract _createReplayConverter(): ReplayConverter;
 
   /**
    * @param beatmap The beatmap for which the calculation will be done.

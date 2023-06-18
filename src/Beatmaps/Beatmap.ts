@@ -7,10 +7,9 @@ import {
   BeatmapEventSection,
 } from './Sections';
 
-import { ControlPointInfo } from './ControlPoints';
-
 import { IBeatmap } from './IBeatmap';
-import { HitObject, IHasDuration } from '../Objects';
+import { ControlPointInfo } from './ControlPoints';
+import { HitObject, HitType, IHasDuration } from '../Objects';
 import { RoundHelper } from '../Utils';
 
 /**
@@ -19,7 +18,7 @@ import { RoundHelper } from '../Utils';
 export class Beatmap implements IBeatmap {
   /**
    * The optional link to the base beatmap.
-   * Base beatmap prefered for beatmap convertation.
+   * Base beatmap is preferrable for beatmap converters.
    */
   base?: IBeatmap;
 
@@ -95,7 +94,7 @@ export class Beatmap implements IBeatmap {
 
     const first = this.hitObjects[0];
     const last = this.hitObjects[this.hitObjects.length - 1];
-    const durationLast = last as unknown as IHasDuration;
+    const durationLast = last as HitObject & IHasDuration;
 
     const startTime = first.startTime;
     const endTime = durationLast.endTime || last.startTime;
@@ -112,7 +111,7 @@ export class Beatmap implements IBeatmap {
     }
 
     const last = this.hitObjects[this.hitObjects.length - 1];
-    const durationObject = last as unknown as IHasDuration;
+    const durationObject = last as HitObject & IHasDuration;
 
     const endTime = durationObject.endTime || last.startTime;
 
@@ -157,15 +156,6 @@ export class Beatmap implements IBeatmap {
    * The most common BPM of a beatmap.
    */
   get bpm(): number {
-    return this.bpmMode;
-  }
-
-  /**
-   * The most common BPM of a beatmap.
-   * Use the {@link bpm} instead.
-   * @deprecated Since 2.1.1
-   */
-  get bpmMode(): number {
     const timingPoints = this.controlPoints.timingPoints;
     const hitObjects = this.hitObjects;
 
@@ -215,6 +205,42 @@ export class Beatmap implements IBeatmap {
    */
   get totalBreakTime(): number {
     return (this.events.breaks || []).reduce((d, e) => d + e.duration, 0);
+  }
+
+  /**
+   * The ammount of hittable objects.
+   */
+  get hittable(): number {
+    return this.hitObjects.reduce((s, h) => {
+      return s + (h.hitType & HitType.Normal ? 1 : 0);
+    }, 0);
+  }
+
+  /**
+   * The ammount of slidable objects.
+   */
+  get slidable(): number {
+    return this.hitObjects.reduce((s, h) => {
+      return s + (h.hitType & HitType.Slider ? 1 : 0);
+    }, 0);
+  }
+
+  /**
+   * The ammount of spinnable objects.
+   */
+  get spinnable(): number {
+    return this.hitObjects.reduce((s, h) => {
+      return s + (h.hitType & HitType.Spinner ? 1 : 0);
+    }, 0);
+  }
+
+  /**
+   * The ammount of holdable objects.
+   */
+  get holdable(): number {
+    return this.hitObjects.reduce((s, h) => {
+      return s + (h.hitType & HitType.Hold ? 1 : 0);
+    }, 0);
   }
 
   /**

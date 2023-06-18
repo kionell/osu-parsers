@@ -59,4 +59,13 @@ export class DifficultyPoint extends ControlPoint {
       && existing.sliderVelocity === this.sliderVelocity
       && existing.generateTicks === this.generateTicks;
   }
+
+  /**
+   * @param other Other difficulty control point.
+   * @returns If two difficulty control points are equal.
+   */
+  equals(other: DifficultyPoint): boolean {
+    return other instanceof DifficultyPoint
+      && this.sliderVelocity === other.sliderVelocity;
+  }
 }

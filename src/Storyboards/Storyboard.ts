@@ -10,7 +10,7 @@ export class Storyboard {
   /**
    * Variables of the storyboard.
    */
-  variables: Record<string, string> = {};
+  variables: Map<string, string> = new Map();
 
   /**
    * Custom beatmap colors.
@@ -69,7 +69,7 @@ export class Storyboard {
 
   /**
    * Across all layers, find the earliest point in time that a storyboard element exists at.
-   * Will return null if there are no elements.
+   * Will return `null` if there are no elements.
    * This iterates all elements and as such should be used sparingly or stored locally.
    */
   get earliestEventTime(): number | null {

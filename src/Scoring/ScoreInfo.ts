@@ -1,12 +1,13 @@
 import { ScoreRank } from './Enums/ScoreRank';
-import { IHitStatistics } from './IHitStatistics';
+import { HitStatistics } from './HitStatistics';
+import { LegacyScoreExtensions } from './LegacyScoreExtensions';
+import { Accuracy, Rank } from './Utils';
 import { IScoreInfo } from './IScoreInfo';
 import { IJsonableScoreInfo, JsonableScoreInfo } from './IJsonableScoreInfo';
-import { LegacyScoreExtensions } from './LegacyScoreExtensions';
-import { IBeatmapInfo } from '../Beatmaps';
+import { BeatmapInfo } from '../Beatmaps/BeatmapInfo';
+import { IBeatmapInfo } from '../Beatmaps/IBeatmapInfo';
 import { IRuleset } from '../Rulesets';
 import { ModCombination } from '../Mods';
-import { calculateAccuracy, calculateRank } from './ScoreUtils';
 
 /**
  * A score information.
@@ -25,7 +26,7 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
   /**
    * The performance of the play.
    */
-  pp: number | null = null;
+  totalPerformance: number | null = null;
 
   /**
    * Max combo of the play.
@@ -34,6 +35,7 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
 
   /**
    * Whether the map was passed or not.
+   * Score rank will always be `F` on `passed = false`.
    */
   passed = false;
 
@@ -51,7 +53,7 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
    * Score accuracy.
    */
   get accuracy(): number {
-    return calculateAccuracy(this);
+    return Accuracy.calculate(this);
   }
 
   set accuracy(_: number) {
@@ -62,11 +64,11 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
    * Score rank.
    */
   get rank(): keyof typeof ScoreRank {
-    return calculateRank(this);
+    return Rank.calculate(this);
   }
 
-  set rank(_: keyof typeof ScoreRank) {
-    return;
+  set rank(value: keyof typeof ScoreRank) {
+    this.passed = value !== 'F';
   }
 
   /**
@@ -94,6 +96,7 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
 
   /**
    * Mods of the play.
+   * This will always be `null` if {@link ruleset} is not set.
    */
   get mods(): ModCombination | null {
     return this._mods;
@@ -106,6 +109,7 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
 
   /**
    * Raw mods of the play that are neutral to any of the rulesets.
+   * This can be either bitwise or stringified mod combination.
    * {@link ScoreInfo} can't work with mod combinations without an actual ruleset instance.
    * TODO: Implement it in a better way???
    */
@@ -146,27 +150,6 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
   date: Date = new Date();
 
   /**
-   * Hit statistics.
-   */
-  statistics: IHitStatistics = {
-    none: 0,
-    miss: 0,
-    meh: 0,
-    ok: 0,
-    good: 0,
-    great: 0,
-    perfect: 0,
-    smallTickMiss: 0,
-    smallTickHit: 0,
-    largeTickMiss: 0,
-    largeTickHit: 0,
-    smallBonus: 0,
-    largeBonus: 0,
-    ignoreMiss: 0,
-    ignoreHit: 0,
-  };
-
-  /**
    * Beatmap MD5 hash.
    */
   beatmapHashMD5 = '';
@@ -182,38 +165,6 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
   }
 
   /**
-   * Converts this score information to JSON.
-   * @returns Score information convertable to JSON.
-   */
-  toJSON(): IJsonableScoreInfo {
-    const partial: Partial<this> = {};
-    const deselect = ['beatmap', 'ruleset', 'rawMods', 'mods'];
-
-    for (const key in this) {
-      if (key.startsWith('_')) continue;
-      if (deselect.includes(key)) continue;
-
-      partial[key] = this[key];
-    }
-
-    return {
-      ...partial as JsonableScoreInfo,
-      beatmap: this.beatmap?.toJSON() ?? null,
-      mods: this.mods?.toString() ?? 'NM',
-      accuracy: this.accuracy,
-      rank: this.rank,
-      rulesetId: this.rulesetId,
-      countGeki: this.countGeki,
-      count300: this.count300,
-      countKatu: this.countKatu,
-      count100: this.count100,
-      count50: this.count50,
-      countMiss: this.countMiss,
-      totalHits: this.totalHits,
-    };
-  }
-
-  /**
    * Creates a deep copy of the score info.
    * @returns Cloned score info.
    */
@@ -222,24 +173,9 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
 
     const cloned = new ScoreInfo();
 
-    cloned.id = this.id;
-    cloned.totalScore = this.totalScore;
-    cloned.maxCombo = this.maxCombo;
-    cloned.rulesetId = this.rulesetId;
-    cloned.passed = this.passed;
-    cloned.perfect = this.perfect;
-    cloned.ruleset = this.ruleset;
-    cloned.mods = this.mods;
-    cloned.username = this.username;
-    cloned.userId = this.userId;
-    cloned.beatmap = this.beatmap;
-    cloned.beatmapId = this.beatmapId;
-    cloned.beatmapHashMD5 = this.beatmapHashMD5;
-    cloned.date = this.date;
+    Object.assign(cloned, this);
 
-    if (this.pp) cloned.pp = this.pp;
-
-    cloned.statistics = { ...this.statistics };
+    cloned.statistics = new HitStatistics(this.statistics);
 
     return cloned;
   }
@@ -256,5 +192,54 @@ export class ScoreInfo extends LegacyScoreExtensions implements IScoreInfo {
     }
 
     return false;
+  }
+
+  /**
+   * Converts this score information to a plain object convertible to JSON.
+   * @returns Score information convertible to JSON.
+   */
+  toJSON(): IJsonableScoreInfo {
+    const partial: Partial<this> = {};
+    const deselect = ['beatmap', 'ruleset', 'rawMods', 'mods'];
+
+    for (const key in this) {
+      if (key.startsWith('_')) continue;
+      if (deselect.includes(key)) continue;
+
+      partial[key] = this[key];
+    }
+
+    return {
+      ...partial as JsonableScoreInfo,
+      statistics: this.statistics.toJSON(),
+      beatmap: this.beatmap?.toJSON() ?? null,
+      mods: this.mods?.toString() ?? 'NM',
+      date: this.date.getTime() / 1000,
+      accuracy: this.accuracy,
+      rank: this.rank,
+      rulesetId: this.rulesetId,
+      countGeki: this.countGeki,
+      count300: this.count300,
+      countKatu: this.countKatu,
+      count100: this.count100,
+      count50: this.count50,
+      countMiss: this.countMiss,
+      totalHits: this.totalHits,
+    };
+  }
+
+  /**
+   * Converts raw JSON score information to an instance of {@link ScoreInfo}.
+   * @param json Raw JSON score information.
+   * @returns Adapted instance of {@link ScoreInfo} class.
+   */
+  static fromJSON(json: IJsonableScoreInfo): ScoreInfo {
+    return new ScoreInfo({
+      ...json as JsonableScoreInfo,
+      rawMods: json.mods,
+      beatmap: json.beatmap ? BeatmapInfo.fromJSON(json.beatmap) : null,
+      statistics: HitStatistics.fromJSON(json.statistics),
+      date: new Date(json.date * 1000),
+    });
   }
 }
