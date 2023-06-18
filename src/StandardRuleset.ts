@@ -16,6 +16,7 @@ import {
   StandardPerformanceCalculator,
 } from './Difficulty';
 
+import { StandardReplayConverter } from './Replays';
 import { StandardModCombination } from './Mods/StandardModCombination';
 
 /**
@@ -69,15 +70,22 @@ export class StandardRuleset extends Ruleset {
   /**
    * @returns A new osu!std beatmap processor.
    */
-  createBeatmapProcessor(): StandardBeatmapProcessor {
+  protected _createBeatmapProcessor(): StandardBeatmapProcessor {
     return new StandardBeatmapProcessor();
   }
 
   /**
    * @returns A new osu!std beatmap converter.
    */
-  createBeatmapConverter(): StandardBeatmapConverter {
+  protected _createBeatmapConverter(): StandardBeatmapConverter {
     return new StandardBeatmapConverter();
+  }
+
+  /**
+   * @returns A new osu!std replay converter.
+   */
+  protected _createReplayConverter(): StandardReplayConverter {
+    return new StandardReplayConverter();
   }
 
   /**
