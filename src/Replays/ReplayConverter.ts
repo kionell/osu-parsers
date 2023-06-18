@@ -15,7 +15,7 @@ export abstract class ReplayConverter {
    * @param original Any kind of a replay.
    * @returns The converted replay.
    */
-  convertReplay(original: IReplay, beatmap: IBeatmap): Replay {
+  convertReplay(original: IReplay, beatmap?: IBeatmap): Replay {
     const converted = this.createReplay();
 
     converted.gameVersion = original.gameVersion;
@@ -34,11 +34,11 @@ export abstract class ReplayConverter {
     return new Replay();
   }
 
-  *convertFrames(frames: IReplayFrame[], beatmap: IBeatmap): Generator<ReplayFrame> {
+  *convertFrames(frames: IReplayFrame[], beatmap?: IBeatmap): Generator<ReplayFrame> {
     let lastFrame: ReplayFrame | null = null;
 
     for (const frame of frames) {
-      const convertedFrame = this._convertFrame(frame, beatmap, lastFrame);
+      const convertedFrame = this._convertFrame(frame, lastFrame, beatmap);
 
       yield convertedFrame;
 
@@ -48,8 +48,8 @@ export abstract class ReplayConverter {
 
   protected _convertFrame(
     frame: IReplayFrame,
-    beatmap: IBeatmap,
     lastFrame: IReplayFrame | null,
+    beatmap?: IBeatmap,
   ): ReplayFrame {
     if (this._isConvertedReplayFrame(frame)) {
       return frame;
@@ -58,12 +58,15 @@ export abstract class ReplayConverter {
     const convertedFrame = this._createConvertibleReplayFrame();
 
     if (convertedFrame && frame instanceof LegacyReplayFrame) {
-      return convertedFrame.fromLegacy(frame, beatmap, lastFrame);
+      return convertedFrame.fromLegacy(frame, lastFrame, beatmap);
     }
 
     throw new Error('Replay can not be converted to this ruleset!');
   }
 
+  /**
+   * @returns A new instance of convertible replay frame.
+   */
   protected abstract _createConvertibleReplayFrame(): IConvertibleReplayFrame | null;
 
   /**

@@ -16,8 +16,8 @@ export interface IConvertibleReplayFrame extends IReplayFrame {
    */
   fromLegacy(
     currentFrame: LegacyReplayFrame,
-    beatmap: IBeatmap,
-    lastFrame: IReplayFrame | null
+    lastFrame: IReplayFrame | null,
+    beatmap?: IBeatmap,
   ): this;
 
   /**
@@ -25,5 +25,5 @@ export interface IConvertibleReplayFrame extends IReplayFrame {
    * @param beatmap The beatmap of the replay which is used to get some data.
    * @returns A new instance of legacy replay frame.
    */
-  toLegacy(beatmap: IBeatmap): LegacyReplayFrame;
+  toLegacy(beatmap?: IBeatmap): LegacyReplayFrame;
 }

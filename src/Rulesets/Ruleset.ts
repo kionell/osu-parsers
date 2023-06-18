@@ -118,8 +118,8 @@ export abstract class Ruleset implements IRuleset {
    * @param beatmap The beatmap of the replay which is used to get some data.
    * @returns A new instance of the replay with applied ruleset.
    */
-  applyToReplay(replay: IReplay, beatmap: IBeatmap): Replay {
-    if (replay.mode !== beatmap.mode) {
+  applyToReplay(replay: IReplay, beatmap?: IBeatmap): Replay {
+    if (beatmap && replay.mode !== beatmap.mode) {
       throw new Error('Replay and beatmap mode does not match!');
     }
 

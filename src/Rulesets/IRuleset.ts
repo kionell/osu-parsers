@@ -48,7 +48,7 @@ export interface IRuleset {
    * @param beatmap The beatmap of the replay which is used to get some data.
    * @returns A new instance of the replay with applied ruleset.
    */
-  applyToReplay(replay: IReplay, beatmap: IBeatmap): Replay;
+  applyToReplay(replay: IReplay, beatmap?: IBeatmap): Replay;
 
   /**
    * Resets a mod combination from a beatmap.
