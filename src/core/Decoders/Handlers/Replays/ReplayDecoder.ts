@@ -1,4 +1,4 @@
-import { LegacyReplayFrame, LifeBarFrame } from 'osu-classes';
+import { LegacyReplayFrame, LifeBarFrame, Vector2 } from 'osu-classes';
 import { Parsing } from '../../../Utils/Parsing';
 
 export abstract class ReplayDecoder {
@@ -24,12 +24,10 @@ export abstract class ReplayDecoder {
   }
 
   static handleLifeBarFrame(frameData: string[]): LifeBarFrame {
-    const lifeBarFrame = new LifeBarFrame();
-
-    lifeBarFrame.startTime = Parsing.parseInt(frameData[0]);
-    lifeBarFrame.health = Parsing.parseFloat(frameData[1]);
-
-    return lifeBarFrame;
+    return new LifeBarFrame(
+      Parsing.parseInt(frameData[0]),
+      Parsing.parseFloat(frameData[1]),
+    );
   }
 
   static decodeReplayFrames(data: string): LegacyReplayFrame[] {
@@ -81,13 +79,14 @@ export abstract class ReplayDecoder {
   }
 
   static handleReplayFrame(frameData: string[]): LegacyReplayFrame {
-    const replayFrame = new LegacyReplayFrame();
-
-    replayFrame.interval = Parsing.parseFloat(frameData[0]);
-    replayFrame.mouseX = Parsing.parseFloat(frameData[1], Parsing.MAX_COORDINATE_VALUE);
-    replayFrame.mouseY = Parsing.parseFloat(frameData[2], Parsing.MAX_COORDINATE_VALUE);
-    replayFrame.buttonState = Parsing.parseInt(frameData[3]);
-
-    return replayFrame;
+    return new LegacyReplayFrame(
+      0.0,
+      Parsing.parseFloat(frameData[0]),
+      new Vector2(
+        Parsing.parseFloat(frameData[1], Parsing.MAX_COORDINATE_VALUE),
+        Parsing.parseFloat(frameData[2], Parsing.MAX_COORDINATE_VALUE),
+      ),
+      Parsing.parseInt(frameData[3]),
+    );
   }
 }
