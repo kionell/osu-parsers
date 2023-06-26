@@ -37,6 +37,23 @@ export abstract class StoryboardEventEncoder {
   }
 
   /**
+   * Encodes storyboard videos.
+   * @param storyboard A storyboard.
+   * @returns Encoded storyboard videos.
+   */
+  static encodeVideos(storyboard: Storyboard): string {
+    const encoded: string[] = [];
+
+    const video = storyboard.getLayerByType(LayerType.Video);
+
+    if (video.elements.length > 0) {
+      encoded.push(this.encodeStoryboardLayer(video));
+    }
+
+    return encoded.join('\n');
+  }
+
+  /**
    * Encodes a storyboard.
    * @param storyboard The storyboard.
    * @returns Encoded storyboard.

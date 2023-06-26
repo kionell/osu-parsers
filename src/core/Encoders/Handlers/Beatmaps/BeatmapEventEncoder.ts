@@ -22,6 +22,10 @@ export abstract class BeatmapEventEncoder {
       encoded.push(`0,0,"${events.backgroundPath}",0,0`);
     }
 
+    if (events.storyboard) {
+      encoded.push(StoryboardEventEncoder.encodeVideos(events.storyboard));
+    }
+
     encoded.push('//Break Periods');
 
     if (events.breaks && events.breaks.length > 0) {
