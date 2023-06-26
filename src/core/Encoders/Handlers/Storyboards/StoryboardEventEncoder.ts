@@ -28,10 +28,13 @@ export abstract class StoryboardEventEncoder {
    * @returns Encoded storyboard events.
    */
   static encodeEventSection(storyboard: Storyboard): string {
-    const encoded: string[] = [
-      '[Events]',
-      this.encodeStoryboard(storyboard),
-    ];
+    const encoded: string[] = [];
+
+    encoded.push('[Events]');
+    encoded.push('//Background and Video events');
+
+    encoded.push(this.encodeVideos(storyboard));
+    encoded.push(this.encodeStoryboard(storyboard));
 
     return encoded.join('\n');
   }
