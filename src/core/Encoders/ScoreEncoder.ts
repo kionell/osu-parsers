@@ -9,6 +9,12 @@ import { FileFormat } from '../Enums';
  */
 export class ScoreEncoder {
   /**
+   * Default game version used if replay is not available.
+   * It's just the last available osu!lazer version at the moment.
+   */
+  static DEFAULT_GAME_VERSION = 20230621;
+
+  /**
    * Performs score & replay encoding to the specified path.
    * @param path The path for writing the .osr file.
    * @param score The score for encoding.
@@ -54,16 +60,14 @@ export class ScoreEncoder {
     try {
       writer.writeByte(score.info.rulesetId);
 
-      if (score.replay) {
-        writer.writeInteger(score.replay.gameVersion);
-      }
+      writer.writeInteger(
+        score.replay?.gameVersion ?? ScoreEncoder.DEFAULT_GAME_VERSION,
+      );
 
       writer.writeString(score.info.beatmapHashMD5 ?? '');
       writer.writeString(score.info.username);
 
-      if (score.replay) {
-        writer.writeString(score.replay.hashMD5);
-      }
+      writer.writeString(score.replay?.hashMD5 ?? '');
 
       writer.writeShort(score.info.count300);
       writer.writeShort(score.info.count100);
@@ -76,18 +80,29 @@ export class ScoreEncoder {
       writer.writeShort(score.info.maxCombo);
 
       writer.writeByte(Number(score.info.perfect));
-      writer.writeInteger((score.info.mods?.bitwise ?? Number(score.info.rawMods)) || 0);
+      writer.writeInteger(
+        (score.info.mods?.bitwise ?? Number(score.info.rawMods)) || 0,
+      );
 
-      writer.writeString(ReplayEncoder.encodeLifeBar(score.replay?.lifeBar ?? []));
+      writer.writeString(
+        ReplayEncoder.encodeLifeBar(score.replay?.lifeBar ?? []),
+      );
 
       writer.writeDate(score.info.date);
 
       if (score.replay) {
-        const replayData = ReplayEncoder.encodeReplayFrames(score.replay.frames, beatmap);
+        const replayData = ReplayEncoder.encodeReplayFrames(
+          score.replay.frames,
+          beatmap,
+        );
+
         const encodedData = await LZMA.compress(replayData);
 
         writer.writeInteger(encodedData.byteLength);
         writer.writeBytes(encodedData);
+      }
+      else {
+        writer.writeInteger(0);
       }
 
       writer.writeLong(BigInt(score.info.id));
