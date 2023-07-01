@@ -25,6 +25,12 @@ npm install osu-parsers
 This package comes with built-in LZMA codec as it is required for replay processing.
 All classes and their typings can be found in [osu-classes](https://github.com/kionell/osu-classes) package which is a peer dependency and must be installed separately.
 
+## Supported file formats
+
+[.osu](https://osu.ppy.sh/wiki/en/Client/File_formats/osu_%28file_format%29) - fully supported (decoding/encoding)
+[.osb](https://osu.ppy.sh/wiki/en/Client/File_formats/osb_%28file_format%29) - fully supported (decoding/encoding)
+[.osr](https://osu.ppy.sh/wiki/en/Client/File_formats/osr_%28file_format%29) - fully supported (decoding/encoding)
+
 ## Beatmap decoding
 
 Beatmap decoder is used to read `.osu` files and convert them to the objects of plain [Beatmap](https://kionell.github.io/osu-classes/classes/Beatmap.html) type.
