@@ -4,11 +4,11 @@
 [![Package](https://img.shields.io/npm/v/osu-parsers)](https://www.npmjs.com/package/osu-parsers)
 
 
-A bundle of parsers for osu! file formats based on the osu!lazer source code.
+A bundle of decoders/encoders for osu! file formats based on the osu!lazer source code.
 
 - Written in TypeScript.
 - Based on the osu!lazer source code.
-- Can be used for parsing beatmaps from any osu! game modes.
+- Allows you to parse beatmaps of any osu! game mode.
 - Supports beatmap conversion between different game modes.
 - Works in browsers.
 
@@ -22,13 +22,13 @@ npm install osu-parsers
 
 ## Dependencies
 
-This package comes with built-in LZMA codec as it required for replay processing.
+This package comes with built-in LZMA codec as it is required for replay processing.
 All classes and their typings can be found in [osu-classes](https://github.com/kionell/osu-classes) package which is a peer dependency and must be installed separately.
 
 ## Beatmap decoding
 
-Beatmap decoder is used to read .osu files and convert them to the objects of plain [Beatmap](https://kionell.github.io/osu-classes/classes/Beatmap.html) type.
-Note that beatmap decoder will return only parsed beatmap without max combo or mods! (read about rulesets below)
+Beatmap decoder is used to read `.osu` files and convert them to the objects of plain [Beatmap](https://kionell.github.io/osu-classes/classes/Beatmap.html) type.
+Note that plain beatmap objects can't be used to get max combo, star rating and performance as they don't have ruleset specific data. To get correct beatmap data, beatmap objects should be converted using one of the supported [rulesets](https://github.com/kionell/osu-parsers#rulesets).
 
 There are 4 ways to read data using this decoders:
 - via file path - async
@@ -72,9 +72,9 @@ console.log(beatmap2) // Another Beatmap object.
 
 ## Storyboard decoding
 
-Storyboard decoder is used to read both .osu and .osb files and convert them to the [Storyboard](https://kionell.github.io/osu-classes/classes/Storyboard.html) objects.
+Storyboard decoder is used to read both `.osu` and `.osb` files and convert them to the [Storyboard](https://kionell.github.io/osu-classes/classes/Storyboard.html) objects.
 
-As in beatmap decoder, there are 4 ways to decode your .osu and .osb files:
+As in beatmap decoder, there are 4 ways to decode your `.osu` and `.osb` files:
 - via file path - async
 - via data buffer - sync
 - via string - sync
@@ -102,9 +102,9 @@ console.log(storyboard2); // Another Storyboard object.
 
 ## Score & replay decoding
 
-Score decoder is used to decode .osr files and convert them to the [Score](https://kionell.github.io/osu-classes/classes/Score.html) objects.
+Score decoder is used to decode `.osr` files and convert them to the [Score](https://kionell.github.io/osu-classes/classes/Score.html) objects.
 Score object contains score information and replay data of plain [Replay](https://kionell.github.io/osu-classes/classes/Replay.html) type.
-Note that plain [Replay](https://kionell.github.io/osu-classes/classes/Replay.html) type doesn't have any data for non-stardard replays and must be converted using one of the supported rulesets. (read about rulesets below)
+Note that all `.osr` files contain raw legacy frame data that was initially intended for osu!standard only. To get correct data, replay objects should be converted using one of the supported [rulesets](https://github.com/kionell/osu-parsers#rulesets).
 This decoder is based on external LZMA library and works asynchronously.
 
 There are 2 ways to read data through this decoder:
@@ -143,7 +143,7 @@ When encoding is complete you can import resulting files to the game.
 ```js
 import { BeatmapDecoder, BeatmapEncoder } from 'osu-parsers'
 
-const decodePath = 'path/to/your/decoding/file.osu';
+const decodePath = 'path/to/your/file.osu';
 const shouldParseSb = true;
 
 const decoder = new BeatmapDecoder();
@@ -153,7 +153,7 @@ const beatmap = await decoder.decodeFromPath(decodePath, shouldParseSb);
 
 // Do your stuff with beatmap...
 
-const encodePath = 'path/to/your/encoding/file.osu';
+const encodePath = 'path/to/your/file.osu';
 
 // Write IBeatmap object to an .osu file.
 await encoder.encodeToPath(encodePath, beatmap);
@@ -167,7 +167,7 @@ const stringified = encoder.encodeToString(beatmap);
 ```js
 import { StoryboardDecoder, StoryboardEncoder } from 'osu-parsers'
 
-const decodePath = 'path/to/your/decoding/file.osb';
+const decodePath = 'path/to/your/file.osb';
 
 const decoder = new StoryboardDecoder();
 const encoder = new StoryboardEncoder();
@@ -176,7 +176,7 @@ const storyboard = await decoder.decodeFromPath(decodePath);
 
 // Do your stuff with storyboard...
 
-const encodePath = 'path/to/your/encoding/file.osb';
+const encodePath = 'path/to/your/file.osb';
 
 // Write Storyboard object to an .osb file.
 await encoder.encodeToPath(encodePath, storyboard);
@@ -190,16 +190,16 @@ const stringified = encoder.encodeToString(storyboard);
 ```js
 import { ScoreDecoder, ScoreEncoder } from 'osu-parsers'
 
-const decodePath = 'path/to/your/decoding/file.osr';
+const decodePath = 'path/to/your/file.osr';
 
-const decoder = new StoryboardDecoder();
-const encoder = new StoryboardEncoder();
+const decoder = new ScoreDecoder();
+const encoder = new ScoreEncoder();
 
 const score = await decoder.decodeFromPath(decodePath);
 
 // Do your stuff with score info and replay...
 
-const encodePath = 'path/to/your/encoding/file.osr';
+const encodePath = 'path/to/your/file.osr';
 
 // Write IScore object to an .osr file.
 await encoder.encodeToPath(encodePath, score);
