@@ -12,20 +12,21 @@ export abstract class BeatmapColorDecoder {
    * @param output An object with colors information.
    */
   static handleLine(line: string, output: IHasBeatmapColors): void {
-    const [key, ...values] = line.split(':').map((v) => v.trim());
+    const [key, ...values] = line.split(':');
 
-    const split = values
-      .join(' ')
+    const rgba = values
+      .join(':')
+      .trim()
       .split(',')
       .map((c) => Parsing.parseByte(c));
 
-    if (split.length !== 3 && split.length !== 4) {
-      throw new Error(`Color specified in incorrect format (should be R,G,B or R,G,B,A): ${split.join(',')}`);
+    if (rgba.length !== 3 && rgba.length !== 4) {
+      throw new Error(`Color specified in incorrect format (should be R,G,B or R,G,B,A): ${rgba.join(',')}`);
     }
 
-    const color = new Color4(split[0], split[1], split[2], split[3]);
+    const color = new Color4(rgba[0], rgba[1], rgba[2], rgba[3]);
 
-    this.addColor(color, output, key);
+    this.addColor(color, output, key.trim());
   }
 
   static addColor(color: Color4, output: IHasBeatmapColors, key: string): void {

@@ -12,10 +12,10 @@ export abstract class BeatmapGeneralDecoder {
    * @param offset The offset to apply to all time values.
    */
   static handleLine(line: string, beatmap: Beatmap, offset: number): void {
-    const [key, ...values] = line.split(':').map((v) => v.trim());
-    const value = values.join(' ');
+    const [key, ...values] = line.split(':');
+    const value = values.join(':').trim();
 
-    switch (key) {
+    switch (key.trim()) {
       case 'AudioFilename':
         beatmap.general.audioFilename = value;
         break;
