@@ -161,10 +161,9 @@ export abstract class BeatmapHitObjectDecoder {
     }
 
     if (extras.length > 5) {
-      this.readCustomSampleBanks(extras[5], bankInfo);
+      this.readCustomSampleBanks(extras[5], bankInfo, true);
     }
 
-    slider.samples = this.convertSoundType(slider.hitSound, bankInfo);
     slider.nodeSamples = this.getSliderNodeSamples(extras, slider, bankInfo);
   }
 
@@ -478,17 +477,23 @@ export abstract class BeatmapHitObjectDecoder {
     }
   }
 
-  static readCustomSampleBanks(hitSample: string, bankInfo: SampleBank): void {
+  static readCustomSampleBanks(
+    hitSample: string,
+    bankInfo: SampleBank,
+    banksOnly = false,
+  ): void {
     if (!hitSample) return;
 
     const split = hitSample.split(':');
 
-    bankInfo.normalSet = Parsing.parseInt(split[0]);
-    bankInfo.additionSet = Parsing.parseInt(split[1]);
+    bankInfo.normalSet = Parsing.parseInt(split[0]) as SampleSet;
+    bankInfo.additionSet = Parsing.parseInt(split[1]) as SampleSet;
 
     if (bankInfo.additionSet === SampleSet.None) {
       bankInfo.additionSet = bankInfo.normalSet;
     }
+
+    if (banksOnly) return;
 
     if (split.length > 2) {
       bankInfo.customIndex = Parsing.parseInt(split[2]);
@@ -498,7 +503,9 @@ export abstract class BeatmapHitObjectDecoder {
       bankInfo.volume = Math.max(0, Parsing.parseInt(split[3]));
     }
 
-    bankInfo.filename = split.length > 4 ? split[4] : '';
+    if (split.length > 4) {
+      bankInfo.filename = split[4];
+    }
   }
 
   static convertSoundType(type: HitSound, bankInfo: SampleBank): HitSample[] {
