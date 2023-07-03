@@ -509,65 +509,63 @@ export abstract class BeatmapHitObjectDecoder {
   }
 
   static convertSoundType(type: HitSound, bankInfo: SampleBank): HitSample[] {
-    /**
-     * TODO: This should return the normal HitSamples 
-     * if the specified sample file isn't found, 
-     * but that's a pretty edge-case scenario.
-     */
-    if (bankInfo.filename) {
-      const sample = new HitSample();
+    const soundTypes: HitSample[] = [];
 
-      sample.filename = bankInfo.filename;
-      sample.volume = bankInfo.volume;
+    if (!bankInfo.filename) {
+      const sample = new HitSample({
+        name: HitSample.HIT_NORMAL,
+        bank: SampleSet[bankInfo.normalSet].toLowerCase(),
+        volume: bankInfo.volume,
+        customBankIndex: bankInfo.customIndex,
 
-      return [ sample ];
+        /**
+         * If the sound type doesn't have the Normal flag set, 
+         * attach it anyway as a layered sample.
+         * None also counts as a normal non-layered sample: 
+         * https://osu.ppy.sh/help/wiki/osu!_File_Formats/Osu_(file_format)#hitsounds
+         */
+        isLayered: type !== HitSound.None && !(type & HitSound.Normal),
+
+        // TODO: Remove deprecated stuff.
+        hitSound: HitSound[HitSound.Normal].toLowerCase(),
+        sampleSet: SampleSet[bankInfo.normalSet].toLowerCase(),
+      });
+
+      soundTypes.push(sample);
+    }
+    else {
+      const sample = new HitSample({
+        filename: bankInfo.filename,
+        volume: bankInfo.volume,
+      });
+
+      soundTypes.push(sample);
     }
 
-    const soundTypes: HitSample[] = [ new HitSample() ];
+    const createAdditionalSample = (name: string) => {
+      const sample = new HitSample({
+        name,
+        bank: SampleSet[bankInfo.additionSet].toLowerCase(),
 
-    soundTypes[0].hitSound = HitSound[HitSound.Normal];
-    soundTypes[0].sampleSet = SampleSet[bankInfo.normalSet];
+        // TODO: Remove deprecated stuff.
+        hitSound: HitSound[type],
+        sampleSet: SampleSet[bankInfo.additionSet].toLowerCase(),
+      });
 
-    /**
-     * if the sound type doesn't have the Normal flag set, 
-     * attach it anyway as a layered sample.
-     * None also counts as a normal non-layered sample.
-     */
-    soundTypes[0].isLayered = type !== HitSound.None && !(type & HitSound.Normal);
+      soundTypes.push(sample);
+    };
 
     if (type & HitSound.Finish) {
-      const sample = new HitSample();
-
-      sample.hitSound = HitSound[HitSound.Finish];
-      soundTypes.push(sample);
+      createAdditionalSample(HitSample.HIT_FINISH);
     }
 
     if (type & HitSound.Whistle) {
-      const sample = new HitSample();
-
-      sample.hitSound = HitSound[HitSound.Whistle];
-      soundTypes.push(sample);
+      createAdditionalSample(HitSample.HIT_WHISTLE);
     }
 
     if (type & HitSound.Clap) {
-      const sample = new HitSample();
-
-      sample.hitSound = HitSound[HitSound.Clap];
-      soundTypes.push(sample);
+      createAdditionalSample(HitSample.HIT_CLAP);
     }
-
-    soundTypes.forEach((sound, i) => {
-      sound.sampleSet = i !== 0
-        ? SampleSet[bankInfo.additionSet]
-        : SampleSet[bankInfo.normalSet];
-
-      sound.volume = bankInfo.volume;
-      sound.customIndex = 0;
-
-      if (bankInfo.customIndex >= 2) {
-        sound.customIndex = bankInfo.customIndex;
-      }
-    });
 
     return soundTypes;
   }
