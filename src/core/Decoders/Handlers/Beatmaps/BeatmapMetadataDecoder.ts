@@ -11,10 +11,10 @@ export abstract class BeatmapMetadataDecoder {
    * @param beatmap A parsed beatmap.
    */
   static handleLine(line: string, beatmap: Beatmap): void {
-    const [key, ...values] = line.split(':').map((v) => v.trim());
-    const value = values.join(' ');
+    const [key, ...values] = line.split(':');
+    const value = values.join(':').trim();
 
-    switch (key) {
+    switch (key.trim()) {
       case 'Title':
         beatmap.metadata.title = value;
         break;
