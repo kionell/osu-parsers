@@ -52,9 +52,9 @@ export abstract class BeatmapTimingPointDecoder {
     const data = line.split(',');
 
     let timeSignature = TimeSignature.SimpleQuadruple;
-    let sampleSet = SampleSet[SampleSet.None];
+    let sampleSet = SampleSet[beatmap.general.sampleSet];
     let customIndex = 0;
-    let volume = 100;
+    let volume = beatmap.general.sampleVolume;
     let timingChange = true;
     let effects = EffectType.None;
 
