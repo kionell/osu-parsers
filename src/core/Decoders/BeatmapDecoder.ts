@@ -1,4 +1,9 @@
-import { Beatmap } from 'osu-classes';
+import {
+  Beatmap,
+  HitObject,
+  IHasDuration,
+  IHasRepeats,
+} from 'osu-classes';
 
 import {
   BeatmapGeneralDecoder,
@@ -26,6 +31,12 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
    * to correct timing changes that were applied at a game client level.
    */
   static readonly EARLY_VERSION_TIMING_OFFSET = 24;
+
+  /**
+   * A small adjustment to the start time of control points 
+   * to account for rounding/precision errors.
+   */
+  static readonly CONTROL_POINT_LENIENCY = 1;
 
   /** 
    * Current offset for all time values.
@@ -137,7 +148,7 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
 
     // Apply default values to the all hit objects.
     for (let i = 0; i < beatmap.hitObjects.length; ++i) {
-      beatmap.hitObjects[i].applyDefaults(beatmap.controlPoints, beatmap.difficulty);
+      this._applyDefaults(beatmap, beatmap.hitObjects[i]);
     }
 
     // Use stable sorting to keep objects in the right order.
@@ -225,5 +236,32 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
 
     // Storyboard should be parsed only if both events and storyboard flags are enabled.
     return parseEvents && parseSb;
+  }
+
+  protected _applyDefaults(beatmap: Beatmap, hitObject: HitObject): void {
+    hitObject.applyDefaults(beatmap.controlPoints, beatmap.difficulty);
+
+    const durationObj = hitObject as HitObject & IHasDuration;
+    const endTime = durationObj?.endTime ?? hitObject.startTime;
+    const time = endTime + BeatmapDecoder.CONTROL_POINT_LENIENCY;
+
+    const samplePoint = beatmap.controlPoints.samplePointAt(time);
+
+    hitObject.samples.forEach((s) => samplePoint.applyTo(s));
+
+    const repeatObj = hitObject as HitObject & IHasRepeats;
+    const nodeSamples = repeatObj.nodeSamples;
+
+    if (nodeSamples) {
+      for (let i = 0; i < nodeSamples.length; ++i) {
+        const time = hitObject.startTime
+          + i * repeatObj.duration / repeatObj.spans
+          + BeatmapDecoder.CONTROL_POINT_LENIENCY;
+
+        const nodeSamplePoint = beatmap.controlPoints.samplePointAt(time);
+
+        nodeSamples[i].forEach((s) => nodeSamplePoint.applyTo(s));
+      }
+    }
   }
 }
