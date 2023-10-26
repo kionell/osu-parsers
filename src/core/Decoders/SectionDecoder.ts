@@ -65,7 +65,7 @@ export abstract class SectionDecoder<T extends IHasFileFormat> extends Decoder {
        * But unfortunately it turns out that files can start with empty lines.
        * Beatmap: https://osu.ppy.sh/beatmapsets/574129#taiko/1485848
        */
-      if (!this._foundFirstNonEmptyLine && !isValidLine) {
+      if (this._foundFirstNonEmptyLine || !isValidLine) {
         throw new Error('Not a valid file!');
       }
 
