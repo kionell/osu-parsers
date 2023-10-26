@@ -514,7 +514,10 @@ export abstract class BeatmapHitObjectDecoder {
     if (!bankInfo.filename) {
       const sample = new HitSample({
         name: HitSample.HIT_NORMAL,
-        bank: SampleSet[bankInfo.normalSet].toLowerCase(),
+        bank: bankInfo.normalSet
+          ? SampleSet[bankInfo.normalSet].toLowerCase()
+          : undefined,
+
         volume: bankInfo.volume,
         customBankIndex: bankInfo.customIndex,
 
@@ -527,8 +530,8 @@ export abstract class BeatmapHitObjectDecoder {
         isLayered: type !== HitSound.None && !(type & HitSound.Normal),
 
         // TODO: Remove deprecated stuff.
-        hitSound: HitSound[HitSound.Normal].toLowerCase(),
-        sampleSet: SampleSet[bankInfo.normalSet].toLowerCase(),
+        hitSound: HitSound[HitSound.Normal],
+        sampleSet: SampleSet[bankInfo.normalSet],
       });
 
       soundTypes.push(sample);
@@ -545,11 +548,13 @@ export abstract class BeatmapHitObjectDecoder {
     const createAdditionalSample = (name: string) => {
       const sample = new HitSample({
         name,
-        bank: SampleSet[bankInfo.additionSet].toLowerCase(),
+        bank: bankInfo.additionSet
+          ? SampleSet[bankInfo.additionSet].toLowerCase()
+          : undefined,
 
         // TODO: Remove deprecated stuff.
         hitSound: HitSound[type],
-        sampleSet: SampleSet[bankInfo.additionSet].toLowerCase(),
+        sampleSet: SampleSet[bankInfo.additionSet],
       });
 
       soundTypes.push(sample);

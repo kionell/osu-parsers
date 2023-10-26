@@ -141,7 +141,7 @@ export abstract class BeatmapTimingPointDecoder {
 
     this.addControlPoint(effectPoint, startTime, timingChange);
 
-    let stringSampleSet = sampleSet.toString().toLowerCase();
+    let stringSampleSet = SampleSet[sampleSet].toLowerCase();
 
     if (sampleSet === SampleSet.None) {
       stringSampleSet = HitSample.BANK_NORMAL;
@@ -153,7 +153,7 @@ export abstract class BeatmapTimingPointDecoder {
     samplePoint.volume = volume;
 
     // TODO: Remove deprecated stuff.
-    samplePoint.sampleSet = stringSampleSet;
+    samplePoint.sampleSet = SampleSet[sampleSet];
     samplePoint.customIndex = customIndex;
     samplePoint.volume = volume;
 

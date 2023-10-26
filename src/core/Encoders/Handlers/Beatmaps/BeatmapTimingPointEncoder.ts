@@ -1,59 +1,29 @@
 import {
   ControlPointGroup,
   DifficultyPoint,
-  EffectPoint,
   SamplePoint,
-  TimingPoint,
   IBeatmap,
-  ControlPointType,
   EffectType,
   TimeSignature,
   SampleSet,
+  IHitObject,
+  ControlPointInfo,
+  IHasSliderVelocity,
+  IHasDuration,
+  IHasNestedObjects,
+  HitSample,
+  TimingPoint,
 } from 'osu-classes';
-
-/**
- * A set of control points in a group.
- */
-interface IActualPoints {
-  /**
-   * A timing point of a group.
-   */
-  timingPoint: TimingPoint | null,
-
-  /**
-   * A difficulty point of a group.
-   */
-  difficultyPoint: DifficultyPoint | null,
-
-  /**
-   * An effect point of a group.
-   */
-  effectPoint: EffectPoint | null,
-
-  /**
-   * A sample point of a group.
-   */
-  samplePoint: SamplePoint | null,
-}
+import { BeatmapHitObjectEncoder } from './BeatmapHitObjectEncoder';
 
 /**
  * An encoder for beatmap control points.
  */
 export abstract class BeatmapTimingPointEncoder {
-  /**
-   * The last saved difficulty point.
-   */
-  static lastDifficultyPoint: DifficultyPoint | null = null;
-
-  /**
-   * The last saved effect point.
-   */
-  static lastEffectPoint: EffectPoint | null = null;
-
-  /**
-   * The last saved sample point.
-   */
-  static lastSamplePoint: SamplePoint | null = null;
+  private static _controlPoints: ControlPointInfo;
+  private static _lastControlPointProperties: LegacyControlPointProperties;
+  private static _lastRelevantSamplePoint: SamplePoint | null;
+  private static _lastRelevantDifficultyPoint: DifficultyPoint | null;
 
   /**
    * Encodes all beatmap control points.
@@ -65,120 +35,252 @@ export abstract class BeatmapTimingPointEncoder {
 
     const encoded: string[] = ['[TimingPoints]'];
 
-    beatmap.controlPoints.groups.forEach((group) => {
-      const points = group.controlPoints;
-      const timing = (points as TimingPoint[]).find((c) => c.beatLength);
+    this._controlPoints = new ControlPointInfo();
 
-      if (timing) {
-        encoded.push(this.encodeGroup(group, true));
+    this._lastRelevantSamplePoint = null;
+    this._lastRelevantDifficultyPoint = null;
+
+    /**
+     * In osu!taiko and osu!mania, a scroll speed is stored 
+     * as "slider velocity" in legacy formats.
+     * In that case, a scrolling speed change is a global effect 
+     * and per-hit object difficulty control points are ignored.
+     */
+    const isTaikoBeatmap = beatmap.mode === 1;
+    const isManiaBeatmap = beatmap.mode === 3;
+
+    const scrollSpeedEncodedAsSliderVelocity = isTaikoBeatmap || isManiaBeatmap;
+
+    /**
+     * Iterate over hit objects and pull out all required sample and difficulty changes.
+     */
+    if (!scrollSpeedEncodedAsSliderVelocity) {
+      this._extractDifficultyPoints(beatmap.hitObjects);
+    }
+
+    this._extractSamplePoints(beatmap.hitObjects);
+
+    if (scrollSpeedEncodedAsSliderVelocity) {
+      for (const point of this._controlPoints.effectPoints) {
+        const difficultyPoint = new DifficultyPoint();
+
+        difficultyPoint.sliderVelocity = point.scrollSpeed;
+
+        this._controlPoints.add(difficultyPoint, point.startTime);
       }
+    }
 
-      encoded.push(this.encodeGroup(group));
-    });
+    this._lastControlPointProperties = new LegacyControlPointProperties();
+
+    for (const group of this._controlPoints.groups) {
+      encoded.push(this._encodeControlPointGroup(group));
+    }
 
     return encoded.join('\n');
   }
 
-  /**
-   * Encodes control point group using only unique control points.
-   * @param group A group of control points
-   * @param useTiming Should we use a timing point in this group?
-   * @returns Encoded group of control points. 
-   */
-  static encodeGroup(group: ControlPointGroup, useTiming = false): string {
-    const {
-      difficultyPoint,
-      effectPoint,
-      samplePoint,
-      timingPoint,
-    } = this.updateActualPoints(group);
+  private static _encodeControlPointGroup(group: ControlPointGroup): string {
+    const encoded: string[] = [];
 
-    const startTime: number = group.startTime;
-    let beatLength = -100;
+    const timingPoint = group.controlPoints.find((c) => c instanceof TimingPoint);
+    const controlPointProperties = this._getLegacyControlPointProperties(
+      group,
+      timingPoint instanceof TimingPoint,
+    );
 
-    if (difficultyPoint !== null) {
-      beatLength /= difficultyPoint.sliderVelocity;
+    /**
+     * If the group contains a timing control point, it needs to be output separately.
+     */
+    if (timingPoint instanceof TimingPoint) {
+      encoded.push([
+        `${timingPoint.startTime}`,
+        `${timingPoint.beatLength}`,
+        this._outputControlPointAt(controlPointProperties, true),
+      ].join(','));
+
+      this._lastControlPointProperties = controlPointProperties;
+      this._lastControlPointProperties.sliderVelocity = 1;
     }
 
-    let sampleSet: SampleSet = SampleSet.None;
-    let customIndex = 0;
-    let volume = 100;
-
-    if (samplePoint !== null) {
-      sampleSet = (SampleSet as any)[samplePoint.sampleSet];
-      customIndex = samplePoint.customIndex;
-      volume = samplePoint.volume;
+    if (controlPointProperties.isRedundant(this._lastControlPointProperties)) {
+      encoded.join('\n');
     }
 
-    let effects = EffectType.None;
+    /**
+     * Output any remaining effects as secondary non-timing control point.
+     */
+    encoded.push([
+      `${group.startTime}`,
+      `${-100 / controlPointProperties.sliderVelocity}`,
+      this._outputControlPointAt(controlPointProperties, false),
+    ].join(','));
 
-    if (effectPoint !== null) {
-      const kiai = effectPoint.kiai
-        ? EffectType.Kiai
-        : EffectType.None;
+    this._lastControlPointProperties = controlPointProperties;
 
-      const omitFirstBarLine = effectPoint.omitFirstBarLine
-        ? EffectType.OmitFirstBarLine
-        : EffectType.None;
+    return encoded.join('\n');
+  }
 
-      effects |= kiai | omitFirstBarLine;
-    }
-
-    let timeSignature = TimeSignature.SimpleQuadruple;
-    let uninherited = 0;
-
-    if (useTiming && timingPoint !== null) {
-      beatLength = timingPoint.beatLength;
-      timeSignature = timingPoint.timeSignature;
-      uninherited = 1;
-    }
-
+  private static _outputControlPointAt(
+    controlPointProperties: LegacyControlPointProperties,
+    isTimingPoint: boolean,
+  ): string {
     return [
-      startTime,
-      beatLength,
-      timeSignature,
-      sampleSet,
-      customIndex,
-      volume,
-      uninherited,
-      effects,
+      `${controlPointProperties.timingSignature}`,
+      `${controlPointProperties.sampleSet}`,
+      `${controlPointProperties.customIndex}`,
+      `${controlPointProperties.sampleVolume}`,
+      isTimingPoint ? '1' : '0',
+      `${controlPointProperties.effectFlags}`,
     ].join(',');
   }
 
-  /**
-   * Updates actual control points.
-   * @param group A group of control points.
-   * @returns The most actual control points.
-   */
-  static updateActualPoints(group: ControlPointGroup): IActualPoints {
-    let timingPoint = null as (TimingPoint | null);
+  private static _collectDifficultyPoints(hitObjects: IHitObject[]): DifficultyPoint[] {
+    const difficultyPoints: DifficultyPoint[] = [];
 
-    group.controlPoints.forEach((point) => {
-      if (point.pointType === ControlPointType.DifficultyPoint
-        && !point.isRedundant(this.lastDifficultyPoint)) {
-        this.lastDifficultyPoint = point as DifficultyPoint;
+    for (const hitObject of hitObjects) {
+      const velocityObject = hitObject as IHitObject & IHasSliderVelocity;
+
+      if (typeof velocityObject.velocity === 'number') {
+        const difficultyPoint = new DifficultyPoint();
+
+        difficultyPoint.startTime = velocityObject.startTime;
+        difficultyPoint.sliderVelocity = velocityObject.velocity;
+
+        difficultyPoints.push(difficultyPoint);
+      }
+    }
+
+    return difficultyPoints.sort((a, b) => a.startTime - b.startTime);
+  }
+
+  private static _extractDifficultyPoints(hitObjects: IHitObject[]): void {
+    for (const difficultyPoint of this._collectDifficultyPoints(hitObjects)) {
+      if (!difficultyPoint.isRedundant(this._lastRelevantDifficultyPoint)) {
+        this._controlPoints.add(difficultyPoint, difficultyPoint.startTime);
+        this._lastRelevantDifficultyPoint = difficultyPoint;
+      }
+    }
+  }
+
+  private static _collectSamplePoints(hitObjects: IHitObject[]): SamplePoint[] {
+    const samplePoints: SamplePoint[] = [];
+
+    for (const hitObject of hitObjects) {
+      if (hitObject.samples.length > 0) {
+        const [volume, customIndex] = hitObject.samples.reduce((p, s) => {
+          p[0] = Math.max(p[0], s.volume);
+          p[1] = Math.max(p[1], s.customBankIndex);
+
+          return p;
+        }, [0, -1]);
+
+        const samplePoint = new SamplePoint();
+
+        const durationObject = hitObject as IHitObject & IHasDuration;
+
+        samplePoint.startTime = durationObject.endTime ?? hitObject.startTime;
+        samplePoint.volume = volume;
+        samplePoint.customBankIndex = customIndex;
+
+        samplePoints.push(samplePoint);
       }
 
-      if (point.pointType === ControlPointType.EffectPoint
-        && !point.isRedundant(this.lastEffectPoint)) {
-        this.lastEffectPoint = point as EffectPoint;
-      }
+      const obj = hitObject as IHitObject & IHasNestedObjects;
 
-      if (point.pointType === ControlPointType.SamplePoint
-        && !point.isRedundant(this.lastSamplePoint)) {
-        this.lastSamplePoint = point as SamplePoint;
+      for (const samplePoint of this._collectSamplePoints(obj.nestedHitObjects)) {
+        samplePoints.push(samplePoint);
       }
+    }
 
-      if (point.pointType === ControlPointType.TimingPoint) {
-        timingPoint = point as TimingPoint;
+    return samplePoints.sort((a, b) => a.startTime - b.startTime);
+  }
+
+  private static _extractSamplePoints(hitObjects: IHitObject[]): void {
+    for (const samplePoint of this._collectSamplePoints(hitObjects)) {
+      if (!samplePoint.isRedundant(this._lastRelevantSamplePoint)) {
+        this._controlPoints.add(samplePoint, samplePoint.startTime);
+        this._lastRelevantSamplePoint = samplePoint;
       }
+    }
+  }
+
+  private static _getLegacyControlPointProperties(
+    group: ControlPointGroup,
+    updateSampleBank: boolean,
+  ): LegacyControlPointProperties {
+    const timingPoint = this._controlPoints.timingPointAt(group.startTime);
+    const difficultyPoint = this._controlPoints.difficultyPointAt(group.startTime);
+    const samplePoint = this._controlPoints.samplePointAt(group.startTime);
+    const effectPoint = this._controlPoints.effectPointAt(group.startTime);
+
+    /**
+     * Apply the control point to a hit sample to uncover legacy properties (e.g. suffix)
+     */
+    const tempHitSample = new HitSample({
+      bank: samplePoint.bank,
+      volume: samplePoint.volume,
+      customBankIndex: samplePoint.customBankIndex,
     });
 
-    return {
-      timingPoint,
-      difficultyPoint: this.lastDifficultyPoint,
-      effectPoint: this.lastEffectPoint,
-      samplePoint: this.lastSamplePoint,
-    };
+    const customIndex = BeatmapHitObjectEncoder.toLegacyCustomIndex(tempHitSample);
+
+    /**
+     * Convert effect flags to the legacy format.
+     */
+    let effectFlags = EffectType.None;
+
+    if (effectPoint.kiai) {
+      effectFlags |= EffectType.Kiai;
+    }
+
+    if (timingPoint.omitFirstBarLine) {
+      effectFlags |= EffectType.OmitFirstBarLine;
+    }
+
+    return new LegacyControlPointProperties({
+      sliderVelocity: difficultyPoint.sliderVelocity,
+      timingSignature: timingPoint.timeSignature,
+      sampleSet: updateSampleBank
+        ? BeatmapHitObjectEncoder.toLegacySampleSet(tempHitSample.bank)
+        : this._lastControlPointProperties.sampleSet,
+
+      /**
+       * Inherit the previous custom sample bank 
+       * if the current custom sample bank is not set
+       */
+      customIndex: customIndex >= 0
+        ? customIndex
+        : this._lastControlPointProperties.customIndex,
+
+      sampleVolume: tempHitSample.volume,
+      effectFlags,
+    });
+  }
+}
+
+class LegacyControlPointProperties {
+  sliderVelocity: number;
+  timingSignature: TimeSignature;
+  sampleSet: SampleSet;
+  customIndex: number;
+  sampleVolume: number;
+  effectFlags: EffectType;
+
+  constructor(options?: Partial<LegacyControlPointProperties>) {
+    this.sliderVelocity = options?.sliderVelocity ?? 1;
+    this.timingSignature = options?.timingSignature ?? TimeSignature.SimpleQuadruple;
+    this.sampleSet = options?.sampleSet ?? SampleSet.None;
+    this.customIndex = options?.customIndex ?? 0;
+    this.sampleVolume = options?.sampleVolume ?? 100;
+    this.effectFlags = options?.effectFlags ?? EffectType.None;
+  }
+
+  isRedundant(other: LegacyControlPointProperties): boolean {
+    return this.sliderVelocity === other.sliderVelocity
+      && this.timingSignature === other.timingSignature
+      && this.sampleSet === other.sampleSet
+      && this.customIndex === other.customIndex
+      && this.sampleVolume === other.sampleVolume
+      && this.effectFlags === other.effectFlags;
   }
 }
