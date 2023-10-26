@@ -156,6 +156,10 @@ export class Beatmap implements IBeatmap {
    * The most common BPM of a beatmap.
    */
   get bpm(): number {
+    if (!this.controlPoints.timingPoints.length) {
+      return this.bpmMax;
+    }
+
     const timingPoints = this.controlPoints.timingPoints;
     const hitObjects = this.hitObjects;
 
