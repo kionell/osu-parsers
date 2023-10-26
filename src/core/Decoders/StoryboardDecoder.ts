@@ -1,6 +1,5 @@
 import { Storyboard } from 'osu-classes';
 import { SectionDecoder } from './SectionDecoder';
-import { Parsing } from '../Utils/Parsing';
 import { BufferLike, stringifyBuffer } from '../Utils/Buffer';
 import { FileFormat, LineType, Section } from '../Enums';
 
@@ -137,17 +136,6 @@ export class StoryboardDecoder extends SectionDecoder<Storyboard> {
     storyboard.variables = this._variables;
 
     return storyboard;
-  }
-
-  protected _parseLine(line: string, storyboard: Storyboard): LineType {
-    // .osu or .osb file version
-    if (line.includes('osu file format v')) {
-      storyboard.fileFormat = Parsing.parseInt(line.split('v')[1]);
-
-      return LineType.FileFormat;
-    }
-
-    return super._parseLine(line, storyboard);
   }
 
   protected _parseSectionData(line: string, storyboard: Storyboard): void {

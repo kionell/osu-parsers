@@ -13,7 +13,6 @@ import {
 import { SectionDecoder } from './SectionDecoder';
 import { StoryboardDecoder } from './StoryboardDecoder';
 import { IBeatmapParsingOptions } from '../Interfaces';
-import { Parsing } from '../Utils/Parsing';
 import { BufferLike, stringifyBuffer } from '../Utils/Buffer';
 import { FileFormat, LineType, Section } from '../Enums';
 
@@ -159,17 +158,6 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
     }
 
     return beatmap;
-  }
-
-  protected _parseLine(line: string, beatmap: Beatmap): LineType {
-    // .osu file version
-    if (line.includes('osu file format v')) {
-      beatmap.fileFormat = Parsing.parseInt(line.split('v')[1]);
-
-      return LineType.FileFormat;
-    }
-
-    return super._parseLine(line, beatmap);
   }
 
   protected _parseSectionData(line: string, beatmap: Beatmap): void {

@@ -1,17 +1,27 @@
-import { BeatmapColorDecoder } from './Handlers';
-import { LineType, Section } from '../Enums';
-import { IHasBeatmapColors, IParsingOptions } from '../Interfaces';
 import { Decoder } from './Decoder';
+import { BeatmapColorDecoder } from './Handlers';
 import { SectionMap } from '../Utils/SectionMap';
+import { Parsing } from '../Utils/Parsing';
+import { LineType, Section } from '../Enums';
+import {
+  IHasBeatmapColors,
+  IParsingOptions,
+  IHasFileFormat,
+} from '../Interfaces';
 
 /**
  * A decoder for human-readable file formats that consist of sections.
  */
-export abstract class SectionDecoder<T> extends Decoder {
+export abstract class SectionDecoder<T extends IHasFileFormat> extends Decoder {
   /**
    * Current data lines.
    */
   protected _lines: string[] | null = null;
+
+  /**
+   * Whether the first non-empty line of the file was found or not.
+   */
+  protected _foundFirstLine = false;
 
   /**
    * Section map of this decoder.
@@ -41,6 +51,8 @@ export abstract class SectionDecoder<T> extends Decoder {
 
     // File format
     if (line.includes('osu file format v')) {
+      output.fileFormat = Parsing.parseInt(line.split('v')[1]);
+
       return LineType.FileFormat;
     }
 
