@@ -60,6 +60,6 @@
     "lzma-js-simple-v2": "^1.2.2"
   },
   "peerDependencies": {
-    "osu-classes": "^3.0.0"
+    "osu-classes": "^3.0.1"
   }
 }

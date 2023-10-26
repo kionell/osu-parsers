@@ -13,7 +13,6 @@ import {
 import { SectionDecoder } from './SectionDecoder';
 import { StoryboardDecoder } from './StoryboardDecoder';
 import { IBeatmapParsingOptions } from '../Interfaces';
-import { Parsing } from '../Utils/Parsing';
 import { BufferLike, stringifyBuffer } from '../Utils/Buffer';
 import { FileFormat, LineType, Section } from '../Enums';
 
@@ -113,17 +112,6 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
     // This array isn't needed if we don't parse a storyboard. 
     this._sbLines = this._shouldParseStoryboard(options) ? [] : null;
 
-    /**
-     * There is one known case of .osu file starting with "\uFEFF" symbol
-     * We need to use trim function to handle it. 
-     * Beatmap: https://osu.ppy.sh/beatmapsets/310499#osu/771496
-     */
-    const fileFormatLine = this._lines[0].trim();
-
-    if (!fileFormatLine.startsWith('osu file format v')) {
-      throw new Error('Not a valid beatmap!');
-    }
-
     // Parse beatmap lines.
     for (let i = 0; i < this._lines.length; ++i) {
       const type = this._parseLine(this._lines[i], beatmap);
@@ -159,17 +147,6 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
     }
 
     return beatmap;
-  }
-
-  protected _parseLine(line: string, beatmap: Beatmap): LineType {
-    // .osu file version
-    if (line.includes('osu file format v')) {
-      beatmap.fileFormat = Parsing.parseInt(line.split('v')[1]);
-
-      return LineType.FileFormat;
-    }
-
-    return super._parseLine(line, beatmap);
   }
 
   protected _parseSectionData(line: string, beatmap: Beatmap): void {

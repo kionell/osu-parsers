@@ -1,6 +1,5 @@
 import { Storyboard } from 'osu-classes';
 import { SectionDecoder } from './SectionDecoder';
-import { Parsing } from '../Utils/Parsing';
 import { BufferLike, stringifyBuffer } from '../Utils/Buffer';
 import { FileFormat, LineType, Section } from '../Enums';
 
@@ -139,17 +138,6 @@ export class StoryboardDecoder extends SectionDecoder<Storyboard> {
     return storyboard;
   }
 
-  protected _parseLine(line: string, storyboard: Storyboard): LineType {
-    // .osu or .osb file version
-    if (line.includes('osu file format v')) {
-      storyboard.fileFormat = Parsing.parseInt(line.split('v')[1]);
-
-      return LineType.FileFormat;
-    }
-
-    return super._parseLine(line, storyboard);
-  }
-
   protected _parseSectionData(line: string, storyboard: Storyboard): void {
     switch (this._sectionMap.currentSection) {
       case Section.General:
@@ -186,8 +174,6 @@ export class StoryboardDecoder extends SectionDecoder<Storyboard> {
 
   protected _reset(): void {
     super._reset();
-
-    this._sectionMap.reset();
 
     /**
      * Set 'Events' section as default one.

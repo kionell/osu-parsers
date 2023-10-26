@@ -1,17 +1,27 @@
-import { BeatmapColorDecoder } from './Handlers';
-import { LineType, Section } from '../Enums';
-import { IHasBeatmapColors, IParsingOptions } from '../Interfaces';
 import { Decoder } from './Decoder';
+import { BeatmapColorDecoder } from './Handlers';
 import { SectionMap } from '../Utils/SectionMap';
+import { Parsing } from '../Utils/Parsing';
+import { LineType, Section } from '../Enums';
+import {
+  IHasBeatmapColors,
+  IParsingOptions,
+  IHasFileFormat,
+} from '../Interfaces';
 
 /**
  * A decoder for human-readable file formats that consist of sections.
  */
-export abstract class SectionDecoder<T> extends Decoder {
+export abstract class SectionDecoder<T extends IHasFileFormat> extends Decoder {
   /**
    * Current data lines.
    */
   protected _lines: string[] | null = null;
+
+  /**
+   * Whether the first non-empty line of the file was found or not.
+   */
+  protected _foundFirstNonEmptyLine = false;
 
   /**
    * Section map of this decoder.
@@ -41,7 +51,34 @@ export abstract class SectionDecoder<T> extends Decoder {
 
     // File format
     if (line.includes('osu file format v')) {
+      /**
+       * There is one known case of .osu file starting with "\uFEFF" symbol
+       * We need to use trim function to handle it. 
+       * Beatmap: https://osu.ppy.sh/beatmapsets/310499#osu/771496
+       */
+      const fileFormatLine = line.trim();
+
+      const isValidLine = fileFormatLine.startsWith('osu file format v');
+
+      /**
+       * We assume that the first line should be the file format.
+       * But unfortunately it turns out that files can start with empty lines.
+       * Beatmap: https://osu.ppy.sh/beatmapsets/574129#taiko/1485848
+       */
+      if (this._foundFirstNonEmptyLine || !isValidLine) {
+        throw new Error('Not a valid file!');
+      }
+
+      output.fileFormat = Parsing.parseInt(fileFormatLine.split('v')[1]);
+
       return LineType.FileFormat;
+    }
+
+    /**
+     * Set the first non-empty line flag to true as we found file format version.
+     */
+    if (!this._foundFirstNonEmptyLine) {
+      this._foundFirstNonEmptyLine = true;
     }
 
     // A file section
@@ -120,6 +157,7 @@ export abstract class SectionDecoder<T> extends Decoder {
   protected _reset(): void {
     this._sectionMap.reset();
     this._lines = null;
+    this._foundFirstNonEmptyLine = false;
   }
 
   /**
