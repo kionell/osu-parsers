@@ -175,8 +175,6 @@ export class StoryboardDecoder extends SectionDecoder<Storyboard> {
   protected _reset(): void {
     super._reset();
 
-    this._sectionMap.reset();
-
     /**
      * Set 'Events' section as default one.
      * This helps to avoid issues with missing section 

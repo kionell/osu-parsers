@@ -21,7 +21,7 @@ export abstract class SectionDecoder<T extends IHasFileFormat> extends Decoder {
   /**
    * Whether the first non-empty line of the file was found or not.
    */
-  protected _foundFirstLine = false;
+  protected _foundFirstNonEmptyLine = false;
 
   /**
    * Section map of this decoder.
@@ -51,9 +51,34 @@ export abstract class SectionDecoder<T extends IHasFileFormat> extends Decoder {
 
     // File format
     if (line.includes('osu file format v')) {
-      output.fileFormat = Parsing.parseInt(line.split('v')[1]);
+      /**
+       * There is one known case of .osu file starting with "\uFEFF" symbol
+       * We need to use trim function to handle it. 
+       * Beatmap: https://osu.ppy.sh/beatmapsets/310499#osu/771496
+       */
+      const fileFormatLine = line.trim();
+
+      const isValidLine = fileFormatLine.startsWith('osu file format v');
+
+      /**
+       * We assume that the first line should be the file format.
+       * But unfortunately it turns out that files can start with empty lines.
+       * Beatmap: https://osu.ppy.sh/beatmapsets/574129#taiko/1485848
+       */
+      if (!this._foundFirstNonEmptyLine && !isValidLine) {
+        throw new Error('Not a valid file!');
+      }
+
+      output.fileFormat = Parsing.parseInt(fileFormatLine.split('v')[1]);
 
       return LineType.FileFormat;
+    }
+
+    /**
+     * Set the first non-empty line flag to true as we found file format version.
+     */
+    if (!this._foundFirstNonEmptyLine) {
+      this._foundFirstNonEmptyLine = true;
     }
 
     // A file section
@@ -132,6 +157,7 @@ export abstract class SectionDecoder<T extends IHasFileFormat> extends Decoder {
   protected _reset(): void {
     this._sectionMap.reset();
     this._lines = null;
+    this._foundFirstNonEmptyLine = false;
   }
 
   /**
