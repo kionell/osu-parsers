@@ -43,14 +43,8 @@ export abstract class SectionDecoder<T extends IHasFileFormat> extends Decoder {
   }
 
   protected _parseLine(line: string, output: T): LineType {
-    if (this._shouldSkipLine(line)) {
-      return LineType.Empty;
-    }
-
-    line = this._preprocessLine(line);
-
     // File format
-    if (line.includes('osu file format v')) {
+    if (!this._foundFirstNonEmptyLine && line.includes('osu file format v')) {
       /**
        * There is one known case of .osu file starting with "\uFEFF" symbol
        * We need to use trim function to handle it. 
@@ -58,28 +52,36 @@ export abstract class SectionDecoder<T extends IHasFileFormat> extends Decoder {
        */
       const fileFormatLine = line.trim();
 
-      const isValidLine = fileFormatLine.startsWith('osu file format v');
+      try {
+        if (fileFormatLine.startsWith('osu file format v')) {
+          output.fileFormat = Parsing.parseInt(fileFormatLine.split('v')[1]);
+        }
 
-      /**
-       * We assume that the first line should be the file format.
-       * But unfortunately it turns out that files can start with empty lines.
-       * Beatmap: https://osu.ppy.sh/beatmapsets/574129#taiko/1485848
-       */
-      if (this._foundFirstNonEmptyLine || !isValidLine) {
-        throw new Error('Not a valid file!');
+        return LineType.FileFormat;
       }
-
-      output.fileFormat = Parsing.parseInt(fileFormatLine.split('v')[1]);
-
-      return LineType.FileFormat;
+      catch {
+        throw new Error('Wrong file format version!');
+      }
     }
 
     /**
-     * Set the first non-empty line flag to true as we found file format version.
+     * We assume that the first line should be the file format.
+     * But unfortunately it turns out that files can start with empty lines.
+     * Beatmap: https://osu.ppy.sh/beatmapsets/574129#taiko/1485848
+     * 
+     * After some testing it was discovered that the actual game is able 
+     * to decode the files with no file format line at all.
+     * The game accepts file format only from the first non-empty line.
      */
-    if (!this._foundFirstNonEmptyLine) {
+    if (!this._foundFirstNonEmptyLine && !this._isEmptyLine(line)) {
       this._foundFirstNonEmptyLine = true;
     }
+
+    if (this._shouldSkipLine(line)) {
+      return LineType.Empty;
+    }
+
+    line = this._preprocessLine(line);
 
     // A file section
     if (line.startsWith('[') && line.endsWith(']')) {
@@ -145,7 +147,11 @@ export abstract class SectionDecoder<T extends IHasFileFormat> extends Decoder {
   }
 
   protected _shouldSkipLine(line: string): boolean {
-    return typeof line !== 'string' || !line || line.startsWith('//');
+    return this._isEmptyLine(line) || line.startsWith('//');
+  }
+
+  protected _isEmptyLine(line: string): boolean {
+    return typeof line !== 'string' || !line;
   }
 
   protected _stripComments(line: string): string {
