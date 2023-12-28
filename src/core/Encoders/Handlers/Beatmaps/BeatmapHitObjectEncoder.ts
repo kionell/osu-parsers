@@ -45,14 +45,6 @@ export abstract class BeatmapHitObjectEncoder {
         position ? position.y : 192,
       );
 
-      if (beatmap.mode === 3) {
-        const totalColumns = Math.trunc(Math.max(1, difficulty.circleSize));
-        const multiplier = Math.round(512 / totalColumns * 100000) / 100000;
-        const column = (hitObject as unknown as IHasPosition).startX;
-
-        startPosition.x = Math.ceil(column * multiplier) + Math.trunc(multiplier / 2);
-      }
-
       general.push(startPosition.toString());
       general.push(hitObject.startTime.toString());
       general.push(hitObject.hitType.toString());
