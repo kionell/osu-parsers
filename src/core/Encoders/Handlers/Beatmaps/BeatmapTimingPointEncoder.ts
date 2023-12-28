@@ -104,8 +104,9 @@ export abstract class BeatmapTimingPointEncoder {
     let customIndex = 0;
     let volume = 100;
 
+    // TODO: Needs a complete rework
     if (samplePoint !== null) {
-      sampleSet = (SampleSet as any)[samplePoint.sampleSet];
+      sampleSet = SampleSet[samplePoint.sampleSet as keyof typeof SampleSet];
       customIndex = samplePoint.customIndex;
       volume = samplePoint.volume;
     }

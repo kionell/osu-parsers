@@ -57,7 +57,7 @@ export abstract class BeatmapGeneralDecoder {
         break;
 
       case 'SampleSet':
-        beatmap.general.sampleSet = (SampleSet as any)[value];
+        beatmap.general.sampleSet = SampleSet[value as keyof typeof SampleSet];
         break;
 
       case 'LetterboxInBreaks':

@@ -11,6 +11,7 @@ import {
   IHasPosition,
   PathType,
   IHasDuration,
+  IHitObject,
 } from 'osu-classes';
 
 /**
@@ -32,7 +33,8 @@ export abstract class BeatmapHitObjectEncoder {
 
     hitObjects.forEach((hitObject) => {
       const general: string[] = [];
-      const position = (hitObject as unknown as IHasPosition).startPosition;
+      const positionObj = hitObject as IHitObject & IHasPosition;
+      const position = positionObj.startPosition;
 
       /**
        * Try to get hit object position if possible.
@@ -78,19 +80,24 @@ export abstract class BeatmapHitObjectEncoder {
 
       const set: string[] = [];
 
-      const normal = hitObject.samples.find((s) => s.hitSound === HitSound[HitSound.Normal]);
+      // TODO: Needs a complete rework
+      const normal = hitObject.samples.find((s) => {
+        return s.hitSound === HitSound[HitSound.Normal];
+      });
 
-      const addition = hitObject.samples.find((s) => s.hitSound !== HitSound[HitSound.Normal]);
+      const addition = hitObject.samples.find((s) => {
+        return s.hitSound !== HitSound[HitSound.Normal];
+      });
 
       let normalSet = SampleSet.None;
       let additionSet = SampleSet.None;
 
       if (normal) {
-        normalSet = (SampleSet as any)[(normal as HitSample).sampleSet];
+        normalSet = SampleSet[normal.sampleSet as keyof typeof SampleSet];
       }
 
       if (addition) {
-        additionSet = (SampleSet as any)[(addition as HitSample).sampleSet];
+        additionSet = SampleSet[addition.sampleSet as keyof typeof SampleSet];
       }
 
       set[0] = normalSet.toString();
@@ -103,8 +110,9 @@ export abstract class BeatmapHitObjectEncoder {
 
       const generalLine = general.join(',');
 
-      const extrasLine =
-        hitObject.hitType & HitType.Hold ? extras.join(':') : extras.join(',');
+      const extrasLine = hitObject.hitType & HitType.Hold 
+        ? extras.join(':') 
+        : extras.join(',');
 
       encoded.push([generalLine, extrasLine].join(','));
     });
@@ -181,17 +189,18 @@ export abstract class BeatmapHitObjectEncoder {
     const adds: number[] = [];
     const sets: number[][] = [];
 
+    // TODO: Needs a complete rework
     slider.nodeSamples.forEach((node, nodeIndex) => {
       adds[nodeIndex] = HitSound.None;
       sets[nodeIndex] = [SampleSet.None, SampleSet.None];
 
       node.forEach((sample, sampleIndex) => {
         if (sampleIndex === 0) {
-          sets[nodeIndex][0] = (SampleSet as any)[sample.sampleSet];
+          sets[nodeIndex][0] = SampleSet[sample.sampleSet as keyof typeof SampleSet];
         }
         else {
-          adds[nodeIndex] |= (HitSound as any)[sample.hitSound];
-          sets[nodeIndex][1] = (SampleSet as any)[sample.sampleSet];
+          adds[nodeIndex] |= HitSound[sample.hitSound as keyof typeof HitSound];
+          sets[nodeIndex][1] = SampleSet[sample.sampleSet as keyof typeof SampleSet];
         }
       });
     });
