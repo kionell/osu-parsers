@@ -33,10 +33,10 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
   static readonly EARLY_VERSION_TIMING_OFFSET = 24;
 
   /**
-   * A small adjustment to the start time of control points 
+   * A small adjustment to the start time of sample control points 
    * to account for rounding/precision errors.
    */
-  static readonly CONTROL_POINT_LENIENCY = 1;
+  static readonly CONTROL_POINT_LENIENCY = 5;
 
   /** 
    * Current offset for all time values.
