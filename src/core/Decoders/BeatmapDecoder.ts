@@ -146,13 +146,13 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
     // Flush last control point group.
     BeatmapTimingPointDecoder.flushPendingPoints();
 
+    // Use stable sorting to keep objects in the right order.
+    beatmap.hitObjects.sort((a, b) => a.startTime - b.startTime);
+
     // Apply default values to the all hit objects.
     for (let i = 0; i < beatmap.hitObjects.length; ++i) {
       this._applyDefaults(beatmap, beatmap.hitObjects[i]);
     }
-
-    // Use stable sorting to keep objects in the right order.
-    beatmap.hitObjects.sort((a, b) => a.startTime - b.startTime);
 
     // Storyboard
     if (this._sbLines && this._sbLines.length) {
