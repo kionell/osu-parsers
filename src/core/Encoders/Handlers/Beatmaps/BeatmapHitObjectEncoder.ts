@@ -216,7 +216,7 @@ export abstract class BeatmapHitObjectEncoder {
   }
 
   static toLegacyCustomIndex(hitSample?: HitSample): number {
-    return hitSample?.customBankIndex ?? 0;
+    return hitSample?.customSampleBank ?? 0;
   }
 
   static toLegacySampleSet(sampleBank?: string): SampleSet {

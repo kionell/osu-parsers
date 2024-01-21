@@ -8,9 +8,9 @@ import {
   SampleSet,
   IHitObject,
   ControlPointInfo,
-  IHasSliderVelocity,
+  IHasVelocity,
   IHasDuration,
-  IHasNestedObjects,
+  IHasNestedHitObjects,
   HitSample,
   TimingPoint,
 } from 'osu-classes';
@@ -138,7 +138,7 @@ export abstract class BeatmapTimingPointEncoder {
     const difficultyPoints: DifficultyPoint[] = [];
 
     for (const hitObject of hitObjects) {
-      const velocityObject = hitObject as IHitObject & IHasSliderVelocity;
+      const velocityObject = hitObject as IHitObject & IHasVelocity;
 
       if (typeof velocityObject.velocity === 'number') {
         const difficultyPoint = new DifficultyPoint();
@@ -169,7 +169,7 @@ export abstract class BeatmapTimingPointEncoder {
       if (hitObject.samples.length > 0) {
         const [volume, customIndex] = hitObject.samples.reduce((p, s) => {
           p[0] = Math.max(p[0], s.volume);
-          p[1] = Math.max(p[1], s.customBankIndex);
+          p[1] = Math.max(p[1], s.customSampleBank);
 
           return p;
         }, [0, -1]);
@@ -180,12 +180,12 @@ export abstract class BeatmapTimingPointEncoder {
 
         samplePoint.startTime = durationObject.endTime ?? hitObject.startTime;
         samplePoint.volume = volume;
-        samplePoint.customBankIndex = customIndex;
+        samplePoint.customSampleBank = customIndex;
 
         samplePoints.push(samplePoint);
       }
 
-      const obj = hitObject as IHitObject & IHasNestedObjects;
+      const obj = hitObject as IHitObject & IHasNestedHitObjects;
 
       for (const samplePoint of this._collectSamplePoints(obj.nestedHitObjects)) {
         samplePoints.push(samplePoint);
@@ -219,7 +219,7 @@ export abstract class BeatmapTimingPointEncoder {
     const tempHitSample = new HitSample({
       bank: samplePoint.bank,
       volume: samplePoint.volume,
-      customBankIndex: samplePoint.customBankIndex,
+      customSampleBank: samplePoint.customSampleBank,
     });
 
     const customIndex = BeatmapHitObjectEncoder.toLegacyCustomIndex(tempHitSample);
