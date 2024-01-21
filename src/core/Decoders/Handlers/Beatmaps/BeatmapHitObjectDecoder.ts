@@ -487,17 +487,19 @@ export abstract class BeatmapHitObjectDecoder {
 
     const split = hitSample.split(':');
 
-    bankInfo.normalSet = Parsing.parseInt(split[0]) as SampleSet;
-    bankInfo.additionSet = Parsing.parseInt(split[1]) as SampleSet;
+    const bank = Parsing.parseInt(split[0]) as SampleSet;
+    const addBank = Parsing.parseInt(split[1]) as SampleSet;
 
-    if (bankInfo.additionSet === SampleSet.None) {
-      bankInfo.additionSet = bankInfo.normalSet;
-    }
+    const stringBank = SampleSet[bank].toLowerCase() as Lowercase<keyof typeof SampleSet>;
+    const stringAddBank = SampleSet[addBank].toLowerCase() as Lowercase<keyof typeof SampleSet>;
+
+    bankInfo.bankForNormal = stringBank;
+    bankInfo.bankForAddition = stringAddBank || stringBank;
 
     if (banksOnly) return;
 
     if (split.length > 2) {
-      bankInfo.customIndex = Parsing.parseInt(split[2]);
+      bankInfo.customSampleBank = Parsing.parseInt(split[2]);
     }
 
     if (split.length > 3) {
@@ -515,12 +517,9 @@ export abstract class BeatmapHitObjectDecoder {
     if (!bankInfo.filename) {
       const sample = new HitSample({
         name: HitSample.HIT_NORMAL,
-        bank: bankInfo.normalSet
-          ? SampleSet[bankInfo.normalSet].toLowerCase()
-          : undefined,
-
+        bank: bankInfo.bankForNormal,
         volume: bankInfo.volume,
-        customBankIndex: bankInfo.customIndex,
+        customSampleBank: bankInfo.customSampleBank,
 
         /**
          * If the sound type doesn't have the Normal flag set, 
@@ -529,15 +528,15 @@ export abstract class BeatmapHitObjectDecoder {
          * https://osu.ppy.sh/help/wiki/osu!_File_Formats/Osu_(file_format)#hitsounds
          */
         isLayered: type !== HitSound.None && !(type & HitSound.Normal),
-
-        // TODO: Remove deprecated stuff.
-        hitSound: HitSound[HitSound.Normal],
-        sampleSet: SampleSet[bankInfo.normalSet],
       });
 
       soundTypes.push(sample);
     }
     else {
+      /**
+       * This should set the normal SampleInfo if the specified 
+       * sample file isn't found, but that's a pretty edge-case scenario.
+       */
       const sample = new HitSample({
         filename: bankInfo.filename,
         volume: bankInfo.volume,
@@ -549,13 +548,9 @@ export abstract class BeatmapHitObjectDecoder {
     const createAdditionalSample = (name: string) => {
       const sample = new HitSample({
         name,
-        bank: bankInfo.additionSet
-          ? SampleSet[bankInfo.additionSet].toLowerCase()
-          : undefined,
-
-        // TODO: Remove deprecated stuff.
-        hitSound: HitSound[type],
-        sampleSet: SampleSet[bankInfo.additionSet],
+        bank: bankInfo.bankForAddition,
+        volume: bankInfo.volume,
+        customSampleBank: bankInfo.customSampleBank,
       });
 
       soundTypes.push(sample);
