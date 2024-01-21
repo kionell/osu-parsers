@@ -80,7 +80,7 @@ export abstract class BeatmapHitObjectDecoder {
     const comboOffset = Math.trunc((hitObject.hitType & HitType.ComboOffset) >> 4);
     const newCombo = !!(hitObject.hitType & HitType.NewCombo);
 
-    if ((hitObject.hitType & HitType.Normal) || (hitObject.hitType & HitType.Slider)) {
+    if ((hitObject instanceof HittableObject) || (hitObject instanceof SlidableObject)) {
       comboObject.isNewCombo = newCombo || this._forceNewCombo;
       comboObject.comboOffset = comboOffset + this._extraComboOffset;
 
@@ -88,7 +88,7 @@ export abstract class BeatmapHitObjectDecoder {
       this._extraComboOffset = 0;
     }
 
-    if (hitObject.hitType & HitType.Spinner) {
+    if (hitObject instanceof SpinnableObject) {
       /**
        * Convert spinners don't create the new combo themselves, 
        * but force the next non-spinner hitobject to create a new combo.
@@ -107,21 +107,22 @@ export abstract class BeatmapHitObjectDecoder {
    * @param offset The offset to apply to all time values.
    * @param fileFormat Beatmap file format.
    */
-  static addExtras(data: string[], hitObject: HitObject, bankInfo: SampleBank, offset: number, fileFormat: number): void {
-    if ((hitObject.hitType & HitType.Normal) && data.length > 0) {
-      this.readCustomSampleBanks(data[0], bankInfo);
+    if ((hitObject instanceof HittableObject) && extras.length > 0) {
+      this.readCustomSampleBanks(extras[0], bankInfo);
     }
 
-    if (hitObject.hitType & HitType.Slider) {
-      return this.addSliderExtras(data, hitObject as SlidableObject, bankInfo, fileFormat);
+    if (hitObject instanceof SlidableObject) {
+      this.addSliderExtras(extras, hitObject, bankInfo, fileFormat);
+
+      hitObject.nodeSamples = this.getSliderNodeSamples(extras, soundType, hitObject, bankInfo);
     }
 
-    if (hitObject.hitType & HitType.Spinner) {
-      return this.addSpinnerExtras(data, hitObject as SpinnableObject, bankInfo, offset);
+    if (hitObject instanceof SpinnableObject) {
+      this.addSpinnerExtras(extras, hitObject, bankInfo, offset);
     }
 
-    if (hitObject.hitType & HitType.Hold) {
-      return this.addHoldExtras(data, hitObject as HoldableObject, bankInfo, offset);
+    if (hitObject instanceof HoldableObject) {
+      this.addHoldExtras(extras, hitObject, bankInfo, offset);
     }
   }
 
