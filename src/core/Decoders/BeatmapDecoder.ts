@@ -252,7 +252,7 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
 
     const samplePoint = beatmap.controlPoints.samplePointAt(time);
 
-    hitObject.samples.forEach((s) => samplePoint.applyTo(s));
+    hitObject.samples = hitObject.samples.map((s) => samplePoint.applyTo(s));
 
     const repeatObj = hitObject as HitObject & IHasRepeats;
     const nodeSamples = repeatObj.nodeSamples;
