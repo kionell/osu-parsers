@@ -5,7 +5,6 @@ import {
   EffectPoint,
   SamplePoint,
   TimingPoint,
-  ControlPointType,
   EffectType,
   TimeSignature,
   SampleSet,
@@ -27,7 +26,7 @@ export abstract class BeatmapTimingPointDecoder {
   /**
    * Types of control points that will be flushed.
    */
-  static pendingTypes: ControlPointType[] = [];
+  static pendingTypes: typeof ControlPoint[] = [];
 
   /**
    * Control points that will be flushed.
@@ -195,11 +194,11 @@ export abstract class BeatmapTimingPointDecoder {
        * Changes from non-timing points are added to the end of the list
        * and should override any changes from timing points.
        */
-      if (pendingTypes.includes(pendingPoints[i].pointType)) {
+      if (pendingTypes.includes(pendingPoints[i].getType())) {
         continue;
       }
 
-      pendingTypes.push(pendingPoints[i].pointType);
+      pendingTypes.push(pendingPoints[i].getType());
       controlPoints.add(pendingPoints[i], pendingTime);
     }
 
