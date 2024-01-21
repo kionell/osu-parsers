@@ -52,7 +52,15 @@ export abstract class BeatmapHitObjectDecoder {
 
     const bankInfo = new SampleBank();
 
-    this.addExtras(data.slice(5), hitObject, bankInfo, offset, beatmap.fileFormat);
+    this.addExtras(
+      data.slice(5),
+      hitObject.hitSound,
+      hitObject,
+      bankInfo,
+      offset,
+      beatmap.fileFormat,
+    );
+
     this.addComboOffset(hitObject, beatmap);
 
     if (hitObject.samples.length === 0) {
@@ -101,12 +109,21 @@ export abstract class BeatmapHitObjectDecoder {
 
   /**
    * Adds extra data to the parsed hit object.
-   * @param data The data of a hit object line.
+   * @param extras Extra data of a hit object.
+   * @param soundType Sound type of this hit object.
    * @param hitObject A parsed hit object.
    * @param bankInfo Sample bank.
    * @param offset The offset to apply to all time values.
    * @param fileFormat Beatmap file format.
    */
+  static addExtras(
+    extras: string[],
+    soundType: HitSound,
+    hitObject: HitObject,
+    bankInfo: SampleBank,
+    offset: number,
+    fileFormat: number,
+  ): void {
     if ((hitObject instanceof HittableObject) && extras.length > 0) {
       this.readCustomSampleBanks(extras[0], bankInfo);
     }
@@ -164,8 +181,6 @@ export abstract class BeatmapHitObjectDecoder {
     if (extras.length > 5) {
       this.readCustomSampleBanks(extras[5], bankInfo, true);
     }
-
-    slider.nodeSamples = this.getSliderNodeSamples(extras, slider, bankInfo);
   }
 
   /**
@@ -206,7 +221,12 @@ export abstract class BeatmapHitObjectDecoder {
     }
   }
 
-  static getSliderNodeSamples(extras: string[], slider: SlidableObject, bankInfo: SampleBank): HitSample[][] {
+  static getSliderNodeSamples(
+    extras: string[],
+    soundType: HitSound,
+    slider: SlidableObject,
+    bankInfo: SampleBank,
+  ): HitSample[][] {
     /**
      * One node for each repeat + the start and end nodes.
      */
@@ -240,7 +260,7 @@ export abstract class BeatmapHitObjectDecoder {
     const nodeSoundTypes: HitSound[] = [];
 
     for (let i = 0; i < nodes; ++i) {
-      nodeSoundTypes.push(slider.hitSound);
+      nodeSoundTypes.push(soundType);
     }
 
     /**
