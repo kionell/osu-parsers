@@ -152,6 +152,7 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
     // Apply default values to the all hit objects.
     for (let i = 0; i < beatmap.hitObjects.length; ++i) {
       this._applyDefaults(beatmap, beatmap.hitObjects[i]);
+      this._applySamples(beatmap, beatmap.hitObjects[i]);
     }
 
     // Storyboard
@@ -239,9 +240,13 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
   }
 
   protected _applyDefaults(beatmap: Beatmap, hitObject: HitObject): void {
-    hitObject.applyDefaults(beatmap.controlPoints, beatmap.difficulty);
 
+    hitObject.applyDefaults(beatmap.controlPoints, beatmap.difficulty);
+  }
+
+  protected _applySamples(beatmap: Beatmap, hitObject: HitObject): void {
     const durationObj = hitObject as HitObject & IHasDuration;
+
     const endTime = durationObj?.endTime ?? hitObject.startTime;
     const time = endTime + BeatmapDecoder.CONTROL_POINT_LENIENCY;
 
