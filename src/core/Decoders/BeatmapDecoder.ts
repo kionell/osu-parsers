@@ -258,7 +258,7 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
 
         const nodeSamplePoint = beatmap.controlPoints.samplePointAt(time);
 
-        nodeSamples[i].forEach((s) => nodeSamplePoint.applyTo(s));
+        nodeSamples[i] = nodeSamples[i].map((s) => nodeSamplePoint.applyTo(s));
       }
     }
   }
