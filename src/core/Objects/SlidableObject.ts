@@ -72,6 +72,11 @@ export class SlidableObject extends HitObject implements ISlidableObject, IHasCo
   velocity = 1;
 
   /**
+   * The slider velocity multiplier.
+   */
+  sliderVelocity = 1;
+
+  /**
    * The curve of a slidable object.
    */
   path: SliderPath = new SliderPath();

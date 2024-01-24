@@ -3,7 +3,7 @@ import {
   HitObject,
   IHasDuration,
   IHasRepeats,
-  IHasVelocity,
+  IHasSliderVelocity,
   IHasGenerateTicks,
 } from 'osu-classes';
 
@@ -228,10 +228,10 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
       generateTicksObj.generateTicks = difficultyPoint.generateTicks;
     }
 
-    const sliderVelocityObj = hitObject as HitObject & IHasVelocity;
+    const sliderVelocityObj = hitObject as HitObject & IHasSliderVelocity;
 
-    if (typeof sliderVelocityObj.velocity === 'number') {
-      sliderVelocityObj.velocity = difficultyPoint.sliderVelocity;
+    if (typeof sliderVelocityObj.sliderVelocity === 'number') {
+      sliderVelocityObj.sliderVelocity = difficultyPoint.sliderVelocity;
     }
 
     hitObject.applyDefaults(beatmap.controlPoints, beatmap.difficulty);
