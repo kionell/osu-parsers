@@ -1,8 +1,6 @@
 import {
   IBeatmap,
-  IHoldableObject,
   ISlidableObject,
-  ISpinnableObject,
   HitSound,
   HitType,
   SampleSet,
@@ -12,6 +10,8 @@ import {
   PathType,
   IHasDuration,
   IHitObject,
+  IHasCombo,
+  IHasPath,
 } from 'osu-classes';
 
 /**
@@ -30,13 +30,12 @@ export abstract class BeatmapHitObjectEncoder {
 
     const encoded: string[] = ['[HitObjects]'];
 
-    const difficulty = beatmap.difficulty;
     const hitObjects = beatmap.hitObjects;
 
     this._mode = beatmap.mode;
 
     hitObjects.forEach((hitObject) => {
-      const general: string[] = [];
+      const data: string[] = [];
       const positionObject = hitObject as IHitObject & IHasPosition;
       const position = positionObject.startPosition;
 
@@ -45,48 +44,64 @@ export abstract class BeatmapHitObjectEncoder {
        * Otherwise, it will be replaced with default position (256, 192).
        */
       const startPosition = new Vector2(position?.x ?? 256, position?.y ?? 192);
+      const hitType = this.getObjectHitType(hitObject);
 
-      general.push(`${startPosition}`);
-      general.push(`${hitObject.startTime}`);
-      general.push(`${hitObject.hitType}`);
-      general.push(`${hitObject.hitSound}`);
+      data.push(`${startPosition},`);
+      data.push(`${hitObject.startTime},`);
+      data.push(`${hitType},`);
+      data.push(`${this.toLegacyHitSoundType(hitObject.samples)},`);
 
-      const extras: string[] = [];
-
-      if (hitObject.hitType & HitType.Slider) {
+      if (hitType & HitType.Slider) {
         const slider = hitObject as ISlidableObject;
 
-        extras.push(this.encodePathData(slider, startPosition));
+        data.push(this.encodePathData(slider, startPosition));
       }
-      else if (hitObject.hitType & HitType.Spinner) {
-        const spinner = hitObject as ISpinnableObject;
+      else if ((hitType & HitType.Spinner) || (hitType & HitType.Hold)) {
+        const durationObj = hitObject as IHitObject & IHasDuration;
 
-        extras.push(this.encodeEndTimeData(spinner));
-      }
-      else if (hitObject.hitType & HitType.Hold) {
-        const hold = hitObject as IHoldableObject;
-
-        extras.push(this.encodeEndTimeData(hold));
+        data.push(this.encodeEndTimeData(durationObj));
       }
 
-      extras.push(this.encodeSampleBank(hitObject.samples));
+      data.push(this.encodeSampleBank(hitObject.samples));
 
-      const generalLine = general.join(',');
-
-      const extrasLine = hitObject.hitType & HitType.Hold
-        ? extras.join(':')
-        : extras.join(',');
-
-      encoded.push([generalLine, extrasLine].join(','));
+      encoded.push(data.join(''));
     });
 
     return encoded.join('\n');
   }
 
+  static getObjectHitType(hitObject: IHitObject): HitType {
+    let type = 0;
+
+    const comboObject = hitObject as IHitObject & IHasCombo;
+
+    if (typeof comboObject.comboOffset === 'number') {
+      type |= comboObject.comboOffset << 4;
+
+      if (comboObject.isNewCombo) {
+        type |= HitType.NewCombo;
+      }
+    }
+
+    const pathObject = hitObject as IHitObject & IHasPath;
+
+    if (pathObject.path) {
+      return type | HitType.Slider;
+    }
+
+    const durationObject = hitObject as IHitObject & IHasDuration;
+
+    if (typeof durationObject.duration === 'number') {
+      return type | (this._mode === 3 ? HitType.Hold : HitType.Spinner);
+    }
+
+    return type | HitType.Normal;
+  }
+
   static encodePathData(slider: ISlidableObject, offset: Vector2): string {
     // curveType|curvePoints,slides,length,edgeSounds,edgeSets
 
-    const path: string[] = [];
+    const data: string[] = [];
 
     let lastType: PathType;
 
@@ -124,43 +139,48 @@ export abstract class BeatmapHitObjectEncoder {
         }
 
         if (needsExplicitSegment) {
-          path.push(slider.path.curveType);
+          data.push(`${point.type}|`);
           lastType = point.type;
         }
         else {
           // New segment with the same type - duplicate the control point
-          path.push(`${offset.x + point.position.x}:${offset.y + point.position.y}`);
+          data.push(`${offset.x + point.position.x}:${offset.y + point.position.y}|`);
         }
       }
 
       if (i !== 0) {
-        path.push(`${offset.x + point.position.x}:${offset.y + point.position.y}`);
+        data.push(`${offset.x + point.position.x}:${offset.y + point.position.y}`);
+        data.push(`${i !== slider.path.controlPoints.length - 1 ? '|' : ','}`);
       }
     });
-
-    const data: string[] = [];
-
-    data.push(path.join('|'));
 
     /**
      * osu!stable treated the first span of the slider as a repeat,
      * but no repeats are happening.
      */
-    data.push((slider.repeats + 1).toString());
-    data.push(slider.distance.toString());
+    data.push(`${slider.repeats + 1},`);
+    data.push(`${slider.path.expectedDistance || slider.distance},`);
 
     const edgeSounds: string[] = [];
     const edgeSets: string[] = [];
 
     for (let i = 0; i < slider.spans + 1; ++i) {
-      edgeSounds.push(`${this.toLegacyHitSoundType(slider.nodeSamples[i])}`);
-      edgeSets.push(this.encodeSampleBank(slider.nodeSamples[i], true));
+      const delimiter = i !== slider.spans ? '|' : ',';
+
+      if (i < slider.nodeSamples.length) {
+        edgeSounds.push(`${this.toLegacyHitSoundType(slider.nodeSamples[i])}${delimiter}`);
+        edgeSets.push(`${this.encodeSampleBank(slider.nodeSamples[i], true)}${delimiter}`);
+      }
+      else {
+        edgeSounds.push(`0${delimiter}`);
+        edgeSets.push(`0:0${delimiter}`);
+      }
     }
 
-    data.push(edgeSounds.join('|'));
-    data.push(edgeSets.join('|'));
+    data.push(edgeSounds.join(''));
+    data.push(edgeSets.join(''));
 
-    return data.join(',');
+    return data.join('');
   }
 
   static encodeSampleBank(samples: HitSample[], banksOnly = false): string {
@@ -168,19 +188,19 @@ export abstract class BeatmapHitObjectEncoder {
 
     const normalSample = samples.find((sample) => {
       return sample.name === HitSample.HIT_NORMAL;
-    });
+    }) ?? HitSample.DEFAULT;
 
     const addSample = samples.find((sample) => {
       return sample.name && sample.name !== HitSample.HIT_NORMAL;
-    });
+    }) ?? HitSample.DEFAULT;
 
     const encoded: string[] = [
-      `${this.toLegacySampleSet(normalSample?.bank)}`,
-      `${this.toLegacySampleSet(addSample?.bank)}`,
+      `${this.toLegacySampleBank(normalSample.bank)}:`,
+      `${this.toLegacySampleBank(addSample.bank)}`,
     ];
 
     if (!banksOnly) {
-      let customIndex = this.toLegacyCustomIndex(samples.find((s) => s.name));
+      let customSampleBank = this.toLegacyCustomSampleBank(samples.find((s) => s.name));
       let volume = samples[0]?.volume ?? 100;
 
       /**
@@ -190,30 +210,34 @@ export abstract class BeatmapHitObjectEncoder {
        * and are already satisfied by the control points.
        */
       if (this._mode !== 3) {
-        customIndex = 0;
+        customSampleBank = 0;
         volume = 0;
       }
 
-      encoded.push(`${customIndex}`);
-      encoded.push(`${volume}`);
+      encoded.push(':');
+      encoded.push(`${customSampleBank}:`);
+      encoded.push(`${volume}:`);
       encoded.push(samples.find((s) => s.name)?.filename ?? '');
     }
 
-    return encoded.join(':');
+    return encoded.join('');
   }
 
-  static encodeEndTimeData(hitObject: IHasDuration): string {
+  static encodeEndTimeData(hitObject: IHitObject & IHasDuration): string {
     // endTime
 
-    return hitObject.endTime.toString();
+    const type = this.getObjectHitType(hitObject);
+    const suffix = type === HitType.Hold ? ':' : ',';
+
+    return `${hitObject.endTime}${suffix}`;
   }
 
-  static toLegacyCustomIndex(hitSample?: HitSample): number {
+  static toLegacyCustomSampleBank(hitSample?: HitSample): number {
     return hitSample?.customSampleBank ?? 0;
   }
 
-  static toLegacySampleSet(sampleBank?: string): SampleSet {
-    switch (sampleBank?.toLowerCase()) {
+  static toLegacySampleBank(bank?: string): SampleSet {
+    switch (bank?.toLowerCase()) {
       case HitSample.BANK_NORMAL:
         return SampleSet.Normal;
 

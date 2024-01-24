@@ -8,7 +8,7 @@ import {
   SampleSet,
   IHitObject,
   ControlPointInfo,
-  IHasVelocity,
+  IHasSliderVelocity,
   IHasDuration,
   IHasNestedHitObjects,
   HitSample,
@@ -37,6 +37,19 @@ export abstract class BeatmapTimingPointEncoder {
     const encoded: string[] = ['[TimingPoints]'];
 
     this._controlPoints = new ControlPointInfo();
+
+    beatmap.controlPoints.allPoints.forEach((controlPoint) => {
+      /**
+       * osu!lazer considers difficulty & sample control points as legacy types.
+       * Skip legacy control points as we don't need them to be encoded.
+       * 
+       * https://github.com/ppy/osu/blob/904c76e437114a214ec5fcc649066ad4daadf30f/osu.Game/Screens/Edit/EditorBeatmap.cs#L122-L153
+       */
+      if (controlPoint instanceof DifficultyPoint) return;
+      if (controlPoint instanceof SamplePoint) return;
+
+      this._controlPoints.add(controlPoint, controlPoint.startTime);
+    });
 
     this._lastRelevantSamplePoint = null;
     this._lastRelevantDifficultyPoint = null;
@@ -74,7 +87,11 @@ export abstract class BeatmapTimingPointEncoder {
     this._lastControlPointProperties = new LegacyControlPointProperties();
 
     for (const group of this._controlPoints.groups) {
-      encoded.push(this._encodeControlPointGroup(group));
+      const encodedGroup = this._encodeControlPointGroup(group);
+
+      if (encodedGroup.length > 0) {
+        encoded.push(encodedGroup);
+      }
     }
 
     return encoded.join('\n');
@@ -104,7 +121,7 @@ export abstract class BeatmapTimingPointEncoder {
     }
 
     if (controlPointProperties.isRedundant(this._lastControlPointProperties)) {
-      encoded.join('\n');
+      return encoded.join('\n');
     }
 
     /**
@@ -127,8 +144,8 @@ export abstract class BeatmapTimingPointEncoder {
   ): string {
     return [
       `${controlPointProperties.timingSignature}`,
-      `${controlPointProperties.sampleSet}`,
-      `${controlPointProperties.customIndex}`,
+      `${controlPointProperties.sampleBank}`,
+      `${controlPointProperties.customSampleBank}`,
       `${controlPointProperties.sampleVolume}`,
       isTimingPoint ? '1' : '0',
       `${controlPointProperties.effectFlags}`,
@@ -139,13 +156,13 @@ export abstract class BeatmapTimingPointEncoder {
     const difficultyPoints: DifficultyPoint[] = [];
 
     for (const hitObject of hitObjects) {
-      const velocityObject = hitObject as IHitObject & IHasVelocity;
+      const velocityObject = hitObject as IHitObject & IHasSliderVelocity;
 
-      if (typeof velocityObject.velocity === 'number') {
+      if (typeof velocityObject.sliderVelocity === 'number') {
         const difficultyPoint = new DifficultyPoint();
 
         difficultyPoint.startTime = velocityObject.startTime;
-        difficultyPoint.sliderVelocity = velocityObject.velocity;
+        difficultyPoint.sliderVelocity = velocityObject.sliderVelocity;
 
         difficultyPoints.push(difficultyPoint);
       }
@@ -217,13 +234,13 @@ export abstract class BeatmapTimingPointEncoder {
     /**
      * Apply the control point to a hit sample to uncover legacy properties (e.g. suffix)
      */
-    const tempHitSample = new HitSample({
+    const tempHitSample = samplePoint.applyTo(new HitSample({
       bank: samplePoint.bank,
       volume: samplePoint.volume,
       customSampleBank: samplePoint.customSampleBank,
-    });
+    }));
 
-    const customIndex = BeatmapHitObjectEncoder.toLegacyCustomIndex(tempHitSample);
+    const customSampleBank = BeatmapHitObjectEncoder.toLegacyCustomSampleBank(tempHitSample);
 
     /**
      * Convert effect flags to the legacy format.
@@ -241,17 +258,17 @@ export abstract class BeatmapTimingPointEncoder {
     return new LegacyControlPointProperties({
       sliderVelocity: difficultyPoint.sliderVelocity,
       timingSignature: timingPoint.timeSignature,
-      sampleSet: updateSampleBank
-        ? BeatmapHitObjectEncoder.toLegacySampleSet(tempHitSample.bank)
-        : this._lastControlPointProperties.sampleSet,
+      sampleBank: updateSampleBank
+        ? BeatmapHitObjectEncoder.toLegacySampleBank(tempHitSample.bank)
+        : this._lastControlPointProperties.sampleBank,
 
       /**
        * Inherit the previous custom sample bank 
        * if the current custom sample bank is not set
        */
-      customIndex: customIndex >= 0
-        ? customIndex
-        : this._lastControlPointProperties.customIndex,
+      customSampleBank: customSampleBank >= 0
+        ? customSampleBank
+        : this._lastControlPointProperties.customSampleBank,
 
       sampleVolume: tempHitSample.volume,
       effectFlags,
@@ -262,16 +279,16 @@ export abstract class BeatmapTimingPointEncoder {
 class LegacyControlPointProperties {
   sliderVelocity: number;
   timingSignature: TimeSignature;
-  sampleSet: SampleSet;
-  customIndex: number;
+  sampleBank: SampleSet;
+  customSampleBank: number;
   sampleVolume: number;
   effectFlags: EffectType;
 
   constructor(options?: Partial<LegacyControlPointProperties>) {
     this.sliderVelocity = options?.sliderVelocity ?? 1;
     this.timingSignature = options?.timingSignature ?? TimeSignature.SimpleQuadruple;
-    this.sampleSet = options?.sampleSet ?? SampleSet.None;
-    this.customIndex = options?.customIndex ?? 0;
+    this.sampleBank = options?.sampleBank ?? SampleSet.None;
+    this.customSampleBank = options?.customSampleBank ?? 0;
     this.sampleVolume = options?.sampleVolume ?? 100;
     this.effectFlags = options?.effectFlags ?? EffectType.None;
   }
@@ -279,8 +296,8 @@ class LegacyControlPointProperties {
   isRedundant(other: LegacyControlPointProperties): boolean {
     return this.sliderVelocity === other.sliderVelocity
       && this.timingSignature === other.timingSignature
-      && this.sampleSet === other.sampleSet
-      && this.customIndex === other.customIndex
+      && this.sampleBank === other.sampleBank
+      && this.customSampleBank === other.customSampleBank
       && this.sampleVolume === other.sampleVolume
       && this.effectFlags === other.effectFlags;
   }
