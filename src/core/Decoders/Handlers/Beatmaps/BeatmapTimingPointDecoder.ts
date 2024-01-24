@@ -140,7 +140,8 @@ export abstract class BeatmapTimingPointDecoder {
 
     this.addControlPoint(effectPoint, startTime, timingChange);
 
-    let stringSampleSet = SampleSet[sampleSet].toLowerCase();
+    let stringSampleSet = SampleSet[sampleSet]
+      .toLowerCase() as Lowercase<keyof typeof SampleSet>;
 
     if (sampleSet === SampleSet.None) {
       stringSampleSet = HitSample.BANK_NORMAL;

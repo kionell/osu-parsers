@@ -520,11 +520,22 @@ export abstract class BeatmapHitObjectDecoder {
     const bank = Parsing.parseInt(split[0]) as SampleSet;
     const addBank = Parsing.parseInt(split[1]) as SampleSet;
 
-    const stringBank = SampleSet[bank].toLowerCase() as Lowercase<keyof typeof SampleSet>;
-    const stringAddBank = SampleSet[addBank].toLowerCase() as Lowercase<keyof typeof SampleSet>;
+    let stringBank = SampleSet[bank]
+      .toLowerCase() as Lowercase<keyof typeof SampleSet> | null;
+
+    if (stringBank === 'none') {
+      stringBank = null;
+    }
+
+    let stringAddBank = SampleSet[addBank]
+      .toLowerCase() as Lowercase<keyof typeof SampleSet> | null;
+
+    if (stringAddBank === 'none') {
+      stringAddBank = null;
+    }
 
     bankInfo.bankForNormal = stringBank;
-    bankInfo.bankForAddition = stringAddBank || stringBank;
+    bankInfo.bankForAddition = stringAddBank ?? stringBank;
 
     if (banksOnly) return;
 
@@ -547,7 +558,7 @@ export abstract class BeatmapHitObjectDecoder {
     if (!bankInfo.filename) {
       const sample = new HitSample({
         name: HitSample.HIT_NORMAL,
-        bank: bankInfo.bankForNormal,
+        bank: bankInfo.bankForNormal as Lowercase<keyof typeof SampleSet>,
         volume: bankInfo.volume,
         customSampleBank: bankInfo.customSampleBank,
 
@@ -578,7 +589,7 @@ export abstract class BeatmapHitObjectDecoder {
     const createAdditionalSample = (name: string) => {
       const sample = new HitSample({
         name,
-        bank: bankInfo.bankForAddition,
+        bank: bankInfo.bankForAddition as Lowercase<keyof typeof SampleSet>,
         volume: bankInfo.volume,
         customSampleBank: bankInfo.customSampleBank,
       });
