@@ -14,7 +14,10 @@ export abstract class BeatmapGeneralEncoder {
 
     const general = beatmap.general;
 
-    encoded.push(`AudioFilename:${general.audioFilename}`);
+    if (general.audioFilename) {
+      encoded.push(`AudioFilename:${general.audioFilename}`);
+    }
+
     encoded.push(`AudioLeadIn:${general.audioLeadIn}`);
 
     if (general.audioHash) {
@@ -38,13 +41,32 @@ export abstract class BeatmapGeneralEncoder {
       encoded.push(`AlwaysShowPlayfield:${+general.alwaysShowPlayfield}`);
     }
 
-    encoded.push(`OverlayPosition:${general.overlayPosition}`);
-    encoded.push(`SkinPreference:${general.skinPreference}`);
-    encoded.push(`EpilepsyWarning:${+general.epilepsyWarning}`);
-    encoded.push(`CountdownOffset:${general.countdownOffset}`);
-    encoded.push(`SpecialStyle:${+general.specialStyle}`);
+    // TODO: Add enum for overlay positions.
+    if (general.overlayPosition !== 'NoChange') {
+      encoded.push(`OverlayPosition:${general.overlayPosition}`);
+    }
+
+    if (general.skinPreference) {
+      encoded.push(`SkinPreference:${general.skinPreference}`);
+    }
+
+    if (general.epilepsyWarning) {
+      encoded.push(`EpilepsyWarning:${+general.epilepsyWarning}`);
+    }
+
+    if (general.countdownOffset > 0) {
+      encoded.push(`CountdownOffset:${general.countdownOffset}`);
+    }
+
+    if (beatmap.mode === 3) {
+      encoded.push(`SpecialStyle:${+general.specialStyle}`);
+    }
+
     encoded.push(`WidescreenStoryboard:${+general.widescreenStoryboard}`);
-    encoded.push(`SamplesMatchPlaybackRate:${+general.samplesMatchPlaybackRate}`);
+
+    if (general.samplesMatchPlaybackRate) {
+      encoded.push(`SamplesMatchPlaybackRate:${+general.samplesMatchPlaybackRate}`);
+    }
 
     return encoded.join('\n');
   }

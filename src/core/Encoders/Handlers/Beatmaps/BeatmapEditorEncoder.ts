@@ -14,7 +14,10 @@ export abstract class BeatmapEditorEncoder {
 
     const editor = beatmap.editor;
 
-    encoded.push(`Bookmarks:${editor.bookmarks.join(',')}`);
+    if (editor.bookmarks.length > 0) {
+      encoded.push(`Bookmarks:${editor.bookmarks.join(',')}`);
+    }
+
     encoded.push(`DistanceSpacing:${editor.distanceSpacing}`);
     encoded.push(`BeatDivisor:${editor.beatDivisor}`);
     encoded.push(`GridSize:${editor.gridSize}`);

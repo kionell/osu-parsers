@@ -15,13 +15,28 @@ export abstract class BeatmapMetadataEncoder {
     const metadata = beatmap.metadata;
 
     encoded.push(`Title:${metadata.title}`);
-    encoded.push(`TitleUnicode:${metadata.titleUnicode}`);
+
+    if (metadata.titleUnicode) {
+      encoded.push(`TitleUnicode:${metadata.titleUnicode}`);
+    }
+
     encoded.push(`Artist:${metadata.artist}`);
-    encoded.push(`ArtistUnicode:${metadata.artistUnicode}`);
+
+    if (metadata.artistUnicode) {
+      encoded.push(`ArtistUnicode:${metadata.artistUnicode}`);
+    }
+
     encoded.push(`Creator:${metadata.creator}`);
     encoded.push(`Version:${metadata.version}`);
-    encoded.push(`Source:${metadata.source}`);
-    encoded.push(`Tags:${metadata.tags.join(' ')}`);
+
+    if (metadata.source) {
+      encoded.push(`Source:${metadata.source}`);
+    }
+
+    if (metadata.tags.length > 0) {
+      encoded.push(`Tags:${metadata.tags.join(' ')}`);
+    }
+
     encoded.push(`BeatmapID:${metadata.beatmapId}`);
     encoded.push(`BeatmapSetID:${metadata.beatmapSetId}`);
 
