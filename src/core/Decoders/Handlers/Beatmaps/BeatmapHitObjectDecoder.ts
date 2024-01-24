@@ -307,7 +307,7 @@ export abstract class BeatmapHitObjectDecoder {
      * This code takes on the responsibility of handling explicit segments of the path ("X" & "Y" from above).
      * Implicit segments are handled by calls to convertPoints().
      */
-    const pathSplit = pathString.split('|').map((p) => p.trim());
+    const pathSplit = pathString.split('|');
 
     const controlPoints: PathPoint[] = [];
 
@@ -373,10 +373,14 @@ export abstract class BeatmapHitObjectDecoder {
     // First control point is zero for the first segment.
     const readOffset = isFirst ? 1 : 0;
 
+    // Total points readable from the base point span.
+    const readablePoints = points.length - 1;
+
     // Extra length if an endpoint is given that lies outside the base point span.
     const endPointLength = endPoint !== null ? 1 : 0;
 
-    const vertices: PathPoint[] = [];
+    const verticesLength = readOffset + readablePoints + endPointLength;
+    const vertices = new Array<PathPoint>(verticesLength);
 
     // Fill any non-read points.
     if (readOffset === 1) {
@@ -384,13 +388,13 @@ export abstract class BeatmapHitObjectDecoder {
     }
 
     // Parse into control points.
-    for (let i = 1; i < points.length; ++i) {
-      vertices[readOffset + i - 1] = readPoint(points[i], offset);
+    for (let i = 1; i <= readablePoints; ++i) {
+      vertices[readOffset + i - 1] = this.readPoint(points[i], offset);
     }
 
     // If an endpoint is given, add it to the end.
     if (endPoint !== null) {
-      vertices[vertices.length - 1] = readPoint(endPoint, offset);
+      vertices[vertices.length - 1] = this.readPoint(endPoint, offset);
     }
 
     let type = this.convertPathType(points[0]);
@@ -400,7 +404,7 @@ export abstract class BeatmapHitObjectDecoder {
       if (vertices.length !== 3) {
         type = PathType.Bezier;
       }
-      else if (isLinear(vertices)) {
+      else if (this.isLinear(vertices)) {
         // osu!stable special-cased colinear perfect curves to a linear path
         type = PathType.Linear;
       }
@@ -460,25 +464,31 @@ export abstract class BeatmapHitObjectDecoder {
     if (endIndex > startIndex) {
       yield vertices.slice(startIndex, endIndex);
     }
+  }
 
-    function readPoint(point: string, offset: Vector2): PathPoint {
-      const coords = point.split(':').map((v) => {
-        return Math.trunc(Parsing.parseFloat(v, Parsing.MAX_COORDINATE_VALUE));
-      });
+  static readPoint(value: string, startPos: Vector2): PathPoint {
+    const vertexSplit = value.split(':');
 
-      const pos = new Vector2(coords[0], coords[1]).fsubtract(offset);
+    const pointX = Parsing.parseInt(vertexSplit[0], Parsing.MAX_COORDINATE_VALUE);
+    const pointY = Parsing.parseInt(vertexSplit[1], Parsing.MAX_COORDINATE_VALUE);
 
-      return new PathPoint(pos);
-    }
+    const position = new Vector2(pointX - startPos.x, pointY - startPos.y);
 
-    function isLinear(p: PathPoint[]): boolean {
-      const yx = (p[1].position.y - p[0].position.y) * (p[2].position.x - p[0].position.x);
-      const xy = (p[1].position.x - p[0].position.x) * (p[2].position.y - p[0].position.y);
+    return new PathPoint(position);
+  }
 
-      const acceptableDifference = 0.001;
+  static isLinear(p: PathPoint[]): boolean {
+    const yx1 = Math.fround(p[1].position.y - p[0].position.y);
+    const yx2 = Math.fround(p[2].position.x - p[0].position.x);
+    const yx = Math.fround(yx1 * yx2);
 
-      return Math.abs(yx - xy) < acceptableDifference;
-    }
+    const xy1 = Math.fround(p[1].position.x - p[0].position.x);
+    const xy2 = Math.fround(p[2].position.y - p[0].position.y);
+    const xy = Math.fround(xy1 * xy2);
+
+    const acceptableDifference = Math.fround(0.001);
+
+    return Math.fround(Math.abs(yx - xy)) < acceptableDifference;
   }
 
   static convertPathType(type: string): PathType {
