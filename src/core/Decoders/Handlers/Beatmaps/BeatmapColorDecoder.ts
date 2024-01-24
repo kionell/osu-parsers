@@ -1,4 +1,4 @@
-import { Color4 } from 'osu-classes';
+import { Color4, MathUtils } from 'osu-classes';
 import { IHasBeatmapColors } from '../../../Interfaces';
 import { Parsing } from '../../../Utils/Parsing';
 
@@ -24,7 +24,9 @@ export abstract class BeatmapColorDecoder {
       throw new Error(`Color specified in incorrect format (should be R,G,B or R,G,B,A): ${rgba.join(',')}`);
     }
 
-    const color = new Color4(rgba[0], rgba[1], rgba[2], rgba[3]);
+    const alpha = !isNaN(rgba[3]) ? MathUtils.map01(rgba[3], 0, 255) : 1;
+
+    const color = new Color4(rgba[0], rgba[1], rgba[2], alpha);
 
     this.addColor(color, output, key.trim());
   }
