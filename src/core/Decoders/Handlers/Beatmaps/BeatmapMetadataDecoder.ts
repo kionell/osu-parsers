@@ -44,7 +44,7 @@ export abstract class BeatmapMetadataDecoder {
         break;
 
       case 'Tags':
-        beatmap.metadata.tags = value.split(' ');
+        beatmap.metadata.tags = value.split(' ').filter((x) => x);
         break;
 
       case 'BeatmapID':
