@@ -14,11 +14,6 @@ import {
  */
 export abstract class SectionDecoder<T extends IHasFileFormat> extends Decoder {
   /**
-   * Current data lines.
-   */
-  protected _lines: string[] | null = null;
-
-  /**
    * Whether the first non-empty line of the file was found or not.
    */
   protected _foundFirstNonEmptyLine = false;
@@ -162,7 +157,6 @@ export abstract class SectionDecoder<T extends IHasFileFormat> extends Decoder {
 
   protected _reset(): void {
     this._sectionMap.reset();
-    this._lines = null;
     this._foundFirstNonEmptyLine = false;
   }
 

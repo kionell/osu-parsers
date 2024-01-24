@@ -118,16 +118,16 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
     const beatmap = new Beatmap();
 
     this._reset();
-    this._lines = this._getLines(data);
-
     this._setEnabledSections(typeof options !== 'boolean' ? options : {});
 
     // This array isn't needed if we don't parse a storyboard. 
     this._sbLines = this._shouldParseStoryboard(options) ? [] : null;
 
+    const lines = this._getLines(data);
+
     // Parse beatmap lines.
-    for (let i = 0; i < this._lines.length; ++i) {
-      const type = this._parseLine(this._lines[i], beatmap);
+    for (let i = 0; i < lines.length; ++i) {
+      const type = this._parseLine(lines[i], beatmap);
 
       // Break early if we parsed all enabled sections.
       if (type === LineType.Break) break;

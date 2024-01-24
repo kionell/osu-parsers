@@ -120,14 +120,14 @@ export class StoryboardDecoder extends SectionDecoder<Storyboard> {
     this._reset();
     this._setEnabledSections();
 
-    this._lines = [
+    const lines = [
       ...this._getLines(firstData),
       ...(secondData ? this._getLines(secondData) : []),
     ];
 
     // Parse storyboard lines.
-    for (let i = 0; i < this._lines.length; ++i) {
-      const type = this._parseLine(this._lines[i], storyboard);
+    for (let i = 0; i < lines.length; ++i) {
+      const type = this._parseLine(lines[i], storyboard);
 
       // Break early if we parsed all enabled sections.
       if (type === LineType.Break) break;
