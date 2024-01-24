@@ -18,6 +18,8 @@ import {
  * An encoder for beatmap hit objects.
  */
 export abstract class BeatmapHitObjectEncoder {
+  static _mode = 0;
+
   /**
    * Encodes all beatmap hit objects.
    * @param beatmap A beatmap.
@@ -31,24 +33,23 @@ export abstract class BeatmapHitObjectEncoder {
     const difficulty = beatmap.difficulty;
     const hitObjects = beatmap.hitObjects;
 
+    this._mode = beatmap.mode;
+
     hitObjects.forEach((hitObject) => {
       const general: string[] = [];
-      const positionObj = hitObject as IHitObject & IHasPosition;
-      const position = positionObj.startPosition;
+      const positionObject = hitObject as IHitObject & IHasPosition;
+      const position = positionObject.startPosition;
 
       /**
        * Try to get hit object position if possible.
        * Otherwise, it will be replaced with default position (256, 192).
        */
-      const startPosition = new Vector2(
-        position ? position.x : 256,
-        position ? position.y : 192,
-      );
+      const startPosition = new Vector2(position?.x ?? 256, position?.y ?? 192);
 
-      general.push(startPosition.toString());
-      general.push(hitObject.startTime.toString());
-      general.push(hitObject.hitType.toString());
-      general.push(hitObject.hitSound.toString());
+      general.push(`${startPosition}`);
+      general.push(`${hitObject.startTime}`);
+      general.push(`${hitObject.hitType}`);
+      general.push(`${hitObject.hitSound}`);
 
       const extras: string[] = [];
 
@@ -68,42 +69,12 @@ export abstract class BeatmapHitObjectEncoder {
         extras.push(this.encodeEndTimeData(hold));
       }
 
-      // normalSet:additionSet:index:volume:filename
-
-      const set: string[] = [];
-
-      // TODO: Needs a complete rework
-      const normal = hitObject.samples.find((s) => {
-        return s.hitSound === HitSound[HitSound.Normal];
-      });
-
-      const addition = hitObject.samples.find((s) => {
-        return s.hitSound !== HitSound[HitSound.Normal];
-      });
-
-      let normalSet = SampleSet.None;
-      let additionSet = SampleSet.None;
-
-      if (normal) {
-        normalSet = SampleSet[normal.sampleSet as keyof typeof SampleSet];
-      }
-
-      if (addition) {
-        additionSet = SampleSet[addition.sampleSet as keyof typeof SampleSet];
-      }
-
-      set[0] = normalSet.toString();
-      set[1] = additionSet.toString();
-      set[2] = hitObject.samples[0].customIndex.toString();
-      set[3] = hitObject.samples[0].volume.toString();
-      set[4] = hitObject.samples[0].filename;
-
-      extras.push(set.join(':'));
+      extras.push(this.encodeSampleBank(hitObject.samples));
 
       const generalLine = general.join(',');
 
-      const extrasLine = hitObject.hitType & HitType.Hold 
-        ? extras.join(':') 
+      const extrasLine = hitObject.hitType & HitType.Hold
+        ? extras.join(':')
         : extras.join(',');
 
       encoded.push([generalLine, extrasLine].join(','));
@@ -178,34 +149,104 @@ export abstract class BeatmapHitObjectEncoder {
     data.push((slider.repeats + 1).toString());
     data.push(slider.distance.toString());
 
-    const adds: number[] = [];
-    const sets: number[][] = [];
+    const edgeSounds: string[] = [];
+    const edgeSets: string[] = [];
 
-    // TODO: Needs a complete rework
-    slider.nodeSamples.forEach((node, nodeIndex) => {
-      adds[nodeIndex] = HitSound.None;
-      sets[nodeIndex] = [SampleSet.None, SampleSet.None];
+    for (let i = 0; i < slider.spans + 1; ++i) {
+      edgeSounds.push(`${this.toLegacyHitSoundType(slider.nodeSamples[i])}`);
+      edgeSets.push(this.encodeSampleBank(slider.nodeSamples[i], true));
+    }
 
-      node.forEach((sample, sampleIndex) => {
-        if (sampleIndex === 0) {
-          sets[nodeIndex][0] = SampleSet[sample.sampleSet as keyof typeof SampleSet];
-        }
-        else {
-          adds[nodeIndex] |= HitSound[sample.hitSound as keyof typeof HitSound];
-          sets[nodeIndex][1] = SampleSet[sample.sampleSet as keyof typeof SampleSet];
-        }
-      });
-    });
-
-    data.push(adds.join('|'));
-    data.push(sets.map((set) => set.join(':')).join('|'));
+    data.push(edgeSounds.join('|'));
+    data.push(edgeSets.join('|'));
 
     return data.join(',');
+  }
+
+  static encodeSampleBank(samples: HitSample[], banksOnly = false): string {
+    // normalSet:additionSet:index:volume:filename
+
+    const normalSample = samples.find((sample) => {
+      return sample.name === HitSample.HIT_NORMAL;
+    });
+
+    const addSample = samples.find((sample) => {
+      return sample.name && sample.name !== HitSample.HIT_NORMAL;
+    });
+
+    const encoded: string[] = [
+      `${this.toLegacySampleSet(normalSample?.bank)}`,
+      `${this.toLegacySampleSet(addSample?.bank)}`,
+    ];
+
+    if (!banksOnly) {
+      let customIndex = this.toLegacyCustomIndex(samples.find((s) => s.name));
+      let volume = samples[0]?.volume ?? 100;
+
+      /**
+       * We want to ignore custom sample banks and volume 
+       * when not encoding to the mania game mode,
+       * because they cause unexpected results in the editor
+       * and are already satisfied by the control points.
+       */
+      if (this._mode !== 3) {
+        customIndex = 0;
+        volume = 0;
+      }
+
+      encoded.push(`${customIndex}`);
+      encoded.push(`${volume}`);
+      encoded.push(samples.find((s) => s.name)?.filename ?? '');
+    }
+
+    return encoded.join(':');
   }
 
   static encodeEndTimeData(hitObject: IHasDuration): string {
     // endTime
 
     return hitObject.endTime.toString();
+  }
+
+  static toLegacyCustomIndex(hitSample?: HitSample): number {
+    return hitSample?.customSampleBank ?? 0;
+  }
+
+  static toLegacySampleSet(sampleBank?: string): SampleSet {
+    switch (sampleBank?.toLowerCase()) {
+      case HitSample.BANK_NORMAL:
+        return SampleSet.Normal;
+
+      case HitSample.BANK_SOFT:
+        return SampleSet.Soft;
+
+      case HitSample.BANK_DRUM:
+        return SampleSet.Drum;
+
+      default:
+        return SampleSet.None;
+    }
+  }
+
+  static toLegacyHitSoundType(samples?: HitSample[]): HitSound {
+    let type = HitSound.None;
+
+    samples?.forEach((sample) => {
+      switch (sample.name) {
+        case HitSample.HIT_WHISTLE:
+          type |= HitSound.Whistle;
+          break;
+
+        case HitSample.HIT_FINISH:
+          type |= HitSound.Finish;
+          break;
+
+        case HitSample.HIT_CLAP:
+          type |= HitSound.Clap;
+          break;
+      }
+    });
+
+    return type;
   }
 }

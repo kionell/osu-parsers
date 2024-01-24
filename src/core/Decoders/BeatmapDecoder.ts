@@ -1,4 +1,11 @@
-import { Beatmap } from 'osu-classes';
+import {
+  Beatmap,
+  HitObject,
+  IHasDuration,
+  IHasRepeats,
+  IHasVelocity,
+  IHasGenerateTicks,
+} from 'osu-classes';
 
 import {
   BeatmapGeneralDecoder,
@@ -25,6 +32,12 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
    * to correct timing changes that were applied at a game client level.
    */
   static readonly EARLY_VERSION_TIMING_OFFSET = 24;
+
+  /**
+   * A small adjustment to the start time of sample control points 
+   * to account for rounding/precision errors.
+   */
+  static readonly CONTROL_POINT_LENIENCY = 5;
 
   /** 
    * Current offset for all time values.
@@ -123,13 +136,14 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
     // Flush last control point group.
     BeatmapTimingPointDecoder.flushPendingPoints();
 
-    // Apply default values to the all hit objects.
-    for (let i = 0; i < beatmap.hitObjects.length; ++i) {
-      beatmap.hitObjects[i].applyDefaults(beatmap.controlPoints, beatmap.difficulty);
-    }
-
     // Use stable sorting to keep objects in the right order.
     beatmap.hitObjects.sort((a, b) => a.startTime - b.startTime);
+
+    // Apply default values to the all hit objects.
+    for (let i = 0; i < beatmap.hitObjects.length; ++i) {
+      this._applyDefaults(beatmap, beatmap.hitObjects[i]);
+      this._applySamples(beatmap, beatmap.hitObjects[i]);
+    }
 
     // Storyboard
     if (this._sbLines && this._sbLines.length) {
@@ -202,5 +216,50 @@ export class BeatmapDecoder extends SectionDecoder<Beatmap> {
 
     // Storyboard should be parsed only if both events and storyboard flags are enabled.
     return parseEvents && parseSb;
+  }
+
+  protected _applyDefaults(beatmap: Beatmap, hitObject: HitObject): void {
+    const controlPoints = beatmap.controlPoints;
+    const difficultyPoint = controlPoints.difficultyPointAt(hitObject.startTime);
+
+    const generateTicksObj = hitObject as HitObject & IHasGenerateTicks;
+
+    if (typeof generateTicksObj.generateTicks === 'boolean') {
+      generateTicksObj.generateTicks = difficultyPoint.generateTicks;
+    }
+
+    const sliderVelocityObj = hitObject as HitObject & IHasVelocity;
+
+    if (typeof sliderVelocityObj.velocity === 'number') {
+      sliderVelocityObj.velocity = difficultyPoint.sliderVelocity;
+    }
+
+    hitObject.applyDefaults(beatmap.controlPoints, beatmap.difficulty);
+  }
+
+  protected _applySamples(beatmap: Beatmap, hitObject: HitObject): void {
+    const durationObj = hitObject as HitObject & IHasDuration;
+
+    const endTime = durationObj?.endTime ?? hitObject.startTime;
+    const time = endTime + BeatmapDecoder.CONTROL_POINT_LENIENCY;
+
+    const samplePoint = beatmap.controlPoints.samplePointAt(time);
+
+    hitObject.samples = hitObject.samples.map((s) => samplePoint.applyTo(s));
+
+    const repeatObj = hitObject as HitObject & IHasRepeats;
+    const nodeSamples = repeatObj.nodeSamples;
+
+    if (nodeSamples) {
+      for (let i = 0; i < nodeSamples.length; ++i) {
+        const time = hitObject.startTime
+          + i * repeatObj.duration / repeatObj.spans
+          + BeatmapDecoder.CONTROL_POINT_LENIENCY;
+
+        const nodeSamplePoint = beatmap.controlPoints.samplePointAt(time);
+
+        nodeSamples[i].forEach((s) => nodeSamplePoint.applyTo(s));
+      }
+    }
   }
 }

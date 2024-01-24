@@ -19,7 +19,7 @@ export abstract class BeatmapEventEncoder {
     encoded.push('//Background and Video events');
 
     if (events.backgroundPath) {
-      encoded.push(`0,0,"${events.backgroundPath}",0,0`);
+      encoded.push(`${EventType.Background},0,"${events.backgroundPath}",0,0`);
     }
 
     if (events.storyboard) {
@@ -30,7 +30,7 @@ export abstract class BeatmapEventEncoder {
 
     if (events.breaks && events.breaks.length > 0) {
       events.breaks.forEach((b) => {
-        encoded.push(`${EventType[EventType.Break]},${b.startTime},${b.endTime}`);
+        encoded.push(`${EventType.Break},${b.startTime},${b.endTime}`);
       });
     }
 

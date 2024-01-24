@@ -5,11 +5,11 @@ import {
   EffectPoint,
   SamplePoint,
   TimingPoint,
-  ControlPointType,
   EffectType,
   TimeSignature,
   SampleSet,
   Beatmap,
+  HitSample,
 } from 'osu-classes';
 
 import { Parsing } from '../../../Utils/Parsing';
@@ -26,7 +26,7 @@ export abstract class BeatmapTimingPointDecoder {
   /**
    * Types of control points that will be flushed.
    */
-  static pendingTypes: ControlPointType[] = [];
+  static pendingTypes: typeof ControlPoint[] = [];
 
   /**
    * Control points that will be flushed.
@@ -51,12 +51,12 @@ export abstract class BeatmapTimingPointDecoder {
 
     const data = line.split(',');
 
-    let timeSignature = TimeSignature.SimpleQuadruple;
-    let sampleSet = SampleSet[SampleSet.None];
-    let customIndex = 0;
-    let volume = 100;
-    let timingChange = true;
     let effects = EffectType.None;
+    let timingChange = true;
+    let volume = beatmap.general.sampleVolume;
+    let customIndex = 0;
+    let sampleSet = beatmap.general.sampleSet;
+    let timeSignature = TimeSignature.SimpleQuadruple;
 
     if (data.length > 2) {
       switch (data.length) {
@@ -65,7 +65,7 @@ export abstract class BeatmapTimingPointDecoder {
         case 7: timingChange = data[6] === '1';
         case 6: volume = Parsing.parseInt(data[5]);
         case 5: customIndex = Parsing.parseInt(data[4]);
-        case 4: sampleSet = SampleSet[Parsing.parseInt(data[3])];
+        case 4: sampleSet = Parsing.parseInt(data[3]);
         case 3: timeSignature = Parsing.parseInt(data[2]);
       }
     }
@@ -104,6 +104,7 @@ export abstract class BeatmapTimingPointDecoder {
 
       timingPoint.beatLength = beatLength;
       timingPoint.timeSignature = timeSignature;
+      timingPoint.omitFirstBarLine = (effects & EffectType.OmitFirstBarLine) > 0;
 
       this.addControlPoint(timingPoint, startTime, true);
     }
@@ -116,8 +117,7 @@ export abstract class BeatmapTimingPointDecoder {
 
     /**
      * All difficulty control points created with this beatmap decoder are legacy.
-     * This flag is required for some beatmap converters (like Taiko and Mania).
-     * https://github.com/ppy/osu/blob/master/osu.Game/Beatmaps/Formats/LegacyBeatmapDecoder.cs#L431
+     * This flag is required for some beatmap converters (like osu!taiko and osu!mania).
      */
     difficultyPoint.isLegacy = true;
 
@@ -126,6 +126,8 @@ export abstract class BeatmapTimingPointDecoder {
     const effectPoint = new EffectPoint();
 
     effectPoint.kiai = (effects & EffectType.Kiai) > 0;
+
+    // TODO: Remove deprecated stuff.
     effectPoint.omitFirstBarLine = (effects & EffectType.OmitFirstBarLine) > 0;
 
     /**
@@ -138,9 +140,19 @@ export abstract class BeatmapTimingPointDecoder {
 
     this.addControlPoint(effectPoint, startTime, timingChange);
 
+    let stringSampleSet = SampleSet[sampleSet].toLowerCase();
+
+    if (sampleSet === SampleSet.None) {
+      stringSampleSet = HitSample.BANK_NORMAL;
+    }
+
     const samplePoint = new SamplePoint();
 
-    samplePoint.sampleSet = sampleSet;
+    samplePoint.bank = stringSampleSet;
+    samplePoint.volume = volume;
+
+    // TODO: Remove deprecated stuff.
+    samplePoint.sampleSet = SampleSet[sampleSet];
     samplePoint.customIndex = customIndex;
     samplePoint.volume = volume;
 
@@ -182,11 +194,11 @@ export abstract class BeatmapTimingPointDecoder {
        * Changes from non-timing points are added to the end of the list
        * and should override any changes from timing points.
        */
-      if (pendingTypes.includes(pendingPoints[i].pointType)) {
+      if (pendingTypes.includes(pendingPoints[i].getType())) {
         continue;
       }
 
-      pendingTypes.push(pendingPoints[i].pointType);
+      pendingTypes.push(pendingPoints[i].getType());
       controlPoints.add(pendingPoints[i], pendingTime);
     }
 

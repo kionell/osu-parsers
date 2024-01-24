@@ -52,7 +52,15 @@ export abstract class BeatmapHitObjectDecoder {
 
     const bankInfo = new SampleBank();
 
-    this.addExtras(data.slice(5), hitObject, bankInfo, offset, beatmap.fileFormat);
+    this.addExtras(
+      data.slice(5),
+      hitObject.hitSound,
+      hitObject,
+      bankInfo,
+      offset,
+      beatmap.fileFormat,
+    );
+
     this.addComboOffset(hitObject, beatmap);
 
     if (hitObject.samples.length === 0) {
@@ -80,7 +88,7 @@ export abstract class BeatmapHitObjectDecoder {
     const comboOffset = Math.trunc((hitObject.hitType & HitType.ComboOffset) >> 4);
     const newCombo = !!(hitObject.hitType & HitType.NewCombo);
 
-    if ((hitObject.hitType & HitType.Normal) || (hitObject.hitType & HitType.Slider)) {
+    if ((hitObject instanceof HittableObject) || (hitObject instanceof SlidableObject)) {
       comboObject.isNewCombo = newCombo || this._forceNewCombo;
       comboObject.comboOffset = comboOffset + this._extraComboOffset;
 
@@ -88,7 +96,7 @@ export abstract class BeatmapHitObjectDecoder {
       this._extraComboOffset = 0;
     }
 
-    if (hitObject.hitType & HitType.Spinner) {
+    if (hitObject instanceof SpinnableObject) {
       /**
        * Convert spinners don't create the new combo themselves, 
        * but force the next non-spinner hitobject to create a new combo.
@@ -101,27 +109,37 @@ export abstract class BeatmapHitObjectDecoder {
 
   /**
    * Adds extra data to the parsed hit object.
-   * @param data The data of a hit object line.
+   * @param extras Extra data of a hit object.
+   * @param soundType Sound type of this hit object.
    * @param hitObject A parsed hit object.
    * @param bankInfo Sample bank.
    * @param offset The offset to apply to all time values.
    * @param fileFormat Beatmap file format.
    */
-  static addExtras(data: string[], hitObject: HitObject, bankInfo: SampleBank, offset: number, fileFormat: number): void {
-    if ((hitObject.hitType & HitType.Normal) && data.length > 0) {
-      this.readCustomSampleBanks(data[0], bankInfo);
+  static addExtras(
+    extras: string[],
+    soundType: HitSound,
+    hitObject: HitObject,
+    bankInfo: SampleBank,
+    offset: number,
+    fileFormat: number,
+  ): void {
+    if ((hitObject instanceof HittableObject) && extras.length > 0) {
+      this.readCustomSampleBanks(extras[0], bankInfo);
     }
 
-    if (hitObject.hitType & HitType.Slider) {
-      return this.addSliderExtras(data, hitObject as SlidableObject, bankInfo, fileFormat);
+    if (hitObject instanceof SlidableObject) {
+      this.addSliderExtras(extras, hitObject, bankInfo, fileFormat);
+
+      hitObject.nodeSamples = this.getSliderNodeSamples(extras, soundType, hitObject, bankInfo);
     }
 
-    if (hitObject.hitType & HitType.Spinner) {
-      return this.addSpinnerExtras(data, hitObject as SpinnableObject, bankInfo, offset);
+    if (hitObject instanceof SpinnableObject) {
+      this.addSpinnerExtras(extras, hitObject, bankInfo, offset);
     }
 
-    if (hitObject.hitType & HitType.Hold) {
-      return this.addHoldExtras(data, hitObject as HoldableObject, bankInfo, offset);
+    if (hitObject instanceof HoldableObject) {
+      this.addHoldExtras(extras, hitObject, bankInfo, offset);
     }
   }
 
@@ -161,11 +179,8 @@ export abstract class BeatmapHitObjectDecoder {
     }
 
     if (extras.length > 5) {
-      this.readCustomSampleBanks(extras[5], bankInfo);
+      this.readCustomSampleBanks(extras[5], bankInfo, true);
     }
-
-    slider.samples = this.convertSoundType(slider.hitSound, bankInfo);
-    slider.nodeSamples = this.getSliderNodeSamples(extras, slider, bankInfo);
   }
 
   /**
@@ -206,7 +221,12 @@ export abstract class BeatmapHitObjectDecoder {
     }
   }
 
-  static getSliderNodeSamples(extras: string[], slider: SlidableObject, bankInfo: SampleBank): HitSample[][] {
+  static getSliderNodeSamples(
+    extras: string[],
+    soundType: HitSound,
+    slider: SlidableObject,
+    bankInfo: SampleBank,
+  ): HitSample[][] {
     /**
      * One node for each repeat + the start and end nodes.
      */
@@ -240,7 +260,7 @@ export abstract class BeatmapHitObjectDecoder {
     const nodeSoundTypes: HitSound[] = [];
 
     for (let i = 0; i < nodes; ++i) {
-      nodeSoundTypes.push(slider.hitSound);
+      nodeSoundTypes.push(soundType);
     }
 
     /**
@@ -478,89 +498,95 @@ export abstract class BeatmapHitObjectDecoder {
     }
   }
 
-  static readCustomSampleBanks(hitSample: string, bankInfo: SampleBank): void {
+  static readCustomSampleBanks(
+    hitSample: string,
+    bankInfo: SampleBank,
+    banksOnly = false,
+  ): void {
     if (!hitSample) return;
 
     const split = hitSample.split(':');
 
-    bankInfo.normalSet = Parsing.parseInt(split[0]);
-    bankInfo.additionSet = Parsing.parseInt(split[1]);
+    const bank = Parsing.parseInt(split[0]) as SampleSet;
+    const addBank = Parsing.parseInt(split[1]) as SampleSet;
 
-    if (bankInfo.additionSet === SampleSet.None) {
-      bankInfo.additionSet = bankInfo.normalSet;
-    }
+    const stringBank = SampleSet[bank].toLowerCase() as Lowercase<keyof typeof SampleSet>;
+    const stringAddBank = SampleSet[addBank].toLowerCase() as Lowercase<keyof typeof SampleSet>;
+
+    bankInfo.bankForNormal = stringBank;
+    bankInfo.bankForAddition = stringAddBank || stringBank;
+
+    if (banksOnly) return;
 
     if (split.length > 2) {
-      bankInfo.customIndex = Parsing.parseInt(split[2]);
+      bankInfo.customSampleBank = Parsing.parseInt(split[2]);
     }
 
     if (split.length > 3) {
       bankInfo.volume = Math.max(0, Parsing.parseInt(split[3]));
     }
 
-    bankInfo.filename = split.length > 4 ? split[4] : '';
+    if (split.length > 4) {
+      bankInfo.filename = split[4];
+    }
   }
 
   static convertSoundType(type: HitSound, bankInfo: SampleBank): HitSample[] {
-    /**
-     * TODO: This should return the normal HitSamples 
-     * if the specified sample file isn't found, 
-     * but that's a pretty edge-case scenario.
-     */
-    if (bankInfo.filename) {
-      const sample = new HitSample();
+    const soundTypes: HitSample[] = [];
 
-      sample.filename = bankInfo.filename;
-      sample.volume = bankInfo.volume;
+    if (!bankInfo.filename) {
+      const sample = new HitSample({
+        name: HitSample.HIT_NORMAL,
+        bank: bankInfo.bankForNormal,
+        volume: bankInfo.volume,
+        customSampleBank: bankInfo.customSampleBank,
 
-      return [ sample ];
+        /**
+         * If the sound type doesn't have the Normal flag set, 
+         * attach it anyway as a layered sample.
+         * None also counts as a normal non-layered sample: 
+         * https://osu.ppy.sh/help/wiki/osu!_File_Formats/Osu_(file_format)#hitsounds
+         */
+        isLayered: type !== HitSound.None && !(type & HitSound.Normal),
+      });
+
+      soundTypes.push(sample);
+    }
+    else {
+      /**
+       * This should set the normal SampleInfo if the specified 
+       * sample file isn't found, but that's a pretty edge-case scenario.
+       */
+      const sample = new HitSample({
+        filename: bankInfo.filename,
+        volume: bankInfo.volume,
+      });
+
+      soundTypes.push(sample);
     }
 
-    const soundTypes: HitSample[] = [ new HitSample() ];
+    const createAdditionalSample = (name: string) => {
+      const sample = new HitSample({
+        name,
+        bank: bankInfo.bankForAddition,
+        volume: bankInfo.volume,
+        customSampleBank: bankInfo.customSampleBank,
+      });
 
-    soundTypes[0].hitSound = HitSound[HitSound.Normal];
-    soundTypes[0].sampleSet = SampleSet[bankInfo.normalSet];
-
-    /**
-     * if the sound type doesn't have the Normal flag set, 
-     * attach it anyway as a layered sample.
-     * None also counts as a normal non-layered sample.
-     */
-    soundTypes[0].isLayered = type !== HitSound.None && !(type & HitSound.Normal);
+      soundTypes.push(sample);
+    };
 
     if (type & HitSound.Finish) {
-      const sample = new HitSample();
-
-      sample.hitSound = HitSound[HitSound.Finish];
-      soundTypes.push(sample);
+      createAdditionalSample(HitSample.HIT_FINISH);
     }
 
     if (type & HitSound.Whistle) {
-      const sample = new HitSample();
-
-      sample.hitSound = HitSound[HitSound.Whistle];
-      soundTypes.push(sample);
+      createAdditionalSample(HitSample.HIT_WHISTLE);
     }
 
     if (type & HitSound.Clap) {
-      const sample = new HitSample();
-
-      sample.hitSound = HitSound[HitSound.Clap];
-      soundTypes.push(sample);
+      createAdditionalSample(HitSample.HIT_CLAP);
     }
-
-    soundTypes.forEach((sound, i) => {
-      sound.sampleSet = i !== 0
-        ? SampleSet[bankInfo.additionSet]
-        : SampleSet[bankInfo.normalSet];
-
-      sound.volume = bankInfo.volume;
-      sound.customIndex = 0;
-
-      if (bankInfo.customIndex >= 2) {
-        sound.customIndex = bankInfo.customIndex;
-      }
-    });
 
     return soundTypes;
   }
