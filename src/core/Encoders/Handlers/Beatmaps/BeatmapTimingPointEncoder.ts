@@ -39,15 +39,6 @@ export abstract class BeatmapTimingPointEncoder {
     this._controlPoints = new ControlPointInfo();
 
     beatmap.controlPoints.allPoints.forEach((controlPoint) => {
-      /**
-       * osu!lazer considers difficulty & sample control points as legacy types.
-       * Skip legacy control points as we don't need them to be encoded.
-       * 
-       * https://github.com/ppy/osu/blob/904c76e437114a214ec5fcc649066ad4daadf30f/osu.Game/Screens/Edit/EditorBeatmap.cs#L122-L153
-       */
-      if (controlPoint instanceof DifficultyPoint) return;
-      if (controlPoint instanceof SamplePoint) return;
-
       this._controlPoints.add(controlPoint, controlPoint.startTime);
     });
 
