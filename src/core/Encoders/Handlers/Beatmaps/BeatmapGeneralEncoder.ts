@@ -35,7 +35,9 @@ export abstract class BeatmapGeneralEncoder {
       encoded.push(`StoryFireInFront: ${+general.storyFireInFront}`);
     }
 
-    encoded.push(`UseSkinSprites: ${+general.useSkinSprites}`);
+    if (general.useSkinSprites) {
+      encoded.push(`UseSkinSprites: ${+general.useSkinSprites}`);
+    }
 
     if (general.alwaysShowPlayfield) {
       encoded.push(`AlwaysShowPlayfield: ${+general.alwaysShowPlayfield}`);
