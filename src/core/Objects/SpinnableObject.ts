@@ -23,6 +23,10 @@ export class SpinnableObject extends HitObject implements ISpinnableObject, IHas
     return this.endTime - this.startTime;
   }
 
+  set duration(value: number) {
+    this.endTime = this.startTime + value;
+  }
+
   /**
    * Creates a copy of this parsed spinner.
    * Non-primitive properties will be copied via their own clone() method.

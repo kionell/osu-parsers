@@ -139,7 +139,7 @@ export abstract class BeatmapHitObjectDecoder {
     }
 
     if (hitObject instanceof HoldableObject) {
-      this.addHoldExtras(extras, hitObject, bankInfo, offset);
+      this.addHoldExtras(extras, hitObject, bankInfo);
     }
   }
 
@@ -203,7 +203,10 @@ export abstract class BeatmapHitObjectDecoder {
   ): void {
     // endTime,hitSample
 
-    spinner.endTime = Parsing.parseInt(extras[0]) + offset;
+    spinner.endTime = Math.max(
+      spinner.startTime,
+      Parsing.parseInt(extras[0]) + offset,
+    );
 
     if (extras.length > 1) {
       this.readCustomSampleBanks(extras[1], bankInfo);
@@ -215,13 +218,11 @@ export abstract class BeatmapHitObjectDecoder {
    * @param extras Extra data of a holdable object.
    * @param hold A parsed hold.
    * @param bankInfo Sample bank.
-   * @param offset The offset to apply to all time values.
    */
   static addHoldExtras(
     extras: string[],
     hold: HoldableObject,
     bankInfo: SampleBank,
-    offset: number,
   ): void {
     // endTime:hitSample
 
@@ -230,7 +231,7 @@ export abstract class BeatmapHitObjectDecoder {
     if (extras.length > 0 && extras[0]) {
       const ss = extras[0].split(':');
 
-      hold.endTime = Math.max(hold.endTime, Parsing.parseFloat(ss[0])) + offset;
+      hold.endTime = Math.max(hold.endTime, Parsing.parseFloat(ss[0]));
 
       this.readCustomSampleBanks(ss.slice(1).join(':'), bankInfo);
     }
