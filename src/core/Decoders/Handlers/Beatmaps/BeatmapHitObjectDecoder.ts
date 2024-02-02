@@ -150,7 +150,12 @@ export abstract class BeatmapHitObjectDecoder {
    * @param bankInfo Sample bank.
    * @param fileFormat Beatmap file format.
    */
-  static addSliderExtras(extras: string[], slider: SlidableObject, bankInfo: SampleBank, fileFormat: number): void {
+  static addSliderExtras(
+    extras: string[],
+    slider: SlidableObject,
+    bankInfo: SampleBank,
+    fileFormat: number,
+  ): void {
     // curveType|curvePoints,slides,length,edgeSounds,edgeSets,hitSample
 
     const pathString = extras[0];
@@ -190,7 +195,12 @@ export abstract class BeatmapHitObjectDecoder {
    * @param bankInfo Sample bank.
    * @param offset The offset to apply to all time values.
    */
-  static addSpinnerExtras(extras: string[], spinner: SpinnableObject, bankInfo: SampleBank, offset: number): void {
+  static addSpinnerExtras(
+    extras: string[],
+    spinner: SpinnableObject,
+    bankInfo: SampleBank,
+    offset: number,
+  ): void {
     // endTime,hitSample
 
     spinner.endTime = Parsing.parseInt(extras[0]) + offset;
@@ -207,7 +217,12 @@ export abstract class BeatmapHitObjectDecoder {
    * @param bankInfo Sample bank.
    * @param offset The offset to apply to all time values.
    */
-  static addHoldExtras(extras: string[], hold: HoldableObject, bankInfo: SampleBank, offset: number): void {
+  static addHoldExtras(
+    extras: string[],
+    hold: HoldableObject,
+    bankInfo: SampleBank,
+    offset: number,
+  ): void {
     // endTime:hitSample
 
     hold.endTime = hold.startTime;
@@ -302,9 +317,14 @@ export abstract class BeatmapHitObjectDecoder {
    * @param fileFormat Beatmap file format.
    * @returns All control points in the resultant path.
    */
-  static convertPathString(pathString: string, offset: Vector2, fileFormat: number): PathPoint[] {
+  static convertPathString(
+    pathString: string,
+    offset: Vector2,
+    fileFormat: number,
+  ): PathPoint[] {
     /**
-     * This code takes on the responsibility of handling explicit segments of the path ("X" & "Y" from above).
+     * This code takes on the responsibility of handling explicit 
+     * segments of the path ("X" & "Y" from above).
      * Implicit segments are handled by calls to convertPoints().
      */
     const pathSplit = pathString.split('|');

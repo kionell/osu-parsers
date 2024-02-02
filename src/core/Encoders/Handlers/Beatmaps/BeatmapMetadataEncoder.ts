@@ -14,31 +14,31 @@ export abstract class BeatmapMetadataEncoder {
 
     const metadata = beatmap.metadata;
 
-    encoded.push(`Title:${metadata.title}`);
+    encoded.push(`Title: ${metadata.title}`);
 
     if (metadata.titleUnicode) {
-      encoded.push(`TitleUnicode:${metadata.titleUnicode}`);
+      encoded.push(`TitleUnicode: ${metadata.titleUnicode}`);
     }
 
-    encoded.push(`Artist:${metadata.artist}`);
+    encoded.push(`Artist: ${metadata.artist}`);
 
     if (metadata.artistUnicode) {
-      encoded.push(`ArtistUnicode:${metadata.artistUnicode}`);
+      encoded.push(`ArtistUnicode: ${metadata.artistUnicode}`);
     }
 
-    encoded.push(`Creator:${metadata.creator}`);
-    encoded.push(`Version:${metadata.version}`);
+    encoded.push(`Creator: ${metadata.creator}`);
+    encoded.push(`Version: ${metadata.version}`);
 
     if (metadata.source) {
-      encoded.push(`Source:${metadata.source}`);
+      encoded.push(`Source: ${metadata.source}`);
     }
 
     if (metadata.tags.length > 0) {
-      encoded.push(`Tags:${metadata.tags.join(' ')}`);
+      encoded.push(`Tags: ${metadata.tags.join(' ')}`);
     }
 
-    encoded.push(`BeatmapID:${metadata.beatmapId}`);
-    encoded.push(`BeatmapSetID:${metadata.beatmapSetId}`);
+    encoded.push(`BeatmapID: ${metadata.beatmapId}`);
+    encoded.push(`BeatmapSetID: ${metadata.beatmapSetId}`);
 
     return encoded.join('\n');
   }

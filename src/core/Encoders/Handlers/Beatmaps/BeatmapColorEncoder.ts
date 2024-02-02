@@ -20,15 +20,15 @@ export abstract class BeatmapColorEncoder {
     const encoded: string[] = ['[Colours]'];
 
     colors.comboColors.forEach((color, i) => {
-      encoded.push(`Combo${i + 1}:${color}`);
+      encoded.push(`Combo${i + 1}: ${color}`);
     });
 
     if (colors.sliderTrackColor) {
-      encoded.push(`SliderTrackOverride:${colors.sliderTrackColor}`);
+      encoded.push(`SliderTrackOverride: ${colors.sliderTrackColor}`);
     }
 
     if (colors.sliderBorderColor) {
-      encoded.push(`SliderBorder:${colors.sliderBorderColor}`);
+      encoded.push(`SliderBorder: ${colors.sliderBorderColor}`);
     }
 
     return encoded.join('\n');

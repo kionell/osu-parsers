@@ -14,12 +14,12 @@ export abstract class BeatmapDifficultyEncoder {
 
     const difficulty = beatmap.difficulty;
 
-    encoded.push(`HPDrainRate:${difficulty.drainRate}`);
-    encoded.push(`CircleSize:${difficulty.circleSize}`);
-    encoded.push(`OverallDifficulty:${difficulty.overallDifficulty}`);
-    encoded.push(`ApproachRate:${difficulty.approachRate}`);
-    encoded.push(`SliderMultiplier:${difficulty.sliderMultiplier}`);
-    encoded.push(`SliderTickRate:${difficulty.sliderTickRate}`);
+    encoded.push(`HPDrainRate: ${difficulty.drainRate}`);
+    encoded.push(`CircleSize: ${difficulty.circleSize}`);
+    encoded.push(`OverallDifficulty: ${difficulty.overallDifficulty}`);
+    encoded.push(`ApproachRate: ${difficulty.approachRate}`);
+    encoded.push(`SliderMultiplier: ${difficulty.sliderMultiplier}`);
+    encoded.push(`SliderTickRate: ${difficulty.sliderTickRate}`);
 
     return encoded.join('\n');
   }

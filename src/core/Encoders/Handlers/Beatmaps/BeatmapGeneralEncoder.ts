@@ -15,57 +15,57 @@ export abstract class BeatmapGeneralEncoder {
     const general = beatmap.general;
 
     if (general.audioFilename) {
-      encoded.push(`AudioFilename:${general.audioFilename}`);
+      encoded.push(`AudioFilename: ${general.audioFilename}`);
     }
 
-    encoded.push(`AudioLeadIn:${general.audioLeadIn}`);
+    encoded.push(`AudioLeadIn: ${general.audioLeadIn}`);
 
     if (general.audioHash) {
-      encoded.push(`AudioHash:${general.audioHash}`);
+      encoded.push(`AudioHash: ${general.audioHash}`);
     }
 
-    encoded.push(`PreviewTime:${general.previewTime}`);
-    encoded.push(`Countdown:${general.countdown}`);
-    encoded.push(`SampleSet:${SampleSet[general.sampleSet]}`);
-    encoded.push(`StackLeniency:${general.stackLeniency}`);
-    encoded.push(`Mode:${beatmap.mode}`);
-    encoded.push(`LetterboxInBreaks:${+general.letterboxInBreaks}`);
+    encoded.push(`PreviewTime: ${general.previewTime}`);
+    encoded.push(`Countdown: ${general.countdown}`);
+    encoded.push(`SampleSet: ${SampleSet[general.sampleSet]}`);
+    encoded.push(`StackLeniency: ${general.stackLeniency}`);
+    encoded.push(`Mode: ${beatmap.mode}`);
+    encoded.push(`LetterboxInBreaks: ${+general.letterboxInBreaks}`);
 
     if (general.storyFireInFront) {
-      encoded.push(`StoryFireInFront:${+general.storyFireInFront}`);
+      encoded.push(`StoryFireInFront: ${+general.storyFireInFront}`);
     }
 
-    encoded.push(`UseSkinSprites:${+general.useSkinSprites}`);
+    encoded.push(`UseSkinSprites: ${+general.useSkinSprites}`);
 
     if (general.alwaysShowPlayfield) {
-      encoded.push(`AlwaysShowPlayfield:${+general.alwaysShowPlayfield}`);
+      encoded.push(`AlwaysShowPlayfield: ${+general.alwaysShowPlayfield}`);
     }
 
     // TODO: Add enum for overlay positions.
     if (general.overlayPosition !== 'NoChange') {
-      encoded.push(`OverlayPosition:${general.overlayPosition}`);
+      encoded.push(`OverlayPosition: ${general.overlayPosition}`);
     }
 
     if (general.skinPreference) {
-      encoded.push(`SkinPreference:${general.skinPreference}`);
+      encoded.push(`SkinPreference: ${general.skinPreference}`);
     }
 
     if (general.epilepsyWarning) {
-      encoded.push(`EpilepsyWarning:${+general.epilepsyWarning}`);
+      encoded.push(`EpilepsyWarning: ${+general.epilepsyWarning}`);
     }
 
     if (general.countdownOffset > 0) {
-      encoded.push(`CountdownOffset:${general.countdownOffset}`);
+      encoded.push(`CountdownOffset: ${general.countdownOffset}`);
     }
 
     if (beatmap.mode === 3) {
-      encoded.push(`SpecialStyle:${+general.specialStyle}`);
+      encoded.push(`SpecialStyle: ${+general.specialStyle}`);
     }
 
-    encoded.push(`WidescreenStoryboard:${+general.widescreenStoryboard}`);
+    encoded.push(`WidescreenStoryboard: ${+general.widescreenStoryboard}`);
 
     if (general.samplesMatchPlaybackRate) {
-      encoded.push(`SamplesMatchPlaybackRate:${+general.samplesMatchPlaybackRate}`);
+      encoded.push(`SamplesMatchPlaybackRate: ${+general.samplesMatchPlaybackRate}`);
     }
 
     return encoded.join('\n');
