@@ -1,4 +1,5 @@
-export { HittableObject } from './HittableObject';
-export { HoldableObject } from './HoldableObject';
-export { SlidableObject } from './SlidableObject';
-export { SpinnableObject } from './SpinnableObject';
+export * from './ConvertHitObject';
+export * from './HittableObject';
+export * from './HoldableObject';
+export * from './SlidableObject';
+export * from './SpinnableObject';

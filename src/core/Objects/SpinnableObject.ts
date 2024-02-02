@@ -1,20 +1,15 @@
-import {
-  ISpinnableObject,
-  HitObject,
-  IHasCombo,
-} from 'osu-classes';
+import { ISpinnableObject } from 'osu-classes';
+import { ConvertHitObject } from './ConvertHitObject';
 
 /**
  * A parsed spinnable object.
+ * Used only for conversion between different rulesets.
  */
-export class SpinnableObject extends HitObject implements ISpinnableObject, IHasCombo {
+export class SpinnableObject extends ConvertHitObject implements ISpinnableObject {
   /**
    * The time at which the spinnable object ends.
    */
   endTime = 0;
-
-  isNewCombo = false;
-  comboOffset = 0;
 
   /**
    * The duration of this spinnable object.
@@ -36,8 +31,6 @@ export class SpinnableObject extends HitObject implements ISpinnableObject, IHas
     const cloned = super.clone();
 
     cloned.endTime = this.endTime;
-    cloned.isNewCombo = this.isNewCombo;
-    cloned.comboOffset = this.comboOffset;
 
     return cloned;
   }

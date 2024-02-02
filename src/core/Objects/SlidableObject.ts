@@ -1,17 +1,20 @@
 import {
   BeatmapDifficultySection,
   ControlPointInfo,
-  HitObject,
   HitSample,
-  IHasCombo,
+  IHasSliderVelocity,
   ISlidableObject,
   SliderPath,
 } from 'osu-classes';
 
+import { ConvertHitObject } from './ConvertHitObject';
+
 /**
  * A parsed slidable object.
+ * Used only for conversion between different rulesets.
  */
-export class SlidableObject extends HitObject implements ISlidableObject, IHasCombo {
+export class SlidableObject extends ConvertHitObject
+  implements ISlidableObject, IHasSliderVelocity {
   /**
    * Scoring distance with a speed-adjusted beat length of 1 second
    * (ie. the speed slider balls move through their track).
@@ -83,6 +86,8 @@ export class SlidableObject extends HitObject implements ISlidableObject, IHasCo
 
   /**
    * The last tick offset of slidable objects in osu!stable.
+   * This property shouldn't be here and will be removed soon.
+   * @deprecated
    */
   legacyLastTickOffset = 36;
 
@@ -97,17 +102,13 @@ export class SlidableObject extends HitObject implements ISlidableObject, IHasCo
    */
   nodeSamples: HitSample[][] = [];
 
-  isNewCombo = false;
-  comboOffset = 0;
-
   applyDefaultsToSelf(controlPoints: ControlPointInfo, difficulty: BeatmapDifficultySection): void {
     super.applyDefaultsToSelf(controlPoints, difficulty);
 
     const timingPoint = controlPoints.timingPointAt(this.startTime);
-    const difficultyPoint = controlPoints.difficultyPointAt(this.startTime);
 
     const scoringDistance = SlidableObject.BASE_SCORING_DISTANCE
-      * difficulty.sliderMultiplier * difficultyPoint.sliderVelocity;
+      * difficulty.sliderMultiplier * this.sliderVelocity;
 
     this.velocity = scoringDistance / timingPoint.beatLength;
   }
@@ -125,8 +126,6 @@ export class SlidableObject extends HitObject implements ISlidableObject, IHasCo
     cloned.velocity = this.velocity;
     cloned.repeats = this.repeats;
     cloned.path = this.path.clone();
-    cloned.isNewCombo = this.isNewCombo;
-    cloned.comboOffset = this.comboOffset;
 
     return cloned;
   }

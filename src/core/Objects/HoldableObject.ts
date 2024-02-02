@@ -5,7 +5,8 @@ import {
 } from 'osu-classes';
 
 /**
- * A holdable object.
+ * A parsed holdable object.
+ * Used only for conversion between different rulesets.
  */
 export class HoldableObject extends HitObject implements IHoldableObject {
   /**
