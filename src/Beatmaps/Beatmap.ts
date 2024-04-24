@@ -155,47 +155,48 @@ export class Beatmap implements IBeatmap {
     }
 
     const timingPoints = this.controlPoints.timingPoints;
-    const hitObjects = this.hitObjects;
+    const durationObject = this.hitObjects.at(-1) as HitObject & IHasDuration;
 
     /**
      * The last playable time in the beatmap - the last timing point extends to this time.
      * Note: This is more accurate and may present different results because 
      * osu-stable didn't have the ability to calculate slider durations in this context.
      */
-    const lastTimingPoint = timingPoints[timingPoints.length - 1];
-    const lastHitObject = hitObjects[hitObjects.length - 1];
-    const durationObject = lastHitObject as HitObject & IHasDuration;
-
     const lastTime = durationObject?.endTime
-      ?? lastHitObject?.startTime
-      ?? lastTimingPoint?.startTime
+      ?? durationObject?.startTime
+      ?? timingPoints.at(-1)?.startTime
       ?? 0;
 
-    let nextTime = 0;
-    let nextBeat = 0;
+    const groups = new Map<number, number>();
 
-    const groups: Record<string, number> = {};
+    timingPoints.forEach((t, i) => {
+      const nextBeat = RoundHelper.round(t.beatLength * 1000) / 1000;
 
-    for (let i = 0, len = timingPoints.length; i < len; ++i) {
-      nextTime = i === len - 1 ? lastTime : timingPoints[i + 1].startTime;
-      nextBeat = RoundHelper.round(timingPoints[i].beatLength * 1000) / 1000;
-
-      if (timingPoints[i].startTime > lastTime) {
-        groups[nextBeat] = 0;
-
-        continue;
+      if (!groups.has(nextBeat)) {
+        groups.set(nextBeat, 0);
       }
 
-      if (!groups[nextBeat]) {
-        groups[nextBeat] = 0;
-      }
+      if (t.startTime > lastTime) return;
 
-      groups[nextBeat] += (nextTime - timingPoints[i].startTime);
-    }
+      /**
+       * osu-stable forced the first control point to start at 0.
+       * This is reproduced here to maintain compatibility 
+       * around osu!mania scroll speed and song select display.
+       */
+      const currentTime = i === 0 ? 0 : t.startTime;
+      const nextTime = i === timingPoints.length - 1
+        ? lastTime : timingPoints[i + 1].startTime;
 
-    const entries = Object.entries(groups).sort((a, b) => b[1] - a[1]);
+      const duration = groups.get(nextBeat) ?? 0;
 
-    return 60000 / Number(entries[0][0]) * this.difficulty.clockRate;
+      groups.set(nextBeat, duration + (nextTime - currentTime));
+    });
+
+    if (groups.size === 0) return this.bpmMax;
+
+    const mostCommon = Object.entries(groups).sort((a, b) => b[1] - a[1])[0];
+
+    return 60000 / Number(mostCommon[0]) * this.difficulty.clockRate;
   }
 
   /**
