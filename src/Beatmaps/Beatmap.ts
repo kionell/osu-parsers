@@ -122,34 +122,28 @@ export class Beatmap implements IBeatmap {
    * Minimal BPM of a beatmap.
    */
   get bpmMin(): number {
-    const beats = this.controlPoints.timingPoints
-      .map((t) => t.bpm)
-      .filter((t) => t >= 0);
+    const longestBeat = this.controlPoints.timingPoints
+      .reduce((b, t) =>
+        t.beatLength >= 0 ? Math.max(t.beatLength, b) : b, -Infinity,
+      );
 
-    if (beats.length) {
-      const bpm = beats.reduce((bpm, beat) => Math.min(bpm, beat), Infinity);
+    if (!isFinite(longestBeat)) return 60;
 
-      return bpm * this.difficulty.clockRate;
-    }
-
-    return 60;
+    return (60000 / longestBeat) * this.difficulty.clockRate;
   }
 
   /**
    * Maximal BPM of a beatmap.
    */
   get bpmMax(): number {
-    const beats = this.controlPoints.timingPoints
-      .map((t) => t.bpm)
-      .filter((t) => t >= 0);
+    const shortestBeat = this.controlPoints.timingPoints
+      .reduce((b, t) =>
+        t.beatLength >= 0 ? Math.min(t.beatLength, b) : b, Infinity,
+      );
 
-    if (beats.length) {
-      const bpm = beats.reduce((bpm, beat) => Math.max(bpm, beat), 0);
+    if (!isFinite(shortestBeat)) return 60;
 
-      return bpm * this.difficulty.clockRate;
-    }
-
-    return 60;
+    return (60000 / shortestBeat) * this.difficulty.clockRate;
   }
 
   /**
