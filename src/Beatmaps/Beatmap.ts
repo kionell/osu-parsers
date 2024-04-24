@@ -194,7 +194,7 @@ export class Beatmap implements IBeatmap {
 
     if (groups.size === 0) return this.bpmMax;
 
-    const mostCommon = Object.entries(groups).sort((a, b) => b[1] - a[1])[0];
+    const mostCommon = [...groups.entries()].sort((a, b) => b[1] - a[1])[0];
 
     return 60000 / Number(mostCommon[0]) * this.difficulty.clockRate;
   }
