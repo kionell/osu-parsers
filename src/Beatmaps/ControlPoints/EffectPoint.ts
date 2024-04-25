@@ -47,7 +47,7 @@ export class EffectPoint extends ControlPoint {
   isRedundant(existing: EffectPoint | null): boolean {
     return (
       !this.omitFirstBarLine
-        && existing !== null
+        && existing instanceof EffectPoint
         && this.kiai === existing.kiai
         && this.omitFirstBarLine === existing.omitFirstBarLine
         && this.scrollSpeed === existing.scrollSpeed

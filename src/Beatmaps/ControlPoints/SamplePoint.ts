@@ -38,7 +38,7 @@ export class SamplePoint extends ControlPoint {
    */
   isRedundant(existing: SamplePoint): boolean {
     return (
-      existing !== null
+      existing instanceof SamplePoint
         && this.volume === existing.volume
         && this.customIndex === existing.customIndex
         && this.sampleSet === existing.sampleSet

@@ -55,7 +55,7 @@ export class DifficultyPoint extends ControlPoint {
    * @returns Whether the difficulty point is redundant.
    */
   isRedundant(existing: DifficultyPoint | null): boolean {
-    return existing !== null
+    return existing instanceof DifficultyPoint
       && existing.sliderVelocity === this.sliderVelocity
       && existing.generateTicks === this.generateTicks;
   }
