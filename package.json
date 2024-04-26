@@ -3,6 +3,7 @@
   "version": "4.1.6",
   "description": "A bundle of parsers for osu! file formats based on the osu!lazer source code.",
   "exports": {
+    "types": "./lib/index.d.ts",
     "node": {
       "import": "./lib/node.mjs",
       "require": "./lib/node.cjs"
@@ -40,7 +41,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "lzma-js-simple-v2": "^1.2.2"
+    "lzma-js-simple-v2": "^1.2.3"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^25.0.7",
