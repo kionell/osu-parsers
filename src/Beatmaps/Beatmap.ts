@@ -8,7 +8,7 @@ import {
 } from './Sections';
 
 import { IBeatmap } from './IBeatmap';
-import { ControlPointInfo } from './ControlPoints';
+import { ControlPointInfo, TimingPoint } from './ControlPoints';
 import { HitObject, HitType, IHasDuration } from '../Objects';
 import { RoundHelper } from '../Utils';
 
@@ -118,40 +118,59 @@ export class Beatmap implements IBeatmap {
     return endTime / this.difficulty.clockRate;
   }
 
+  private _getLongestBeatLength(unlimited: boolean): number {
+    const longestBeat = this.controlPoints.timingPoints.reduce((b, t) => {
+      const beatLength = unlimited ? t.beatLengthUnlimited : t.beatLength;
+
+      return beatLength >= 0 ? Math.max(beatLength, b) : b;
+    }, -Infinity);
+
+    return isFinite(longestBeat) ? longestBeat : TimingPoint.DEFAULT_BEAT_LENGTH;
+  }
+
   /**
    * Minimal BPM of a beatmap.
    */
   get bpmMin(): number {
-    const longestBeat = this.controlPoints.timingPoints
-      .reduce((b, t) =>
-        t.beatLength >= 0 ? Math.max(t.beatLength, b) : b, -Infinity,
-      );
+    return 60000 / this._getLongestBeatLength(false) * this.difficulty.clockRate;
+  }
 
-    if (!isFinite(longestBeat)) return 60;
+  /**
+   * Minimal BPM of a beatmap without any limits as it was in osu!stable.
+   * Usage of {@link bpmMin} is preferable when working with osu!lazer.
+   */
+  get bpmMinUnlimited(): number {
+    return 60000 / this._getLongestBeatLength(true) * this.difficulty.clockRate;
+  }
 
-    return (60000 / longestBeat) * this.difficulty.clockRate;
+  private _getShortestBeatLength(unlimited: boolean): number {
+    const shortestBeat = this.controlPoints.timingPoints.reduce((b, t) => {
+      const beatLength = unlimited ? t.beatLengthUnlimited : t.beatLength;
+
+      return beatLength >= 0 ? Math.min(beatLength, b) : b;
+    }, Infinity);
+
+    return isFinite(shortestBeat) ? shortestBeat : TimingPoint.DEFAULT_BEAT_LENGTH;
   }
 
   /**
    * Maximal BPM of a beatmap.
    */
   get bpmMax(): number {
-    const shortestBeat = this.controlPoints.timingPoints
-      .reduce((b, t) =>
-        t.beatLength >= 0 ? Math.min(t.beatLength, b) : b, Infinity,
-      );
-
-    if (!isFinite(shortestBeat)) return 60;
-
-    return (60000 / shortestBeat) * this.difficulty.clockRate;
+    return 60000 / this._getShortestBeatLength(false) * this.difficulty.clockRate;
   }
 
   /**
-   * The most common BPM of a beatmap.
+   * Maximal BPM of a beatmap without any limits as it was in osu!stable.
+   * Usage of {@link bpmMax} is preferable when working with osu!lazer.
    */
-  get bpm(): number {
+  get bpmMaxUnlimited(): number {
+    return 60000 / this._getShortestBeatLength(true) * this.difficulty.clockRate;
+  }
+
+  private _getMostCommonBeatLength(unlimited: boolean): number {
     if (!this.controlPoints.timingPoints.length) {
-      return this.bpmMax;
+      return TimingPoint.DEFAULT_BEAT_LENGTH;
     }
 
     const timingPoints = this.controlPoints.timingPoints;
@@ -170,7 +189,8 @@ export class Beatmap implements IBeatmap {
     const groups = new Map<number, number>();
 
     timingPoints.forEach((t, i) => {
-      const nextBeat = RoundHelper.round(t.beatLength * 1000) / 1000;
+      const beatLength = unlimited ? t.beatLengthUnlimited : t.beatLength;
+      const nextBeat = RoundHelper.round(beatLength * 1000) / 1000;
 
       if (!groups.has(nextBeat)) {
         groups.set(nextBeat, 0);
@@ -194,9 +214,22 @@ export class Beatmap implements IBeatmap {
 
     if (groups.size === 0) return this.bpmMax;
 
-    const mostCommon = [...groups.entries()].sort((a, b) => b[1] - a[1])[0];
+    return [...groups.entries()].sort((a, b) => b[1] - a[1])[0][0];
+  }
 
-    return 60000 / Number(mostCommon[0]) * this.difficulty.clockRate;
+  /**
+   * The most common BPM of a beatmap.
+   */
+  get bpm(): number {
+    return 60000 / this._getMostCommonBeatLength(false) * this.difficulty.clockRate;
+  }
+
+  /**
+   * The most common BPM of a beatmap without any limits as it was in osu!stable.
+   * Usage of {@link bpm} is preferable when working with osu!lazer.
+   */
+  get bpmUnlimited(): number {
+    return 60000 / this._getMostCommonBeatLength(true) * this.difficulty.clockRate;
   }
 
   /**
