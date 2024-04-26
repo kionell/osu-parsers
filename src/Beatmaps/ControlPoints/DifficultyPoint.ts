@@ -28,18 +28,22 @@ export class DifficultyPoint extends ControlPoint {
    */
   isLegacy = false;
 
-  private _sliderVelocity = 1;
+  /**
+   * The real slider velocity of this difficulty point 
+   * without any limits as it was in osu!stable.
+   * Usage of {@link sliderVelocity} is preferable when working with osu!lazer.
+   */
+  sliderVelocityUnlimited = 1;
 
   /**
    * The slider velocity at this difficulty point.
    */
   get sliderVelocity(): number {
-    // Imitate bindable value with range [0.1, 10].
-    return clamp(this._sliderVelocity, 0.1, 10);
+    return clamp(this.sliderVelocityUnlimited, 0.1, 10);
   }
 
   set sliderVelocity(value: number) {
-    this._sliderVelocity = value;
+    this.sliderVelocityUnlimited = value;
   }
 
   /**

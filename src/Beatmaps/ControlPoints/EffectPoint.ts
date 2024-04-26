@@ -27,16 +27,21 @@ export class EffectPoint extends ControlPoint {
   omitFirstBarLine = false;
 
   /**
+   * The real scroll speed of this effect point 
+   * without any limits as it was in osu!stable.
+   * Usage of {@link scrollSpeed} is preferable when working with osu!lazer.
+   */
+  scrollSpeedUnlimited = 1;
+
+  /**
    * The relative scroll speed at this control point.
    */
-  private _scrollSpeed = 1;
-
   get scrollSpeed(): number {
-    return clamp(this._scrollSpeed, 0.1, 10);
+    return clamp(this.scrollSpeedUnlimited, 0.1, 10);
   }
 
   set scrollSpeed(value: number) {
-    this._scrollSpeed = value;
+    this.scrollSpeedUnlimited = value;
   }
 
   /**

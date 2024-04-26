@@ -13,27 +13,47 @@ export class TimingPoint extends ControlPoint {
   static default: TimingPoint = new TimingPoint();
 
   /**
+   * Default length of a beat in milliseconds. 
+   * Used whenever there is no beatmap or track playing.
+   */
+  static DEFAULT_BEAT_LENGTH = 1000;
+
+  /**
    * The type of a timing point.
    */
   pointType: ControlPointType = ControlPointType.TimingPoint;
 
   /**
-   * The beat length of this timing point. 
+   * The real beat length of this timing point 
+   * without any limits as it was in osu!stable.
+   * Usage of {@link beatLength} is preferable when working with osu!lazer.
    */
-  private _beatLength = 1000;
+  beatLengthUnlimited = TimingPoint.DEFAULT_BEAT_LENGTH;
 
+  /**
+   * The beat length of this timing point.
+   */
   get beatLength(): number {
-    return clamp(this._beatLength, 6, 60000);
+    return clamp(this.beatLengthUnlimited, 6, 60000);
   }
 
   set beatLength(value: number) {
-    this._beatLength = value;
+    this.beatLengthUnlimited = value;
   }
 
   /**
    * The time signature of this timing point.
    */
   timeSignature: TimeSignature = TimeSignature.SimpleQuadruple;
+
+  /**
+   * The real BPM of this timing point 
+   * without any limits as it was in osu!stable.
+   * Usage of {@link bpm} is preferable when working with osu!lazer.
+   */
+  get bpmUnlimited(): number {
+    return 60000 / this.beatLengthUnlimited;
+  }
 
   /**
    * The BPM of this timing point. 
