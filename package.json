@@ -1,0 +1,56 @@
+{
+  "name": "osu-classes",
+  "version": "3.1.0",
+  "description": "Basic classes, interfaces and utils for creating new osu! rulesets",
+  "exports": {
+    "import": {
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.mjs"
+    },
+    "require": {
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.cjs"
+    }
+  },
+  "types": "./lib/index.d.ts",
+  "scripts": {
+    "dev": "rollup -c -w",
+    "build": "rollup -c && npm run format",
+    "test": "jest --verbose",
+    "fix": "eslint --fix ./src",
+    "format": "eslint --fix ./lib/** --no-ignore",
+    "prepublishOnly": "npm run build",
+    "docs": "npx typedoc src/index.ts"
+  },
+  "keywords": [
+    "osu",
+    "ruleset",
+    "osu!std",
+    "osu!taiko",
+    "osu!mania",
+    "osu!catch"
+  ],
+  "author": "Kionell",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kionell/osu-classes"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.12.7",
+    "@typescript-eslint/eslint-plugin": "^7.7.1",
+    "@typescript-eslint/parser": "^7.7.1",
+    "eslint": "^8.57.0",
+    "eslint-plugin-import": "^2.29.1",
+    "jest": "^29.7.0",
+    "rollup": "^4.16.4",
+    "rollup-plugin-dts": "^6.1.0",
+    "rollup-plugin-node-externals": "^7.1.1",
+    "tslib": "^2.6.2",
+    "typedoc": "^0.25.13",
+    "typescript": "^5.4.5"
+  }
+}
