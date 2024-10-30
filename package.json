@@ -1,0 +1,51 @@
+{
+  "name": "osu-catch-stable",
+  "version": "4.0.0",
+  "description": "osu!stable version of osu!catch ruleset based on osu!lazer source code.",
+  "exports": {
+    "import": "./lib/index.mjs",
+    "require": "./lib/index.cjs"
+  },
+  "types": "./lib/index.d.ts",
+  "scripts": {
+    "build": "rollup -c && npm run format",
+    "test": "jest --verbose",
+    "fix": "eslint --fix ./src",
+    "format": "eslint --fix ./lib/** --no-ignore",
+    "prepublishOnly": "npm run build && npm run test",
+    "docs": "npx typedoc src/index.ts"
+  },
+  "keywords": [
+    "osu",
+    "osu!lazer",
+    "osu!catch"
+  ],
+  "author": "Kionell",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kionell/osu-catch-stable"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^21.0.1",
+    "@rollup/plugin-typescript": "^8.2.1",
+    "@types/jest": "^27.0.3",
+    "@types/node": "^17.0.4",
+    "@typescript-eslint/eslint-plugin": "^4.20.0",
+    "@typescript-eslint/parser": "^4.21.0",
+    "eslint": "^7.23.0",
+    "eslint-plugin-import": "^2.22.1",
+    "jest": "^28.1.3",
+    "jest-esm-transformer": "^1.0.0",
+    "osu-parsers": "^4.1.0",
+    "rollup": "^2.44.0",
+    "rollup-plugin-dts": "^3.0.1",
+    "rollup-plugin-node-externals": "^3.1.2",
+    "ts-jest": "^28.0.8",
+    "typedoc": "^0.22.6",
+    "typescript": "^4.1.5"
+  },
+  "peerDependencies": {
+    "osu-classes": "^3.0.0"
+  }
+}

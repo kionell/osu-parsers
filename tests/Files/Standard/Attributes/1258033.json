@@ -1,0 +1,212 @@
+{
+  "DT": {
+    "totalPerformance": 3.3561214190523474,
+    "starRating": 9.695144187297492,
+    "maxCombo": 2330,
+    "approachRate": 10.573333104451496
+  },
+  "DTFL": {
+    "totalPerformance": 7.008488853113404,
+    "starRating": 9.695144187297492,
+    "maxCombo": 2330,
+    "approachRate": 10.573333104451496
+  },
+  "EZ": {
+    "totalPerformance": 1.6001693229894,
+    "starRating": 7.090832938012067,
+    "maxCombo": 2330,
+    "approachRate": 4.679999828338623
+  },
+  "EZDT": {
+    "totalPerformance": 2.17022298597307,
+    "starRating": 8.539274709002141,
+    "maxCombo": 2330,
+    "approachRate": 7.495999908447265
+  },
+  "EZDTFL": {
+    "totalPerformance": 4.532012316246151,
+    "starRating": 8.539274709002141,
+    "maxCombo": 2330,
+    "approachRate": 7.495999908447265
+  },
+  "EZFL": {
+    "totalPerformance": 3.341586153468754,
+    "starRating": 7.090832938012067,
+    "maxCombo": 2330,
+    "approachRate": 4.679999828338623
+  },
+  "EZHD": {
+    "totalPerformance": 2.3186453696131855,
+    "starRating": 7.090832938012067,
+    "maxCombo": 2330,
+    "approachRate": 4.679999828338623
+  },
+  "EZHDDTFL": {
+    "totalPerformance": 5.609724876168345,
+    "starRating": 8.539274709002141,
+    "maxCombo": 2330,
+    "approachRate": 7.495999908447265
+  },
+  "EZHDFL": {
+    "totalPerformance": 4.841958379397821,
+    "starRating": 7.090832938012067,
+    "maxCombo": 2330,
+    "approachRate": 4.679999828338623
+  },
+  "EZHDHT": {
+    "totalPerformance": 2.3415966160398156,
+    "starRating": 6.319603793230955,
+    "maxCombo": 2330,
+    "approachRate": 1.239999771118164
+  },
+  "EZHDHTFL": {
+    "totalPerformance": 4.889886786824604,
+    "starRating": 6.319603793230955,
+    "maxCombo": 2330,
+    "approachRate": 1.239999771118164
+  },
+  "EZHT": {
+    "totalPerformance": 1.3717613312782495,
+    "starRating": 6.319603793230955,
+    "maxCombo": 2330,
+    "approachRate": 1.239999771118164
+  },
+  "EZHTFL": {
+    "totalPerformance": 2.864608516491119,
+    "starRating": 6.319603793230955,
+    "maxCombo": 2330,
+    "approachRate": 1.239999771118164
+  },
+  "FL": {
+    "totalPerformance": 4.057818478300366,
+    "starRating": 7.988672013885963,
+    "maxCombo": 2330,
+    "approachRate": 9.359999656677246
+  },
+  "HD": {
+    "totalPerformance": 2.1335766185344913,
+    "starRating": 7.988672013885963,
+    "maxCombo": 2330,
+    "approachRate": 9.359999656677246
+  },
+  "HDDT": {
+    "totalPerformance": 3.4469604695209073,
+    "starRating": 9.695144187297492,
+    "maxCombo": 2330,
+    "approachRate": 10.573333104451496
+  },
+  "HDDTFL": {
+    "totalPerformance": 7.198185348902305,
+    "starRating": 9.695144187297492,
+    "maxCombo": 2330,
+    "approachRate": 10.573333104451496
+  },
+  "HDFL": {
+    "totalPerformance": 4.455484793659409,
+    "starRating": 7.988672013885963,
+    "maxCombo": 2330,
+    "approachRate": 9.359999656677246
+  },
+  "HDHR": {
+    "totalPerformance": 2.548618259031502,
+    "starRating": 8.664555474489871,
+    "maxCombo": 2330,
+    "approachRate": 10
+  },
+  "HDHRDT": {
+    "totalPerformance": 4.232236489710928,
+    "starRating": 10.471371497094738,
+    "maxCombo": 2330,
+    "approachRate": 11
+  },
+  "HDHRDTFL": {
+    "totalPerformance": 8.838053979064396,
+    "starRating": 10.471371497094738,
+    "maxCombo": 2330,
+    "approachRate": 11
+  },
+  "HDHRFL": {
+    "totalPerformance": 5.322203945859375,
+    "starRating": 8.664555474489871,
+    "maxCombo": 2330,
+    "approachRate": 10
+  },
+  "HDHRHT": {
+    "totalPerformance": 1.94976993914029,
+    "starRating": 7.679368826271693,
+    "maxCombo": 2330,
+    "approachRate": 9
+  },
+  "HDHRHTFL": {
+    "totalPerformance": 4.071646754800317,
+    "starRating": 7.679368826271693,
+    "maxCombo": 2330,
+    "approachRate": 9
+  },
+  "HDHT": {
+    "totalPerformance": 1.761818515786262,
+    "starRating": 7.100972337146091,
+    "maxCombo": 2330,
+    "approachRate": 8.146666208902994
+  },
+  "HDHTFL": {
+    "totalPerformance": 3.6791533700182333,
+    "starRating": 7.100972337146091,
+    "maxCombo": 2330,
+    "approachRate": 8.146666208902994
+  },
+  "HR": {
+    "totalPerformance": 2.427255484791906,
+    "starRating": 8.664555474489871,
+    "maxCombo": 2330,
+    "approachRate": 10
+  },
+  "HRDT": {
+    "totalPerformance": 4.190333158129632,
+    "starRating": 10.471371497094738,
+    "maxCombo": 2330,
+    "approachRate": 11
+  },
+  "HRDTFL": {
+    "totalPerformance": 8.750548494123162,
+    "starRating": 10.471371497094738,
+    "maxCombo": 2330,
+    "approachRate": 11
+  },
+  "HRFL": {
+    "totalPerformance": 5.068765662723214,
+    "starRating": 8.664555474489871,
+    "maxCombo": 2330,
+    "approachRate": 10
+  },
+  "HRHT": {
+    "totalPerformance": 1.7331288347913691,
+    "starRating": 7.679368826271693,
+    "maxCombo": 2330,
+    "approachRate": 9
+  },
+  "HRHTFL": {
+    "totalPerformance": 3.619241559822503,
+    "starRating": 7.679368826271693,
+    "maxCombo": 2330,
+    "approachRate": 9
+  },
+  "HT": {
+    "totalPerformance": 1.4817648990024401,
+    "starRating": 7.100972337146091,
+    "maxCombo": 2330,
+    "approachRate": 8.146666208902994
+  },
+  "HTFL": {
+    "totalPerformance": 3.0943257054524733,
+    "starRating": 7.100972337146091,
+    "maxCombo": 2330,
+    "approachRate": 8.146666208902994
+  },
+  "NM": {
+    "totalPerformance": 1.9431480587431422,
+    "starRating": 7.988672013885963,
+    "maxCombo": 2330,
+    "approachRate": 9.359999656677246
+  }
+}
