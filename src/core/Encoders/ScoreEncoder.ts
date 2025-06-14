@@ -9,10 +9,41 @@ import { FileFormat } from '../Enums';
  */
 export class ScoreEncoder {
   /**
+   * Database version in stable-compatible YYYYMMDD format.
+   * Should be incremented if any changes are made to the format/usage.
+   * 30000001: Appends LegacyReplaySoloScoreInfo to the end of scores.
+   * 30000002: Score stored to replay calculated using the Score V2 algorithm. 
+   * Legacy scores on this version are candidate to Score V1 -> V2 conversion.
+   * 30000003: First version after converting legacy total score to standardised.
+   * 30000004: Fixed mod multipliers during legacy score conversion. Reconvert all scores.
+   * 30000005: Introduce combo exponent in the osu! gamemode. Reconvert all scores.
+   * 30000006: Fix edge cases in conversion after combo exponent introduction that lead to NaNs. Reconvert all scores.
+   * 30000007: Adjust osu!mania combo and accuracy portions and judgement scoring values. Reconvert all scores.
+   * 30000008: Add accuracy conversion. Reconvert all scores.
+   * 30000009: Fix edge cases in conversion for scores which have 0.0x mod multiplier on stable. Reconvert all scores.
+   * 30000010: Fix mania score V1 conversion using score V1 accuracy rather than V2 accuracy. Reconvert all scores.
+   * 30000011: Re-do catch scoring to mirror stable Score V2 as closely as feasible. Reconvert all scores.
+   * 30000012: Fix incorrect total score conversion on selected beatmaps after 
+   * implementing the more correct difficulty calculator method. Reconvert all scores.
+   * 30000013: All local scores will use lazer definitions of ranks for consistency. Recalculates the rank of all scores.
+   * 30000014: Fix edge cases in conversion for osu! scores on selected beatmaps. Reconvert all scores.
+   * 30000015: Fix osu! standardised score estimation algorithm violating basic invariants. Reconvert all scores.
+   * 30000016: Fix taiko standardised score estimation algorithm not including 
+   * swell tick score gain into bonus portion. Reconvert all scores.
+   */
+  static LATEST_VERSION = 30000016;
+
+  /**
    * Default game version used if replay is not available.
    * It's just the last available osu!lazer version at the moment.
+   * @deprecated Use {@link LATEST_VERSION} instead.
    */
-  static DEFAULT_GAME_VERSION = 20230621;
+  static DEFAULT_GAME_VERSION = ScoreEncoder.LATEST_VERSION;
+
+  /**
+   * The first stable-compatible YYYYMMDD format version given to lazer usage of replays.
+   */
+  static FIRST_LAZER_VERSION = 30000000;
 
   /**
    * Performs score & replay encoding to the specified path.
@@ -60,9 +91,8 @@ export class ScoreEncoder {
     try {
       writer.writeByte(score.info.rulesetId);
 
-      writer.writeInteger(
-        score.replay?.gameVersion ?? ScoreEncoder.DEFAULT_GAME_VERSION,
-      );
+      // Always force latest version when encoding a replay.
+      writer.writeInteger(ScoreEncoder.LATEST_VERSION);
 
       writer.writeString(score.info.beatmapHashMD5 ?? '');
       writer.writeString(score.info.username);
