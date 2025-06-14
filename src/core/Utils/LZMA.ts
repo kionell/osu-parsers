@@ -22,8 +22,8 @@ export class LZMA {
   }
 }
 
-type DecompressedData = string | Uint8Array;
-type CompressedData = Uint8Array;
+export type DecompressedData = string | Uint8Array;
+export type CompressedData = Uint8Array;
 
 interface LZMAInstance {
   decompress(data: CompressedData, ...args: any[]): Promise<DecompressedData>;
