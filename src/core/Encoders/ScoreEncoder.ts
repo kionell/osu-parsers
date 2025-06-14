@@ -96,10 +96,7 @@ export class ScoreEncoder {
           beatmap,
         );
 
-        const encodedData = await LZMA.compress(replayData);
-
-        writer.writeInteger(encodedData.byteLength);
-        writer.writeBytes(encodedData);
+        writer.writeBytes(await writer.compressData(replayData));
       }
       else {
         writer.writeInteger(0);

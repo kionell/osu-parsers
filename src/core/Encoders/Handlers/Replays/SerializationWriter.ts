@@ -1,4 +1,5 @@
 import { concatBufferViews } from '../../../Utils/Buffer';
+import { CompressedData, DecompressedData, LZMA } from '../../../Utils/LZMA';
 
 export class SerializationWriter {
   /**
@@ -17,6 +18,10 @@ export class SerializationWriter {
 
   finish(): Uint8Array {
     return concatBufferViews(this._views);
+  }
+
+  async compressData(data: DecompressedData): Promise<CompressedData> {
+    return LZMA.compress(data);
   }
 
   writeByte(value: number): number {

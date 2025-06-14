@@ -85,19 +85,17 @@ export class ScoreDecoder extends Decoder {
 
       scoreInfo.date = reader.readDate();
 
-      const replayLength = reader.readInteger();
-      const compressedBytes = reader.readBytes(replayLength);
+      const compressedReplay = reader.readBytes();
 
-      if (parseReplay && replayLength > 0) {
+      if (parseReplay && compressedReplay.length > 0) {
         replay = new Replay();
 
-        const replayData = await LZMA.decompress(compressedBytes);
-        const replayString = stringifyBuffer(replayData);
+        const rawFrameData = await reader.readCompressedData(compressedReplay);
 
         replay.mode = scoreInfo.rulesetId;
         replay.gameVersion = gameVersion;
         replay.hashMD5 = replayHashMD5;
-        replay.frames = ReplayDecoder.decodeReplayFrames(replayString);
+        replay.frames = ReplayDecoder.decodeReplayFrames(rawFrameData);
         replay.lifeBar = ReplayDecoder.decodeLifeBar(lifeData);
       }
 

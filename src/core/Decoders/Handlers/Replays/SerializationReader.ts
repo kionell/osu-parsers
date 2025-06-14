@@ -1,4 +1,5 @@
 import { BufferLike, stringifyBuffer } from '../../../Utils/Buffer';
+import { CompressedData, LZMA } from '../../../Utils/LZMA';
 
 export class SerializationReader {
   /**
@@ -25,6 +26,10 @@ export class SerializationReader {
    */
   get remainingBytes(): number {
     return this.view.byteLength - this._bytesRead;
+  }
+
+  async readCompressedData(compressedData: CompressedData): Promise<string> {
+    return stringifyBuffer(await LZMA.decompress(compressedData));
   }
 
   /**
