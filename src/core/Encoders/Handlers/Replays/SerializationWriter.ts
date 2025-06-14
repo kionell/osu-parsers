@@ -24,6 +24,8 @@ export class SerializationWriter {
   }
 
   writeBytes(value: Uint8Array): number {
+    this.writeInteger(value.byteLength);
+
     this._bytesWritten += value.byteLength;
     this._views.push(value);
 
