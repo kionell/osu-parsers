@@ -1,7 +1,6 @@
-import { IBeatmap, IScore } from 'osu-classes';
+import { IBeatmap, IScore, LegacyReplaySoloScoreInfo } from 'osu-classes';
 import { ReplayEncoder, SerializationWriter } from './Handlers';
 import { mkdir, writeFile, dirname } from '../Utils/FileSystem';
-import { LZMA } from '../Utils/LZMA';
 import { FileFormat } from '../Enums';
 
 /**
@@ -133,6 +132,10 @@ export class ScoreEncoder {
       }
 
       writer.writeLong(BigInt(score.info.id));
+
+      const jsonScore = JSON.stringify(LegacyReplaySoloScoreInfo.fromScore(score.info));
+
+      writer.writeBytes(await writer.compressData(jsonScore));
 
       return writer.finish();
     }
